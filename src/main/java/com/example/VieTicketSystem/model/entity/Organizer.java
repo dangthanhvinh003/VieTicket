@@ -12,12 +12,11 @@ import java.sql.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Organizer {
-
-    private int organizerId;
+public class Organizer extends User{
     private Date foundedDate;
     private String website;
     private String organizerAddr;
     private String organizerType;
-    private User user;
+ 
+  
 }
