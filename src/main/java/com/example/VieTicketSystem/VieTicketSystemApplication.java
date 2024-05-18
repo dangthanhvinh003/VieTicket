@@ -24,7 +24,7 @@ public class VieTicketSystemApplication {
 	@EventListener(ApplicationReadyEvent.class)
 	public void triggerMail() {
 		try {
-			emailService.sendEmail("jsaluluftdl@gmail.com", "Test", "Hi mom");
+			emailService.sendEmail("dvih003@gmail.com", "Test", "Hi mom");
 			System.out.println("Mail sent successfully");
 		} catch (MessagingException e) {
 			System.out.println("Failed to send mail");
