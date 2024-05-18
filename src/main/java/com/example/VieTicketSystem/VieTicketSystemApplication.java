@@ -14,22 +14,7 @@ import jakarta.mail.MessagingException;
 @SpringBootApplication
 @PropertySource("classpath:secrets.properties")
 public class VieTicketSystemApplication {
-	@Autowired
-	private EmailService emailService;
-
 	public static void main(String[] args) {
 		SpringApplication.run(VieTicketSystemApplication.class, args);
 	}
-
-	@EventListener(ApplicationReadyEvent.class)
-	public void triggerMail() {
-		try {
-			emailService.sendEmail("dvih003@gmail.com", "Test", "Hi mom");
-			System.out.println("Mail sent successfully");
-		} catch (MessagingException e) {
-			System.out.println("Failed to send mail");
-			e.printStackTrace();
-		}
-	}
-
 }
