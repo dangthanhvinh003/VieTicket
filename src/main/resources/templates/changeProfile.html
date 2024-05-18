@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Home</title>
+</head>
+
+<body>
+    <h1>Welcome to the Home Page</h1>
+    <div th:if="${session.activeUser}">
+        <p>Hello</p>
+    </div>
+
+   
+    <form class="form">
+        <h2>User Profile</h2>
+        <div class="form-group">
+            <label for="avatar">Avatar:</label>
+            <div class="relative">
+                <div class="input-group">
+                    <label class="input-group-btn">
+                        <span class="btn btn-default">
+                            <img th:src="@{${session.activeUser.avatar}}">
+                        </span>
+                    </label>
+                    
+                    <i class="fa fa-image"></i>
+                    <form action="#" th:action="@{/upload}" method="post" enctype="multipart/form-data">
+                        <input type="file" name="image" placeholder="upload file">
+                        <input type="submit" value="Submit">
+                
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="name">Full Name:</label>
+            <div class="relative">
+                <input class="form-control" id="name" type="text" pattern="[a-zA-Z\s]+" required="" autofocus=""
+                    title="Username should only contain letters. e.g. Piyush Gupta" autocomplete=""
+                    placeholder="Type your name here...">
+                <i class="fa fa-user"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email address:</label>
+            <div class="relative">
+                <input class="form-control" type="email" required="" placeholder="Type your email address..."
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
+                <i class="fa fa-envelope"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <div class="relative">
+                <input class="form-control" type="text" maxlength="10"
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'');" required=""
+                    placeholder="Type your Mobile Number...">
+                <i class="fa fa-phone"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dob">Date of Birth:</label>
+            <div class="relative">
+                <input class="form-control" type="date" required="" placeholder="YYYY-MM-DD">
+                <i class="fa fa-calendar"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <div class="relative">
+                <select class="form-control" required="">
+                    <option value="">Select Gender</option>
+                    <option value="M">">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Female</option>
+                </select>
+                <i class="fa fa-venus-mars"></i>
+            </div>
+        </div>
+        <div class="tright">
+            <a href=""><button class="movebtn movebtnre" type="Reset"><i class="fa fa-fw fa-refresh"></i> Reset
+                </button></a>
+            <a href=""><button class="movebtn movebtnsu" type="Submit">Submit <i
+                        class="fa fa-fw fa-paper-plane"></i></button></a>
+        </div>
+    </form>
+
+    <div class="thanks" style="display: none;">
+        <h4>Thank you!</h4>
+        <p><small>Your message has been successfully sent.</small></p>
+    </div>
+
+</body>
+
+</html>

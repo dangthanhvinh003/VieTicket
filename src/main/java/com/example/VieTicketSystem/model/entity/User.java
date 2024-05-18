@@ -22,4 +22,5 @@ public class User {
     private char gender;
     private String avatar;
     private char role;
+    private String email;
 }

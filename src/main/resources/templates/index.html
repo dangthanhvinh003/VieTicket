@@ -1,0 +1,28 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home VieTicket</title>
+</head>
+
+<body>
+    <div style="justify-content: space-between; display: flex;">
+        <div>
+            Home
+        </div>
+        <div style="display: flex;">
+
+            <th:block th:if="${session.activeUser == null}">
+                <!-- Nếu chưa đăng nhập, hiển thị link đến trang đăng nhập -->
+                <a th:href="@{/login}">Đăng nhập / Đăng ký</a>
+            </th:block>
+            <th:block th:if="${session.activeUser != null}">
+                <!-- Nếu đã đăng nhập, hiển thị link đến trang profile -->
+                <a th:href="@{/change}">Profile</a>
+            </th:block>
+
+        </div>
+</body>
+
+</html>
