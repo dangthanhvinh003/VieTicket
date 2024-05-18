@@ -15,7 +15,7 @@
 
             <th:block th:if="${session.activeUser == null}">
                 <!-- Nếu chưa đăng nhập, hiển thị link đến trang đăng nhập -->
-                <a th:href="@{/login}">Đăng nhập / Đăng ký</a>
+                <a th:href="@{/auth/login}">Đăng nhập / Đăng ký</a>
             </th:block>
             <th:block th:if="${session.activeUser != null}">
                 <!-- Nếu đã đăng nhập, hiển thị link đến trang profile -->
