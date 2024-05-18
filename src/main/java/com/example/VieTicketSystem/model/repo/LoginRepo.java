@@ -21,20 +21,21 @@ public class LoginRepo {
         ps.setString(1, usernameInput);
         ps.setString(2, passwordInput);
         ResultSet rs = ps.executeQuery();
-        if(rs.next()){
-        int userId = rs.getInt("user_id");
-        String fullName = rs.getString("full_name");
-        String username = rs.getString("username");
-        String password = rs.getString("password");
-        String phone = rs.getString("phone");
-        Date dob = rs.getDate("dob");
-        char gender = rs.getString("gender").charAt(0);
-        String avatar = rs.getString("avatar");
-        char role = rs.getString("role").charAt(0);
-        User user = new User(userId, fullName, username, password, phone, dob, gender, avatar, role);
-        ps.close();
-        return user;
-        }return null;
-        
+        if (rs.next()) {
+            int userId = rs.getInt("user_id");
+            String fullName = rs.getString("full_name");
+            String username = rs.getString("username");
+            String password = rs.getString("password");
+            String phone = rs.getString("phone");
+            Date dob = rs.getDate("dob");
+            char gender = rs.getString("gender").charAt(0);
+            String avatar = rs.getString("avatar");
+            char role = rs.getString("role").charAt(0);
+            User user = new User(userId, fullName, username, password, phone, dob, gender, avatar, role);
+            ps.close();
+            return user;
+        }
+        return null;
+
     }
 }
