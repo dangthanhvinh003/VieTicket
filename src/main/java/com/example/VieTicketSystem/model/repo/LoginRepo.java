@@ -31,7 +31,8 @@ public class LoginRepo {
         char gender = rs.getString("gender").charAt(0);
         String avatar = rs.getString("avatar");
         char role = rs.getString("role").charAt(0);
-        User user = new User(userId, fullName, username, password, phone, dob, gender, avatar, role);
+        String email = rs.getString("email");
+        User user = new User(userId, fullName, username, password, phone, dob, gender, avatar, role,email);
         ps.close();
         return user;
         }return null;
