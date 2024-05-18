@@ -1,5 +1,7 @@
 package com.example.VieTicketSystem.controller;
 
+import java.sql.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.stereotype.Controller; // Import Controller annotation
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.LoginRepo;
+import com.example.VieTicketSystem.model.repo.UserRepo;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -16,8 +19,27 @@ import jakarta.servlet.http.HttpSession;
 public class UserController {
     @Autowired
     LoginRepo loginRepo = new LoginRepo();
+    UserRepo userRepo = new UserRepo();
 
-    @PostMapping(value = "/auth/sign-up")
+    @PostMapping(value = "/editUser")
+    public String editUser(@RequestParam("fullName") String nameInput,
+            @RequestParam("phone") String phoneInput,
+            @RequestParam("email") String emailInput, @RequestParam("dob") Date dobInput,
+            @RequestParam("gender") Character genderInput, Model model,
+            HttpSession httpSession) throws Exception {
+        User activeUser = (User) httpSession.getAttribute("activeUser");
+        userRepo.editProfile(nameInput, emailInput, phoneInput, dobInput, genderInput, activeUser.getUserId());
+        activeUser.setFullName(nameInput);
+        activeUser.setPhone(phoneInput);
+        activeUser.setEmail(emailInput);
+        activeUser.setDob(dobInput);
+        activeUser.setGender(genderInput);
+        httpSession.setAttribute("activeUser", activeUser);
+        
+        return "redirect:/change";
+    }
+
+    @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = loginRepo.CheckLogin(usernameInput, passwordInput);
@@ -36,13 +58,15 @@ public class UserController {
 
     @GetMapping("/auth/login")
     public String loginPage() {
-        
+
         return "login"; // Trả về tên của trang login.html
     }
+
     @GetMapping("/change")
     public String changeProfile() {
         return "changeProfile"; // Trả về tên của trang login.html
     }
+
     @GetMapping("/profile")
     public String profilePage(Model model, HttpSession httpSession) {
         // Kiểm tra xem session "activeUser" có tồn tại hay không
@@ -55,7 +79,7 @@ public class UserController {
         } else {
             // Nếu không tồn tại session "activeUser", chuyển hướng người dùng đến trang
             // đăng nhập
-            return "redirect:/login";
+            return "redirect:/auth/login";
         }
     }
 }

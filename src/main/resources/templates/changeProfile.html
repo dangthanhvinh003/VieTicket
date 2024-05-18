@@ -8,11 +8,10 @@
 <body>
     <h1>Welcome to the Home Page</h1>
     <div th:if="${session.activeUser}">
-        <p>Hello</p>
+        <p th:text="${session.activeUser.fullName}"> Hello </p>
     </div>
 
-   
-    <form class="form">
+    <form action="@{/upload}" th:action="@{/upload}" method="post" enctype="multipart/form-data" class="form">
         <h2>User Profile</h2>
         <div class="form-group">
             <label for="avatar">Avatar:</label>
@@ -23,57 +22,59 @@
                             <img th:src="@{${session.activeUser.avatar}}">
                         </span>
                     </label>
-                    
+
                     <i class="fa fa-image"></i>
-                    <form action="#" th:action="@{/upload}" method="post" enctype="multipart/form-data">
-                        <input type="file" name="image" placeholder="upload file">
-                        <input type="submit" value="Submit">
-                
-                    </form>
+                    <input type="file" name="image" placeholder="upload file">
+                    <input type="submit" value="Submit">
                 </div>
             </div>
         </div>
+    </form>
+    <form class="form" th:action="@{/editUser}" method="post">
+
         <div class="form-group">
             <label for="name">Full Name:</label>
             <div class="relative">
-                <input class="form-control" id="name" type="text" pattern="[a-zA-Z\s]+" required="" autofocus=""
-                    title="Username should only contain letters. e.g. Piyush Gupta" autocomplete=""
-                    placeholder="Type your name here...">
+                <input name="fullName" class="form-control" id="name" type="text" pattern="[\s\S]+" required=""
+                    autofocus=""
+                    title="Tên chỉ nên chứa các chữ cái và khoảng trắng. Ví dụ: Nguyễn Văn Á. Lưu ý: không sử dụng ký tự đặc biệt hoặc số."
+                    autocomplete="" placeholder="Nhập tên của bạn ở đây..." th:value="${session.activeUser.fullName}">
                 <i class="fa fa-user"></i>
             </div>
         </div>
         <div class="form-group">
             <label for="email">Email address:</label>
             <div class="relative">
-                <input class="form-control" type="email" required="" placeholder="Type your email address..."
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$">
+                <input name="email" class="form-control" type="email" required=""
+                    placeholder="Type your email address..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
+                    th:value="@{${session.activeUser.email}}">
                 <i class="fa fa-envelope"></i>
             </div>
         </div>
         <div class="form-group">
             <label for="phone">Phone Number:</label>
             <div class="relative">
-                <input class="form-control" type="text" maxlength="10"
+                <input name="phone" class="form-control" type="text" maxlength="10"
                     oninput="this.value=this.value.replace(/[^0-9]/g,'');" required=""
-                    placeholder="Type your Mobile Number...">
+                    placeholder="Type your Mobile Number..." th:value="@{${session.activeUser.phone}}">
                 <i class="fa fa-phone"></i>
             </div>
         </div>
         <div class="form-group">
             <label for="dob">Date of Birth:</label>
             <div class="relative">
-                <input class="form-control" type="date" required="" placeholder="YYYY-MM-DD">
+                <input name="dob" class="form-control" type="date" id="dob" th:value="${session.activeUser.dob}"
+                    required="" placeholder="YYYY-MM-DD">
                 <i class="fa fa-calendar"></i>
             </div>
         </div>
         <div class="form-group">
             <label for="gender">Gender:</label>
             <div class="relative">
-                <select class="form-control" required="">
-                    <option value="">Select Gender</option>
-                    <option value="M">">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Female</option>
+                <select class="form-control" name="gender" required="">
+                    <option value="M" th:selected="${session.activeUser.gender == 'M'}">Male</option>
+                    <option value="F" th:selected="${session.activeUser.gender == 'F'}">Female</option>
+                    <option value="O" th:selected="${session.activeUser.gender == 'O'}">Other</option>
                 </select>
                 <i class="fa fa-venus-mars"></i>
             </div>
