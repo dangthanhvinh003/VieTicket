@@ -1,4 +1,4 @@
-package com.example.VieTicketSystem.service;
+package com.example.VieTicketSystem.model.service;
 
 import org.springframework.stereotype.Service;
 
