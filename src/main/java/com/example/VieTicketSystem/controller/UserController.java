@@ -67,11 +67,6 @@ public class UserController {
         return "reset-password";
     }
 
-    @GetMapping("/auth/reset-password/verify")
-    public String showPasswordResetVerifyForm() {
-        return "verify-otp";
-    }
-
     @GetMapping("/change")
     public String changeProfile() {
         return "changeProfile"; // Trả về tên của trang login.html

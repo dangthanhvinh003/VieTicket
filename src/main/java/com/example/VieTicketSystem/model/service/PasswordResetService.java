@@ -19,7 +19,7 @@ public class PasswordResetService {
     @Autowired
     private EmailService emailService;
 
-    public void handleFormSubmission(String email) throws Exception {
+    public String handleFormSubmission(String email) throws Exception {
         // Check if the user already exists in the database
         User user = userRepository.findByEmail(email);
         user = user == null ? userRepository.findByUsername(email) : user;
@@ -43,5 +43,28 @@ public class PasswordResetService {
 
         // Send the OTP to the user's email address
         emailService.sendOTP(user.getEmail(), user.getUsername(), otp);
+
+        String censored_email = user.getEmail().replaceAll("(?<=.).(?=[^@]*?.@)", "*");
+        return censored_email;
+    }
+
+    public void verifyOTP(String email, String otp) throws Exception {
+        // Check if the user already exists in the database
+        User user = userRepository.findByEmail(email);
+        user = user == null ? userRepository.findByUsername(email) : user;
+        if (user == null) {
+            throw new Exception("User not found");
+        }
+
+        // Check if the user has a secret key
+        String secretKey = userSecretsRepo.getSecretKey(user.getUserId());
+        if (secretKey == null) {
+            throw new Exception("Secret key not found");
+        }
+
+        // Verify the OTP
+        if (!otpService.validateOTP(secretKey, otp)) {
+            throw new Exception("Invalid OTP");
+        }
     }
 }
