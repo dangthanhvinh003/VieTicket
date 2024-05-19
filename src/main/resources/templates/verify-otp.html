@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OTP Input</title>
+</head>
+<body>
+    <form id="otp-form">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('otp-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var otp = document.getElementById('otp').value;
+
+            console.log('Entered OTP:', otp);
+            // Add your logic here to verify the OTP
+        });
+    </script>
+</body>
+</html>

@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class UserSecretsRepo {
 
     private static final String INSERT_SECRET_KEY_SQL = "INSERT INTO UserSecrets(user_id, secret_key) VALUES (?, ?)";

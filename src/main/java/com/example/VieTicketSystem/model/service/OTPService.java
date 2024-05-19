@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 public class OTPService {
     private final int timeWindow;
 
-    public OTPService(@Value("${OTP_TIME_WINDOW}") int timeWindow) {
+    public OTPService(@Value("${OTP_TIME_WINDOW_MINUTES}") int timeWindow) {
+        timeWindow *= 60; // Convert minutes to seconds
         if (timeWindow < 45) {
             this.timeWindow = 45;
         } else if (timeWindow > 180) {
