@@ -1,7 +1,6 @@
 package com.example.VieTicketSystem.model.service;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jboss.aerogear.security.otp.Totp;
@@ -16,19 +15,24 @@ public class OTPService {
     private static final Map<String, String> newUserOTPs = new ConcurrentHashMap<>();
 
     public String generateNewUserOTP(String email) {
-        String secretKey = UUID.randomUUID().toString();
+        String secretKey = SecretGenerator.generateSecret();
         String otp = generateOTP(secretKey);
-        newUserOTPs.put(email, otp);
+        newUserOTPs.put(email, secretKey);
         return otp;
     }
 
     public boolean validateNewUserOTP(String email, String userOTP) {
-        String otp = newUserOTPs.get(email);
-        if (otp == null) {
+        String secretKey = newUserOTPs.get(email);
+        if (secretKey == null) {
             throw new RuntimeException("No OTP found for email");
         }
+
+        if (!validateOTP(secretKey, userOTP)) {
+            return false;
+        }
+
         newUserOTPs.remove(email);
-        return otp.equals(userOTP);
+        return true;
     }
 
     public OTPService(@Value("${OTP_TIME_WINDOW_MINUTES}") double timeWindow) {
