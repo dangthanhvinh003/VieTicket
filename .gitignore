@@ -35,3 +35,4 @@ build/
 ### Environment Variables ###
 *.env
 secrets.*
+Baseconnection.java
