@@ -45,12 +45,21 @@ public class UserController {
         User user = loginRepo.CheckLogin(usernameInput, passwordInput);
         if (user != null) {
             httpSession.setAttribute("activeUser", user);
-            return "index.html";
+            return "redirect:/";
         } else {
             return showLogin();
         }
     }
-
+    public String doLogout(HttpSession httpSession) {
+        // Xóa thuộc tính activeUser khỏi session
+        httpSession.removeAttribute("activeUser");
+        
+        // Vô hiệu hóa session hiện tại
+        httpSession.invalidate();
+       
+        // Chuyển hướng người dùng đến trang chủ
+        return "redirect:/";
+    }
     @GetMapping(value = { "", "/" })
     public String showLogin() {
         return "index.html";
@@ -69,7 +78,7 @@ public class UserController {
 
     @GetMapping("/change")
     public String changeProfile() {
-        return "changeProfile"; // Trả về tên của trang login.html
+        return "changeProfile"; // Trả về tên của trang changeProfile
     }
 
     @GetMapping("/profile")
@@ -80,7 +89,7 @@ public class UserController {
             User activeUser = (User) httpSession.getAttribute("activeUser");
             model.addAttribute("activeUser", activeUser);
             // Trả về trang home.html
-            return "changeProfile.html";
+            return "redirect:/change";
         } else {
             // Nếu không tồn tại session "activeUser", chuyển hướng người dùng đến trang
             // đăng nhập
