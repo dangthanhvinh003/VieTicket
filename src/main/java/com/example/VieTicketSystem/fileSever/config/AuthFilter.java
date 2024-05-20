@@ -24,13 +24,14 @@ public class AuthFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpSession session = httpRequest.getSession();
         String requestURI = httpRequest.getRequestURI();
-        if (requestURI.equals("/auth/login") || requestURI.equals("/") || requestURI.equals("") || requestURI.equals("/auth/reset-password")) {
+        if (requestURI.equals("/auth/login") || requestURI.equals("/") || requestURI.equals("")
+                || requestURI.equals("/auth/reset-password") || requestURI.equals("/signup")) {
             chain.doFilter(request, response);
             return;
         }
 
         // Bỏ qua filter cho các yêu cầu đến các tệp tĩnh (ví dụ: CSS, JavaScript)
-        String[] staticResources = {".css", ".js", ".jpg", ".jpeg", ".png", ".gif"};
+        String[] staticResources = { ".css", ".js", ".jpg", ".jpeg", ".png", ".gif" };
         for (String resource : staticResources) {
             if (requestURI.endsWith(resource)) {
                 chain.doFilter(request, response);
@@ -43,12 +44,13 @@ public class AuthFilter implements Filter {
         if (isAdmin(user)) {
             // Người dùng có role ADMIN được truy cập tất cả các trang
             chain.doFilter(request, response);
-        } else if (isUser(user) && requestURI.startsWith("/change") || requestURI.startsWith("/editUser")|| requestURI.startsWith("/upload")) {
+        } else if (isUser(user) && requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
+                || requestURI.startsWith("/upload")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else {
             // Không có quyền truy cập
-            
+
             httpResponse.sendRedirect("/");
         }
 
