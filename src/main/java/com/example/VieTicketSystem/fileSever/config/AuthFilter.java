@@ -25,7 +25,8 @@ public class AuthFilter implements Filter {
         HttpSession session = httpRequest.getSession();
         String requestURI = httpRequest.getRequestURI();
         if (requestURI.equals("/auth/login") || requestURI.equals("/") || requestURI.equals("")
-                || requestURI.equals("/auth/reset-password") || requestURI.equals("/signup")) {
+                || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
+                || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")) {
             chain.doFilter(request, response);
             return;
         }
