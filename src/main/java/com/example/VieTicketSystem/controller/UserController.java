@@ -53,8 +53,15 @@ public class UserController {
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = loginRepo.CheckLogin(usernameInput, passwordInput);
         if (user != null) {
-            httpSession.setAttribute("activeUser", user);
-            return "redirect:/";
+            if (user instanceof Organizer) {
+                httpSession.setAttribute("activeOrganizer", user);
+                // Redirect to Organizer's specific page
+                return "redirect:/";
+            } else {
+                httpSession.setAttribute("activeUser", user);
+                // Redirect to User's specific page
+                return "redirect:/";
+            }
         } else {
             return "redirect:/";
         }
@@ -136,16 +143,16 @@ public class UserController {
         // Validate passwords match
         if (!password.equals(confirmPassword)) {
             model.addAttribute("errorMessage", "Passwords do not match.");
-            return "signup";
+            return "redirect:/signup";
         }
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("errorMessage", "Phone already exists.");
-            return "signup";
+            return "redirect:/signup";
         }
         // Check if username already exists
         if (userRepo.existsByUsername(username)) {
             model.addAttribute("errorMessage", "Username already exists.");
-            return "signup";
+            return "redirect:/signup";
         }
 
         // Check if email already exists

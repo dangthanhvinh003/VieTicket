@@ -1,4 +1,5 @@
 package com.example.VieTicketSystem.model.entity;
+
 import java.sql.Date;
 
 import lombok.AllArgsConstructor;
@@ -23,19 +24,19 @@ public class User {
     private String avatar;
     private char role;
     private String email;
+
     
-    
-    public User(String fullName, String phone, Date dob, char gender, String email, String username, String password, char role) {
+
+    public User(String fullName, String phone, Date dob, char gender, String email, String username, String password,
+            char role) {
         this.fullName = fullName;
         this.phone = phone;
         this.dob = dob;
         this.gender = gender;
         this.email = email;
         this.username = username;
-        this.password = password;  
-        this.role = role;    
+        this.password = password;
+        this.role = role;
     }
 
-
-    
 }

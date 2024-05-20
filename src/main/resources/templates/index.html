@@ -35,9 +35,14 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Create Event</a>
-                    </li>
+                    <!-- <p th:text="'Active Organizer: ' + ${session.activeUser.role}"></p> -->
+                    <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
+                        <li>
+                            <a class="nav-link" href="#">Create Event</a>
+                        </li>
+                    </th:block>
+
+
                     <li class="nav-item">
                         <th:block th:if="${session.activeUser == null}">
                             <a class="nav-link" th:href="@{/auth/login}">Đăng nhập / Đăng ký</a>
@@ -67,7 +72,7 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
-                                <li><a class="dropdown-item" href="#">Purchased Ticket</a></li>
+                                <li><a class="dropdown-item" href="#">View List Event</a></li>
                                 <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
                             </ul>
                         </li>
