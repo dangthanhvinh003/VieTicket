@@ -21,4 +21,5 @@ public class Event {
     private Date ticketSaleDate;
     private Date endDate;
     private Organizer organizer; 
+    private String seatMap;
 }
