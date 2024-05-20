@@ -56,9 +56,10 @@ public class UserController {
             httpSession.setAttribute("activeUser", user);
             return "redirect:/";
         } else {
-            return showLogin();
+            return "redirect:/";
         }
     }
+    @GetMapping (value = "/auth/log-out")
     public String doLogout(HttpSession httpSession) {
         // Xóa thuộc tính activeUser khỏi session
         httpSession.removeAttribute("activeUser");
