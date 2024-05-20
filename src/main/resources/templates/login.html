@@ -30,6 +30,10 @@
         <button type="submit">Login</button>
         </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <th:block th:if="${session.activeUser == null}">
+        <!-- Nếu chưa đăng ky, hiển thị link đến trang đăng ky -->
+        <a th:href="@{/signup}">Đăng ký</a>
+    </th:block>
 </body>
-
+    
 </html>
