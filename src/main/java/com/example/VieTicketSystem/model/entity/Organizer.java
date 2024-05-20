@@ -15,8 +15,8 @@ import java.sql.Date;
 public class Organizer extends User{
     private Date foundedDate;
     private String website;
+    private boolean isActive;
     private String organizerAddr;
     private String organizerType;
     private boolean isActive;
-  
 }
