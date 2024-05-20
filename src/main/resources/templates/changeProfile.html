@@ -72,6 +72,7 @@
             <label for="gender">Gender:</label>
             <div class="relative">
                 <select class="form-control" name="gender" required="">
+                    <option value="" th:text="${session.activeUser.gender}"></option>
                     <option value="M" th:selected="${session.activeUser.gender == 'M'}">Male</option>
                     <option value="F" th:selected="${session.activeUser.gender == 'F'}">Female</option>
                     <option value="O" th:selected="${session.activeUser.gender == 'O'}">Other</option>

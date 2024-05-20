@@ -1,22 +1,23 @@
 package com.example.VieTicketSystem.model.entity;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.sql.Date;
 
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Organizer extends User{
-    private Date foundedDate;
-    private String website;
-    private boolean isActive;
-    private String organizerAddr;
-    private String organizerType;
-    private boolean isActive;
+public class PasswordResetToken {
+    
+    private int id;
+    private int userId;
+    private String token;
+    private LocalDateTime createdAt;
+    private LocalDateTime expiryDate;
 }

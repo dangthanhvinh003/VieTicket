@@ -71,6 +71,11 @@ public class UserController {
         return "login"; // Trả về tên của trang login.html
     }
 
+    @GetMapping("/auth/reset-password")
+    public String showPasswordResetForm() {
+        return "reset-password";
+    }
+
     @GetMapping("/change")
     public String changeProfile() {
         return "changeProfile"; // Trả về tên của trang login.html
