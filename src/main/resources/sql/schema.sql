@@ -2,15 +2,15 @@
 CREATE TABLE User
 (
   user_id INT AUTO_INCREMENT,
-  full_name VARCHAR(50),
-  username VARCHAR(50),
-  `password` VARCHAR(50),
-  phone VARCHAR(10),
+  full_name VARCHAR(64),
+  username VARCHAR(64),
+  `password` VARCHAR(128),
+  phone VARCHAR(16),
   dob DATE,
   gender CHAR(1),
   avatar TEXT,
   `role` CHAR,
-  email varchar(100),
+  email varchar(96),
   PRIMARY KEY (user_id)
 );
 
@@ -20,8 +20,8 @@ CREATE TABLE Organizer
   founded_date DATE,
   website TEXT,
   is_active Boolean,
-  organizer_addr VARCHAR(225),
-  organizer_type VARCHAR(50),
+  organizer_addr VARCHAR(256),
+  organizer_type VARCHAR(64),
   PRIMARY KEY (organizer_id),
   FOREIGN KEY (organizer_id) REFERENCES User(user_id)
 );
@@ -29,11 +29,11 @@ CREATE TABLE Organizer
 CREATE TABLE Event
 (
   event_id INT AUTO_INCREMENT,
-  `name` VARCHAR(50),
+  `name` VARCHAR(64),
   `description` TEXT,
   start_date DATE,
   location VARCHAR(225),
-  `type` VARCHAR(50),
+  `type` VARCHAR(64),
   ticket_sale_date DATE,
   end_date DATE,
   organizer_id INT,
@@ -66,7 +66,7 @@ CREATE TABLE Rating
 CREATE TABLE Area
 (
   area_id INT AUTO_INCREMENT,
-  name VARCHAR(50),
+  name VARCHAR(64),
   total_tickets INT,
   ticket_price FLOAT,
   event_id INT,
@@ -76,7 +76,7 @@ CREATE TABLE Area
 
 CREATE TABLE `Row`
 (
-  row_name VARCHAR(10),
+  row_name VARCHAR(16),
   row_id INT AUTO_INCREMENT,
   area_id INT,
   PRIMARY KEY (row_id),
@@ -97,7 +97,7 @@ CREATE TABLE RefundOrder
 CREATE TABLE Seat
 (
   seat_id INT AUTO_INCREMENT,
-  number VARCHAR(50),
+  number VARCHAR(64),
   ticket_price FLOAT,
   is_buy BOOLEAN,
   is_checkedin BOOLEAN,
@@ -120,7 +120,7 @@ CREATE TABLE Ticket
 create table PasswordResetToken(
  id int primary key auto_increment,
  user_id int,
- token varchar(255),
+ token varchar(256),
  expiry_date timestamp,
  created_at timestamp,
  FOREIGN KEY (user_id) REFERENCES `User`(user_id)
