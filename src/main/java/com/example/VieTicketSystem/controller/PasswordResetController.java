@@ -41,13 +41,13 @@ public class PasswordResetController {
             // Handle the exception here
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
-            errorNode.put("message", "Error resetting password. Please check your input and try again.");
+            errorNode.put("message", "An error occurred while processing the request. Please recheck your input and try again later.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
         }
 
         ObjectNode successNode = mapper.createObjectNode();
         successNode.put("success", true);
-        successNode.put("message", "OTP sent to " + returnedFromService);
+        successNode.put("message", returnedFromService);
         return ResponseEntity.ok().body(successNode);
     }
 
