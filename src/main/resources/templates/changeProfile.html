@@ -3,96 +3,86 @@
 
 <head>
     <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Welcome to the Home Page</h1>
-    <div th:if="${session.activeUser}">
-        <p th:text="${session.activeUser.fullName}"> Hello </p>
-    </div>
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Profile Editing Section -->
+            <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </a>    
+                    <h2>User Profile</h2>
 
-    <form action="@{/upload}" th:action="@{/upload}" method="post" enctype="multipart/form-data" class="form">
-        <h2>User Profile</h2>
-        <div class="form-group">
-            <label for="avatar">Avatar:</label>
-            <div class="relative">
-                <div class="input-group">
-                    <label class="input-group-btn">
-                        <span class="btn btn-default">
-                            <img th:src="@{${session.activeUser.avatar}}">
-                        </span>
-                    </label>
-
-                    <i class="fa fa-image"></i>
-                    <input type="file" name="image" placeholder="upload file">
-                    <input type="submit" value="Submit">
                 </div>
+                <form class="form" th:action="@{/editUser}" method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name:</label>
+                        <input name="fullName" class="form-control" id="name" type="text" pattern="[\s\S]+" required
+                            title="Tên chỉ nên chứa các chữ cái và khoảng trắng. Ví dụ: Nguyễn Văn Á. Lưu ý: không sử dụng ký tự đặc biệt hoặc số."
+                            placeholder="Nhập tên của bạn ở đây..." th:value="${session.activeUser.fullName}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address:</label>
+                        <input name="email" class="form-control" type="email" required
+                            placeholder="Type your email address..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
+                            th:value="${session.activeUser.email}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number:</label>
+                        <input name="phone" class="form-control" type="text" maxlength="10"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'');" required
+                            placeholder="Type your Mobile Number..." th:value="${session.activeUser.phone}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dob" class="form-label">Date of Birth:</label>
+                        <input name="dob" class="form-control" type="date" id="dob" th:value="${session.activeUser.dob}"
+                            required placeholder="YYYY-MM-DD">
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Gender:</label>
+                        <select class="form-control" name="gender" required>
+                            <option th:value="${session.activeUser.gender}" th:text="${session.activeUser.gender}"></option>
+                            <option value="M" th:selected="${session.activeUser.gender == 'M'}">Male</option>
+                            <option value="F" th:selected="${session.activeUser.gender == 'F'}">Female</option>
+                            <option value="O" th:selected="${session.activeUser.gender == 'O'}">Other</option>
+                        </select>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-secondary" type="reset"><i class="fa fa-fw fa-refresh"></i> Reset</button>
+                        <button class="btn btn-primary" type="submit">Submit <i class="fa fa-fw fa-paper-plane"></i></button>
+                    </div>
+                </form>
+            </div>
+            <!-- Avatar and Upload Section -->
+            <div class="col-md-6 text-center">
+                <h2>Upload Avatar</h2>
+                <form action="@{/upload}" th:action="@{/upload}" method="post" enctype="multipart/form-data" class="form">
+                    <div class="mb-3">
+                        <img class="avatar img-fluid" th:src="@{${session.activeUser.avatar}}" alt="Avatar">
+                    </div>
+                    <div class="mb-3">
+                        <input type="file" class="form-control" name="image" placeholder="Upload file">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
             </div>
         </div>
-    </form>
-    <form class="form" th:action="@{/editUser}" method="post">
-
-        <div class="form-group">
-            <label for="name">Full Name:</label>
-            <div class="relative">
-                <input name="fullName" class="form-control" id="name" type="text" pattern="[\s\S]+" required=""
-                    autofocus=""
-                    title="Tên chỉ nên chứa các chữ cái và khoảng trắng. Ví dụ: Nguyễn Văn Á. Lưu ý: không sử dụng ký tự đặc biệt hoặc số."
-                    autocomplete="" placeholder="Nhập tên của bạn ở đây..." th:value="${session.activeUser.fullName}">
-                <i class="fa fa-user"></i>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="email">Email address:</label>
-            <div class="relative">
-                <input name="email" class="form-control" type="email" required=""
-                    placeholder="Type your email address..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
-                    th:value="@{${session.activeUser.email}}">
-                <i class="fa fa-envelope"></i>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="phone">Phone Number:</label>
-            <div class="relative">
-                <input name="phone" class="form-control" type="text" maxlength="10"
-                    oninput="this.value=this.value.replace(/[^0-9]/g,'');" required=""
-                    placeholder="Type your Mobile Number..." th:value="@{${session.activeUser.phone}}">
-                <i class="fa fa-phone"></i>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="dob">Date of Birth:</label>
-            <div class="relative">
-                <input name="dob" class="form-control" type="date" id="dob" th:value="${session.activeUser.dob}"
-                    required="" placeholder="YYYY-MM-DD">
-                <i class="fa fa-calendar"></i>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="gender">Gender:</label>
-            <div class="relative">
-                <select class="form-control" name="gender" required="">
-                    <option value="" th:text="${session.activeUser.gender}"></option>
-                    <option value="M" th:selected="${session.activeUser.gender == 'M'}">Male</option>
-                    <option value="F" th:selected="${session.activeUser.gender == 'F'}">Female</option>
-                    <option value="O" th:selected="${session.activeUser.gender == 'O'}">Other</option>
-                </select>
-                <i class="fa fa-venus-mars"></i>
-            </div>
-        </div>
-        <div class="tright">
-            <a href=""><button class="movebtn movebtnre" type="Reset"><i class="fa fa-fw fa-refresh"></i> Reset
-                </button></a>
-            <a href=""><button class="movebtn movebtnsu" type="Submit">Submit <i
-                        class="fa fa-fw fa-paper-plane"></i></button></a>
-        </div>
-    </form>
-
-    <div class="thanks" style="display: none;">
-        <h4>Thank you!</h4>
-        <p><small>Your message has been successfully sent.</small></p>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

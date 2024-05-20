@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
     <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
-    
+    <style>
+        .avatar-small {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+        }
+        .dropdown-toggle-avatar {
+            display: flex;
+            align-items: center;
+        }
+    </style>
     
 </head>
 
@@ -23,22 +35,26 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="#">Create Event</a>
                     </li>
                     <li class="nav-item">
                         <th:block th:if="${session.activeUser == null}">
-                            <!-- Nếu chưa đăng nhập, hiển thị link đến trang đăng nhập -->
                             <a class="nav-link" th:href="@{/auth/login}">Đăng nhập / Đăng ký</a>
                         </th:block>
-                        
                     </li>
-                    <li class="nav-item">
-
-                        <th:block th:if="${session.activeUser != null}">
-                            <!-- Nếu đã đăng nhập, hiển thị link đến trang profile -->
-                            <a class="nav-link" th:href="@{/change}">Profile</a>
-                        </th:block>
-                    </li>
+                    <th:block th:if="${session.activeUser != null}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Purchased Ticket</a></li>
+                                <li><a class="dropdown-item"th:href="@{/auth/log-out}">Log out</a></li>
+                            </ul>
+                        </li>
+                    </th:block>
                 </ul>
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
