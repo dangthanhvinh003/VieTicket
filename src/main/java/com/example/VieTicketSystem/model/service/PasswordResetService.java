@@ -10,8 +10,6 @@ import com.example.VieTicketSystem.model.repo.UserRepo;
 import com.example.VieTicketSystem.model.repo.UserSecretsRepo;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -28,7 +26,7 @@ public class PasswordResetService {
     @Autowired
     private PasswordResetTokenRepository tokenRepository;
 
-    public Map<String, String> handleFormSubmission(String email) throws Exception {
+    public String handleFormSubmission(String email) throws Exception {
         // Check if the user already exists in the database
         User user = userRepository.findByEmail(email);
         user = user == null ? userRepository.findByUsername(email) : user;
@@ -63,15 +61,11 @@ public class PasswordResetService {
         token.setExpiryDate(LocalDateTime.now().plusHours(1)); // The token expires in 1 hour
         tokenRepository.insertToken(token);
 
-        // Return the reset token and censored email to the user's browser
-        Map<String, String> response = new HashMap<>();
-        response.put("token", resetToken);
         String censored_email = user.getEmail().replaceAll("(?<=.).(?=[^@]*?.@)", "*");
-        response.put("email", censored_email);
-        return response;
+        return censored_email;
     }
 
-    public void verifyOTP(String email, String otp) throws Exception {
+    public String verifyOTP(String email, String otp) throws Exception {
         // Check if the user already exists in the database
         User user = userRepository.findByEmail(email);
         user = user == null ? userRepository.findByUsername(email) : user;
@@ -89,12 +83,20 @@ public class PasswordResetService {
         if (!otpService.validateOTP(secretKey, otp)) {
             throw new Exception("Invalid OTP");
         }
+
+        // Retrieve the reset token from the database
+        String resetToken = tokenRepository.getToken(user.getUserId());
+        if (resetToken == null) {
+            throw new Exception("Token not found");
+        }
+
+        return resetToken;
     }
 
     public void resetPassword(String token, String newPassword) throws Exception {
         // Find the token
         PasswordResetToken resetToken = tokenRepository.findByToken(token);
-        if (resetToken == null) {
+        if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             throw new Exception("Invalid token");
         }
 

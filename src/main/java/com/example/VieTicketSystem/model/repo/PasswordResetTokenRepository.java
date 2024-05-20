@@ -15,7 +15,7 @@ import com.example.VieTicketSystem.model.entity.PasswordResetToken;
 public class PasswordResetTokenRepository {
     private static final String INSERT_TOKEN_SQL = "INSERT INTO PasswordResetToken(user_id, token, expiry_date) VALUES (?, ?, ?)";
     private static final String SELECT_TOKEN_SQL = "SELECT token FROM PasswordResetToken WHERE user_id = ?";
-    private static final String FIND_BY_TOKEN_SQL = "SELECT user_id FROM PasswordResetToken WHERE token = ?";
+    private static final String FIND_BY_TOKEN_SQL = "SELECT * FROM PasswordResetToken WHERE token = ?";
     private static final String DELETE_TOKEN_SQL = "DELETE FROM PasswordResetToken WHERE user_id = ?";
 
     public void insertToken(PasswordResetToken token) throws SQLException {
@@ -70,6 +70,7 @@ public class PasswordResetTokenRepository {
                 if (resultSet.next()) {
                     PasswordResetToken passwordResetToken = new PasswordResetToken();
                     passwordResetToken.setUserId(resultSet.getInt("user_id"));
+                    passwordResetToken.setExpiryDate(resultSet.getTimestamp("expiry_date").toLocalDateTime());
                     return passwordResetToken;
                 }
             }

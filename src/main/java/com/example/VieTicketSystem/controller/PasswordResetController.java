@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,7 +26,7 @@ public class PasswordResetController {
     @PostMapping("/auth/password-reset")
     public ResponseEntity<?> passwordReset(@RequestBody Map<String, String> body) {
         String email = body.get("email");
-        Map<String, String> returnedFromService;
+        String returnedFromService;
         if (email == null) {
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
@@ -42,14 +41,13 @@ public class PasswordResetController {
             // Handle the exception here
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
-            errorNode.put("message", e.getMessage());
+            errorNode.put("message", "Error resetting password. Please check your input and try again.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
         }
 
         ObjectNode successNode = mapper.createObjectNode();
         successNode.put("success", true);
-        successNode.put("message", "OTP sent to " + returnedFromService.get("email"));
-        successNode.put("token", returnedFromService.get("token"));
+        successNode.put("message", "OTP sent to " + returnedFromService);
         return ResponseEntity.ok().body(successNode);
     }
 
@@ -63,10 +61,10 @@ public class PasswordResetController {
             errorNode.put("message", "OTP is required");
             return ResponseEntity.badRequest().body(errorNode);
         }
-
+        String resetToken = body.get("resetToken");
         try {
             // Verify the OTP
-            passwordResetService.verifyOTP(email, otp);
+            resetToken = passwordResetService.verifyOTP(email, otp);
         } catch (Exception e) {
             // Handle the exception here
             ObjectNode errorNode = mapper.createObjectNode();
@@ -78,6 +76,7 @@ public class PasswordResetController {
         ObjectNode successNode = mapper.createObjectNode();
         successNode.put("success", true);
         successNode.put("message", "OTP verified successfully");
+        successNode.put("token", resetToken);
         return ResponseEntity.ok().body(successNode);
     }
 
