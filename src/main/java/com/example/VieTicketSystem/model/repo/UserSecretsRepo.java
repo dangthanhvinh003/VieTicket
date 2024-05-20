@@ -13,6 +13,7 @@ public class UserSecretsRepo {
 
     private static final String INSERT_SECRET_KEY_SQL = "INSERT INTO UserSecrets(user_id, secret_key) VALUES (?, ?)";
     private static final String SELECT_SECRET_KEY_SQL = "SELECT secret_key FROM UserSecrets WHERE user_id = ?";
+    private static final String DELETE_SECRET_KEY_SQL = "DELETE FROM UserSecrets WHERE user_id = ?";
 
     public void insertSecretKey(int userId, String secretKey) throws SQLException {
         try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
@@ -39,5 +40,20 @@ public class UserSecretsRepo {
         }
 
         return null;
+    }
+
+    public void deleteSecretKey(int userId) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SECRET_KEY_SQL)) {
+
+            preparedStatement.setInt(1, userId);
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public void rotateSecretKey(int userId, String secretKey) throws SQLException {
+        deleteSecretKey(userId);
+        insertSecretKey(userId, secretKey);
     }
 }
