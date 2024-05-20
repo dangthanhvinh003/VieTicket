@@ -43,6 +43,36 @@ public class UserRepo {
 
     }
 
+    public User findById(int id) throws Exception {
+        Class.forName(Baseconnection.nameClass);
+        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM User WHERE user_id = ?");
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+
+        User user = null;
+        if (rs.next()) {
+            user = new User();
+            user.setUserId(rs.getInt("user_id"));
+            user.setFullName(rs.getString("full_name"));
+            user.setUsername(rs.getString("username"));
+            user.setPassword(rs.getString("password"));
+            user.setPhone(rs.getString("phone"));
+            user.setDob(rs.getDate("dob"));
+            user.setGender(rs.getString("gender").charAt(0));
+            user.setAvatar(rs.getString("avatar"));
+            user.setRole(rs.getString("role").charAt(0));
+            user.setEmail(rs.getString("email"));
+        }
+
+        rs.close();
+        ps.close();
+        con.close();
+
+        return user;
+    }
+
     public User findByUsername(String email) throws Exception {
         Class.forName(Baseconnection.nameClass);
         Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
@@ -103,7 +133,7 @@ public class UserRepo {
         return user;
     }
 
-    public void save(User user) throws Exception {
+    public void saveNew(User user) throws Exception {
         if (existsByUsername(user.getUsername())) {
             throw new Exception("Username already exists");
         }
@@ -128,6 +158,27 @@ public class UserRepo {
         ps.setString(7, user.getAvatar());
         ps.setString(8, String.valueOf(user.getRole()));
         ps.setString(9, user.getEmail());
+        ps.executeUpdate();
+        ps.close();
+        con.close();
+    }
+
+    public void save(User user) throws Exception {
+        Class.forName(Baseconnection.nameClass);
+        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+        PreparedStatement ps = con.prepareStatement(
+                "UPDATE User SET full_name = ?, username = ?, password = ?, phone = ?, dob = ?, gender = ?, avatar = ?, role = ?, email = ? WHERE user_id = ?");
+        ps.setString(1, user.getFullName());
+        ps.setString(2, user.getUsername());
+        ps.setString(3, user.getPassword());
+        ps.setString(4, user.getPhone());
+        ps.setDate(5, user.getDob());
+        ps.setString(6, String.valueOf(user.getGender()));
+        ps.setString(7, user.getAvatar());
+        ps.setString(8, String.valueOf(user.getRole()));
+        ps.setString(9, user.getEmail());
+        ps.setInt(10, user.getUserId()); // Assuming that User has a getId() method that returns the user's ID
         ps.executeUpdate();
         ps.close();
         con.close();
