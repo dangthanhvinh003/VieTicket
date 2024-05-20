@@ -34,6 +34,32 @@
             <input type="email" id="email" name="email" required>
         </div>
         <div>
+            <label for="role">Role:</label>
+            <select id="role" name="role" required onchange="toggleOrganizerFields()">
+                <option value="u">User</option>
+                <option value="o">Organizer</option>
+            </select>
+        </div>
+        <div id="organizerFields" style="display: none;">
+            <div>
+                <label for="foundedDate">Founded Date:</label>
+                <input type="date" id="foundedDate" name="foundedDate">
+            </div>
+            <div>
+                <label for="website">Website:</label>
+                <input type="text" id="website" name="website">
+            </div>
+            <div>
+                <label for="organizerAddr">Organizer Address:</label>
+                <input type="text" id="organizerAddr" name="organizerAddr">
+            </div>
+            <div>
+                <label for="organizerType">Organizer Type:</label>
+                <input type="text" id="organizerType" name="organizerType">
+            </div>
+        </div>
+
+        <div>
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
             <span id="username-error" style="color: red;"></span>
@@ -50,7 +76,7 @@
             <button type="submit">Sign Up</button>
         </div>
     </form>
-    <div id="error-message" style="color: red;"></div>
+    <div id="error-message" th:text="${errorMessage}" style="color: red;"></div>
     <!-- <div>
             <label for="captcha">Captcha:</label>
             <input type="text" id="captcha" name="captcha" required>
@@ -58,6 +84,17 @@
             <img th:src="@{/captcha}" alt="CAPTCHA Image">
     </div> -->
     <script>
+        function toggleOrganizerFields() {
+            var role = document.getElementById("role").value;
+            var organizerFields = document.getElementById("organizerFields");
+            
+            if (role === "o") {
+                organizerFields.style.display = "block";
+            } else {
+                organizerFields.style.display = "none";
+            }
+        }
+
         function validateForm() {
             var password = document.getElementById("password").value;
             var confirmPassword = document.getElementById("confirmPassword").value;
