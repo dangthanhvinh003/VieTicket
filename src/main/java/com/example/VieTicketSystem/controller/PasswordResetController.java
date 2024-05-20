@@ -41,7 +41,6 @@ public class PasswordResetController {
             // Handle the exception here
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
-            // errorNode.put("message", e.getMessage()); 
             errorNode.put("message", "An error occurred while processing the request. Please recheck your input and try again later.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
         }
