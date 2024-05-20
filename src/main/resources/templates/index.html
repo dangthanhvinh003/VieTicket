@@ -13,12 +13,13 @@
             object-fit: cover;
             margin-right: 8px;
         }
+
         .dropdown-toggle-avatar {
             display: flex;
             align-items: center;
         }
     </style>
-    
+
 </head>
 
 <body>
@@ -42,18 +43,50 @@
                             <a class="nav-link" th:href="@{/auth/login}">Đăng nhập / Đăng ký</a>
                         </th:block>
                     </li>
-                    <th:block th:if="${session.activeUser != null}">
+                    <th:block th:if="${session.activeUser != null  and session.activeUser.role.toString() == 'u'} ">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
                                 Profile
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
                                 <li><a class="dropdown-item" href="#">Purchased Ticket</a></li>
-                                <li><a class="dropdown-item"th:href="@{/auth/log-out}">Log out</a></li>
+                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
                             </ul>
                         </li>
+                    </th:block>
+                    <!-- Kiểm tra xem người dùng có đăng nhập không và vai trò của người dùng là 'o' -->
+                    <th:block th:if="${session.activeUser != null  and session.activeUser.role.toString() == 'o'} ">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Purchased Ticket</a></li>
+                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
+                            </ul>
+                        </li>
+                    </th:block>
+                    <!-- Kiểm tra xem người dùng có đăng nhập không và vai trò của người dùng là 'a' -->
+                    <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'a'}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
+                                <li><a class="dropdown-item" th:href="@{/ViewAllApprove}">View All List Approve</a></li>
+                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
+                            </ul>
+                        </li>
+
                     </th:block>
                 </ul>
                 <form class="d-flex" role="search">
