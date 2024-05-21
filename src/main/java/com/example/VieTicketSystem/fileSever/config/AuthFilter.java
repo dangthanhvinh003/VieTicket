@@ -64,9 +64,12 @@ public class AuthFilter implements Filter {
             Organizer organizer = organizerRepo.getOrganizerByUserId(user.getUserId());
 
             if (organizer != null) {
-                if (organizer.isActive() && requestURI.startsWith("/createEvent") || requestURI.startsWith("/inactive-account")||(requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                || requestURI.startsWith("/upload") ) ) {
-                    // Người dùng có role ORGANIZER chỉ được truy cập các trang cho phép khi isActive
+                if (organizer.isActive() && requestURI.startsWith("/createEvent")
+                        || requestURI.startsWith("/inactive-account")
+                        || (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
+                                || requestURI.startsWith("/upload"))) {
+                    // Người dùng có role ORGANIZER chỉ được truy cập các trang cho phép khi
+                    // isActive
                     chain.doFilter(request, response);
                 } else {
                     httpResponse.sendRedirect("/inactive-account");
