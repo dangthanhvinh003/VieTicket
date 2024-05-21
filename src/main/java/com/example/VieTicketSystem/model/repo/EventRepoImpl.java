@@ -9,15 +9,13 @@ import java.util.List;
 import java.sql.Connection;
 import java.sql.Date;
 
-
-
 import com.example.VieTicketSystem.model.entity.Event;
 
 public class EventRepoImpl implements EventRepo {
 
     private static final String URL = "jdbc:mysql://localhost:3306/VieTicket1";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "thanhvinh";
+    private static final String PASSWORD = "2Bthere4u";
     private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
 
     static {
@@ -32,8 +30,8 @@ public class EventRepoImpl implements EventRepo {
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM event");
-             ResultSet resultSet = statement.executeQuery()) {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM event");
+                ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
