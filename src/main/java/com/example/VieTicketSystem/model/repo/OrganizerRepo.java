@@ -11,10 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import com.example.VieTicketSystem.model.entity.Organizer;
 
-/*
- * View comments on the bottom of this source file
- */
-
 @Repository
 public class OrganizerRepo {
 

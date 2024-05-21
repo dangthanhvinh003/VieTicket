@@ -18,13 +18,25 @@ import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.LoginRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
+import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
-
+import com.example.VieTicketSystem.model.service.EmailService;
+import com.example.VieTicketSystem.model.service.VerifyEmailService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
+
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    private VerifyEmailService verifyEmailService;
+
+    @Autowired
+    private UnverifiedUserRepo unverifiedUserRepo;
+
     @Autowired
     private LoginRepo loginRepo;
 
@@ -56,11 +68,20 @@ public class UserController {
         return "redirect:/change";
     }
 
+    @GetMapping("/auth/verify-email")
+    public String showVerifyEmailPage(Model model, HttpSession session) throws Exception {
+        User user = (User) session.getAttribute("activeUser");
+        if (user == null || !unverifiedUserRepo.isUnverified(user.getUserId())) {
+            return "redirect:/"; // Redirect if not applicable
+        }
+        return "verify-email";
+    }
+
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = loginRepo.CheckLogin(usernameInput, passwordInput);
-       
+
         if (user != null) {
             if (user instanceof Organizer) {
                 httpSession.setAttribute("activeOrganizer", user);
@@ -75,23 +96,25 @@ public class UserController {
             return showLogin(httpSession);
         }
     }
-    @GetMapping (value = "/auth/log-out")
+
+    @GetMapping(value = "/auth/log-out")
     public String doLogout(HttpSession httpSession) {
         // Xóa thuộc tính activeUser khỏi session
         httpSession.removeAttribute("activeUser");
-        
+
         // Vô hiệu hóa session hiện tại
         httpSession.invalidate();
-       
+
         // Chuyển hướng người dùng đến trang chủ
         return "redirect:/";
     }
+
     @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
         System.out.println(events);
         session.setAttribute("events", events);
-       
+
         return "index";
     }
 
@@ -132,7 +155,7 @@ public class UserController {
     public String signupPage() {
         return "signup"; // Trả về trang signup.html
     }
-    
+
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
             @RequestParam("phone") String phone,
@@ -204,6 +227,12 @@ public class UserController {
             newUser.setPassword(password);
             newUser.setRole('u');
             userRepo.saveNew(newUser);
+        }
+
+        try {
+            verifyEmailService.sendOTP(email);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // Redirect to login page after successful registration
