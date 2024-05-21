@@ -1,0 +1,205 @@
+.avatar-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+}
+
+.dropdown-toggle-avatar {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-custom {
+    background-color: #191825;
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link,
+.navbar-custom .dropdown-item {
+    color: white;
+}
+
+.navbar-custom .navbar-brand:hover,
+.navbar-custom .nav-link:hover,
+.navbar-custom .dropdown-item:hover {
+    color: #E384FF;
+}
+
+.search-form {
+    margin: auto;
+    flex-grow: 1;
+    max-width: 600px;
+}
+
+.form-control {
+    background-color: white;
+    border-color: white;
+    color: white;
+}
+
+.form-control::placeholder {
+    color: white;
+}
+
+.btn-outline-success {
+    color: white;
+    border-color: #6466E9;
+}
+
+.btn-outline-success:hover {
+    background-color: #6466E9;
+    color: white;
+    border-color: #6466E9;
+}
+
+.dropdown-menu {
+    background-color: #6466E9;
+}
+
+.dropdown-menu .dropdown-item {
+    color: white;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #E384FF;
+    color: white;
+}
+
+.navbar-nav {
+    flex-direction: row;
+    align-items: center;
+}
+
+.navbar-nav .nav-item {
+    margin-right: 10px;
+}
+
+.navbar-nav .nav-item:last-child {
+    margin-right: 0;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #15132b;
+    color: white;
+}
+
+.dark-mode .navbar-custom {
+    background-color: #191825;
+}
+
+.dark-mode .form-control {
+    background-color: #191825;
+    border-color: #191825;
+    color: white;
+}
+
+.dark-mode .btn-outline-success {
+    color: white;
+    border-color: #6466E9;
+}
+
+.dark-mode .btn-outline-success:hover {
+    background-color: #6466E9;
+    color: white;
+    border-color: #6466E9;
+}
+
+.dark-mode .dropdown-menu {
+    background-color: #6466E9;
+}
+
+.dark-mode .dropdown-menu .dropdown-item {
+    color: white;
+}
+
+.dark-mode .dropdown-menu .dropdown-item:hover {
+    background-color: #E384FF;
+    color: white;
+}
+
+/* Light Mode Styles */
+.light-mode {
+    background-color: white;
+    color: black;
+}
+
+.light-mode .navbar-custom {
+    background-color: #f8f9fa;
+}
+
+.light-mode .form-control {
+    background-color: white;
+    border-color: white;
+    color: black;
+}
+
+.light-mode .btn-outline-success {
+    color: black;
+    border-color: #6466E9;
+}
+
+.light-mode .btn-outline-success:hover {
+    background-color: #6466E9;
+    color: white;
+    border-color: #6466E9;
+}
+
+.light-mode .dropdown-menu {
+    background-color: #6466E9;
+}
+
+.light-mode .dropdown-menu .dropdown-item {
+    color: white;
+}
+
+.light-mode .dropdown-menu .dropdown-item:hover {
+    background-color: #E384FF;
+    color: white;
+}
+
+.light-mode {
+    background-color: #f8f9fa;
+    /* Thay đổi màu nền cho Light Mode */
+}
+
+.light-mode .navbar-custom {
+    background-color: #f8f9fa;
+    /* Thay đổi màu nền của thanh navbar cho Light Mode */
+}
+
+.light-mode .navbar-custom .navbar-brand,
+.light-mode .navbar-custom .nav-link,
+.light-mode .navbar-custom .dropdown-item {
+    color: #191825;
+    /* Thay đổi màu chữ cho Light Mode */
+}
+
+.light-mode .search-form,
+.light-mode .navbar-custom {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Thêm hiệu ứng nổi lên */
+}
+
+.dark-mode .form-control::-webkit-input-placeholder {
+    color: white;
+    /* Màu chữ placeholder trong Dark Mode */
+}
+
+.light-mode .form-control::-webkit-input-placeholder {
+    color: black;
+    /* Màu chữ placeholder trong Light Mode */
+}
+
+.dark-mode .card {
+    background-color: #191825;
+    color: white;
+}
+
+/* Light Mode Styles */
+.light-mode .card {
+    background-color: #f8f9fa;
+    color: black;
+}

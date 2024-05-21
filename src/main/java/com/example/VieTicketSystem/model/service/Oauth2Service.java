@@ -67,6 +67,7 @@ public class Oauth2Service {
                 user.setFullName((String) response.getBody().get("name"));
                 user.setEmail((String) response.getBody().get("email"));
                 user.setAvatar((String) response.getBody().get("picture"));
+                user.setRole('u');
                 return user;
         }
 }

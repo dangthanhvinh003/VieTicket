@@ -5,5 +5,5 @@ public class Baseconnection {
     static String username = "root";
     static String password = "thanhvinh";
     static String nameClass = "com.mysql.cj.jdbc.Driver";
-   
+
 }

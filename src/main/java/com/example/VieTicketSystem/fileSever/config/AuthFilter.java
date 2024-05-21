@@ -36,7 +36,8 @@ public class AuthFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
 
         // tất cả các role đều có thể vào
-        if (requestURI.equals("/auth/login") || requestURI.equals("/") || requestURI.equals("")
+        if (requestURI.equals("/auth/login") || requestURI.equals("/")
+                || requestURI.equals("/auth/login/oauth2/google") || requestURI.equals("")
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
                 || requestURI.equals("/auth/log-out")) {
@@ -86,7 +87,9 @@ public class AuthFilter implements Filter {
 
             if (organizer != null) {
                 if (organizer.isActive() && requestURI.startsWith("/createEvent")
-                        || requestURI.startsWith("/inactive-account")) {
+                        || requestURI.startsWith("/inactive-account")
+                        || (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
+                                || requestURI.startsWith("/upload"))) {
                     // Người dùng có role ORGANIZER chỉ được truy cập các trang cho phép khi
                     // isActive
                     chain.doFilter(request, response);

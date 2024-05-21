@@ -20,8 +20,12 @@ import com.example.VieTicketSystem.model.repo.LoginRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
+
 import com.example.VieTicketSystem.model.service.EmailService;
 import com.example.VieTicketSystem.model.service.VerifyEmailService;
+
+import com.example.VieTicketSystem.model.service.Oauth2Service;
+
 
 import jakarta.servlet.http.HttpSession;
 
@@ -93,7 +97,7 @@ public class UserController {
                 return "redirect:/";
             }
         } else {
-            return showLogin(httpSession);
+            return "redirect:/";
         }
     }
 
@@ -112,7 +116,6 @@ public class UserController {
     @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
-        System.out.println(events);
         session.setAttribute("events", events);
 
         return "index";
@@ -122,6 +125,26 @@ public class UserController {
     public String loginPage() {
 
         return "login"; // Trả về tên của trang login.html
+    }
+
+    @GetMapping("/auth/login/oauth2/google")
+    public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
+            HttpSession httpSession)
+            throws Exception {
+        System.out.println("hello");
+        Oauth2Service oauth2 = new Oauth2Service();
+        // Exchange the authorization code for an access token
+        String accessToken = oauth2.getAccessToken(authorizationCode);
+        // Get user info
+        User client = oauth2.getUserInfo(accessToken);
+        User user = userRepo.findByEmail(client.getEmail());
+        if (user == null) {
+            userRepo.saveNew(client);
+            httpSession.setAttribute("activeUser", client);
+        } else {
+            httpSession.setAttribute("activeUser", user);
+        }
+        return "redirect:/";
     }
 
     @GetMapping("/auth/reset-password")
