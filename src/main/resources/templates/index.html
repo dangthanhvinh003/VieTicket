@@ -101,6 +101,33 @@
             </div>
         </div>
     </nav>
+    <div class="container mt-5">
+        <h2>Events</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="event : ${session.events}">
+                <div class="card">
+                    <!-- <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image"> -->
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${event.name}">Event Name</h5>
+                        <p class="card-text" th:text="${event.description}">Event Description</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Location:</strong> <span th:text="${event.location}">Location</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Type:</strong> <span th:text="${event.type}">Type</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Start Date:</strong> <span th:text="${event.startDate}">Start Date</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
     <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

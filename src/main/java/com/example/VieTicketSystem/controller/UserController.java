@@ -2,6 +2,8 @@ package com.example.VieTicketSystem.controller;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -11,10 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.VieTicketSystem.model.entity.User;
+import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
+import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.LoginRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
+
 
 import jakarta.servlet.http.HttpSession;
 
@@ -25,6 +30,9 @@ public class UserController {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private EventRepo eventRepo;
 
     @Autowired
     private OrganizerRepo organizerRepo;
@@ -64,7 +72,7 @@ public class UserController {
                 return "redirect:/";
             }
         } else {
-            return "redirect:/";
+            return showLogin(httpSession);
         }
     }
     @GetMapping (value = "/auth/log-out")
@@ -79,8 +87,12 @@ public class UserController {
         return "redirect:/";
     }
     @GetMapping(value = { "", "/" })
-    public String showLogin() {
-        return "index.html";
+    public String showLogin(HttpSession session) {
+        List<Event> events = eventRepo.getAllEvents();
+        System.out.println(events);
+        session.setAttribute("events", events);
+       
+        return "index";
     }
 
     @GetMapping("/auth/login")
@@ -120,12 +132,7 @@ public class UserController {
     public String signupPage() {
         return "signup"; // Trả về trang signup.html
     }
-    // @PostMapping("/signup")
-    // public String signUp() {
-    // // Redirect về trang đăng nhập
-    // return "redirect:/auth/login";
-    // }
-
+    
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
             @RequestParam("phone") String phone,
