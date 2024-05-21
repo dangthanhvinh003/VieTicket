@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Add Event</h1>
+        <form method="post" action="/add-event">
+            <!-- Name -->
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <!-- Start Date -->
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+            <!-- Location -->
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <!-- Type -->
+            <div class="mb-3">
+                <label for="type" class="form-label">Type</label>
+                <input type="text" class="form-control" id="type" name="type" required>
+            </div>
+            <!-- Ticket Sale Date -->
+            <div class="mb-3">
+                <label for="ticket_sale_date" class="form-label">Ticket Sale Date</label>
+                <input type="date" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required>
+            </div>
+            <!-- End Date -->
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" required>
+            </div>
+            <!-- Organizer ID -->
+            <!-- <div class="mb-3">
+                <label for="organizer_id" class="form-label">Organizer ID</label>
+                <input type="number" class="form-control" id="organizer_id" name="organizer_id" required>
+            </div> -->
+            <!-- Seat Map -->
+            <div class="mb-3">
+                <label for="seat_map" class="form-label">Seat Map</label>
+                <input type="text" class="form-control" id="seat_map" name="seat_map">
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Add Event</button>
+        </form>
+    </div>
+</body>
+
+</html>

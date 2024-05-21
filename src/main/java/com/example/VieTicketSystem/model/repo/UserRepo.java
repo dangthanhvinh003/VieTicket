@@ -5,13 +5,37 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.VieTicketSystem.model.entity.User;
+import com.example.VieTicketSystem.model.service.Oauth2Service;
+
+import jakarta.servlet.http.HttpSession;
 
 @Repository
 public class UserRepo {
+
+    @GetMapping(value = "/auth/login/oauth2/google")
+    public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
+            HttpSession httpSession)
+            throws Exception {
+        Oauth2Service oauth2 = new Oauth2Service();
+        // Exchange the authorization code for an access token
+        String accessToken = oauth2.getAccessToken(authorizationCode);
+        // Get user info
+        User user = oauth2.getUserInfo(accessToken);
+        // System.out.println(user);
+        // Save the user in the session
+        httpSession.setAttribute("activeUser", user);
+
+        return "index.html";
+    }
+
     public void EditImgUser(String img, int id) throws Exception {
 
         Class.forName(Baseconnection.nameClass);
@@ -41,6 +65,36 @@ public class UserRepo {
         ps.executeUpdate();
         ps.close();
 
+    }
+
+    public List<User> findAll() throws Exception {
+        Class.forName(Baseconnection.nameClass);
+        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM User");
+        ResultSet rs = ps.executeQuery();
+
+        List<User> users = new ArrayList<>();
+        while (rs.next()) {
+            User user = new User();
+            user.setUserId(rs.getInt("user_id"));
+            user.setFullName(rs.getString("full_name"));
+            user.setUsername(rs.getString("username"));
+            user.setPassword(rs.getString("password"));
+            user.setPhone(rs.getString("phone"));
+            user.setDob(rs.getDate("dob"));
+            user.setGender(rs.getString("gender").charAt(0));
+            user.setAvatar(rs.getString("avatar"));
+            user.setRole(rs.getString("role").charAt(0));
+            user.setEmail(rs.getString("email"));
+            users.add(user);
+        }
+
+        rs.close();
+        ps.close();
+        con.close();
+
+        return users;
     }
 
     public User findById(int id) throws Exception {

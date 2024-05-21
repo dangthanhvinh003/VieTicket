@@ -60,14 +60,32 @@ public class UserController {
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = loginRepo.CheckLogin(usernameInput, passwordInput);
+       
         if (user != null) {
-            httpSession.setAttribute("activeUser", user);
-            return "index.html";
+            if (user instanceof Organizer) {
+                httpSession.setAttribute("activeOrganizer", user);
+                // Redirect to Organizer's specific page
+                return "redirect:/";
+            } else {
+                httpSession.setAttribute("activeUser", user);
+                // Redirect to User's specific page
+                return "redirect:/";
+            }
         } else {
             return showLogin(httpSession);
         }
     }
-
+    @GetMapping (value = "/auth/log-out")
+    public String doLogout(HttpSession httpSession) {
+        // Xóa thuộc tính activeUser khỏi session
+        httpSession.removeAttribute("activeUser");
+        
+        // Vô hiệu hóa session hiện tại
+        httpSession.invalidate();
+       
+        // Chuyển hướng người dùng đến trang chủ
+        return "redirect:/";
+    }
     @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
@@ -90,7 +108,7 @@ public class UserController {
 
     @GetMapping("/change")
     public String changeProfile() {
-        return "changeProfile"; // Trả về tên của trang login.html
+        return "changeProfile"; // Trả về tên của trang changeProfile
     }
 
     @GetMapping("/profile")
@@ -101,7 +119,7 @@ public class UserController {
             User activeUser = (User) httpSession.getAttribute("activeUser");
             model.addAttribute("activeUser", activeUser);
             // Trả về trang home.html
-            return "changeProfile.html";
+            return "redirect:/change";
         } else {
             // Nếu không tồn tại session "activeUser", chuyển hướng người dùng đến trang
             // đăng nhập
@@ -133,16 +151,16 @@ public class UserController {
         // Validate passwords match
         if (!password.equals(confirmPassword)) {
             model.addAttribute("errorMessage", "Passwords do not match.");
-            return "signup";
+            return "redirect:/signup";
         }
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("errorMessage", "Phone already exists.");
-            return "signup";
+            return "redirect:/signup";
         }
         // Check if username already exists
         if (userRepo.existsByUsername(username)) {
             model.addAttribute("errorMessage", "Username already exists.");
-            return "signup";
+            return "redirect:/signup";
         }
 
         // Check if email already exists
