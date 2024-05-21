@@ -55,8 +55,8 @@ public class AuthFilter implements Filter {
             // Người dùng có role ADMIN được truy cập tất cả các trang
             chain.doFilter(request, response);
         } else if (isUser(user) && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                || requestURI.startsWith("/upload"))) {
-            // Người dùng có role USER chỉ được truy cập các trang cho phép
+                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))) {
+            // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else if (isOrganizer(user)) {
             // Tìm thông tin Organizer dựa trên userId

@@ -99,12 +99,17 @@
                                         </div>
 
                                         <div class="col-sm-6">
-                                            <a th:href="@{/auth/reset-password}" class="float-end text-primary">Forgot Password?</a>
+                                            <a th:href="@{/auth/reset-password}" class="float-end text-primary">Forgot
+                                                Password?</a>
                                         </div>
 
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-primary px-4 float-end mt-4">Login</button>
-                                            <a th:href="@{/signup}" class="btn btn-secondary px-4 float-start mt-4">Sign Up</a>
+                                            <button type="submit"
+                                                class="btn btn-primary px-4 float-end mt-4">Login</button>
+                                            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
+                                                role="button" class="btn btn-primary">Login with google</a>
+                                            <a th:href="@{/signup}" class="btn btn-secondary px-4 float-start mt-4">Sign
+                                                Up</a>
                                         </div>
                                     </form>
                                 </div>
