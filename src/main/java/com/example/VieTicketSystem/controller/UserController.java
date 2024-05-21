@@ -56,12 +56,19 @@ public class UserController {
         return "redirect:/change";
     }
 
+    
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
-            @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
-        User user = loginRepo.CheckLogin(usernameInput, passwordInput);
+                          @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
+        User user = userRepo.findByUsername(usernameInput);
 
-        if (user != null) {
+        if (user == null) {
+            model.addAttribute("error", "Username does not exist");
+            return "login";
+        } else if (!loginRepo.checkPassword(usernameInput, passwordInput)) {
+            model.addAttribute("error", "Incorrect password");
+            return "login";
+        } else {
             if (user instanceof Organizer) {
                 httpSession.setAttribute("activeOrganizer", user);
                 // Redirect to Organizer's specific page
@@ -71,8 +78,6 @@ public class UserController {
                 // Redirect to User's specific page
                 return "redirect:/";
             }
-        } else {
-            return showLogin(httpSession);
         }
     }
 
@@ -133,6 +138,37 @@ public class UserController {
         return "changeProfile"; // Trả về tên của trang changeProfile
     }
 
+    @GetMapping("/change-password")
+    public String changePassword() {
+        return "change-password"; // Trả về tên của trang changePassword
+    }
+    @PostMapping(value = "/change-password")
+    public String changePassword(@RequestParam("oldPassword") String oldPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Model model,
+                                 HttpSession httpSession) throws Exception {
+        User activeUser = (User) httpSession.getAttribute("activeUser");
+
+        if (activeUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        if (!loginRepo.checkPassword(activeUser.getUsername(), oldPassword)) {
+            model.addAttribute("error", "Wrong old password");
+            return "change-password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "New passwords do not match");
+            return "change-password";
+        }
+
+        userRepo.updatePassword(activeUser.getUserId(), newPassword);
+        model.addAttribute("message", "Password changed successfully");
+        return "change-password";
+    }
+
     @GetMapping("/profile")
     public String profilePage(Model model, HttpSession httpSession) {
         // Kiểm tra xem session "activeUser" có tồn tại hay không
@@ -170,11 +206,7 @@ public class UserController {
             @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
             @RequestParam(value = "organizerType", required = false) String organizerType,
             Model model) throws Exception {
-        // Validate passwords match
-        if (!password.equals(confirmPassword)) {
-            model.addAttribute("errorMessage", "Passwords do not match.");
-            return "redirect:/signup";
-        }
+        
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("errorMessage", "Phone already exists.");
             return "redirect:/signup";

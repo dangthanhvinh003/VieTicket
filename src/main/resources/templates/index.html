@@ -121,6 +121,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
+                                <li><a class="dropdown-item" th:href="@{/change-password}">Change Password</a></li>
                                 <th:block th:if="${session.activeUser.role.toString() == 'u'}">
                                     <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
                                 </th:block>

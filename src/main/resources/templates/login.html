@@ -22,7 +22,7 @@
         }
 
         .form-right {
-            background-color: #191825; /* Màu mới */
+            background-color: #191825;
             color: white;
             display: flex;
             align-items: center;
@@ -35,31 +35,31 @@
         }
 
         .btn-primary {
-            background-color: #865DFF; /* Màu mới */
-            border-color: #865DFF; /* Màu mới */
+            background-color: #865DFF;
+            border-color: #865DFF;
         }
 
         .btn-primary:hover {
-            background-color: #E384FF; /* Màu mới */
-            border-color: #E384FF; /* Màu mới */
+            background-color: #E384FF;
+            border-color: #E384FF;
         }
 
         .btn-secondary {
-            background-color: #865DFF; /* Màu mới */
-            border-color: #865DFF; /* Màu mới */
+            background-color: #865DFF;
+            border-color: #865DFF;
         }
 
         .btn-secondary:hover {
-            background-color: #E384FF; /* Màu mới */
-            border-color: #E384FF; /* Màu mới */
+            background-color: #E384FF;
+            border-color: #E384FF;
         }
 
         .text-primary {
-            color: #865DFF !important; /* Màu mới */
+            color: #865DFF !important;
         }
 
         .text-primary:hover {
-            color: #E384FF !important; /* Màu mới */
+            color: #E384FF !important;
         }
     </style>
 </head>
@@ -92,6 +92,10 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-12">
+                                            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+                                        </div>
+
                                         <div class="col-sm-6">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="rememberMe">
@@ -100,8 +104,7 @@
                                         </div>
 
                                         <div class="col-sm-6">
-                                            <a th:href="@{/auth/reset-password}" class="float-end text-primary">Forgot
-                                                Password?</a>
+                                            <a th:href="@{/auth/reset-password}" class="float-end text-primary">Forgot Password?</a>
                                         </div>
 
                                         <div class="col-12 d-flex justify-content-between">
@@ -111,7 +114,7 @@
                                         
                                         <div class="col-12 mt-3 text-center">
                                             <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
-                                               role="button" class="btn btn-secondary  w-100">
+                                               role="button" class="btn btn-secondary w-100">
                                                <i class="bi bi-google me-2"> Login with Google</i></a>
                                         </div>
                                     </form>
@@ -120,11 +123,8 @@
                             <div class="col-md-5 ps-0 d-none d-md-block">
                                 <div class="form-right h-100 text-white d-flex flex-column align-items-center justify-content-center">
                                     <img src="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png" alt="Welcome Image" style="width: 100%; height: auto;">
-                                  
                                 </div>
                             </div>
-                            
-                            
                         </div>
                     </div>
                     <p class="text-end text-secondary mt-3"></p>
