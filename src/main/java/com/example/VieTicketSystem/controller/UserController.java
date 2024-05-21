@@ -18,13 +18,29 @@ import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.LoginRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
+import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
+
+import com.example.VieTicketSystem.model.service.EmailService;
+import com.example.VieTicketSystem.model.service.VerifyEmailService;
+
 import com.example.VieTicketSystem.model.service.Oauth2Service;
+
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
+
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    private VerifyEmailService verifyEmailService;
+
+    @Autowired
+    private UnverifiedUserRepo unverifiedUserRepo;
+
     @Autowired
     private LoginRepo loginRepo;
 
@@ -54,6 +70,15 @@ public class UserController {
         httpSession.setAttribute("activeUser", activeUser);
 
         return "redirect:/change";
+    }
+
+    @GetMapping("/auth/verify-email")
+    public String showVerifyEmailPage(Model model, HttpSession session) throws Exception {
+        User user = (User) session.getAttribute("activeUser");
+        if (user == null || !unverifiedUserRepo.isUnverified(user.getUserId())) {
+            return "redirect:/"; // Redirect if not applicable
+        }
+        return "verify-email";
     }
 
     @PostMapping(value = "/auth/login")
@@ -91,7 +116,6 @@ public class UserController {
     @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
-       
         session.setAttribute("events", events);
 
         return "index";
@@ -226,6 +250,12 @@ public class UserController {
             newUser.setPassword(password);
             newUser.setRole('u');
             userRepo.saveNew(newUser);
+        }
+
+        try {
+            verifyEmailService.sendOTP(email);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // Redirect to login page after successful registration

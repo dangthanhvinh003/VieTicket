@@ -1,8 +1,5 @@
 package com.example.VieTicketSystem.model.service;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.jboss.aerogear.security.otp.Totp;
 import org.jboss.aerogear.security.otp.api.Clock;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,28 +9,7 @@ import org.springframework.stereotype.Service;
 public class OTPService {
     private final int timeWindow;
 
-    private static final Map<String, String> newUserOTPs = new ConcurrentHashMap<>();
-
-    public String generateNewUserOTP(String email) {
-        String secretKey = SecretGenerator.generateSecret();
-        String otp = generateOTP(secretKey);
-        newUserOTPs.put(email, secretKey);
-        return otp;
-    }
-
-    public boolean validateNewUserOTP(String email, String userOTP) {
-        String secretKey = newUserOTPs.get(email);
-        if (secretKey == null) {
-            throw new RuntimeException("No OTP found for email");
-        }
-
-        if (!validateOTP(secretKey, userOTP)) {
-            return false;
-        }
-
-        newUserOTPs.remove(email);
-        return true;
-    }
+    
 
     public OTPService(@Value("${OTP_TIME_WINDOW_MINUTES}") double timeWindow) {
         timeWindow *= 60; // Convert minutes to seconds

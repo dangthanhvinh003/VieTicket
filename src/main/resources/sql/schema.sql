@@ -139,6 +139,12 @@ create table googleOauth(
     redirect_uri varchar(255)
 );
 
+CREATE TABLE UnverifiedUsers (
+    userid INT NOT NULL PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 INSERT INTO User (full_name, username, `password`, phone, dob, gender, avatar, `role`,email)
 VALUES 
 ('Nguyễn Văn A', 'nguyenvana', '123456', '0123456789', '1990-01-01', 'M', 'avatar1.jpg', 'o','hoangnpvde180297@fpt.edu.vn'),
