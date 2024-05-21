@@ -15,10 +15,13 @@
             align-items: center;
             justify-content: center;
             background-color: #f8f9fa;
+            background-image: url("https://i.ytimg.com/vi/KkLTZi05YJ4/maxresdefault.jpg");
+            background-size: cover;
+            background-position: center;
         }
 
         .form-right {
-            background-color: #007bff;
+            background-color: #191825; /* Màu mới */
             color: white;
             display: flex;
             align-items: center;
@@ -28,6 +31,34 @@
 
         .form-right i {
             font-size: 100px;
+        }
+
+        .btn-primary {
+            background-color: #865DFF; /* Màu mới */
+            border-color: #865DFF; /* Màu mới */
+        }
+
+        .btn-primary:hover {
+            background-color: #E384FF; /* Màu mới */
+            border-color: #E384FF; /* Màu mới */
+        }
+
+        .btn-secondary {
+            background-color: #FFA3FD; /* Màu mới */
+            border-color: #FFA3FD; /* Màu mới */
+        }
+
+        .btn-secondary:hover {
+            background-color: #E384FF; /* Màu mới */
+            border-color: #E384FF; /* Màu mới */
+        }
+
+        .text-primary {
+            color: #865DFF !important; /* Màu mới */
+        }
+
+        .text-primary:hover {
+            color: #E384FF !important; /* Màu mới */
         }
     </style>
 </head>
@@ -45,22 +76,18 @@
                                 <div class="form-left h-100 py-5 px-5">
                                     <form th:action="@{/auth/login}" method="post" class="row g-4">
                                         <div class="col-12">
-                                            <label for="username" class="form-label">Username <span
-                                                    class="text-danger">*</span></label>
+                                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
-                                                <input type="text" class="form-control" id="username" name="username"
-                                                    placeholder="Enter Username" required>
+                                                <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" required>
                                             </div>
                                         </div>
 
                                         <div class="col-12">
-                                            <label for="password" class="form-label">Password <span
-                                                    class="text-danger">*</span></label>
+                                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
-                                                <input type="password" class="form-control" id="password"
-                                                    name="password" placeholder="Enter Password" required>
+                                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
                                             </div>
                                         </div>
 
@@ -88,10 +115,8 @@
                                 </div>
                             </div>
                             <div class="col-md-5 ps-0 d-none d-md-block">
-                                <div
-                                    class="form-right h-100 bg-primary text-white d-flex flex-column align-items-center justify-content-center">
-                                    <img src="path_to_your_image.jpg" alt="Welcome Image"
-                                        style="width: 100px; height: auto;">
+                                <div class="form-right h-100 text-white d-flex flex-column align-items-center justify-content-center">
+                                    <img src="path_to_your_image.jpg" alt="Welcome Image" style="width: 100px; height: auto;">
                                     <h2 class="fs-1">Welcome Back!!!</h2>
                                 </div>
                             </div>
