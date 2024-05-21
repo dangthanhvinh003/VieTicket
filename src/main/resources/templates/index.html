@@ -38,7 +38,7 @@
                     <!-- <p th:text="'Active Organizer: ' + ${session.activeUser.role}"></p> -->
                     <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
                         <li>
-                            <a class="nav-link" href="#">Create Event</a>
+                            <a class="nav-link" th:href="@{/createEvent}">Create Event</a>
                         </li>
                     </th:block>
 

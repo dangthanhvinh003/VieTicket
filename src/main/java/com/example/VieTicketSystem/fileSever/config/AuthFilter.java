@@ -2,8 +2,12 @@ package com.example.VieTicketSystem.fileSever.config;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.User;
+import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -16,7 +20,8 @@ import jakarta.servlet.http.HttpSession;
 
 @Component
 public class AuthFilter implements Filter {
-
+    @Autowired
+    OrganizerRepo organizerRepo = new OrganizerRepo();
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -24,9 +29,13 @@ public class AuthFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpSession session = httpRequest.getSession();
         String requestURI = httpRequest.getRequestURI();
+
+       
+        // tất cả các role đều có thể vào
         if (requestURI.equals("/auth/login") || requestURI.equals("/") || requestURI.equals("")
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
-                || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")) {
+                || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
+                || requestURI.equals("/auth/log-out")) {
             chain.doFilter(request, response);
             return;
         }
@@ -49,9 +58,21 @@ public class AuthFilter implements Filter {
                 || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
+        } else if (isOrganizer(user)) {
+            // Tìm thông tin Organizer dựa trên userId
+            Organizer organizer = organizerRepo.getOrganizerByUserId(user.getUserId());
+      
+            if (organizer != null) {
+                if (organizer.isActive() && requestURI.startsWith("/createEvent") || requestURI.startsWith("/inactive-account") ) {
+                    // Người dùng có role ORGANIZER chỉ được truy cập các trang cho phép khi isActive
+                    chain.doFilter(request, response);
+                } else {
+                    httpResponse.sendRedirect("/inactive-account");
+                    return;
+                }
+            }
         } else {
             // Không có quyền truy cập
-
             httpResponse.sendRedirect("/");
         }
 
@@ -67,7 +88,17 @@ public class AuthFilter implements Filter {
     private boolean isUser(User user) {
         if (user != null) {
             char role = user.getRole();
-            if (role == 'u' || role == 'o') {
+            if (role == 'u') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isOrganizer(User user) {
+        if (user != null) {
+            char role = user.getRole();
+            if (role == 'o') {
                 return true;
             }
         }

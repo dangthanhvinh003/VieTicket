@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inactive Account</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-PsSC83n7NDzQz3Etc6tGL5givL/4WT/7GwzNaHn8I1W0ko8+IiKOMYgDqMpK/gwuc1aAnqYx61Jj+TmIv+JX3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Định dạng cho container */
+        .container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        /* Định dạng cho thông báo */
+        .alert {
+            padding: 20px;
+            background-color: #f8d7da; /* Màu nền */
+            color: #721c24; /* Màu chữ */
+            margin-bottom: 15px;
+            border: 1px solid #f5c6cb; /* Viền */
+            border-radius: .25rem; /* Bo góc */
+        }
+        
+        /* Định dạng cho icon cảnh báo */
+        .alert i {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Thông báo cảnh báo -->
+        <div class="alert" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> Your account is pending approval from the admin. Please wait for admin approval.
+        </div>
+        <!-- Back to index button -->
+        <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+    <!-- Font Awesome Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" integrity="sha512-MtW/m6nkpKea1prg7H5NzQ1G/k8p9RfGRATqY0Zkcim1hyWshI0kCDpA+qFBHjRjFpLlfAdFfIvpsV5G4/hFlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+
+</html>

@@ -52,6 +52,7 @@ public class UserController {
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = loginRepo.CheckLogin(usernameInput, passwordInput);
+       
         if (user != null) {
             if (user instanceof Organizer) {
                 httpSession.setAttribute("activeOrganizer", user);
