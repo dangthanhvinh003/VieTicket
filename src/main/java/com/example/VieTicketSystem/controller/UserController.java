@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +27,16 @@ import com.example.VieTicketSystem.model.service.VerifyEmailService;
 
 import com.example.VieTicketSystem.model.service.Oauth2Service;
 
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
 
     @Autowired
-    EmailService emailService;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private VerifyEmailService verifyEmailService;
@@ -83,14 +86,15 @@ public class UserController {
 
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
-                          @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
+            @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
-
-        if (user == null) {
+        if (user != null && user.getRole() == 'a') {
+            if (!passwordInput.equals(user.getPassword())) {
+                model.addAttribute("error", "Username does not exist");
+                return "login";
+            }
+        } else if (!passwordEncoder.encode(passwordInput).equals(user.getPassword())) {
             model.addAttribute("error", "Username does not exist");
-            return "login";
-        } else if (!loginRepo.checkPassword(usernameInput, passwordInput)) {
-            model.addAttribute("error", "Incorrect password");
             return "login";
         } else {
             if (user instanceof Organizer) {
@@ -102,7 +106,9 @@ public class UserController {
                 // Redirect to User's specific page
                 return "redirect:/";
             }
-        } 
+        }
+        model.addAttribute("error", "Username does not exist");
+        return "login";
     }
 
     @GetMapping(value = "/auth/log-out")
@@ -120,7 +126,6 @@ public class UserController {
     @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
-
         session.setAttribute("events", events);
 
         return "index";
@@ -166,12 +171,13 @@ public class UserController {
     public String changePassword() {
         return "change-password"; // Trả về tên của trang changePassword
     }
+
     @PostMapping(value = "/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
-                                 @RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmPassword") String confirmPassword,
-                                 Model model,
-                                 HttpSession httpSession) throws Exception {
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Model model,
+            HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         if (activeUser == null) {
@@ -230,7 +236,7 @@ public class UserController {
             @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
             @RequestParam(value = "organizerType", required = false) String organizerType,
             Model model) throws Exception {
-        
+
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("errorMessage", "Phone already exists.");
             return "redirect:/signup";
@@ -247,7 +253,10 @@ public class UserController {
             return "signup";
         }
 
-        // Create new user and save to databas
+        // Hash the password
+        String hashedPassword = passwordEncoder.encode(password);
+
+        // Create new user and save to database
         // Convert LocalDate to java.sql.Date
         Date sqlDob = Date.valueOf(dob);
         Date sqlFoundedDate = (foundedDate != null) ? Date.valueOf(foundedDate) : null;
@@ -261,7 +270,7 @@ public class UserController {
             newUser.setGender(gender);
             newUser.setEmail(email);
             newUser.setUsername(username);
-            newUser.setPassword(password);
+            newUser.setPassword(hashedPassword); // Use hashed password
             newUser.setRole('o');
 
             newUser.setFoundedDate(sqlFoundedDate);
@@ -279,7 +288,7 @@ public class UserController {
             newUser.setGender(gender);
             newUser.setEmail(email);
             newUser.setUsername(username);
-            newUser.setPassword(password);
+            newUser.setPassword(hashedPassword); // Use hashed password
             newUser.setRole('u');
             userRepo.saveNew(newUser);
         }
@@ -293,4 +302,5 @@ public class UserController {
         // Redirect to login page after successful registration
         return "redirect:/auth/login";
     }
+
 }
