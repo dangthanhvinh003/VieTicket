@@ -22,4 +22,6 @@ public class Event {
     private Date endDate;
     private Organizer organizer; 
     private String seatMap;
+    private String poster;
+    private String panner;
 }

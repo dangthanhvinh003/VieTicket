@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.example.VieTicketSystem.model.service.PasswordResetService;
+import com.example.VieTicketSystem.model.service.VerifyEmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
@@ -16,11 +17,14 @@ public class PasswordResetController {
 
     private final PasswordResetService passwordResetService;
     private final ObjectMapper mapper;
+    private final VerifyEmailService verifyEmailService;
 
     // Inject the PasswordResetService and ObjectMapper here
-    public PasswordResetController(PasswordResetService passwordResetService, ObjectMapper mapper) {
+    public PasswordResetController(PasswordResetService passwordResetService, ObjectMapper mapper,
+            VerifyEmailService verifyEmailService) {
         this.passwordResetService = passwordResetService;
         this.mapper = mapper;
+        this.verifyEmailService = verifyEmailService;
     }
 
     @PostMapping("/auth/password-reset")
@@ -36,12 +40,19 @@ public class PasswordResetController {
 
         try {
             // Handle the password reset request
-            returnedFromService = passwordResetService.handleFormSubmission(email);
+            if (verifyEmailService.isUnverified(email)) {
+                returnedFromService = verifyEmailService.sendOTP(email);
+            } else {
+                returnedFromService = passwordResetService.handleFormSubmission(email);
+            }
         } catch (Exception e) {
             // Handle the exception here
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
-            errorNode.put("message", "An error occurred while processing the request. Please recheck your input and try again later.");
+            errorNode.put("message", e.getLocalizedMessage());
+            // errorNode.put("message",
+            // "An error occurred while processing the request. Please recheck your input
+            // and try again later.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
         }
 
@@ -64,7 +75,11 @@ public class PasswordResetController {
         String resetToken = body.get("resetToken");
         try {
             // Verify the OTP
-            resetToken = passwordResetService.verifyOTP(email, otp);
+            if (verifyEmailService.isUnverified(email)) {
+                verifyEmailService.validateNewUserOTP(email, otp);
+            } else {
+                resetToken = passwordResetService.verifyOTP(email, otp);
+            }
         } catch (Exception e) {
             // Handle the exception here
             ObjectNode errorNode = mapper.createObjectNode();

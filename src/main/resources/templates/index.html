@@ -5,94 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
+    <link th:href="@{/css/index.css}" rel="stylesheet">
+
     <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
-    <link rel="icon" type="image/png" href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
-    <style>
-        .avatar-small {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 8px;
-        }
 
-        .dropdown-toggle-avatar {
-            display: flex;
-            align-items: center;
-        }
 
-        .navbar-custom {
-            background-color: #191825;
-        }
+    <link rel="icon" type="image/png"
+        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
 
-        .navbar-custom .navbar-brand,
-        .navbar-custom .nav-link,
-        .navbar-custom .dropdown-item {
-            color: white;
-        }
-
-        .navbar-custom .navbar-brand:hover,
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .dropdown-item:hover {
-            color: #E384FF;
-        }
-
-        .search-form {
-            margin: auto;
-            flex-grow: 1;
-            max-width: 600px;
-        }
-
-        .form-control {
-            background-color: #6466E9;
-            border-color: #6466E9;
-            color: white;
-        }
-
-        .form-control::placeholder {
-            color: white;
-        }
-
-        .btn-outline-success {
-            color: white;
-            border-color: #6466E9;
-        }
-
-        .btn-outline-success:hover {
-            background-color: #6466E9;
-            color: white;
-            border-color: #6466E9;
-        }
-
-        .dropdown-menu {
-            background-color: #6466E9;
-        }
-
-        .dropdown-menu .dropdown-item {
-            color: white;
-        }
-
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #E384FF;
-            color: white;
-        }
-        .navbar-nav {
-    flex-direction: row; /* Đảm bảo các phần tử trong navbar-nav hiển thị theo hàng ngang */
-    align-items: center; /* Canh giữa các phần tử theo chiều dọc */
-}
-
-.navbar-nav .nav-item {
-    margin-right: 10px; /* Khoảng cách giữa các phần tử */
-}
-
-.navbar-nav .nav-item:last-child {
-    margin-right: 0; /* Loại bỏ margin-right của phần tử cuối cùng */
-}
-
-    </style>
 </head>
 
-<body>
+<body class="dark-mode">
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">VieTicket</a>
@@ -102,7 +25,9 @@
             </button>
             <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarTogglerDemo02">
                 <form class="d-flex search-form" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
+                        placeholder="Search" aria-label="Search">
+
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
                 <ul class="navbar-nav mb-2 mb-lg-0">
@@ -110,7 +35,7 @@
                         <li class="nav-item">
                             <a class="btn btn-outline-success" th:href="@{/createEvent}">Create Event</a>
                         </li>
-                        
+
                     </th:block>
                     <th:block th:if="${session.activeUser != null}">
                         <li class="nav-item dropdown">
@@ -132,7 +57,7 @@
                                     <li><a class="dropdown-item" th:href="@{/ViewAllApprove}">View All List Approve</a>
                                     </li>
                                 </th:block>
-                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
+                                <li><a class=" dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
                             </ul>
                         </li>
                     </th:block>
@@ -142,37 +67,41 @@
                         </li>
                     </th:block>
                 </ul>
+                <!-- Dark Mode / Light Mode Toggle Button -->
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="modeSwitch">
+                    <label class="form-check-label" for="modeSwitch">Dark Mode</label>
+                </div>
             </div>
         </div>
     </nav>
     <div class="container mt-5">
-        <h2>Events</h2>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col" th:each="event : ${session.events}">
-                <div class="card">
-                    <!-- <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image"> -->
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${event.name}">Event Name</h5>
-                        <p class="card-text" th:text="${event.description}">Event Description</p>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <strong>Location:</strong> <span th:text="${event.location}">Location</span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong>Type:</strong> <span th:text="${event.type}">Type</span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong>Start Date:</strong> <span th:text="${event.startDate}">Start Date</span>
-                            </li>
-                        </ul>
+        <h2 id="eventsTitle">Events</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+            <div class="col mb-4" th:each="event : ${session.events}">
+                <div class="card border-0 shadow">
+                    <img decoding="async"
+                        src="https://ticketbox.vn/_next/image?url=https%3A%2F%2Fsalt.tkbcdn.com%2Fts%2Fds%2F75%2Fd2%2F79%2Fc9ead6b9c63b63dace78a75df05fa28c.png&w=2048&q=75"
+                        class="card-img-top" alt="Event Image">
+                    <div class="card-body p-0">
+                        <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                        <p class="card-text m-0 p-2">
+                            Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                        </p>
+                        <div class="d-flex">
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
 
     <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
+
 </body>
 
 </html>
