@@ -34,7 +34,9 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    EmailService emailService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private VerifyEmailService verifyEmailService;
@@ -86,11 +88,13 @@ public class UserController {
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
-        if (user != null && passwordEncoder.matches(passwordInput, user.getPassword())) {
+        if (user != null && user.getRole() == 'a') {
+            if (!passwordInput.equals(user.getPassword())) {
+                model.addAttribute("error", "Username does not exist");
+                return "login";
+            }
+        } else if (!passwordEncoder.encode(passwordInput).equals(user.getPassword())) {
             model.addAttribute("error", "Username does not exist");
-            return "login";
-        } else if (!loginRepo.checkPassword(usernameInput, passwordInput)) {
-            model.addAttribute("error", "Incorrect password");
             return "login";
         } else {
             if (user instanceof Organizer) {
@@ -103,6 +107,8 @@ public class UserController {
                 return "redirect:/";
             }
         }
+        model.addAttribute("error", "Username does not exist");
+        return "login";
     }
 
     @GetMapping(value = "/auth/log-out")
