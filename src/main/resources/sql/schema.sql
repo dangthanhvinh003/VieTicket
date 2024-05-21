@@ -133,6 +133,12 @@ create table UserSecrets(
  
 );
 
+create table googleOauth(
+	client_id varchar(255),
+    client_secret varchar(255),
+    redirect_uri varchar(255)
+);
+
 INSERT INTO User (full_name, username, `password`, phone, dob, gender, avatar, `role`,email)
 VALUES 
 ('Nguyễn Văn A', 'nguyenvana', '123456', '0123456789', '1990-01-01', 'M', 'avatar1.jpg', 'o','hoangnpvde180297@fpt.edu.vn'),
@@ -211,19 +217,20 @@ VALUES
 ('E1', 150000, 1, 0, 5),
 ('E2', 150000, 1, 0, 5);
 
+--@block
 INSERT INTO Ticket (qr_code, purchase_date, order_id, seat_id)
 VALUES 
-('QR0001', '2024-05-25', 1, 1),
-('QR0002', '2024-05-25', 1, 2),
-('QR0003', '2024-06-02', 2, 3),
-('QR0004', '2024-06-02', 2, 4),
-('QR0005', '2024-07-10', 3, 5),
-('QR0006', '2024-07-10', 3, 6),
-('QR0007', '2024-08-05', 4, 7),
-('QR0008', '2024-08-05', 4, 8),
-('QR0009', '2024-09-15', 5, 9),
-('QR0010', '2024-09-15', 5, 10);
-
+('QR1063', '2024-05-25', 1, 1),
+('QR0242', '2024-05-25', 1, 2),
+('QR0123', '2024-06-02', 2, 3),
+('QR0134', '2024-06-02', 2, 4),
+('QR0235', '2024-07-10', 3, 5),
+('QR0036', '2024-07-10', 3, 6),
+('QR0047', '2024-08-05', 4, 7),
+('QR0075', '2024-08-05', 4, 8),
+('QR1089', '2024-09-15', 5, 9),
+('QR0280', '2024-09-15', 5, 10);
+--@block
 -- select * from organizer;
 -- UPDATE `user` set avatar = "https://scontent.fsgn5-13.fna.fbcdn.net/v/t39.30808-1/362619067_3390825254514467_2268458930563726293_n.jpg?stp=dst-jpg_s480x480&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=sQ0ep36X-6UQ7kNvgEH4JZQ&_nc_ht=scontent.fsgn5-13.fna&oh=00_AYAxo_hXsnJycOiA6UXP0IrVo9zTRO-NKMLBKrRg9_Tghg&oe=664D40B2"
 -- where user_id = 1;
