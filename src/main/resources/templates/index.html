@@ -5,216 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
+    <link th:href="@{/css/index.css}" rel="stylesheet">
+
     <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+
+
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
-    <style>
-        .avatar-small {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 8px;
-        }
 
-        .dropdown-toggle-avatar {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar-custom {
-            background-color: #191825;
-        }
-
-        .navbar-custom .navbar-brand,
-        .navbar-custom .nav-link,
-        .navbar-custom .dropdown-item {
-            color: white;
-        }
-
-        .navbar-custom .navbar-brand:hover,
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .dropdown-item:hover {
-            color: #E384FF;
-        }
-
-        .search-form {
-            margin: auto;
-            flex-grow: 1;
-            max-width: 600px;
-        }
-
-        .form-control {
-            background-color: white;
-            border-color: white;
-            color: white;
-        }
-
-        .form-control::placeholder {
-            color: white;
-        }
-
-        .btn-outline-success {
-            color: white;
-            border-color: #6466E9;
-        }
-
-        .btn-outline-success:hover {
-            background-color: #6466E9;
-            color: white;
-            border-color: #6466E9;
-        }
-
-        .dropdown-menu {
-            background-color: #6466E9;
-        }
-
-        .dropdown-menu .dropdown-item {
-            color: white;
-        }
-
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #E384FF;
-            color: white;
-        }
-
-        .navbar-nav {
-            flex-direction: row;
-            align-items: center;
-        }
-
-        .navbar-nav .nav-item {
-            margin-right: 10px;
-        }
-
-        .navbar-nav .nav-item:last-child {
-            margin-right: 0;
-        }
-
-        /* Dark Mode Styles */
-        .dark-mode {
-            background-color: #15132b;
-            color: white;
-        }
-
-        .dark-mode .navbar-custom {
-            background-color: #191825;
-        }
-
-        .dark-mode .form-control {
-            background-color: #191825;
-            border-color: #191825;
-            color: white;
-        }
-
-        .dark-mode .btn-outline-success {
-            color: white;
-            border-color: #6466E9;
-        }
-
-        .dark-mode .btn-outline-success:hover {
-            background-color: #6466E9;
-            color: white;
-            border-color: #6466E9;
-        }
-
-        .dark-mode .dropdown-menu {
-            background-color: #6466E9;
-        }
-
-        .dark-mode .dropdown-menu .dropdown-item {
-            color: white;
-        }
-
-        .dark-mode .dropdown-menu .dropdown-item:hover {
-            background-color: #E384FF;
-            color: white;
-        }
-
-        /* Light Mode Styles */
-        .light-mode {
-            background-color: white;
-            color: black;
-        }
-
-        .light-mode .navbar-custom {
-            background-color: #f8f9fa;
-        }
-
-        .light-mode .form-control {
-            background-color: white;
-            border-color: white;
-            color: black;
-        }
-
-        .light-mode .btn-outline-success {
-            color: black;
-            border-color: #6466E9;
-        }
-
-        .light-mode .btn-outline-success:hover {
-            background-color: #6466E9;
-            color: white;
-            border-color: #6466E9;
-        }
-
-        .light-mode .dropdown-menu {
-            background-color: #6466E9;
-        }
-
-        .light-mode .dropdown-menu .dropdown-item {
-            color: white;
-        }
-
-        .light-mode .dropdown-menu .dropdown-item:hover {
-            background-color: #E384FF;
-            color: white;
-        }
-
-        .light-mode {
-            background-color: #f8f9fa;
-            /* Thay đổi màu nền cho Light Mode */
-        }
-
-        .light-mode .navbar-custom {
-            background-color: #f8f9fa;
-            /* Thay đổi màu nền của thanh navbar cho Light Mode */
-        }
-
-        .light-mode .navbar-custom .navbar-brand,
-        .light-mode .navbar-custom .nav-link,
-        .light-mode .navbar-custom .dropdown-item {
-            color: #191825;
-            /* Thay đổi màu chữ cho Light Mode */
-        }
-
-        .light-mode .search-form,
-        .light-mode .navbar-custom {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            /* Thêm hiệu ứng nổi lên */
-        }
-
-        .dark-mode .form-control::-webkit-input-placeholder {
-            color: white;
-            /* Màu chữ placeholder trong Dark Mode */
-        }
-
-        .light-mode .form-control::-webkit-input-placeholder {
-            color: black;
-            /* Màu chữ placeholder trong Light Mode */
-        }
-
-        .dark-mode .card {
-            background-color: #191825;
-            color: white;
-        }
-
-        /* Light Mode Styles */
-        .light-mode .card {
-            background-color: #f8f9fa;
-            color: black;
-        }
-    </style>
 </head>
 
 <body class="dark-mode">
@@ -284,71 +82,24 @@
                     <img decoding="async"
                         src="https://ticketbox.vn/_next/image?url=https%3A%2F%2Fsalt.tkbcdn.com%2Fts%2Fds%2F75%2Fd2%2F79%2Fc9ead6b9c63b63dace78a75df05fa28c.png&w=2048&q=75"
                         class="card-img-top" alt="Event Image">
-                    <div class="card-body">
-                        <h6 class="card-title mb-2" th:text="${event.name}">Event Name</h6>
-                        <p class="card-text mb-1">
+                    <div class="card-body p-0">
+                        <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                        <p class="card-text m-0 p-2">
                             Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
                         </p>
-                        <div class="d-flex justify-content-between">
-                            <a href="#" class="btn btn-sm btn-outline-success me-auto">View Detail</a>
-                            <a href="#" class="btn btn-sm btn-outline-success">Buy Ticket</a>
+                        <div class="d-flex">
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
+
     <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const modeSwitch = document.getElementById('modeSwitch');
-        modeSwitch.addEventListener('change', () => {
-            document.body.classList.toggle('dark-mode');
-            document.body.classList.toggle('light-mode');
-            if (modeSwitch.checked) {
-                modeSwitch.nextElementSibling.textContent = 'Light Mode';
-            } else {
-                modeSwitch.nextElementSibling.textContent = 'Dark Mode';
-            }
-        });
-
-        const eventsTitle = document.getElementById('eventsTitle');
-
-        modeSwitch.addEventListener('change', () => {
-            if (modeSwitch.checked) {
-                eventsTitle.classList.remove('dark-mode');
-                eventsTitle.classList.add('light-mode');
-            } else {
-                eventsTitle.classList.remove('light-mode');
-                eventsTitle.classList.add('dark-mode');
-            }
-        });
-        const searchInput = document.getElementById('searchInput');
-
-        modeSwitch.addEventListener('change', () => {
-            if (modeSwitch.checked) {
-                searchInput.classList.remove('dark-mode');
-                searchInput.classList.add('light-mode');
-            } else {
-                searchInput.classList.remove('light-mode');
-                searchInput.classList.add('dark-mode');
-            }
-        });
-        const eventsCards = document.querySelectorAll('.card');
-
-        modeSwitch.addEventListener('change', () => {
-            eventsCards.forEach(card => {
-                if (modeSwitch.checked) {
-                    card.classList.remove('dark-mode');
-                    card.classList.add('light-mode');
-                } else {
-                    card.classList.remove('light-mode');
-                    card.classList.add('dark-mode');
-                }
-            });
-        });
-
-    </script>
+    <script type="text/javascript" th:src="@{/js/index.js}"></script>
 
 </body>
 
