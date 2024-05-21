@@ -1,4 +1,3 @@
-
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -18,7 +17,7 @@
                 </div>
             </span>
         </div>
-        
+
         <div>
             <span>
                 <label>Password</label>
@@ -28,12 +27,11 @@
             </span>
         </div>
         <button type="submit">Login</button>
+        <button type="button" th:onclick="|window.location.href='@{/signup}'|">Đăng ký</button>
+
         </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <th:block th:if="${session.activeUser == null}">
-        <!-- Nếu chưa đăng ky, hiển thị link đến trang đăng ky -->
-        <a th:href="@{/signup}">Đăng ký</a>
-    </th:block>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
 </body>
-    
+
 </html>
