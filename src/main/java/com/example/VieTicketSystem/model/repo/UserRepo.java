@@ -9,32 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.service.Oauth2Service;
-
-import jakarta.servlet.http.HttpSession;
 
 @Repository
 public class UserRepo {
-
-    @GetMapping(value = "/auth/login/oauth2/google")
-    public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
-            HttpSession httpSession)
-            throws Exception {
-        Oauth2Service oauth2 = new Oauth2Service();
-        // Exchange the authorization code for an access token
-        String accessToken = oauth2.getAccessToken(authorizationCode);
-        // Get user info
-        User user = oauth2.getUserInfo(accessToken);
-        // System.out.println(user);
-        // Save the user in the session
-        httpSession.setAttribute("activeUser", user);
-
-        return "index.html";
-    }
 
     public void EditImgUser(String img, int id) throws Exception {
 
@@ -194,7 +173,7 @@ public class UserRepo {
         if (existsByEmail(user.getEmail())) {
             throw new Exception("Email already exists");
         }
-        if (existsByPhone(user.getPhone())) {
+        if (user.getPhone() != null && existsByPhone(user.getPhone())) {
             throw new Exception("Phone number already exists");
         }
 
