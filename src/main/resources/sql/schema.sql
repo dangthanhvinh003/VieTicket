@@ -276,3 +276,13 @@ SELECT
     u.email
 FROM Organizer o
 JOIN User u ON o.organizer_id = u.user_id;
+
+--@block
+CREATE VIEW ticket_with_user AS
+SELECT
+    Ticket.*,
+    `Order`.user_id
+FROM
+    Ticket
+JOIN
+    `Order` ON Ticket.order_id = `Order`.order_id;
