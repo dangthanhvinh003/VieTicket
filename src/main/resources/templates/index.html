@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
     <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
     <style>
         .avatar-small {
             width: 30px;
@@ -107,10 +108,9 @@
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
                         <li class="nav-item">
-                            <button class="btn btn-outline-success" type="button" th:href="@{/createEvent}">
-                                Create Event
-                            </button>
+                            <a class="btn btn-outline-success" th:href="@{/createEvent}">Create Event</a>
                         </li>
+                        
                     </th:block>
                     <th:block th:if="${session.activeUser != null}">
                         <li class="nav-item dropdown">
