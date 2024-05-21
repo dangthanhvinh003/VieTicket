@@ -38,4 +38,20 @@ public class LoginRepo {
         }return null;
         
     }
+    public boolean checkPassword(String username, String password) throws Exception {
+        Class.forName(Baseconnection.nameClass);
+        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM User WHERE username = ? AND password = ?");
+        ps.setString(1, username);
+        ps.setString(2, password);
+        ResultSet rs = ps.executeQuery();
+        boolean exists = false;
+        if (rs.next()) {
+            exists = rs.getInt(1) > 0;
+        }
+        rs.close();
+        ps.close();
+        return exists;
+    }
+
 }

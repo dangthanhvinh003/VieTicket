@@ -106,6 +106,8 @@ public class PasswordResetService {
     }
 
     public void resetPassword(String token, String newPassword) throws Exception {
+        tokenRepository.cleanUpExpiredTokens();
+
         // Find the token
         PasswordResetToken resetToken = tokenRepository.findByToken(token);
         if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {

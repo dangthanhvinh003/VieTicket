@@ -19,7 +19,12 @@ import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.LoginRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
+import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
+
+import com.example.VieTicketSystem.model.service.EmailService;
+import com.example.VieTicketSystem.model.service.VerifyEmailService;
+
 import com.example.VieTicketSystem.model.service.Oauth2Service;
 
 import jakarta.servlet.http.HttpSession;
@@ -29,6 +34,13 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    EmailService emailService;
+
+    @Autowired
+    private VerifyEmailService verifyEmailService;
+
+    @Autowired
+    private UnverifiedUserRepo unverifiedUserRepo;
 
     @Autowired
     private LoginRepo loginRepo;
@@ -61,14 +73,26 @@ public class UserController {
         return "redirect:/change";
     }
 
+    @GetMapping("/auth/verify-email")
+    public String showVerifyEmailPage(Model model, HttpSession session) throws Exception {
+        User user = (User) session.getAttribute("activeUser");
+        if (user == null || !unverifiedUserRepo.isUnverified(user.getUserId())) {
+            return "redirect:/"; // Redirect if not applicable
+        }
+        return "verify-email";
+    }
+
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
-
-        System.out.println(passwordEncoder.encode(passwordInput));
-        System.out.println(user.getPassword());
         if (user != null && passwordEncoder.matches(passwordInput, user.getPassword())) {
+            model.addAttribute("error", "Username does not exist");
+            return "login";
+        } else if (!loginRepo.checkPassword(usernameInput, passwordInput)) {
+            model.addAttribute("error", "Incorrect password");
+            return "login";
+        } else {
             if (user instanceof Organizer) {
                 httpSession.setAttribute("activeOrganizer", user);
                 // Redirect to Organizer's specific page
@@ -78,8 +102,6 @@ public class UserController {
                 // Redirect to User's specific page
                 return "redirect:/";
             }
-        } else {
-            return showLogin(httpSession);
         }
     }
 
@@ -140,6 +162,38 @@ public class UserController {
         return "changeProfile"; // Trả về tên của trang changeProfile
     }
 
+    @GetMapping("/change-password")
+    public String changePassword() {
+        return "change-password"; // Trả về tên của trang changePassword
+    }
+
+    @PostMapping(value = "/change-password")
+    public String changePassword(@RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Model model,
+            HttpSession httpSession) throws Exception {
+        User activeUser = (User) httpSession.getAttribute("activeUser");
+
+        if (activeUser == null) {
+            return "redirect:/auth/login";
+        }
+
+        if (!loginRepo.checkPassword(activeUser.getUsername(), oldPassword)) {
+            model.addAttribute("error", "Wrong old password");
+            return "change-password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "New passwords do not match");
+            return "change-password";
+        }
+
+        userRepo.updatePassword(activeUser.getUserId(), newPassword);
+        model.addAttribute("message", "Password changed successfully");
+        return "change-password";
+    }
+
     @GetMapping("/profile")
     public String profilePage(Model model, HttpSession httpSession) {
         // Kiểm tra xem session "activeUser" có tồn tại hay không
@@ -177,11 +231,7 @@ public class UserController {
             @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
             @RequestParam(value = "organizerType", required = false) String organizerType,
             Model model) throws Exception {
-        // Validate passwords match
-        if (!password.equals(confirmPassword)) {
-            model.addAttribute("errorMessage", "Passwords do not match.");
-            return "redirect:/signup";
-        }
+
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("errorMessage", "Phone already exists.");
             return "redirect:/signup";
@@ -236,6 +286,12 @@ public class UserController {
             newUser.setPassword(hashedPassword); // Use hashed password
             newUser.setRole('u');
             userRepo.saveNew(newUser);
+        }
+
+        try {
+            verifyEmailService.sendOTP(email);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // Redirect to login page after successful registration

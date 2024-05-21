@@ -217,6 +217,17 @@ public class UserRepo {
         con.close();
     }
 
+    public void updatePassword(int userId, String newPassword) throws Exception {
+        Class.forName(Baseconnection.nameClass);
+        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        PreparedStatement ps = connection.prepareStatement("UPDATE User SET password = ? WHERE user_id = ?");
+        ps.setString(1, newPassword);
+        ps.setInt(2, userId);
+        ps.executeUpdate();
+        ps.close();
+        connection.close();
+    }
+
     public boolean existsByUsername(String username) throws Exception {
         Class.forName(Baseconnection.nameClass);
         Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
