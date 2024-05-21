@@ -73,7 +73,7 @@ public class UserController {
                 return "redirect:/";
             }
         } else {
-            return showLogin(httpSession);
+            return "redirect:/";
         }
     }
 

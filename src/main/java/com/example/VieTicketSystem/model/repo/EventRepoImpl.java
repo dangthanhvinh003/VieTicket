@@ -45,6 +45,8 @@ public class EventRepoImpl implements EventRepo {
                 event.setType(resultSet.getString("type"));
                 event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
                 event.setEndDate(resultSet.getDate("end_date"));
+                event.setPoster(resultSet.getString("poster"));
+                event.setPanner(resultSet.getString("banner"));
                 // Set the organizer if applicable
                 events.add(event);
             }
