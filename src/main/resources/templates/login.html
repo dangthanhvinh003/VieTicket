@@ -44,8 +44,8 @@
         }
 
         .btn-secondary {
-            background-color: #FFA3FD; /* Màu mới */
-            border-color: #FFA3FD; /* Màu mới */
+            background-color: #865DFF; /* Màu mới */
+            border-color: #865DFF; /* Màu mới */
         }
 
         .btn-secondary:hover {
@@ -103,13 +103,15 @@
                                                 Password?</a>
                                         </div>
 
-                                        <div class="col-12">
-                                            <button type="submit"
-                                                class="btn btn-primary px-4 float-end mt-4">Login</button>
+                                        <div class="col-12 d-flex justify-content-between">
+                                            <button type="submit" class="btn btn-primary flex-grow-1 mx-1">Login</button>
+                                            <a th:href="@{/signup}" class="btn btn-secondary flex-grow-1 mx-1">Sign Up</a>
+                                        </div>
+                                        
+                                        <div class="col-12 mt-3 text-center">
                                             <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
-                                                role="button" class="btn btn-primary">Login with google</a>
-                                            <a th:href="@{/signup}" class="btn btn-secondary px-4 float-start mt-4">Sign
-                                                Up</a>
+                                               role="button" class="btn btn-secondary  w-100">
+                                               <i class="bi bi-google me-2"> Login with Google</i></a>
                                         </div>
                                     </form>
                                 </div>

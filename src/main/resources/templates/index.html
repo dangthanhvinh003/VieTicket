@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -18,86 +19,128 @@
             display: flex;
             align-items: center;
         }
-    </style>
 
+        .navbar-custom {
+            background-color: #191825;
+        }
+
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link,
+        .navbar-custom .dropdown-item {
+            color: white;
+        }
+
+        .navbar-custom .navbar-brand:hover,
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .dropdown-item:hover {
+            color: #E384FF;
+        }
+
+        .search-form {
+            margin: auto;
+            flex-grow: 1;
+            max-width: 600px;
+        }
+
+        .form-control {
+            background-color: #6466E9;
+            border-color: #6466E9;
+            color: white;
+        }
+
+        .form-control::placeholder {
+            color: white;
+        }
+
+        .btn-outline-success {
+            color: white;
+            border-color: #6466E9;
+        }
+
+        .btn-outline-success:hover {
+            background-color: #6466E9;
+            color: white;
+            border-color: #6466E9;
+        }
+
+        .dropdown-menu {
+            background-color: #6466E9;
+        }
+
+        .dropdown-menu .dropdown-item {
+            color: white;
+        }
+
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #E384FF;
+            color: white;
+        }
+        .navbar-nav {
+    flex-direction: row; /* Đảm bảo các phần tử trong navbar-nav hiển thị theo hàng ngang */
+    align-items: center; /* Canh giữa các phần tử theo chiều dọc */
+}
+
+.navbar-nav .nav-item {
+    margin-right: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+.navbar-nav .nav-item:last-child {
+    margin-right: 0; /* Loại bỏ margin-right của phần tử cuối cùng */
+}
+
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Navbar</a>
+            <a class="navbar-brand" href="#">VieTicket</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
                 aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <!-- <p th:text="'Active Organizer: ' + ${session.activeUser.role}"></p> -->
-                    <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
-                        <li>
-                            <a class="nav-link" th:href="@{/createEvent}">Create Event</a>
-                        </li>
-                    </th:block>
-
-
-                    <li class="nav-item">
-                        <th:block th:if="${session.activeUser == null}">
-                            <a class="nav-link" th:href="@{/auth/login}">Đăng nhập / Đăng ký</a>
-                        </th:block>
-                    </li>
-                    <th:block th:if="${session.activeUser != null  and session.activeUser.role.toString() == 'u'} ">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
-                                <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
-                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
-                            </ul>
-                        </li>
-                    </th:block>
-                    <!-- Kiểm tra xem người dùng có đăng nhập không và vai trò của người dùng là 'o' -->
-                    <th:block th:if="${session.activeUser != null  and session.activeUser.role.toString() == 'o'} ">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
-                                <li><a class="dropdown-item" href="#">View List Event</a></li>
-                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
-                            </ul>
-                        </li>
-                    </th:block>
-                    <!-- Kiểm tra xem người dùng có đăng nhập không và vai trò của người dùng là 'a' -->
-                    <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'a'}">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
-                                <li><a class="dropdown-item" th:href="@{/ViewAllApprove}">View All List Approve</a></li>
-                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
-                            </ul>
-                        </li>
-
-                    </th:block>
-                </ul>
-                <form class="d-flex" role="search">
+            <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarTogglerDemo02">
+                <form class="d-flex search-form" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
+                        <li class="nav-item">
+                            <button class="btn btn-outline-success" type="button" th:href="@{/createEvent}">
+                                Create Event
+                            </button>
+                        </li>
+                    </th:block>
+                    <th:block th:if="${session.activeUser != null}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
+                                <th:block th:if="${session.activeUser.role.toString() == 'u'}">
+                                    <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
+                                </th:block>
+                                <th:block th:if="${session.activeUser.role.toString() == 'o'}">
+                                    <li><a class="dropdown-item" href="#">View List Event</a></li>
+                                </th:block>
+                                <th:block th:if="${session.activeUser.role.toString() == 'a'}">
+                                    <li><a class="dropdown-item" th:href="@{/ViewAllApprove}">View All List Approve</a>
+                                    </li>
+                                </th:block>
+                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
+                            </ul>
+                        </li>
+                    </th:block>
+                    <th:block th:if="${session.activeUser == null}">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/auth/login}">Đăng nhập / Đăng ký</a>
+                        </li>
+                    </th:block>
+                </ul>
             </div>
         </div>
     </nav>
