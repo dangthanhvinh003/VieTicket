@@ -9,49 +9,58 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <h2>List of Organizers to Approve</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Full Name</th>
-                <th>Phone</th>
-                <th>Date of Birth</th>
-                <th>Gender</th>
-                <th>Email</th>
-                <th>Founded Date</th>
-                <th>Website</th>
-                <th>Organizer Address</th>
-                <th>Organizer Type</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Sử dụng Thymeleaf để lặp qua danh sách các Organizer và hiển thị thông tin của từng Organizer -->
-            <tr th:each="organizer : ${organizers}">
-                <td th:text="${organizer.userId}"></td>
-                <td th:text="${organizer.fullName}"></td>
-                <td th:text="${organizer.phone}"></td>
-                <td th:text="${#dates.format(organizer.dob, 'dd/MM/yyyy')}"></td>
-                <td th:text="${organizer.gender}"></td>
-                <td th:text="${organizer.email}"></td>
-                <td th:text="${#dates.format(organizer.foundedDate, 'dd/MM/yyyy')}"></td>
-                <td th:text="${organizer.website}"></td>
-                <td th:text="${organizer.organizerAddr}"></td>
-                <td th:text="${organizer.organizerType}"></td>
-                <td>
-                    <form th:action="@{/approve}" method="post">
-                        <input type="hidden" name="organizerId" th:value="${organizer.userId}">
-                        <button type="submit" class="btn btn-success"><i class="bi bi-check"></i></button>
-                    </form>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger"><i class="bi bi-x"></i></button>
-                </td>
-            </tr>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="mb-4">List of Organizers to Approve</h2>
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>User ID</th>
+                        <th>Full Name</th>
+                        <th>Phone</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Founded Date</th>
+                        <th>Website</th>
+                        <th>Organizer Address</th>
+                        <th>Organizer Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sử dụng Thymeleaf để lặp qua danh sách các Organizer và hiển thị thông tin của từng Organizer -->
+                    <tr th:each="organizer : ${organizers}">
+                        <td th:text="${organizer.userId}"></td>
+                        <td th:text="${organizer.fullName}"></td>
+                        <td th:text="${organizer.phone}"></td>
+                        <td th:text="${#dates.format(organizer.dob, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${organizer.gender}"></td>
+                        <td th:text="${organizer.email}"></td>
+                        <td th:text="${#dates.format(organizer.foundedDate, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${organizer.website}"></td>
+                        <td th:text="${organizer.organizerAddr}"></td>
+                        <td th:text="${organizer.organizerType}"></td>
+                        <td class="d-flex justify-content-center">
+                            <form th:action="@{/approve}" method="post" class="me-2">
+                                <input type="hidden" name="organizerId" th:value="${organizer.userId}">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-danger btn-sm">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        </tbody>
-    </table>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

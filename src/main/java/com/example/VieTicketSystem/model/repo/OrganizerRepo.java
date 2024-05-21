@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.springframework.stereotype.Repository;
 
@@ -106,6 +107,34 @@ public class OrganizerRepo {
         rs.close();
         ps.close();
         con.close();
+        return organizer;
+    }
+
+    public Organizer getOrganizerByUserId(int userId) {
+        Organizer organizer = null;
+        String sql = "SELECT * FROM Organizer WHERE organizer_id = ?";
+
+        try {
+            Class.forName(Baseconnection.nameClass);
+            try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                    Baseconnection.password);
+                    PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                preparedStatement.setInt(1, userId);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        organizer = new Organizer();
+
+                        organizer.setFoundedDate(resultSet.getDate("founded_date"));
+                        organizer.setWebsite(resultSet.getString("website"));
+                        organizer.setActive(resultSet.getBoolean("is_active"));
+                        organizer.setOrganizerAddr(resultSet.getString("organizer_addr"));
+                        organizer.setOrganizerType(resultSet.getString("organizer_type"));
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
         return organizer;
     }
 }
