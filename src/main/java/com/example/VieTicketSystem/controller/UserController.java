@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,10 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
     private LoginRepo loginRepo;
 
@@ -59,9 +64,11 @@ public class UserController {
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
-        User user = loginRepo.CheckLogin(usernameInput, passwordInput);
+        User user = userRepo.findByUsername(usernameInput);
 
-        if (user != null) {
+        System.out.println(passwordEncoder.encode(passwordInput));
+        System.out.println(user.getPassword());
+        if (user != null && passwordEncoder.matches(passwordInput, user.getPassword())) {
             if (user instanceof Organizer) {
                 httpSession.setAttribute("activeOrganizer", user);
                 // Redirect to Organizer's specific page
@@ -191,7 +198,10 @@ public class UserController {
             return "signup";
         }
 
-        // Create new user and save to databas
+        // Hash the password
+        String hashedPassword = passwordEncoder.encode(password);
+
+        // Create new user and save to database
         // Convert LocalDate to java.sql.Date
         Date sqlDob = Date.valueOf(dob);
         Date sqlFoundedDate = (foundedDate != null) ? Date.valueOf(foundedDate) : null;
@@ -205,7 +215,7 @@ public class UserController {
             newUser.setGender(gender);
             newUser.setEmail(email);
             newUser.setUsername(username);
-            newUser.setPassword(password);
+            newUser.setPassword(hashedPassword); // Use hashed password
             newUser.setRole('o');
 
             newUser.setFoundedDate(sqlFoundedDate);
@@ -223,7 +233,7 @@ public class UserController {
             newUser.setGender(gender);
             newUser.setEmail(email);
             newUser.setUsername(username);
-            newUser.setPassword(password);
+            newUser.setPassword(hashedPassword); // Use hashed password
             newUser.setRole('u');
             userRepo.saveNew(newUser);
         }
@@ -231,4 +241,5 @@ public class UserController {
         // Redirect to login page after successful registration
         return "redirect:/auth/login";
     }
+
 }
