@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
-import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -21,9 +20,6 @@ import jakarta.servlet.http.HttpSession;
 
 @Component
 public class AuthFilter implements Filter {
-    @Autowired
-    UnverifiedUserRepo unverifiedUserRepo;
-
     @Autowired
     OrganizerRepo organizerRepo = new OrganizerRepo();
 
@@ -55,32 +51,14 @@ public class AuthFilter implements Filter {
         }
         User user = (User) session.getAttribute("activeUser");
 
-        boolean isUnverified = true;
-
-        try {
-            isUnverified = unverifiedUserRepo.isUnverified(user.getUserId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(isUnverified && !(requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/editUser")
-        || requestURI.startsWith("/change")));
-
         // Kiểm tra role của người dùng và cho phép truy cập tài nguyên tương ứng
         if (isAdmin(user)) {
             // Người dùng có role ADMIN được truy cập tất cả các trang
             chain.doFilter(request, response);
         } else if (isUser(user) && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets")
-                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/editUser")
-                || requestURI.startsWith("/change"))) {
+                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))|| requestURI.startsWith("/auth/verify-email")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
-
-            if (isUnverified) {
-                httpResponse.sendRedirect("/auth/verify-email");
-                return;
-            }
         } else if (isOrganizer(user)) {
             // Tìm thông tin Organizer dựa trên userId
             Organizer organizer = organizerRepo.getOrganizerByUserId(user.getUserId());
@@ -94,10 +72,6 @@ public class AuthFilter implements Filter {
                     // isActive
                     chain.doFilter(request, response);
                 } else {
-                    if (isUnverified) {
-                        httpResponse.sendRedirect("/auth/verify-email");
-                        return;
-                    }
                     httpResponse.sendRedirect("/inactive-account");
                     return;
                 }

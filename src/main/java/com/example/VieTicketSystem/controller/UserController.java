@@ -120,7 +120,7 @@ public class UserController {
     @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
-System.out.println(events);
+
         session.setAttribute("events", events);
 
         return "index";

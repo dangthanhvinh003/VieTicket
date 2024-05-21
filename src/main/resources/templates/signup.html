@@ -1,12 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <link rel="icon" type="image/png"
+        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background-color: #15132b;
+            color: white;
+        }
+
+        .form-control {
+            background-color: white;
+            border-color: #191825;
+            color: black;
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+        }
+
+        .btn-primary {
+            background-color: #6466E9;
+            border-color: #6466E9;
+        }
+
+        .btn-primary:hover {
+            background-color: #4e50b8;
+            border-color: #4e50b8;
+        }
+
+        .text-danger {
+            color: #E384FF;
+        }
+
+        body {
+            background-color: #15132b;
+            color: white;
+        }
+
+        .container {
+            max-width: 600px;
+            /* Giới hạn chiều rộng tối đa của container */
+        }
+
+        .form-control {
+            background-color: white;
+            border-color: #191825;
+            color: black;
+            padding: 0.375rem 0.5rem;
+            /* Giảm kích thước padding của ô input */
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+        }
+
+        .btn-primary {
+            background-color: #6466E9;
+            border-color: #6466E9;
+            padding: 0.25rem 0.5rem;
+            /* Giảm kích thước padding của nút */
+        }
+
+        .btn-primary:hover {
+            background-color: #4e50b8;
+            border-color: #4e50b8;
+        }
+
+        .text-danger {
+            color: #E384FF;
+        }
+
+        /* Giới hạn chiều cao của form */
+        form {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
+
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">Sign Up</h2>
@@ -83,7 +160,7 @@
         function toggleOrganizerFields() {
             var role = document.getElementById("role").value;
             var organizerFields = document.getElementById("organizerFields");
-            
+
             if (role === "o") {
                 organizerFields.style.display = "block";
             } else {
@@ -95,7 +172,7 @@
             var password = document.getElementById("password").value;
             var confirmPassword = document.getElementById("confirmPassword").value;
             var errorMessage = document.getElementById("error-message");
-            
+
             if (password !== confirmPassword) {
                 errorMessage.textContent = "Passwords do not match.";
                 return false;
@@ -108,4 +185,5 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
