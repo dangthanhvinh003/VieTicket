@@ -45,8 +45,8 @@ public class AuthFilter implements Filter {
         if (isAdmin(user)) {
             // Người dùng có role ADMIN được truy cập tất cả các trang
             chain.doFilter(request, response);
-        } else if (isUser(user) && requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                || requestURI.startsWith("/upload")) {
+        } else if (isUser(user) && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
+                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else {
@@ -73,6 +73,5 @@ public class AuthFilter implements Filter {
         }
         return false;
     }
-    
 
 }
