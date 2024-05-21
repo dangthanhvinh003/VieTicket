@@ -21,7 +21,6 @@ import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
 import com.example.VieTicketSystem.model.service.Oauth2Service;
 
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -94,7 +93,7 @@ public class UserController {
         List<Event> events = eventRepo.getAllEvents();
         System.out.println(events);
         session.setAttribute("events", events);
-       
+
         return "index";
     }
 
@@ -113,11 +112,14 @@ public class UserController {
         // Exchange the authorization code for an access token
         String accessToken = oauth2.getAccessToken(authorizationCode);
         // Get user info
-        System.out.println(accessToken);
-        User user = oauth2.getUserInfo(accessToken);
-        System.out.println(user);
-        userRepo.saveNew(user);
-        httpSession.setAttribute("activeUser", user);
+        User client = oauth2.getUserInfo(accessToken);
+        User user = userRepo.findByEmail(client.getEmail());
+        if (user == null) {
+            userRepo.saveNew(client);
+            httpSession.setAttribute("activeUser", client);
+        } else {
+            httpSession.setAttribute("activeUser", user);
+        }
         return "redirect:/";
     }
 
@@ -152,7 +154,7 @@ public class UserController {
     public String signupPage() {
         return "signup"; // Trả về trang signup.html
     }
-    
+
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
             @RequestParam("phone") String phone,
