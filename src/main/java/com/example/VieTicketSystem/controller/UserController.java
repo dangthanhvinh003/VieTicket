@@ -19,6 +19,7 @@ import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.LoginRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
+import com.example.VieTicketSystem.model.service.Oauth2Service;
 
 
 import jakarta.servlet.http.HttpSession;
@@ -60,7 +61,7 @@ public class UserController {
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = loginRepo.CheckLogin(usernameInput, passwordInput);
-       
+
         if (user != null) {
             if (user instanceof Organizer) {
                 httpSession.setAttribute("activeOrganizer", user);
@@ -75,17 +76,19 @@ public class UserController {
             return showLogin(httpSession);
         }
     }
-    @GetMapping (value = "/auth/log-out")
+
+    @GetMapping(value = "/auth/log-out")
     public String doLogout(HttpSession httpSession) {
         // Xóa thuộc tính activeUser khỏi session
         httpSession.removeAttribute("activeUser");
-        
+
         // Vô hiệu hóa session hiện tại
         httpSession.invalidate();
-       
+
         // Chuyển hướng người dùng đến trang chủ
         return "redirect:/";
     }
+
     @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
@@ -99,6 +102,23 @@ public class UserController {
     public String loginPage() {
 
         return "login"; // Trả về tên của trang login.html
+    }
+
+    @GetMapping("/auth/login/oauth2/google")
+    public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
+            HttpSession httpSession)
+            throws Exception {
+        System.out.println("hello");
+        Oauth2Service oauth2 = new Oauth2Service();
+        // Exchange the authorization code for an access token
+        String accessToken = oauth2.getAccessToken(authorizationCode);
+        // Get user info
+        System.out.println(accessToken);
+        User user = oauth2.getUserInfo(accessToken);
+        System.out.println(user);
+        userRepo.saveNew(user);
+        httpSession.setAttribute("activeUser", user);
+        return "redirect:/";
     }
 
     @GetMapping("/auth/reset-password")
