@@ -47,8 +47,8 @@
                     <span class="page-link" th:text="${currentPage + 1}"></span>
                 </li>
                 <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                    <a class="page-link" th:if="${currentPage > 0}"
-                        th:href="@{/tickets(page=${currentPage - 1}, size=${size})}">Previous</a>
+                    <a class="page-link" th:if="${currentPage < totalPages - 1}"
+                        th:href="@{/tickets(page=${currentPage + 1}, size=${size})}">Next</a>
                 </li>
             </ul>
         </nav>
