@@ -88,27 +88,26 @@ public class UserController {
     public String doLogin(@RequestParam("username") String usernameInput,
             @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
-        if (user != null && user.getRole() == 'a') {
-            if (!passwordInput.equals(user.getPassword())) {
-                model.addAttribute("error", "Username does not exist");
-                return "login";
-            }
-        } else if (!passwordEncoder.encode(passwordInput).equals(user.getPassword())) {
-            model.addAttribute("error", "Username does not exist");
+        if (user == null) {
+            model.addAttribute("error", "Invalid login, please try again");
+            return "login";
+        }
+        
+        if (!passwordEncoder.encode(passwordInput).equals(user.getPassword())) {
+            model.addAttribute("error", "Invalid login, please try again");
             return "login";
         } else {
             if (user instanceof Organizer) {
                 httpSession.setAttribute("activeOrganizer", user);
                 // Redirect to Organizer's specific page
-                return "redirect:/";
             } else {
                 httpSession.setAttribute("activeUser", user);
                 // Redirect to User's specific page
-                return "redirect:/";
             }
+            return "redirect:/";
         }
-        model.addAttribute("error", "Username does not exist");
-        return "login";
+        // model.addAttribute("error", "Username does not exist");
+        // return "login";
     }
 
     @GetMapping(value = "/auth/log-out")
@@ -184,6 +183,8 @@ public class UserController {
             return "redirect:/auth/login";
         }
 
+        oldPassword = passwordEncoder.encode(oldPassword);
+
         if (!loginRepo.checkPassword(activeUser.getUsername(), oldPassword)) {
             model.addAttribute("error", "Wrong old password");
             return "change-password";
@@ -194,7 +195,7 @@ public class UserController {
             return "change-password";
         }
 
-        userRepo.updatePassword(activeUser.getUserId(), newPassword);
+        userRepo.updatePassword(activeUser.getUserId(), passwordEncoder.encode(newPassword));
         model.addAttribute("message", "Password changed successfully");
         return "change-password";
     }

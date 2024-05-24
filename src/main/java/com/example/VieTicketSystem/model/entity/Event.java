@@ -23,5 +23,5 @@ public class Event {
     private Organizer organizer; 
     private String seatMap;
     private String poster;
-    private String panner;
+    private String banner;
 }

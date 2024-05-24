@@ -80,9 +80,7 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
             <div class="col mb-4" th:each="event : ${session.events}">
                 <div class="card border-0 shadow">
-                    <img decoding="async"
-                        src="https://ticketbox.vn/_next/image?url=https%3A%2F%2Fsalt.tkbcdn.com%2Fts%2Fds%2F75%2Fd2%2F79%2Fc9ead6b9c63b63dace78a75df05fa28c.png&w=2048&q=75"
-                        class="card-img-top" alt="Event Image">
+                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image">
                     <div class="card-body p-0">
                         <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
                         <p class="card-text m-0 p-2">

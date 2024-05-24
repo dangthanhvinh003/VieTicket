@@ -13,7 +13,7 @@ import com.example.VieTicketSystem.model.entity.Event;
 
 public class EventRepoImpl implements EventRepo {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/VieTicket1";
+    private static final String URL = "jdbc:mysql://localhost:3307/VieTicket1";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "thanhvinh";
     private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
@@ -30,7 +30,7 @@ public class EventRepoImpl implements EventRepo {
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM event");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
                 ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -44,7 +44,7 @@ public class EventRepoImpl implements EventRepo {
                 event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
                 event.setEndDate(resultSet.getDate("end_date"));
                 event.setPoster(resultSet.getString("poster"));
-                event.setPanner(resultSet.getString("banner"));
+                event.setBanner(resultSet.getString("banner"));
                 // Set the organizer if applicable
                 events.add(event);
             }

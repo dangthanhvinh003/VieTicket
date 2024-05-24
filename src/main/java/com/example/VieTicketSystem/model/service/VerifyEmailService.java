@@ -59,12 +59,6 @@ public class VerifyEmailService {
             userSecretsRepo.insertSecretKey(user.getUserId(), secretKey);
         }
 
-        // Generate an OTP for the user
-        String otp = otpService.generateOTP(secretKey);
-
-        // Send the OTP to the user's email address
-        emailService.sendOTP(user.getEmail(), user.getUsername(), otp);
-
         UnverifiedUser unverifiedUser = unverifiedUserRepo.findById(userRepo.findByEmail(email).getUserId());
         if (unverifiedUser != null) {
             // Throw an exception if users do shits too fast
@@ -74,6 +68,12 @@ public class VerifyEmailService {
             // Delete old entry if user do shits too slow
             unverifiedUserRepo.deleteById(unverifiedUser.getUserId());
         }
+
+        // Generate an OTP for the user
+        String otp = otpService.generateOTP(secretKey);
+
+        // Send the OTP to the user's email address
+        emailService.sendOTP(user.getEmail(), user.getUsername(), otp);
 
         unverifiedUser = new UnverifiedUser();
         unverifiedUser.setUserId(userRepo.findByEmail(email).getUserId());
