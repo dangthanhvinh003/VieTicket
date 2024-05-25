@@ -1,7 +1,6 @@
 package com.example.VieTicketSystem.model.repo;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,7 +13,7 @@ import com.example.VieTicketSystem.model.entity.Organizer;
 
 @Repository
 public class AdminRepo {
-    public ArrayList<Organizer> viewAllListAprrove() throws ClassNotFoundException, SQLException {
+    public ArrayList<Organizer> viewAllListApprove() throws ClassNotFoundException, SQLException {
         ArrayList<Organizer> organizersList = new ArrayList<>();
         Class.forName(Baseconnection.nameClass);
         Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,

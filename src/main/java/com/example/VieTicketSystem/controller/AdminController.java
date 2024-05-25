@@ -1,6 +1,5 @@
 package com.example.VieTicketSystem.controller;
 
-import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -22,7 +21,7 @@ public class AdminController {
 
     @GetMapping(value = ("/ViewAllApprove"))
     public String approvePage(Model model) throws ClassNotFoundException, SQLException {
-        ArrayList<Organizer> organizers = adminRepo.viewAllListAprrove();
+        ArrayList<Organizer> organizers = adminRepo.viewAllListApprove();
         model.addAttribute("organizers", organizers);
         return "viewApprove";
     }

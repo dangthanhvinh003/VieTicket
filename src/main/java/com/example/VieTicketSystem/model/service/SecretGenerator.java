@@ -12,7 +12,6 @@ public class SecretGenerator {
 
         // Convert to Base32 string
         Base32 base32 = new Base32();
-        String base32Secret = base32.encodeToString(randomBytes);
-        return base32Secret;
+        return base32.encodeToString(randomBytes);
     }
 }
