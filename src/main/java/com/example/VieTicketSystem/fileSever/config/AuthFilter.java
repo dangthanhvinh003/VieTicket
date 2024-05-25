@@ -42,7 +42,8 @@ public class AuthFilter implements Filter {
                 return;
             }
         }
-        User user = (User) session.getAttribute("activeUser");
+        User user = (User) session.getAttribute("activeOrganizer");
+        user = user == null ? (User) session.getAttribute("activeUser") : user;
 
         // Check if the user is unverified
         boolean isUnverified = false;

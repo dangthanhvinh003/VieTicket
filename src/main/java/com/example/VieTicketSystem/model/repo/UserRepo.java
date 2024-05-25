@@ -181,7 +181,7 @@ public class UserRepo {
         Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
         PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO User (full_name, username, password, phone, dob, gender, avatar, role, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                "INSERT INTO User (full_name, username, password, phone, dob, gender, avatar, role, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
         ps.setString(1, user.getFullName());
         ps.setString(2, user.getUsername());
         ps.setString(3, user.getPassword());
@@ -192,6 +192,14 @@ public class UserRepo {
         ps.setString(8, String.valueOf(user.getRole()));
         ps.setString(9, user.getEmail());
         ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        int userId = 0;
+        if (rs.next()) {
+            userId = rs.getInt(1);
+            user.setUserId(userId);
+        }
+
         ps.close();
         con.close();
     }

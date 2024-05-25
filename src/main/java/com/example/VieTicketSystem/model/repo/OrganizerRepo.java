@@ -1,11 +1,6 @@
 package com.example.VieTicketSystem.model.repo;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import org.springframework.stereotype.Repository;
 
@@ -19,29 +14,29 @@ public class OrganizerRepo {
     private static final String SELECT_STATEMENT = "SELECT * FROM OrganizerDetails WHERE organizer_id = ?";
 
     public void saveNew(Organizer organizer) throws Exception {
-
         Class.forName(Baseconnection.nameClass);
-        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-        PreparedStatement ps = con.prepareStatement(INSERT_STATEMENT);
-        ps.setString(1, organizer.getFullName());
-        ps.setString(2, organizer.getUsername());
-        ps.setString(3, organizer.getPassword());
-        ps.setString(4, organizer.getPhone());
-        ps.setDate(5, new Date(organizer.getDob().getTime())); // Convert to SQL Date
-        ps.setString(6, String.valueOf(organizer.getGender()));
-        ps.setString(7, organizer.getAvatar());
-        ps.setString(8, String.valueOf(organizer.getRole()));
-        ps.setString(9, organizer.getEmail());
-        ps.setDate(10, new Date(organizer.getFoundedDate().getTime())); // Convert to SQL Date
-        ps.setString(11, organizer.getWebsite());
-        ps.setBoolean(12, organizer.isActive());
-        ps.setString(13, organizer.getOrganizerAddr());
-        ps.setString(14, organizer.getOrganizerType());
+        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password)) {
+            CallableStatement cs = con.prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+            cs.setString(1, organizer.getFullName());
+            cs.setString(2, organizer.getUsername());
+            cs.setString(3, organizer.getPassword());
+            cs.setString(4, organizer.getPhone());
+            cs.setDate(5, new Date(organizer.getDob().getTime())); // Convert to SQL Date
+            cs.setString(6, String.valueOf(organizer.getGender()));
+            cs.setString(7, organizer.getAvatar());
+            cs.setString(8, String.valueOf(organizer.getRole()));
+            cs.setString(9, organizer.getEmail());
+            cs.setDate(10, new Date(organizer.getFoundedDate().getTime())); // Convert to SQL Date
+            cs.setString(11, organizer.getWebsite());
+            cs.setBoolean(12, organizer.isActive());
+            cs.setString(13, organizer.getOrganizerAddr());
+            cs.setString(14, organizer.getOrganizerType());
+            cs.registerOutParameter(15, Types.INTEGER);
+            cs.executeUpdate();
 
-        ps.executeUpdate();
-        ps.close();
-        con.close();
+            int userId = cs.getInt(15);
+            organizer.setUserId(userId);
+        }
     }
 
     public void save(Organizer organizer) throws Exception {
@@ -114,7 +109,7 @@ public class OrganizerRepo {
             Class.forName(Baseconnection.nameClass);
             try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                     Baseconnection.password);
-                    PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                 PreparedStatement preparedStatement = con.prepareStatement(sql)) {
                 preparedStatement.setInt(1, userId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
