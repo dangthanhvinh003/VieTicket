@@ -42,9 +42,6 @@ public class UserController {
     private UnverifiedUserRepo unverifiedUserRepo;
 
     @Autowired
-    private LoginRepo loginRepo;
-
-    @Autowired
     private UserRepo userRepo;
 
     @Autowired
@@ -90,7 +87,7 @@ public class UserController {
             return "login";
         }
 
-        if (!passwordEncoder.encode(passwordInput).equals(user.getPassword())) {
+        if (!passwordEncoder.matches(passwordInput, user.getPassword())) {
             model.addAttribute("error", "Invalid login, please try again");
             return "login";
         }
@@ -103,9 +100,6 @@ public class UserController {
             // Redirect to User's specific page
         }
         return "redirect:/";
-
-        // model.addAttribute("error", "Username does not exist");
-        // return "login";
     }
 
     @GetMapping(value = "/auth/log-out")
@@ -181,9 +175,7 @@ public class UserController {
             return "redirect:/auth/login";
         }
 
-        oldPassword = passwordEncoder.encode(oldPassword);
-
-        if (!loginRepo.checkPassword(activeUser.getUsername(), oldPassword)) {
+        if (!passwordEncoder.matches(oldPassword, activeUser.getPassword())) {
             model.addAttribute("error", "Wrong old password");
             return "change-password";
         }
