@@ -35,13 +35,11 @@ public class AuthFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
 
         // Bỏ qua filter cho các yêu cầu đến các tệp tĩnh (ví dụ: CSS, JavaScript)
-        String[] staticResources = {".css", ".js", ".jpg", ".jpeg", ".png", ".gif"};
-        for (String resource : staticResources) {
-            if (requestURI.endsWith(resource)) {
-                chain.doFilter(request, response);
-                return;
-            }
+        if (requestURI.startsWith("/static/")) {
+            chain.doFilter(request, response);
+            return;
         }
+
         User user = (User) session.getAttribute("activeOrganizer");
         user = user == null ? (User) session.getAttribute("activeUser") : user;
 
