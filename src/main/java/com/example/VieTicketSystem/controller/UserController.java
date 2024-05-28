@@ -107,8 +107,9 @@ public class UserController {
                 return "redirect:/";
             }
         }
-        model.addAttribute("error", "Username does not exist");
-        return "login";
+        httpSession.setAttribute("activeUser", user);
+                // Redirect to User's specific page
+                return "redirect:/";
     }
 
     @GetMapping(value = "/auth/log-out")

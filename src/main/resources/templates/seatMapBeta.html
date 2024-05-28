@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seat Selector</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    .container-wrapper {
+      overflow: hidden;
+      max-width: 100vw;
+      max-height: 100vh;
+    }
+
+    .container {
+      width: 1800px;
+      height: 900px;
+      display: grid;
+      grid-template-columns: repeat(80, 1fr);
+      grid-template-rows: repeat(40, 1fr);
+      gap: 7px;
+      /* Default gap */
+      position: relative;
+      background-repeat: no-repeat;
+      background-size: auto 800px;
+      background-position: center;
+      transition: all 0.3s ease;
+    }
+
+    .seat {
+      width: 100%;
+      height: 100%;
+      background-color: #ccc;
+      border: 1px solid #999;
+      position: relative;
+      border-radius: 50%;
+    }
+
+    .seat.selected {
+      background-color: #000000;
+    }
+
+    .seat.vip {
+      background-color: rgb(48, 58, 7);
+    }
+
+    .seat.stage {
+      background-color: #ff6347;
+    }
+
+    .selection-box {
+      border: 2px dashed #000000;
+      background-color: rgba(0, 0, 0, 0.2);
+      position: absolute;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="controls">
+    <label for="seatSize">Kích thước ghế:</label>
+    <input type="number" id="seatSize" value="16" min="10">
+    <label for="seatSpacing">Khoảng cách ghế:</label>
+    <input type="number" id="seatSpacing" value="7" min="0.1">
+    <button id="applySettingsButton">Áp dụng</button>
+  </div>
+  <input type="file" id="imageUpload" accept="image/*">
+  <div class="container-wrapper">
+    <div class="container" id="container">
+      <div class="selection-box" id="selectionBox"></div>
+    </div>
+  </div>
+
+  <button id="vipButton">Chọn vùng VIP</button>
+  <button id="stageButton">Chọn vùng Stage</button>
+  <button id="saveImageButton">Lưu ảnh</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
+  <script>
+    const containerWrapper = document.querySelector('.container-wrapper');
+    const container = document.getElementById('container');
+    const selectionBox = document.getElementById('selectionBox');
+    const seatSizeInput = document.getElementById('seatSize');
+    const seatSpacingInput = document.getElementById('seatSpacing');
+    let startX, startY, endX, endY;
+    let isSelecting = false;
+    let isSelectingSeat = false;
+    let isSelectingVIP = false;
+    let isSelectingStage = false;
+
+    // Generate seats
+    const rows = 40;
+    const cols = 80;
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const seat = document.createElement('div');
+        seat.classList.add('seat');
+        seat.dataset.originalRow = String.fromCharCode(65 + i);
+        seat.dataset.number = j + 1;
+        seat.addEventListener('click', selectSeat);
+        container.appendChild(seat);
+      }
+    }
+    // Hàm thêm sự kiện click cho từng ghế
+    function addClickEventToSeats() {
+      const seats = document.querySelectorAll('.seat');
+      seats.forEach(seat => {
+        seat.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectSeat(seat);
+        });
+      });
+    }
+
+    // Hàm áp dụng thiết lập mới
+    function applySettings() {
+  const seatSize = parseFloat(seatSizeInput.value);
+  const seatSpacing = parseFloat(seatSpacingInput.value);
+  const containerWidth = container.offsetWidth;
+  const containerHeight = container.offsetHeight;
+  const cols = Math.floor((containerWidth + seatSpacing) / (seatSize + seatSpacing)); // Thay đổi cách tính số cột
+  const rows = Math.floor((containerHeight + seatSpacing) / (seatSize + seatSpacing)); // Thay đổi cách tính số hàng
+
+  // Cập nhật kích thước container
+  container.style.width = cols * (seatSize + seatSpacing) - seatSpacing + 'px';
+  container.style.height = rows * (seatSize + seatSpacing) - seatSpacing + 'px';
+
+  // Cập nhật kích thước ghế
+  document.querySelectorAll('.seat').forEach(seat => {
+    seat.style.width = seatSize + 'px';
+    seat.style.height = seatSize + 'px';
+  });
+
+  // Cập nhật số hàng và số cột trong grid template
+  container.style.gridTemplateColumns = `repeat(${cols}, ${seatSize}px)`;
+  container.style.gridTemplateRows = `repeat(${rows}, ${seatSize}px)`;
+
+  // Cập nhật khoảng cách giữa các ghế
+  container.style.gap = seatSpacing + 'px';
+
+  // Tạo thêm các ghế nếu cần
+  generateSeats();
+
+  // Thêm sự kiện click cho từng ghế
+  addClickEventToSeats();
+}
+
+
+    // Gọi hàm áp dụng thiết lập mới khi click vào nút "Áp dụng"
+    document.getElementById('applySettingsButton').addEventListener('click', applySettings);
+
+    // Thêm sự kiện click cho từng ghế khi trang được tải lần đầu
+    addClickEventToSeats();
+
+
+
+    function generateSeats() {
+      const currentSeats = document.querySelectorAll('.seat');
+      const seatSize = parseFloat(seatSizeInput.value);
+      const seatSpacing = parseFloat(seatSpacingInput.value);
+      const containerWidth = container.offsetWidth;
+      const containerHeight = container.offsetHeight;
+      const cols = Math.floor(containerWidth / (seatSize + seatSpacing));
+      const rows = Math.floor(containerHeight / (seatSize + seatSpacing));
+
+      const totalSeats = currentSeats.length;
+      const seatsNeeded = cols * rows;
+      const seatsToAdd = seatsNeeded - totalSeats;
+
+      if (seatsToAdd > 0) {
+        for (let i = 0; i < seatsToAdd; i++) {
+          const seat = document.createElement('div');
+          seat.classList.add('seat');
+          seat.style.width = seatSize + 'px';
+          seat.style.height = seatSize + 'px';
+          container.appendChild(seat);
+        }
+      }
+    }
+
+    document.getElementById('applySettingsButton').addEventListener('click', applySettings);
+
+
+
+    document.getElementById('applySettingsButton').addEventListener('click', applySettings);
+
+    function selectSeat() {
+      if (isSelectingSeat) {
+        if (isSelectingVIP) {
+          this.classList.add('vip');
+        } else if (isSelectingStage) {
+          this.classList.add('stage');
+        } else {
+          this.classList.toggle('selected');
+        }
+      }
+    }
+
+    container.addEventListener('mousedown', (e) => {
+      const rect = container.getBoundingClientRect();
+      startX = e.clientX - rect.left;
+      startY = e.clientY - rect.top;
+      selectionBox.style.left = `${startX}px`;
+      selectionBox.style.top = `${startY}px`;
+      selectionBox.style.width = '0';
+      selectionBox.style.height = '0';
+      selectionBox.style.display = 'block';
+      isSelecting = true;
+      isSelectingSeat = false;
+    });
+
+    const seats = document.querySelectorAll('.seat');
+    seats.forEach(seat => {
+      seat.addEventListener('click', (e) => {
+        e.stopPropagation();
+        seat.classList.toggle('selected');
+      });
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      if (isSelecting) {
+        const rect = container.getBoundingClientRect();
+        endX = e.clientX - rect.left;
+        endY = e.clientY - rect.top;
+        const width = endX - startX;
+        const height = endY - startY;
+        selectionBox.style.width = `${Math.abs(width)}px`;
+        selectionBox.style.height = `${Math.abs(height)}px`;
+        selectionBox.style.left = `${width < 0 ? endX : startX}px`;
+        selectionBox.style.top = `${height < 0 ? endY : startY}px`;
+      }
+    });
+
+    container.addEventListener('mouseup', () => {
+      if (isSelecting) {
+        const rect = selectionBox.getBoundingClientRect();
+        const seats = document.querySelectorAll('.seat');
+        seats.forEach(seat => {
+          const seatRect = seat.getBoundingClientRect();
+          if (seatRect.left >= rect.left && seatRect.right <= rect.right &&
+            seatRect.top >= rect.top && seatRect.bottom <= rect.bottom) {
+            if (isSelectingVIP) {
+              seat.classList.add
+                ('vip');
+            } else if (isSelectingStage) {
+              seat.classList.add('stage');
+            } else {
+              seat.classList.add('selected');
+            }
+          }
+        });
+        selectionBox.style.display = 'none';
+        isSelecting = false;
+      }
+    });
+
+    container.addEventListener('mouseleave', () => {
+      if (isSelecting) {
+        selectionBox.style.display = 'none';
+        isSelecting = false;
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Shift') {
+        isSelectingSeat = true;
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Shift') {
+        isSelectingSeat = false;
+      }
+    });
+
+    const vipButton = document.getElementById('vipButton');
+    vipButton.addEventListener('click', () => {
+      isSelectingVIP = !isSelectingVIP;
+      if (isSelectingVIP) {
+        vipButton.textContent = 'Kết thúc chọn vùng VIP';
+      } else {
+        vipButton.textContent = 'Chọn vùng VIP';
+      }
+    });
+
+    const stageButton = document.getElementById('stageButton');
+    stageButton.addEventListener('click', () => {
+      isSelectingStage = !isSelectingStage;
+      if (isSelectingStage) {
+        stageButton.textContent = 'Kết thúc chọn vùng Stage';
+      } else {
+        stageButton.textContent = 'Chọn vùng Stage';
+      }
+    });
+    //
+
+    //
+    function saveImage() {
+  const selectedSeats = document.querySelectorAll('.seat.selected, .seat.vip, .seat.stage');
+  let rowCounters = {};
+  let rowMappings = {};
+  let currentRowCharCode = 65; // 'A'
+  const unselectedSeats = document.querySelectorAll('.seat:not(.selected):not(.vip):not(.stage)');
+
+  // Ẩn các ghế không được chọn
+  unselectedSeats.forEach(seat => {
+    seat.style.visibility = 'hidden';
+  });
+
+  selectedSeats.forEach(seat => {
+    const originalRow = seat.dataset.originalRow;
+    if (!rowMappings[originalRow]) {
+      rowMappings[originalRow] = String.fromCharCode(currentRowCharCode++);
+    }
+    const row = rowMappings[originalRow];
+    if (!rowCounters[row]) {
+      rowCounters[row] = 1;
+    }
+    const number = rowCounters[row];
+    const label = document.createElement('div');
+    label.textContent = `${row}${number}`;
+    label.style.color = 'white';
+    label.style.fontSize = `${parseInt(seatSizeInput.value) * 0.5}px`; //thay dodori size chu
+    label.style.position = 'absolute';
+    label.style.left = '50%';
+    label.style.top = '50%';
+    label.style.transform = 'translate(-50%, -50%)';
+    seat.appendChild(label);
+    rowCounters[row]++;
+  });
+
+  html2canvas(container).then(canvas => {
+    canvas.toBlob(blob => {
+      const formData = new FormData();
+      formData.append('seatMapImg', blob, 'seat_layout.png');
+
+      fetch('/seatMap/SeatMapBeta', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Đã lưu ảnh thành công!');
+        } else {
+          console.error('Lỗi khi lưu ảnh:', response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi khi gửi yêu cầu:', error);
+      });
+    }, 'image/png');
+  }).catch(error => {
+    console.error("Error generating canvas:", error);
+  });
+}
+
+    const saveImageButton = document.getElementById('saveImageButton');
+    saveImageButton.addEventListener('click', saveImage);
+
+    document.getElementById('imageUpload').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = function () {
+            container.style.backgroundImage = `url(${event.target.result})`;
+          };
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 package com.example.VieTicketSystem.model.entity;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +21,11 @@ public class Event {
     private String type;
     private Date ticketSaleDate;
     private Date endDate;
-    private Organizer organizer; 
+    private Organizer organizer;
     private String seatMap;
     private String poster;
-    private String panner;
+    private String banner;
+    private boolean isApprove;
+
+    
 }
