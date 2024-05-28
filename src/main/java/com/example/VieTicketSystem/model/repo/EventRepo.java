@@ -12,13 +12,12 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.Statement;
 
 import com.example.VieTicketSystem.model.entity.Event;
 
 @Repository
 public class EventRepo {
-
-  
 
     static {
         try {
@@ -30,10 +29,10 @@ public class EventRepo {
     @Autowired
     OrganizerRepo organizerRepo = new OrganizerRepo();
 
-  
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM event");
                 ResultSet resultSet = statement.executeQuery()) {
 
@@ -58,14 +57,15 @@ public class EventRepo {
         }
         return events;
     }
+
     public Event getEventByName(String eventName) {
         Event event = null;
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM event WHERE name = ?");
-                ) {
-    
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM event WHERE name = ?");) {
+
             statement.setString(1, eventName); // Truyền tên sự kiện cụ thể vào câu lệnh SQL
-    
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     event = new Event();
@@ -88,30 +88,44 @@ public class EventRepo {
         }
         return event;
     }
+
+    public int addEvent(String name, String description, Date startDate, String location, String type,
+                    Date ticketSaleDate, Date endDate, int organizerId, String poster, String banner)
+                    throws ClassNotFoundException, SQLException {
+
+    Class.forName(Baseconnection.nameClass);
+    Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
     
-
-    public void addEvent(String name, String description, Date starDate, String locaton, String type,
-            Date ticket_sale_date, Date endDate, int id, String poster, String banner)
-            throws ClassNotFoundException, SQLException {
-
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-        PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
-        ps.setString(1, name);
-        ps.setString(2, description);
-        ps.setDate(3, starDate);
-        ps.setString(4, locaton);
-        ps.setString(5, type);
-        ps.setDate(6, ticket_sale_date);
-        ps.setDate(7, endDate);
-        ps.setInt(8, id);
-        ps.setString(9, poster);
-        ps.setString(10, banner);
-        ps.setBoolean(11, false);
-        ps.executeUpdate();
-        ps.close();
+    // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
+    PreparedStatement ps = connection.prepareStatement(
+            "INSERT INTO event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            Statement.RETURN_GENERATED_KEYS);
+    
+    ps.setString(1, name);
+    ps.setString(2, description);
+    ps.setDate(3, startDate);
+    ps.setString(4, location);
+    ps.setString(5, type);
+    ps.setDate(6, ticketSaleDate);
+    ps.setDate(7, endDate);
+    ps.setInt(8, organizerId);
+    ps.setString(9, poster);
+    ps.setString(10, banner);
+    ps.setBoolean(11, false);
+    ps.executeUpdate();
+    
+    // Lấy khóa tự động tăng vừa được tạo
+    ResultSet rs = ps.getGeneratedKeys();
+    int eventId = 0;
+    if (rs.next()) {
+        eventId = rs.getInt(1);
     }
+    
+    rs.close();
+    ps.close();
+    connection.close();
+    
+    return eventId;
+}
 
 }

@@ -20,6 +20,7 @@
             /* Định vị video để cắt phần dưới */
             width: 100%;
         }
+
         #hiddenFeature {
             display: none;
             background: white;
@@ -68,11 +69,13 @@
                                     <li><a class="dropdown-item" href="#">View List Event</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'a'}">
-                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List Approve Organizer</a>
+                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List
+                                            Approve Organizer</a>
                                     </li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'a'}">
-                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveEvent}">View All List Approve Event</a>
+                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveEvent}">View All List Approve
+                                            Event</a>
                                     </li>
                                 </th:block>
                                 <li><a class=" dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
@@ -156,7 +159,8 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
             <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.isApprove == true}">
                 <div class="card border-0 shadow">
-                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image">
+                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                        style="width: 100%; max-width: 800px; height: 200px;object-fit: cover;">
                     <div class="card-body p-0">
                         <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
                         <p class="card-text m-0 p-2">
