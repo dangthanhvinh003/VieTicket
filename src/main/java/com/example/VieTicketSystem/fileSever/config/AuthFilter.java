@@ -2,6 +2,7 @@ package com.example.VieTicketSystem.fileSever.config;
 
 import java.io.IOException;
 
+import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,9 @@ public class AuthFilter implements Filter {
     @Autowired
     OrganizerRepo organizerRepo = new OrganizerRepo();
 
-    @Override
+    @Autowired
+    UnverifiedUserRepo unverifiedUserRepo;
+
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -31,25 +34,42 @@ public class AuthFilter implements Filter {
         HttpSession session = httpRequest.getSession();
         String requestURI = httpRequest.getRequestURI();
 
-        // tất cả các role đều có thể vào
-        if (requestURI.equals("/auth/login") || requestURI.equals("/")
-                || requestURI.equals("/auth/login/oauth2/google") || requestURI.equals("")
-                || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
-                || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
-                || requestURI.equals("/auth/log-out")) {
+        // Bỏ qua filter cho các yêu cầu đến các tệp tĩnh (ví dụ: CSS, JavaScript)
+        if (requestURI.startsWith("/static/")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Bỏ qua filter cho các yêu cầu đến các tệp tĩnh (ví dụ: CSS, JavaScript)
-        String[] staticResources = { ".css", ".js", ".jpg", ".jpeg", ".png", ".gif" };
-        for (String resource : staticResources) {
-            if (requestURI.endsWith(resource)) {
-                chain.doFilter(request, response);
-                return;
-            }
+        User user = (User) session.getAttribute("activeOrganizer");
+        user = user == null ? (User) session.getAttribute("activeUser") : user;
+
+        // Check if the user is unverified
+        boolean isUnverified = false;
+        try {
+            isUnverified = user != null && unverifiedUserRepo.isUnverified(user.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        User user = (User) session.getAttribute("activeUser");
+
+        // If the user is unverified and the request URI is not /auth/verify-email, /change, or /editUser, then redirect them to /auth/verify-email
+        if (isUnverified && !(requestURI.equals("/auth/verify-email") || requestURI.startsWith("/change") || requestURI.startsWith("/editUser") || requestURI.startsWith("/auth/verify-otp") || requestURI.startsWith("/auth/password-reset") || requestURI.startsWith("/auth/log-out"))) {
+            httpResponse.sendRedirect("/auth/verify-email");
+            return;
+        }
+
+        if (isUnverified && (requestURI.startsWith("/auth/log-out") || requestURI.startsWith("/auth/verify-otp") || requestURI.startsWith("/auth/password-reset"))) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // tất cả các role đều có thể vào
+        if ((requestURI.equals("/auth/login") || requestURI.equals("/auth/login/oauth2/google") || requestURI.isEmpty()
+                || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
+                || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
+                || requestURI.equals("/auth/log-out") || requestURI.equals("/")) && !isUnverified) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         // Kiểm tra role của người dùng và cho phép truy cập tài nguyên tương ứng
         if (isAdmin(user)) {
@@ -93,18 +113,13 @@ public class AuthFilter implements Filter {
     }
 
     private boolean isAdmin(User user) {
-        if (user != null && user.getRole() == 'a') {
-            return true;
-        }
-        return false;
+        return user != null && user.getRole() == 'a';
     }
 
     private boolean isUser(User user) {
         if (user != null) {
             char role = user.getRole();
-            if (role == 'u') {
-                return true;
-            }
+            return role == 'u';
         }
         return false;
     }
@@ -112,9 +127,7 @@ public class AuthFilter implements Filter {
     private boolean isOrganizer(User user) {
         if (user != null) {
             char role = user.getRole();
-            if (role == 'o') {
-                return true;
-            }
+            return role == 'o';
         }
         return false;
     }

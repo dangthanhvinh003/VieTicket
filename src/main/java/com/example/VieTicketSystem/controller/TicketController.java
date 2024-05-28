@@ -32,10 +32,9 @@ public class TicketController {
             @RequestParam(defaultValue = "10") int size) {
         User activeUser = (User) httpSession.getAttribute("activeUser");
         int userId = activeUser.getUserId();
-        int limit = size;
         int offset = page * size;
         try {
-            List<Ticket> tickets = ticketRepo.findByUserId(userId, limit, offset);
+            List<Ticket> tickets = ticketRepo.findByUserId(userId, size, offset);
             List<String> qrCodeImages = new ArrayList<>();
             for (Ticket ticket : tickets) {
                 String qrCodeImage = qrCodeService.generateQRCodeImageBase64(ticket.getQrCode());

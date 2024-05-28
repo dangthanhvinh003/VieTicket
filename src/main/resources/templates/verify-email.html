@@ -7,6 +7,7 @@
 
 <body>
     <h2>Verify Your Email</h2>
+    <a href="/auth/log-out">Log Out</a>
     <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
     <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
 
@@ -48,7 +49,7 @@
         document.getElementById('otp-form').addEventListener('submit', function (event) {
             event.preventDefault();
 
-            var otp = document.getElementById('otp').value;
+            const otp = document.getElementById('otp').value;
 
             fetch('/auth/verify-otp', {
                 method: 'POST',
@@ -59,10 +60,11 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                    }
                     // Alert the message
                     alert(data.message);
+                    if (data.success) {
+                        window.location.href = '/'; // Redirect to the home page
+                    }
                 })
                 .catch(error => {
                     alert("Error: " + error.message); // Display the error message from the server

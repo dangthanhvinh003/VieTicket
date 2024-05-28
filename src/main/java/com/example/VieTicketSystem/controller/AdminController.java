@@ -1,6 +1,5 @@
 package com.example.VieTicketSystem.controller;
 
-import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 

@@ -36,16 +36,10 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private EmailService emailService;
-
-    @Autowired
     private VerifyEmailService verifyEmailService;
 
     @Autowired
     private UnverifiedUserRepo unverifiedUserRepo;
-
-    @Autowired
-    private LoginRepo loginRepo;
 
     @Autowired
     private UserRepo userRepo;
@@ -58,11 +52,11 @@ public class UserController {
 
     @PostMapping(value = "/editUser")
     public String editUser(@RequestParam("fullName") String nameInput,
-            @RequestParam("phone") String phoneInput,
-            @RequestParam("email") String emailInput,
-            @RequestParam("dob") Date dobInput,
-            @RequestParam("gender") Character genderInput, Model model,
-            HttpSession httpSession) throws Exception {
+                           @RequestParam("phone") String phoneInput,
+                           @RequestParam("email") String emailInput,
+                           @RequestParam("dob") Date dobInput,
+                           @RequestParam("gender") Character genderInput, Model model,
+                           HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
         userRepo.editProfile(nameInput, emailInput, phoneInput, dobInput, genderInput, activeUser.getUserId());
         activeUser.setFullName(nameInput);
@@ -86,30 +80,26 @@ public class UserController {
 
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
-            @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
+                          @RequestParam("password") String passwordInput, Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
-        if (user != null && user.getRole() == 'a') {
-            if (!passwordInput.equals(user.getPassword())) {
-                model.addAttribute("error", "Username does not exist");
-                return "login";
-            }
-        } else if (!passwordEncoder.encode(passwordInput).equals(user.getPassword())) {
-            model.addAttribute("error", "Username does not exist");
+        if (user == null) {
+            model.addAttribute("error", "Invalid login, please try again");
             return "login";
-        } else {
-            if (user instanceof Organizer) {
-                httpSession.setAttribute("activeOrganizer", user);
-                // Redirect to Organizer's specific page
-                return "redirect:/";
-            } else {
-                httpSession.setAttribute("activeUser", user);
-                // Redirect to User's specific page
-                return "redirect:/";
-            }
         }
-        httpSession.setAttribute("activeUser", user);
-                // Redirect to User's specific page
-                return "redirect:/";
+
+        if (!passwordEncoder.matches(passwordInput, user.getPassword())) {
+            model.addAttribute("error", "Invalid login, please try again");
+            return "login";
+        }
+
+        if (user instanceof Organizer) {
+            httpSession.setAttribute("activeOrganizer", user);
+            // Redirect to Organizer's specific page
+        } else {
+            httpSession.setAttribute("activeUser", user);
+            // Redirect to User's specific page
+        }
+        return "redirect:/";
     }
 
     @GetMapping(value = "/auth/log-out")
@@ -124,7 +114,7 @@ public class UserController {
         return "redirect:/";
     }
 
-    @GetMapping(value = { "", "/" })
+    @GetMapping(value = {"", "/"})
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
         session.setAttribute("events", events);
@@ -140,7 +130,7 @@ public class UserController {
 
     @GetMapping("/auth/login/oauth2/google")
     public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
-            HttpSession httpSession)
+                                    HttpSession httpSession)
             throws Exception {
         System.out.println("hello");
         Oauth2Service oauth2 = new Oauth2Service();
@@ -175,17 +165,17 @@ public class UserController {
 
     @PostMapping(value = "/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
-            @RequestParam("newPassword") String newPassword,
-            @RequestParam("confirmPassword") String confirmPassword,
-            Model model,
-            HttpSession httpSession) throws Exception {
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Model model,
+                                 HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         if (activeUser == null) {
             return "redirect:/auth/login";
         }
 
-        if (!loginRepo.checkPassword(activeUser.getUsername(), oldPassword)) {
+        if (!passwordEncoder.matches(oldPassword, activeUser.getPassword())) {
             model.addAttribute("error", "Wrong old password");
             return "change-password";
         }
@@ -195,7 +185,7 @@ public class UserController {
             return "change-password";
         }
 
-        userRepo.updatePassword(activeUser.getUserId(), newPassword);
+        userRepo.updatePassword(activeUser.getUserId(), passwordEncoder.encode(newPassword));
         model.addAttribute("message", "Password changed successfully");
         return "change-password";
     }
@@ -203,17 +193,17 @@ public class UserController {
     @GetMapping("/profile")
     public String profilePage(Model model, HttpSession httpSession) {
         // Kiểm tra xem session "activeUser" có tồn tại hay không
-        if (httpSession.getAttribute("activeUser") != null) {
-            // Nếu tồn tại, lấy thông tin người dùng từ session và truyền vào model
-            User activeUser = (User) httpSession.getAttribute("activeUser");
-            model.addAttribute("activeUser", activeUser);
-            // Trả về trang home.html
-            return "redirect:/change";
-        } else {
+        if (httpSession.getAttribute("activeUser") == null) {
             // Nếu không tồn tại session "activeUser", chuyển hướng người dùng đến trang
             // đăng nhập
             return "redirect:/auth/login";
         }
+
+        // Nếu tồn tại, lấy thông tin người dùng từ session và truyền vào model
+        User activeUser = (User) httpSession.getAttribute("activeUser");
+        model.addAttribute("activeUser", activeUser);
+        // Trả về trang home.html
+        return "redirect:/change";
     }
 
     // khanh
@@ -224,19 +214,19 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
-            @RequestParam("phone") String phone,
-            @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
-            @RequestParam("gender") char gender,
-            @RequestParam("email") String email,
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("confirmPassword") String confirmPassword,
-            @RequestParam("role") char role,
-            @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
-            @RequestParam(value = "website", required = false) String website,
-            @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
-            @RequestParam(value = "organizerType", required = false) String organizerType,
-            Model model) throws Exception {
+                         @RequestParam("phone") String phone,
+                         @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
+                         @RequestParam("gender") char gender,
+                         @RequestParam("email") String email,
+                         @RequestParam("username") String username,
+                         @RequestParam("password") String password,
+                         @RequestParam("confirmPassword") String confirmPassword,
+                         @RequestParam("role") char role,
+                         @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
+                         @RequestParam(value = "website", required = false) String website,
+                         @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
+                         @RequestParam(value = "organizerType", required = false) String organizerType,
+                         Model model, HttpSession httpSession) throws Exception {
 
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("errorMessage", "Phone already exists.");
@@ -281,6 +271,8 @@ public class UserController {
             newUser.setOrganizerType(organizerType);
             organizerRepo.saveNew(newUser);
 
+            httpSession.setAttribute("activeOrganizer", newUser);
+            httpSession.setAttribute("activeUser", newUser);
         } else {
             User newUser = new User();
             newUser.setFullName(fullName);
@@ -292,6 +284,8 @@ public class UserController {
             newUser.setPassword(hashedPassword); // Use hashed password
             newUser.setRole('u');
             userRepo.saveNew(newUser);
+
+            httpSession.setAttribute("activeUser", newUser);
         }
 
         try {
@@ -300,8 +294,7 @@ public class UserController {
             e.printStackTrace();
         }
 
-        // Redirect to login page after successful registration
-        return "redirect:/auth/login";
+        return "redirect:/auth/verify-email";
     }
 
 }
