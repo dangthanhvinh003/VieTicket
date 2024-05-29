@@ -13,9 +13,9 @@ import com.example.VieTicketSystem.model.entity.Event;
 
 public class EventRepoImpl implements EventRepo {
 
-    private static final String URL = "jdbc:mysql://localhost:3307/VieTicket1";
+    private static final String URL = "jdbc:mysql://localhost:3306/VieTicket1";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "thanhvinh";
+    private static final String PASSWORD = "khanhtran0905";
     private static final String DRIVER_CLASS = "com.mysql.cj.jdbc.Driver";
 
     static {

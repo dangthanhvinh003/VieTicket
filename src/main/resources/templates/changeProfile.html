@@ -155,6 +155,31 @@
                             <option value="O" th:selected="${session.activeUser.gender == 'O'}">Other</option>
                         </select>
                     </div>
+                    <!-- them thuoc tinh organizers -->
+                    <div th:if="${session.activeUser.role.toString() == 'o'}">
+                        <div class="mb-3">
+                            <label for="organizerType" class="form-label">Organizer Type:</label>
+                            <input name="organizerType" class="form-control" id="organizerType" type="text" required
+                                placeholder="Enter the type of organizer" th:value="${session.activeOrganizer.organizerType}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="website" class="form-label">Website:</label>
+                            <input name="website" class="form-control" id="website" type="text" 
+                                placeholder="Enter the website URL" th:value="${session.activeOrganizer.website}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="foundedDate" class="form-label">Founded Date:</label>
+                            <input name="foundedDate" class="form-control" id="foundedDate" type="date" 
+                                placeholder="YYYY-MM-DD" th:value="${session.activeOrganizer.foundedDate}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="organizerAddr" class="form-label">Address:</label>
+                            <input name="organizerAddr" class="form-control" id="organizerAddr" type="text" 
+                                placeholder="Enter the address" th:value="${session.activeOrganizer.organizerAddr}">
+                        </div>
+                      
+                    </div>
+
                     <div class="text-end">
                         <button class="btn btn-secondary" type="reset"><i class="fa fa-fw fa-refresh"></i>
                             Reset</button>

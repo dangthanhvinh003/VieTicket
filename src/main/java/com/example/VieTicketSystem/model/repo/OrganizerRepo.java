@@ -10,7 +10,7 @@ import com.example.VieTicketSystem.model.entity.Organizer;
 public class OrganizerRepo {
 
     private static final String INSERT_STATEMENT = "CALL InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_STATEMENT = "CALL UpdateOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE_STATEMENT = "CALL UpdateOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SELECT_STATEMENT = "SELECT * FROM OrganizerDetails WHERE organizer_id = ?";
 
     public void saveNew(Organizer organizer) throws Exception {

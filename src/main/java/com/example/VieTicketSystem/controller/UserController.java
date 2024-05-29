@@ -50,24 +50,76 @@ public class UserController {
     @Autowired
     private OrganizerRepo organizerRepo;
 
-    @PostMapping(value = "/editUser")
-    public String editUser(@RequestParam("fullName") String nameInput,
-                           @RequestParam("phone") String phoneInput,
-                           @RequestParam("email") String emailInput,
-                           @RequestParam("dob") Date dobInput,
-                           @RequestParam("gender") Character genderInput, Model model,
-                           HttpSession httpSession) throws Exception {
-        User activeUser = (User) httpSession.getAttribute("activeUser");
-        userRepo.editProfile(nameInput, emailInput, phoneInput, dobInput, genderInput, activeUser.getUserId());
-        activeUser.setFullName(nameInput);
-        activeUser.setPhone(phoneInput);
-        activeUser.setEmail(emailInput);
-        activeUser.setDob(dobInput);
-        activeUser.setGender(genderInput);
-        httpSession.setAttribute("activeUser", activeUser);
+    // @PostMapping(value = "/editUser")  //Them thuoc tinh organizer
+    // public String editUser(@RequestParam("fullName") String nameInput,
+    //                        @RequestParam("phone") String phoneInput,
+    //                        @RequestParam("email") String emailInput,
+    //                        @RequestParam("dob") Date dobInput,
+    //                        @RequestParam("gender") Character genderInput, Model model,
+    //                        HttpSession httpSession) throws Exception {
+    //     User activeUser = (User) httpSession.getAttribute("activeUser");
+    //     userRepo.editProfile(nameInput, emailInput, phoneInput, dobInput, genderInput, activeUser.getUserId());
+    //     activeUser.setFullName(nameInput);
+    //     activeUser.setPhone(phoneInput);
+    //     activeUser.setEmail(emailInput);
+    //     activeUser.setDob(dobInput);
+    //     activeUser.setGender(genderInput);
+    //     httpSession.setAttribute("activeUser", activeUser);
 
-        return "redirect:/change";
+    //     return "redirect:/change";
+    // }
+
+    @PostMapping(value = "/editUser")  // Them thuoc tinh cho organizer
+public String editUser(@RequestParam("fullName") String nameInput,
+                       @RequestParam("phone") String phoneInput,
+                       @RequestParam("email") String emailInput,
+                       @RequestParam("dob") Date dobInput,
+                       @RequestParam("gender") Character genderInput,
+                       @RequestParam(value = "foundedDate", required = false) Date foundedDateInput,
+                       @RequestParam(value = "website", required = false) String websiteInput,
+                       @RequestParam(value = "organizerAddr", required = false) String organizerAddrInput,
+                       @RequestParam(value = "organizerType", required = false) String organizerTypeInput,
+                       Model model,
+                       HttpSession httpSession) throws Exception {
+    User activeUser = (User) httpSession.getAttribute("activeUser");
+
+    // Update common user attributes
+    userRepo.editProfile(nameInput, emailInput, phoneInput, dobInput, genderInput, activeUser.getUserId());
+    activeUser.setFullName(nameInput);
+    activeUser.setPhone(phoneInput);
+    activeUser.setEmail(emailInput);
+    activeUser.setDob(dobInput);
+    activeUser.setGender(genderInput);
+    userRepo.save(activeUser);
+
+    // Update organizer-specific attributes if the user is an organizer
+    if (activeUser.getRole() == 'o') {
+
+        Organizer activeOrganizer = organizerRepo.findById(activeUser.getUserId());
+        if (foundedDateInput != null) {
+            activeOrganizer.setFoundedDate(foundedDateInput);
+        }
+        if (websiteInput != null) {
+            activeOrganizer.setWebsite(websiteInput);
+        }
+        if (organizerAddrInput != null) {
+            activeOrganizer.setOrganizerAddr(organizerAddrInput);
+        }
+        if (organizerTypeInput != null) {
+            activeOrganizer.setOrganizerType(organizerTypeInput);
+        }
+
+        // Call repository method to update organizer-specific attributes in the database
+        organizerRepo.save(activeOrganizer);
+        httpSession.setAttribute("activeOrganizer", activeOrganizer);
     }
+
+    activeUser = userRepo.findById(activeUser.getUserId());
+    httpSession.setAttribute("activeUser", activeUser);
+
+    return "redirect:/change";
+}
+
 
     @GetMapping("/auth/verify-email")
     public String showVerifyEmailPage(Model model, HttpSession session) throws Exception {
@@ -92,13 +144,14 @@ public class UserController {
             return "login";
         }
 
-        if (user instanceof Organizer) {
-            httpSession.setAttribute("activeOrganizer", user);
+        httpSession.setAttribute("activeUser", user);
+
+
+        if (user.getRole() == 'o') {
+            Organizer organizer = organizerRepo.findById(user.getUserId());
+            httpSession.setAttribute("activeOrganizer", organizer);
             // Redirect to Organizer's specific page
-        } else {
-            httpSession.setAttribute("activeUser", user);
-            // Redirect to User's specific page
-        }
+        } 
         return "redirect:/";
     }
 
@@ -246,6 +299,7 @@ public class UserController {
 
         // Hash the password
         String hashedPassword = passwordEncoder.encode(password);
+        System.out.println(hashedPassword);
 
         // Create new user and save to database
         // Convert LocalDate to java.sql.Date
