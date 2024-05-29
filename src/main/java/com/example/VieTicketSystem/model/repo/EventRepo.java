@@ -33,7 +33,7 @@ public class EventRepo {
         List<Event> events = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM event");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
                 ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -62,7 +62,7 @@ public class EventRepo {
         Event event = null;
         try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM event WHERE name = ?");) {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE name = ?");) {
 
             statement.setString(1, eventName); // Truyền tên sự kiện cụ thể vào câu lệnh SQL
 
@@ -98,7 +98,7 @@ public class EventRepo {
     
     // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
     PreparedStatement ps = connection.prepareStatement(
-            "INSERT INTO event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             Statement.RETURN_GENERATED_KEYS);
     
     ps.setString(1, name);
