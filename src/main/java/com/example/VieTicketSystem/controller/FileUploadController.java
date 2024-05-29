@@ -33,7 +33,7 @@ public class FileUploadController {
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("image") MultipartFile multipartFile,
             Model model, HttpSession httpSession) throws Exception {
-        
+
         Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(),
                 ObjectUtils.asMap(
                         "transformation", new Transformation()
@@ -47,7 +47,7 @@ public class FileUploadController {
 
         // Thêm URL ảnh vào model
         model.addAttribute("imageURL", imageURL);
-            System.out.println(imageURL);
+        System.out.println(imageURL);
         // Cập nhật thông tin người dùng
         User user = (User) httpSession.getAttribute("activeUser");
         userRepo.EditImgUser(imageURL, user.getUserId());
@@ -56,4 +56,19 @@ public class FileUploadController {
 
         return "redirect:/change";
     }
+
+    @PostMapping("/upload/poster")
+    public String uploadPoster(@RequestParam("poster") MultipartFile multipartFile, Model model) throws Exception {
+        String imageURL = fileUpload.uploadFile(multipartFile);
+        model.addAttribute("poster", imageURL);
+        return "forward:/createEvent";
+    }
+    
+    @PostMapping("/upload/banner")
+    public String uploadBanner(@RequestParam("banner") MultipartFile multipartFile, Model model) throws Exception {
+        String imageURL = fileUpload.uploadFile(multipartFile);
+        model.addAttribute("banner", imageURL);
+        return "forward:/createEvent";
+    }
+    
 }

@@ -1,7 +1,7 @@
 package com.example.VieTicketSystem.config;
 
 import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.EventRepoImpl;
+import com.example.VieTicketSystem.model.repo.EventRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +10,6 @@ public class Appconfig {
 
     @Bean
     public EventRepo eventRepo() {
-        return new EventRepoImpl();
+        return new EventRepo();
     }
 }

@@ -76,7 +76,8 @@ public class AuthFilter implements Filter {
             // Người dùng có role ADMIN được truy cập tất cả các trang
             chain.doFilter(request, response);
         } else if (isUser(user) && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets")) || requestURI.startsWith("/auth/verify-email")) {
+                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))
+                || requestURI.startsWith("/auth/verify-email")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else if (isOrganizer(user)) {
@@ -86,8 +87,16 @@ public class AuthFilter implements Filter {
             if (organizer != null) {
                 if (organizer.isActive() && requestURI.startsWith("/createEvent")
                         || requestURI.startsWith("/inactive-account")
-                        || (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                        || requestURI.startsWith("/upload"))) {
+                        || (requestURI.startsWith("/change")
+                                || requestURI.startsWith("/editUser")
+                                || requestURI.startsWith("/upload")
+                                || requestURI.startsWith("/upload/poster")
+                                || requestURI.startsWith("/upload/banner")
+                                || requestURI.startsWith("/add-event")
+                                || requestURI.startsWith("createEvent")
+                                || requestURI.startsWith("/seatMap")
+                                || requestURI.startsWith("/seatMap/NoSeatMap")
+                                || requestURI.startsWith("/seatMap/SeatMapBeta"))) {
                     // Người dùng có role ORGANIZER chỉ được truy cập các trang cho phép khi
                     // isActive
                     chain.doFilter(request, response);

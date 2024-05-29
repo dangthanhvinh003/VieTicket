@@ -12,7 +12,22 @@
 
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <style>
+        .carousel-item video {
+            height: 600px;
+            object-fit: cover;
+            object-position: center top;
+            /* Định vị video để cắt phần dưới */
+            width: 100%;
+        }
 
+        #hiddenFeature {
+            display: none;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 2px 8px 0px #F0F1F2;
+        }
+    </style>
 </head>
 
 <body class="dark-mode">
@@ -54,7 +69,13 @@
                                     <li><a class="dropdown-item" href="#">View List Event</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'a'}">
-                                    <li><a class="dropdown-item" th:href="@{/ViewAllApprove}">View All List Approve</a>
+                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List
+                                            Approve Organizer</a>
+                                    </li>
+                                </th:block>
+                                <th:block th:if="${session.activeUser.role.toString() == 'a'}">
+                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveEvent}">View All List Approve
+                                            Event</a>
                                     </li>
                                 </th:block>
                                 <li><a class=" dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
@@ -75,12 +96,71 @@
             </div>
         </div>
     </nav>
+    <!--
+    -->
+    <div id="carouselExampleDark" class="carousel carousel-dark slide">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1"
+                aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2"
+                aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="10000">
+                <video class="d-block w-100" autoplay muted loop>
+                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715235805/tepkus15wsobic6jx3d4.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>First slide label</h5>
+                    <p>Some representative placeholder content for the first slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="2000">
+                <video class="d-block w-100" autoplay muted loop>
+                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057233/d8gg9cestunm6ny9rsxy.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Second slide label</h5>
+                    <p>Some representative placeholder content for the second slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <video class="d-block w-100" autoplay muted loop>
+                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057205/ooeyodiujb7dtf8u1etl.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some representative placeholder content for the third slide.</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+
+    <!---->
     <div class="container mt-5">
         <h2 id="eventsTitle">Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-            <div class="col mb-4" th:each="event : ${session.events}">
+            <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.isApprove == true}">
                 <div class="card border-0 shadow">
-                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image">
+                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                        style="width: 100%; max-width: 800px; height: 200px;object-fit: cover;">
                     <div class="card-body p-0">
                         <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
                         <p class="card-text m-0 p-2">

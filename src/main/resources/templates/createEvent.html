@@ -13,7 +13,13 @@
 <body>
     <div class="container">
         <h1>Add Event</h1>
-        <form method="post" action="/add-event">
+        <form method="post" th:action="@{/add-event}" enctype="multipart/form-data" class="form">
+             <!-- Poster Upload -->
+             <div class="mb-3">
+                <img th:if="${poster}" th:src="${poster}" alt="Uploaded Poster">
+                <input type="file" class="form-control" name="poster" placeholder="Upload Poster" onchange="previewImage(event, 'posterPreview')">
+                <img id="posterPreview" class="avatar img-fluid" src="#" alt="Poster Preview" style="display: none;">
+            </div>
             <!-- Name -->
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
@@ -49,20 +55,32 @@
                 <label for="end_date" class="form-label">End Date</label>
                 <input type="date" class="form-control" id="end_date" name="end_date" required>
             </div>
-            <!-- Organizer ID -->
-            <!-- <div class="mb-3">
-                <label for="organizer_id" class="form-label">Organizer ID</label>
-                <input type="number" class="form-control" id="organizer_id" name="organizer_id" required>
-            </div> -->
-            <!-- Seat Map -->
+        
+           
+        
+            <!-- Banner Upload -->
             <div class="mb-3">
-                <label for="seat_map" class="form-label">Seat Map</label>
-                <input type="text" class="form-control" id="seat_map" name="seat_map">
+                <img th:if="${banner}" th:src="${banner}" alt="Uploaded Banner">
+                <input type="file" class="form-control" name="banner" placeholder="Upload Banner" onchange="previewImage(event, 'bannerPreview')">
+                <img id="bannerPreview" class="avatar img-fluid" src="#" alt="Banner Preview" style="display: none;">
             </div>
-            <!-- Submit Button -->
+        
+            <!-- Buttons -->
             <button type="submit" class="btn btn-primary">Add Event</button>
         </form>
+        
     </div>
+    <script>
+        function previewImage(event, previewId) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById(previewId);
+                output.src = reader.result;
+                output.style.display = 'block';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+        </script>
 </body>
 
 </html>
