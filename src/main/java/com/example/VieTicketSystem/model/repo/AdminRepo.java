@@ -83,7 +83,7 @@ public class AdminRepo {
                 Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                                 Baseconnection.password);
                 PreparedStatement ps = con.prepareStatement(
-                               "SELECT * FROM EVENT WHERE is_approve = 0");
+                               "SELECT * FROM Event WHERE is_approve = 0");
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                         Event event = new Event();
@@ -110,7 +110,7 @@ public class AdminRepo {
                 Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                                 Baseconnection.password);
                 PreparedStatement ps = con.prepareStatement(
-                                "UPDATE EVENT SET is_approve = 1 WHERE event_id = ?");
+                                "UPDATE Event SET is_approve = 1 WHERE event_id = ?");
                 ps.setInt(1, eventId);
 
                 ps.executeUpdate();

@@ -31,24 +31,25 @@ BEGIN
     VALUES (new_user_id, p_founded_date, p_website, p_is_active, p_organizer_addr, p_organizer_type);
 END;
 
---@block
+
+DELIMITER $$
 
 CREATE PROCEDURE UpdateOrganizer(
     IN p_organizer_id INT,
-    IN p_full_name VARCHAR(50),
-    IN p_username VARCHAR(50),
-    IN p_password VARCHAR(50),
-    IN p_phone VARCHAR(10),
+    IN p_full_name VARCHAR(64),
+    IN p_username VARCHAR(64),
+    IN p_password VARCHAR(128),
+    IN p_phone VARCHAR(16),
     IN p_dob DATE,
     IN p_gender CHAR(1),
     IN p_avatar TEXT,
     IN p_role CHAR,
-    IN p_email VARCHAR(100),
+    IN p_email VARCHAR(96),
     IN p_founded_date DATE,
     IN p_website TEXT,
     IN p_is_active BOOLEAN,
-    IN p_organizer_addr VARCHAR(225),
-    IN p_organizer_type VARCHAR(50)
+    IN p_organizer_addr VARCHAR(256),
+    IN p_organizer_type VARCHAR(64)
 )
 BEGIN
     -- Update User attributes
@@ -72,7 +73,9 @@ BEGIN
         organizer_addr = p_organizer_addr, 
         organizer_type = p_organizer_type
     WHERE organizer_id = p_organizer_id;
-END;
+END $$
+
+DELIMITER ;
 
 --@block
 CREATE VIEW OrganizerDetails AS
