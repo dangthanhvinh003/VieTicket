@@ -18,7 +18,7 @@ public class SeatMapRepo {
         Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
         PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO SEATMAP (event_id, name, img) VALUES (?, ?, ?)");
+                "INSERT INTO SeatMap (event_id, name, img) VALUES (?, ?, ?)");
         ps.setInt(1, eventId);
         ps.setString(2, name);
         ps.setString(3, img);
