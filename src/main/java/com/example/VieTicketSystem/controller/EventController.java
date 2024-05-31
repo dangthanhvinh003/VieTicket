@@ -146,7 +146,7 @@ public class EventController {
                         for (int k = 0; k < allRow.size(); k++) {
                             for (int j = 0; j < allSeatNormal.size(); j++) {
                                 if (allSeatNormal.get(j).startsWith(allRow.get(k).getRowName())) {
-                                    seatRepo.addSeat(allSeatNormal.get(j), additionalData.getVipPrice(),
+                                    seatRepo.addSeat(allSeatNormal.get(j), additionalData.getNormalPrice(),
                                             allRow.get(k).getRowId());
                                 }
                             }
@@ -188,7 +188,7 @@ public class EventController {
                         for (int k = 0; k < allRow.size(); k++) {
                             for (int j = 0; j < allSeatVip.size(); j++) {
                                 if (allSeatVip.get(j).startsWith(allRow.get(k).getRowName())) {
-                                    seatRepo.addSeat(allSeatVip.get(j), additionalData.getNormalPrice(),
+                                    seatRepo.addSeat(allSeatVip.get(j), additionalData.getVipPrice(),
                                             allRow.get(k).getRowId());
                                 }
                             }
