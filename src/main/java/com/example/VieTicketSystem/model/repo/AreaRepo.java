@@ -33,9 +33,30 @@ public class AreaRepo {
         Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
         PreparedStatement ps = connection.prepareStatement(
-                "SELECT area_id FROM AREA WHERE event_id = ?");
+                "SELECT area_id FROM AREA WHERE event_id = ? ");
         ps.setInt(1, eventId);
 
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            areaId = rs.getInt("area_id");
+        }
+
+        rs.close();
+        ps.close();
+        connection.close();
+
+        return areaId;
+    }
+    public int getIdAreaEventIdAndName(int eventId, String name) throws ClassNotFoundException, SQLException {
+        int areaId = -1; // Giá trị mặc định khi không tìm thấy khu vực
+
+        Class.forName(Baseconnection.nameClass);
+        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+        PreparedStatement ps = connection.prepareStatement(
+                "SELECT area_id FROM AREA WHERE event_id = ? and name = ? ");
+        ps.setInt(1, eventId);
+        ps.setString(2, name);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             areaId = rs.getInt("area_id");

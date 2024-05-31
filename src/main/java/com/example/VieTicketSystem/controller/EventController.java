@@ -60,20 +60,21 @@ public class EventController {
             @RequestParam("start_date") Date startDate, @RequestParam("location") String location,
             @RequestParam("type") String type, @RequestParam("ticket_sale_date") Date ticketSaleDate,
             @RequestParam("end_date") Date endDate, @RequestParam("poster") MultipartFile multipartFile,
-            @RequestParam("poster") MultipartFile multipartFile1, HttpSession httpSession, Model model)
+            @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
             throws Exception {
         String imageURL = fileUpload.uploadFile(multipartFile);
         model.addAttribute("poster", imageURL);
         String imageURL1 = fileUpload.uploadFile(multipartFile1);
-        model.addAttribute("poster", imageURL1);
+        model.addAttribute("banner", imageURL1);
         User user = (User) httpSession.getAttribute("activeUser");
         System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
                 organizerRepo.findById(user.getUserId()), type, imageURL, imageURL1, false);
         httpSession.setAttribute("newEvent", event);
-        int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate, user.getUserId(),
+        int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
+                user.getUserId(),
                 imageURL, imageURL1);
-                httpSession.setAttribute("idNewEvent", idNewEvent);
+        httpSession.setAttribute("idNewEvent", idNewEvent);
         return "redirect:/seatMap";
     }
 
@@ -118,47 +119,85 @@ public class EventController {
         seatMapRepo.addSeatMap(idNewEvent, "SeatMapBeta", imageURL1);
         // add area normal
         if (additionalData.getTotalSelectedSeats() != 0) {
-            areaRepo.addArea("Normal", additionalData.getTotalSelectedSeats(), idNewEvent,additionalData.getNormalPrice());
-        }
+            areaRepo.addArea("Normal", additionalData.getTotalSelectedSeats(), idNewEvent,
+                    additionalData.getNormalPrice());
 
-        // add row normal and seat
-        ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
-        System.out.println("allSeatNormal : "+allSeatNormal);
-        Set<Character> uniqueFirstLetters = new HashSet<>();
-        
-        if (additionalData.getSelectedSeats() != null) {
-            for (String seat : allSeatNormal) {
-                if (seat != null && !seat.isEmpty()) {
-                    uniqueFirstLetters.add(seat.charAt(0));
+            ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
+            System.out.println("allSeatNormal : " + allSeatNormal);
+            Set<Character> uniqueFirstLetters = new HashSet<>();
+
+            if (additionalData.getSelectedSeats() != null) {
+                for (String seat : allSeatNormal) {
+                    if (seat != null && !seat.isEmpty()) {
+                        uniqueFirstLetters.add(seat.charAt(0));
+                    }
                 }
-            }
-            System.out.println("uniqueFirstLetters : "+uniqueFirstLetters);
-            ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
-            System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
-            if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
-                for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
-                    rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
-                            areaRepo.getIdAreaEventId(idNewEvent)); //tiep tuc
-                    
-                }
-                if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventId(idNewEvent)) != null) { // get sai
-                    ArrayList<Row> allRow = rowRepo.getAllRowsByAreaId(areaRepo.getIdAreaEventId(idNewEvent));
-                    for (int k = 0; k < allRow.size(); k++) {
-                        for (int j = 0; j < allSeatNormal.size(); j++) {
-                            if (allSeatNormal.get(j).startsWith(allRow.get(k).getRowName())) {
-                                seatRepo.addSeat(allSeatNormal.get(j), additionalData.getNormalPrice(), allRow.get(k).getRowId());
+                System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
+                ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
+                System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
+                if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
+                    for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
+                        rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
+                                areaRepo.getIdAreaEventIdAndName(idNewEvent,"Normal")); // tiep tuc
+
+                    }
+                    if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Normal")) != null) { // get sai
+                        ArrayList<Row> allRow = rowRepo.getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Normal"));
+                        for (int k = 0; k < allRow.size(); k++) {
+                            for (int j = 0; j < allSeatNormal.size(); j++) {
+                                if (allSeatNormal.get(j).startsWith(allRow.get(k).getRowName())) {
+                                    seatRepo.addSeat(allSeatNormal.get(j), additionalData.getVipPrice(),
+                                            allRow.get(k).getRowId());
+                                }
                             }
                         }
+
                     }
-                    
+                }
+            }
+            // add row normal and seat
+
+        }
+
+        // vip area
+        if (additionalData.getTotalVIPSeats() != 0) {
+
+            areaRepo.addArea("Vip", additionalData.getTotalVIPSeats(), idNewEvent,
+                    additionalData.getVipPrice());
+            ArrayList<String> allSeatVip = additionalData.getVipSeats();
+            System.out.println("allSeatNormal : " + allSeatVip);
+            Set<Character> uniqueFirstLetters = new HashSet<>();
+
+            if (additionalData.getSelectedSeats() != null) {
+                for (String seat : allSeatVip) {
+                    if (seat != null && !seat.isEmpty()) {
+                        uniqueFirstLetters.add(seat.charAt(0));
+                    }
+                }
+                System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
+                ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
+                System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
+                if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
+                    for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
+                        rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
+                                areaRepo.getIdAreaEventIdAndName(idNewEvent,"Vip")); // tiep tuc
+
+                    }
+                    if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Vip")) != null) { // get sai
+                        ArrayList<Row> allRow = rowRepo.getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Vip"));
+                        for (int k = 0; k < allRow.size(); k++) {
+                            for (int j = 0; j < allSeatVip.size(); j++) {
+                                if (allSeatVip.get(j).startsWith(allRow.get(k).getRowName())) {
+                                    seatRepo.addSeat(allSeatVip.get(j), additionalData.getNormalPrice(),
+                                            allRow.get(k).getRowId());
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
         }
-        // vip area
-        if (additionalData.getTotalVIPSeats() != 0) {
-            areaRepo.addArea("Vip", additionalData.getTotalVIPSeats(), idNewEvent,additionalData.getVipPrice());
-        }
-        ArrayList<String> allSeatVip = additionalData.getVipSeats();
 
         return "redirect:/createEventSuccess";
     }
