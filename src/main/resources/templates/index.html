@@ -27,6 +27,22 @@
             padding: 20px;
             box-shadow: 0px 2px 8px 0px #F0F1F2;
         }
+
+        .card-img-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 1);
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        /* Khi navbar tàng hình */
+        .navbar-transparent {
+            background-color: rgba(255, 255, 255, 0);
+        }
     </style>
 </head>
 
@@ -166,9 +182,7 @@
                         <p class="card-text m-0 p-2">
                             Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
                         </p>
-                        <p class="card-text m-0 p-2">
-                            description: <span class="small" th:utext="${event.description}">description</span>
-                        </p>
+
                         <div class="d-flex">
                             <a href="#" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
                             <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
@@ -178,11 +192,12 @@
             </div>
         </div>
     </div>
-
+    <!-- <p class="card-text m-0 p-2">
+                            description: <span class="small" th:utext="${event.description}">description</span>
+                        </p> -->
+    
 
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" th:src="@{/static/js/index.js}"></script>
-
 </body>
-
 </html>

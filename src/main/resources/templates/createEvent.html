@@ -110,6 +110,9 @@
             max-width: 100%;
             height: auto;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -118,20 +121,19 @@
         <h1>Create New Events</h1>
         <form method="post" th:action="@{/add-event}" enctype="multipart/form-data" class="form">
             <!-- Banner Upload -->
-            <div class="upload-container mb-3" style="height: 200px;">
-                <img src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
-                <p>Input banner (1280×720)</p>
+            <div class="upload-container mb-3" style="height: 480px;">
+                <img id="uploadIcon" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
+                <p id="uploadText">Input banner (1280×720)</p>
                 <input type="file" name="banner" accept="image/*" onchange="previewImage(event, 'bannerPreview')">
-                <img id="bannerPreview" alt="Banner Preview">
+                <img id="bannerPreview" alt="Banner Preview" style="height:720px; ">
             </div>
             <div class="row">
                 <!-- Poster Upload -->
                 <div class="col-lg-4 mb-3">
                     <div class="upload-container" style="height: 320px;">
-                        <img src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
-                        <p>Input poster (720×958)</p>
-                        <input type="file" name="poster" accept="image/*"
-                            onchange="previewImage(event, 'posterPreview')">
+                        <img id="uploadIcon1" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
+                        <p id="uploadText1">Input poster (720×958)</p>
+                        <input type="file" name="poster" accept="image/*" onchange="previewImage(event, 'posterPreview')">
                         <img id="posterPreview" alt="Poster Preview">
                     </div>
                 </div>
@@ -187,16 +189,21 @@
     <!-- Bootstrap JS -->
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Function to preview the uploaded images
         function previewImage(event, previewElementId) {
-            const reader = new FileReader();
-            reader.onload = function () {
-                const output = document.getElementById(previewElementId);
-                output.src = reader.result;
-                output.style.display = 'block';
-                output.style.width = "100%";
-            };
-            reader.readAsDataURL(event.target.files[0]);
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(previewElementId);
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('uploadIcon').classList.add('hidden');
+                    document.getElementById('uploadText').classList.add('hidden');
+                    document.getElementById('uploadIcon1').classList.add('hidden');
+                    document.getElementById('uploadText1').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
         }
     </script>
 </body>
