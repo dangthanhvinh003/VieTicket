@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 
 // Original author: https://github.com/pad1092/VNPAY-Springboot-Demo
@@ -18,11 +19,19 @@ import java.util.*;
 public class VNPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_Returnurl = "/vnpay-payment";
-    @Value("${vnp_TmnCode}")
     public static String vnp_TmnCode;
-    @Value("${vnp_HashSecret}")
     public static String vnp_HashSecret;
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+
+    @Value("${vnp_TmnCode}")
+    public void setVnp_TmnCode(String vnp_TmnCode) {
+        VNPayConfig.vnp_TmnCode = vnp_TmnCode;
+    }
+
+    @Value("${vnp_HashSecret}")
+    public void setVnp_HashSecret(String vnp_HashSecret) {
+        VNPayConfig.vnp_HashSecret = vnp_HashSecret;
+    }
 
     public static String md5(String message) {
         String digest = null;
@@ -117,12 +126,12 @@ public class VNPayConfig {
         return ipAdress;
     }
 
-    public static String getRandomNumber(int len) {
-        Random rnd = new Random();
-        String chars = "0123456789";
+    public static String getRandomAlphanumericString(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        SecureRandom rnd = new SecureRandom();
         StringBuilder sb = new StringBuilder(len);
         for (int i = 0; i < len; i++) {
-            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
         }
         return sb.toString();
     }
