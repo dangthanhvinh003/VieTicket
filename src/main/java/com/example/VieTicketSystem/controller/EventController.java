@@ -29,8 +29,10 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.print.attribute.standard.Chromaticity;
@@ -138,17 +140,34 @@ public class EventController {
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
-                                areaRepo.getIdAreaEventIdAndName(idNewEvent,"Normal")); // tiep tuc
+                                areaRepo.getIdAreaEventIdAndName(idNewEvent, "Normal")); // tiep tuc
 
                     }
-                    if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Normal")) != null) { // get sai
-                        ArrayList<Row> allRow = rowRepo.getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Normal"));
-                        for (int k = 0; k < allRow.size(); k++) {
-                            for (int j = 0; j < allSeatNormal.size(); j++) {
-                                if (allSeatNormal.get(j).startsWith(allRow.get(k).getRowName())) {
-                                    seatRepo.addSeat(allSeatNormal.get(j), additionalData.getNormalPrice(),
-                                            allRow.get(k).getRowId());
-                                }
+                    if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Normal")) != null) { // get
+                                                                                                                        // sai
+                        ArrayList<Row> allRow = rowRepo
+                                .getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Normal"));
+
+                        Map<String, Integer> rowIndexMap = new HashMap<>();
+                        for (int i = 0; i < allRow.size(); i++) {
+                            rowIndexMap.put(allRow.get(i).getRowName(), i);
+                        }
+
+                        // Create a 2D list to store seats by row
+                        List<List<String>> seatsByRow = new ArrayList<>(allRow.size());
+                        for (int i = 0; i < allRow.size(); i++) {
+                            seatsByRow.add(new ArrayList<>());
+                        }
+
+                        // Distribute seats into the 2D list
+                        for (String seat : allSeatNormal) {
+                            String row = seat.substring(0, 1); // Get the row letter
+                            int index = rowIndexMap.get(row); // Get the index of the row
+                            seatsByRow.get(index).add(seat); // Add seat to the corresponding row list
+                        }
+                        for (int i = 0; i < seatsByRow.size(); i++) {
+                            for (String seat : seatsByRow.get(i)) {
+                                seatRepo.addSeat(seat, additionalData.getNormalPrice(), allRow.get(i).getRowId());
                             }
                         }
 
@@ -180,17 +199,33 @@ public class EventController {
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
-                                areaRepo.getIdAreaEventIdAndName(idNewEvent,"Vip")); // tiep tuc
+                                areaRepo.getIdAreaEventIdAndName(idNewEvent, "Vip")); // tiep tuc
 
                     }
-                    if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Vip")) != null) { // get sai
-                        ArrayList<Row> allRow = rowRepo.getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent,"Vip"));
-                        for (int k = 0; k < allRow.size(); k++) {
-                            for (int j = 0; j < allSeatVip.size(); j++) {
-                                if (allSeatVip.get(j).startsWith(allRow.get(k).getRowName())) {
-                                    seatRepo.addSeat(allSeatVip.get(j), additionalData.getVipPrice(),
-                                            allRow.get(k).getRowId());
-                                }
+                    if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Vip")) != null) { // get
+                                                                                                                     // sai
+                        ArrayList<Row> allRow = rowRepo
+                                .getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Vip"));
+                        Map<String, Integer> rowIndexMap = new HashMap<>();
+                        for (int i = 0; i < allRow.size(); i++) {
+                            rowIndexMap.put(allRow.get(i).getRowName(), i);
+                        }
+
+                        // Create a 2D list to store seats by row
+                        List<List<String>> seatsByRow = new ArrayList<>(allRow.size());
+                        for (int i = 0; i < allRow.size(); i++) {
+                            seatsByRow.add(new ArrayList<>());
+                        }
+
+                        // Distribute seats into the 2D list
+                        for (String seat : allSeatVip) {
+                            String row = seat.substring(0, 1); // Get the row letter
+                            int index = rowIndexMap.get(row); // Get the index of the row
+                            seatsByRow.get(index).add(seat); // Add seat to the corresponding row list
+                        }
+                        for (int i = 0; i < seatsByRow.size(); i++) {
+                            for (String seat : seatsByRow.get(i)) {
+                                seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
                             }
                         }
 
