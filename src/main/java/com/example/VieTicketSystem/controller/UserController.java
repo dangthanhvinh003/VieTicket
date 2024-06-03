@@ -171,7 +171,7 @@ public String editUser(@RequestParam("fullName") String nameInput,
     public String showLogin(HttpSession session) {
         List<Event> events = eventRepo.getAllEvents();
         session.setAttribute("events", events);
-
+        session.setAttribute("eventCreated", false);
         return "index";
     }
 

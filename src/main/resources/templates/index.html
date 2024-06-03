@@ -82,7 +82,7 @@
                                     <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'o'}">
-                                    <li><a class="dropdown-item" href="#">View List Event</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/viewMyListEvent}">View List Event</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'a'}">
                                     <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List
@@ -173,7 +173,7 @@
     <div class="container mt-5">
         <h2 id="eventsTitle">Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-            <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.isApprove == true}">
+            <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.isApprove == 1}">
                 <div class="card border-0 shadow">
                     <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
                         style="width: 100%; max-width: 800px; height: 200px;object-fit: cover;">

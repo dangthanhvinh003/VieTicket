@@ -32,7 +32,7 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="/seatMap/NoSeatMap" method="post">
+                                    <form action="/seatMap/NoSeatMapEdit" method="post">
                                         <div class="mb-3">
                                             <label for="quantity" class="form-label">Số lượng vé:</label>
                                             <input type="number" class="form-control" id="quantity" name="quantity"
@@ -40,7 +40,8 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="price" class="form-label">Giá tiền:</label>
-                                            <input type="text" class="form-control" id="price" name="price" required pattern="[0-9,]+" title="Vui lòng nhập số tiền hợp lệ">
+                                            <input type="text" class="form-control" id="price" name="price" required
+                                                pattern="[0-9,]+" title="Vui lòng nhập số tiền hợp lệ">
                                         </div>
                                         <button type="submit" class="btn btn-primary">Gửi</button>
                                     </form>
@@ -48,30 +49,48 @@
                             </div>
                         </div>
                     </div>
-                    <a href="/seatMap/SeatMapBeta" class="btn btn-secondary">Bản đồ chỗ ngồi (Beta)</a>
+                    <a href="/seatMap/SeatMapBetaEdit" class="btn btn-secondary">Bản đồ chỗ ngồi (Beta)</a>
                 </div>
             </div>
         </div>
     </div>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
-    <script>
-        $(function () {
-            $('#price').inputmask('numeric', {
-                radixPoint: ',',
-                groupSeparator: '.',
-                digits: 0,
-                autoGroup: true,
-                prefix: '₫ ',
-                rightAlign: false,
-                oncleared: function () {
-                    self.Value('');
-                }
-            });
-        });
-    </script> -->
+
+    <!-- Popup Modal -->
+    <div class="modal fade" id="initialPopup" tabindex="-1" aria-labelledby="initialPopupLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="initialPopupLabel">Lưu ý</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Nếu bạn chọn <strong>Yes</strong> thì <strong style="color: red;">toàn bộ dữ liệu về seat map cũ sẽ
+                        biến mất </strong> và bạn cần tạo lại seat map mới để được duyệt.
+                </div>
+                <div class="modal-footer">
+                    <form th:action="@{/seatMapDelete}" method="get">
+                        <button type="submit" >Yes</button>
+                    </form>
+                    <a th:href="@{/viewMyListEvent}" >Return</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+        <script>
+            // Hiển thị modal khi tải trang nếu showModal là true hoặc không có trong URL
+            document.addEventListener('DOMContentLoaded', function () {
+                var showModal = "[[${param.showModal}]]";
+                if (showModal === 'true' || showModal === '') {
+                    var initialPopup = new bootstrap.Modal(document.getElementById('initialPopup'), {});
+                    initialPopup.show();
+                }
+            });
+        </script>
+
 </body>
 
 </html>

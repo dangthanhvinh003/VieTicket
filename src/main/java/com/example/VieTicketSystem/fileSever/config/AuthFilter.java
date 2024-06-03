@@ -51,13 +51,17 @@ public class AuthFilter implements Filter {
             e.printStackTrace();
         }
 
-        // If the user is unverified and the request URI is not /auth/verify-email, /change, or /editUser, then redirect them to /auth/verify-email
-        if (isUnverified && !(requestURI.equals("/auth/verify-email") || requestURI.startsWith("/change") || requestURI.startsWith("/editUser") || requestURI.startsWith("/auth/verify-otp") || requestURI.startsWith("/auth/password-reset") || requestURI.startsWith("/auth/log-out"))) {
+        // If the user is unverified and the request URI is not /auth/verify-email,
+        // /change, or /editUser, then redirect them to /auth/verify-email
+        if (isUnverified && !(requestURI.equals("/auth/verify-email") || requestURI.startsWith("/change")
+                || requestURI.startsWith("/editUser") || requestURI.startsWith("/auth/verify-otp")
+                || requestURI.startsWith("/auth/password-reset") || requestURI.startsWith("/auth/log-out"))) {
             httpResponse.sendRedirect("/auth/verify-email");
             return;
         }
 
-        if (isUnverified && (requestURI.startsWith("/auth/log-out") || requestURI.startsWith("/auth/verify-otp") || requestURI.startsWith("/auth/password-reset"))) {
+        if (isUnverified && (requestURI.startsWith("/auth/log-out") || requestURI.startsWith("/auth/verify-otp")
+                || requestURI.startsWith("/auth/password-reset"))) {
             chain.doFilter(request, response);
             return;
         }
@@ -85,6 +89,7 @@ public class AuthFilter implements Filter {
             Organizer organizer = organizerRepo.getOrganizerByUserId(user.getUserId());
 
             if (organizer != null) {
+                boolean eventCreated = Boolean.TRUE.equals(session.getAttribute("eventCreated"));
                 if (organizer.isActive() && requestURI.startsWith("/createEvent")
                         || requestURI.startsWith("/inactive-account")
                         || (requestURI.startsWith("/change")
@@ -93,10 +98,26 @@ public class AuthFilter implements Filter {
                                 || requestURI.startsWith("/upload/poster")
                                 || requestURI.startsWith("/upload/banner")
                                 || requestURI.startsWith("/add-event")
-                                || requestURI.startsWith("createEvent")
-                                || requestURI.startsWith("/seatMap")
-                                || requestURI.startsWith("/seatMap/NoSeatMap")
-                                || requestURI.startsWith("/seatMap/SeatMapBeta"))) {
+                                || requestURI.startsWith("createEvent") ||
+                                (requestURI.startsWith("/seatMap") && eventCreated) ||
+                                (requestURI.startsWith("/seatMap/NoSeatMap") && eventCreated) ||
+                                (requestURI.startsWith("/seatMap/SeatMapBeta") && eventCreated)
+                                || requestURI.startsWith("/viewMyListEvent")
+                                || requestURI.startsWith("/allEvents")
+                                || requestURI.startsWith("/pendingEvents")
+                                || requestURI.startsWith("/approvedEvents")
+                                || requestURI.startsWith("/passedEvents")
+                                || requestURI.startsWith("/seatMapEdit")
+                                || requestURI.startsWith("/seatMapDelete")
+                                || requestURI.startsWith("/noModelEditPage")
+                                || (requestURI.startsWith("/seatMap/NoSeatMapEdit")) ||
+                                (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
+                                || requestURI.startsWith("/editSuccess"))
+                                || requestURI.startsWith("/eventEditPage")
+                                || requestURI.startsWith("/eventEditSubmit")) {
+                    if (requestURI.startsWith("/createEvent")) {
+                        session.setAttribute("eventCreated", true);
+                    }
                     // Người dùng có role ORGANIZER chỉ được truy cập các trang cho phép khi
                     // isActive
                     chain.doFilter(request, response);
