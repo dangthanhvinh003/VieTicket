@@ -25,11 +25,11 @@ public class Event {
     private Organizer organizer;
     private String poster;
     private String banner;
-    private boolean isApprove;
+    private int isApprove;
     private List<Area> areas; // Danh sách các khu vực và giá tiền
     private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
     public Event(int eventId, String name, String description, Date startDate, String location, String type,
-            Date ticketSaleDate, Date endDate, Organizer organizer, String poster, String banner, boolean isApprove) {
+            Date ticketSaleDate, Date endDate, Organizer organizer, String poster, String banner, int isApprove) {
         this.eventId = eventId;
         this.name = name;
         this.description = description;

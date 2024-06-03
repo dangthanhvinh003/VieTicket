@@ -50,7 +50,7 @@ public class EventRepo {
                 event.setEndDate(resultSet.getDate("end_date"));
                 event.setPoster(resultSet.getString("poster"));
                 event.setBanner(resultSet.getString("banner"));
-                event.setApprove(resultSet.getBoolean("is_approve"));
+                event.setIsApprove(resultSet.getInt("is_approve"));
                 // Set the organizer if applicable
                 events.add(event);
             }
@@ -81,7 +81,7 @@ public class EventRepo {
                     event.setEndDate(resultSet.getDate("end_date"));
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
-                    event.setApprove(resultSet.getBoolean("is_approve"));
+                    event.setIsApprove(resultSet.getInt("is_approve"));
                     // Set the organizer if applicable
                 }
             }
@@ -190,7 +190,7 @@ public class EventRepo {
                     event.setEndDate(resultSet.getDate("end_date"));
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
-                    event.setApprove(resultSet.getBoolean("is_approve"));
+                    event.setIsApprove(resultSet.getInt("is_approve"));
                     event.setAreas(getAreasByEventId(event.getEventId()));
 
                     // Lấy ảnh sơ đồ chỗ ngồi
@@ -229,7 +229,7 @@ public class EventRepo {
                     event.setEndDate(resultSet.getDate("end_date"));
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
-                    event.setApprove(resultSet.getBoolean("is_approve"));
+                    event.setIsApprove(resultSet.getInt("is_approve"));
                     // Set the organizer_id if applicable
                     event.setAreas(getAreasByEventId(event.getEventId()));
 

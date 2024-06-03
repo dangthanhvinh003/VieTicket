@@ -92,7 +92,9 @@ public class OrganizerController {
     public String pendingEvents(Model model, HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("activeUser");
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
-        List<Event> pendingEvents = eventList.stream().filter(event -> !event.isApprove()).collect(Collectors.toList());
+        List<Event> pendingEvents = eventList.stream()
+                .filter(event -> event.getIsApprove() == 0 || event.getIsApprove() == 3)
+                .collect(Collectors.toList());
         model.addAttribute("eventList", pendingEvents);
         return "viewMyListEvent";
     }
@@ -103,7 +105,7 @@ public class OrganizerController {
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
         java.util.Date currentDate = new java.util.Date();
         List<Event> approvedEvents = eventList.stream()
-                .filter(event -> event.isApprove() && event.getEndDate().after(currentDate))
+                .filter(event -> event.getIsApprove() == 1  && event.getEndDate().after(currentDate))
                 .collect(Collectors.toList());
         model.addAttribute("eventList", approvedEvents);
         return "viewMyListEvent";
@@ -120,13 +122,13 @@ public class OrganizerController {
         return "viewMyListEvent";
     }
 
-    @GetMapping(value = ("/eventEditPage"))
-    public String eventEditPage(@RequestParam("eventId") int eventId, Model model, HttpSession httpSession) {
-        httpSession.setAttribute("eventIdEdit", eventId);
-        Event event = eventRepo.getEventById(eventId);
-        model.addAttribute("eventEdit", event);
-        return "eventEdit";
-    }
+    @PostMapping(value = "/eventEditPage")
+public String eventEditPage(@RequestParam("eventId") int eventId, Model model, HttpSession httpSession) {
+    httpSession.setAttribute("eventIdEdit", eventId);
+    Event event = eventRepo.getEventById(eventId);
+    model.addAttribute("eventEdit", event);
+    return "eventEdit";
+}
     @PostMapping(value = ("/eventEditSubmit"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
                            @RequestParam("start_date") Date startDate, @RequestParam("location") String location,
@@ -158,12 +160,11 @@ public class OrganizerController {
         return "redirect:/editSuccess";
     }
 
-    @GetMapping(value = ("/seatMapEditPage"))
-    public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession) {
-
-        httpSession.setAttribute("eventIdEdit", eventId);
-        return "seatMapEdit";
-    }
+    @PostMapping(value = "/seatMapEditPage")
+public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession) {
+    httpSession.setAttribute("eventIdEdit", eventId);
+    return "seatMapEdit";
+}
 
     @GetMapping(value = "/seatMapDelete")
     public String seatMapDelete(HttpSession httpSession, RedirectAttributes redirectAttributes)
