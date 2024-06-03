@@ -110,6 +110,7 @@
             max-width: 100%;
             height: auto;
         }
+
         .hidden {
             display: none;
         }
@@ -122,41 +123,44 @@
         <form method="post" th:action="@{/eventEditSubmit}" enctype="multipart/form-data" class="form">
             <!-- Banner Upload -->
             <div class="upload-container mb-3" style="height: 480px;">
-                <!-- <img id="uploadIcon" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
-                <p id="uploadText">Input banner (1280×720)</p> -->
-                <input type="file" name="banner" accept="image/*" onchange="previewImage(event, 'bannerPreview')" >
-                <img id="bannerPreview" alt="Banner Preview" style="height:720px; " th:src="${eventEdit.banner}">
+                <input type="file" name="banner" accept="image/*" onchange="previewImage(event, 'bannerPreview')">
+                <img id="bannerPreview" alt="Banner Preview" style="height:720px;" th:src="${eventEdit.banner}">
+                <input type="hidden" name="currentBanner" th:value="${eventEdit.banner}">
             </div>
             <div class="row">
-                <!-- Poster Upload -->
                 <div class="col-lg-4 mb-3">
                     <div class="upload-container" style="height: 320px;">
-                        <!-- <img id="uploadIcon1" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
-                        <p id="uploadText1">Input poster (720×958)</p> -->
-                        <input type="file" name="poster" accept="image/*" onchange="previewImage(event, 'posterPreview')" >
+                        <input type="file" name="poster" accept="image/*"
+                            onchange="previewImage(event, 'posterPreview')">
                         <img id="posterPreview" alt="Poster Preview" th:src="${eventEdit.poster}">
+                        <input type="hidden" name="currentPoster" th:value="${eventEdit.poster}">
                     </div>
                 </div>
+
                 <div class="col-lg-8">
                     <!-- Name -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Name Event :</label>
-                        <input type="text" class="form-control" id="name" name="name" required th:value="${eventEdit.name}">
+                        <input type="text" class="form-control" id="name" name="name" required
+                            th:value="${eventEdit.name}">
                     </div>
                     <!-- Location -->
                     <div class="mb-3">
                         <label for="location" class="form-label">Location :</label>
-                        <input type="text" class="form-control" id="location" name="location" required th:value="${eventEdit.location}">
+                        <input type="text" class="form-control" id="location" name="location" required
+                            th:value="${eventEdit.location}">
                     </div>
                     <!-- Start Date -->
                     <div class="mb-3">
                         <label for="start_date" class="form-label">Start Date :</label>
-                        <input type="date" class="form-control" id="start_date" name="start_date" required th:value="${eventEdit.startDate}">
+                        <input type="date" class="form-control" id="start_date" name="start_date" required
+                            th:value="${eventEdit.startDate}">
                     </div>
                     <!-- End Date -->
                     <div class="mb-3">
                         <label for="end_date" class="form-label">End Date :</label>
-                        <input type="date" class="form-control" id="end_date" name="end_date" required th:value="${eventEdit.endDate}">
+                        <input type="date" class="form-control" id="end_date" name="end_date" required
+                            th:value="${eventEdit.endDate}">
                     </div>
                 </div>
 
@@ -169,7 +173,8 @@
             <!-- TicketSaleDate-->
             <div class="mb-3">
                 <label for="end_date" class="form-label">End Date :</label>
-                <input type="date" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required th:value="${eventEdit.ticketSaleDate}">
+                <input type="date" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required
+                    th:value="${eventEdit.ticketSaleDate}">
             </div>
             <!-- Description -->
             <div class="mb-3">
@@ -192,7 +197,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const preview = document.getElementById(previewElementId);
                     preview.src = e.target.result;
                     preview.style.display = 'block';

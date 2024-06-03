@@ -127,24 +127,34 @@ public class OrganizerController {
         model.addAttribute("eventEdit", event);
         return "eventEdit";
     }
-
     @PostMapping(value = ("/eventEditSubmit"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
-            @RequestParam("start_date") Date startDate, @RequestParam("location") String location,
-            @RequestParam("type") String type, @RequestParam("ticket_sale_date") Date ticketSaleDate,
-            @RequestParam("end_date") Date endDate, @RequestParam("poster") MultipartFile multipartFile,
-            @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
-            throws Exception {
+                           @RequestParam("start_date") Date startDate, @RequestParam("location") String location,
+                           @RequestParam("type") String type, @RequestParam("ticket_sale_date") Date ticketSaleDate,
+                           @RequestParam("end_date") Date endDate, @RequestParam("poster") MultipartFile multipartFile,
+                           @RequestParam("banner") MultipartFile multipartFile1,
+                           @RequestParam("currentPoster") String currentPoster,
+                           @RequestParam("currentBanner") String currentBanner,
+                           HttpSession httpSession, Model model) throws Exception {
         int eventId = (int) httpSession.getAttribute("eventIdEdit");
-        String imageURL = fileUpload.uploadFile(multipartFile);
-        model.addAttribute("poster", imageURL);
-        String imageURL1 = fileUpload.uploadFile(multipartFile1);
-        model.addAttribute("banner", imageURL1);
+        String posterUrl = currentPoster;
+        String bannerUrl = currentBanner;
+    
+        if (!multipartFile.isEmpty()) {
+            posterUrl = fileUpload.uploadFile(multipartFile);
+        }
+        model.addAttribute("poster", posterUrl);
+    
+        if (!multipartFile1.isEmpty()) {
+            bannerUrl = fileUpload.uploadFile(multipartFile1);
+        }
+        model.addAttribute("banner", bannerUrl);
+    
         User user = (User) httpSession.getAttribute("activeUser");
-
-        eventRepo.updateEvent(eventId,name, description, startDate, location, type, ticketSaleDate, endDate,
-                user.getUserId(),
-                imageURL, imageURL1);
+    
+        eventRepo.updateEvent(eventId, name, description, startDate, location, type, ticketSaleDate, endDate,
+                user.getUserId(), posterUrl, bannerUrl);
+    
         return "redirect:/editSuccess";
     }
 
