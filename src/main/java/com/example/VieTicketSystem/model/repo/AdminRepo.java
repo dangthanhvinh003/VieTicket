@@ -124,6 +124,49 @@ public class AdminRepo {
                 return eventList;
         }
 
+        public ArrayList<Event> viewAllListRejectEvent() throws Exception {
+                ArrayList<Event> eventList = new ArrayList<>();
+                Class.forName(Baseconnection.nameClass);
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+
+                String query = "SELECT * FROM Event WHERE is_approve = 3";
+                PreparedStatement ps = con.prepareStatement(query);
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                        Event event = new Event();
+                        event.setEventId(rs.getInt("event_id"));
+                        event.setName(rs.getString("name"));
+                        event.setDescription(rs.getString("description"));
+                        event.setStartDate(rs.getDate("start_date"));
+                        event.setLocation(rs.getString("location"));
+                        event.setType(rs.getString("type"));
+                        event.setTicketSaleDate(rs.getDate("ticket_sale_date"));
+                        event.setEndDate(rs.getDate("end_date"));
+                        event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id"))); // Assuming findById is a
+                                                                                               // method in
+                                                                                               // OrganizerRepository
+                        event.setPoster(rs.getString("poster"));
+                        event.setBanner(rs.getString("banner"));
+                        event.setApprove(rs.getBoolean("is_approve"));
+
+                        // Lấy danh sách các khu vực và giá tiền
+                        event.setAreas(getAreasByEventId(event.getEventId()));
+
+                        // Lấy ảnh sơ đồ chỗ ngồi
+                        event.setSeatMap((getSeatMapDetailsByEventId(event.getEventId())));
+
+                        eventList.add(event);
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
+
+                return eventList;
+        }
+
         private List<Area> getAreasByEventId(int eventId) throws Exception {
                 List<Area> areas = new ArrayList<>();
                 Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
@@ -160,7 +203,7 @@ public class AdminRepo {
                 if (rs.next()) {
                         String seatMapImage = rs.getString("img");
                         String seatMapName = rs.getString("name");
-                        seatMapDetails = new SeatMap( seatMapName, seatMapImage);
+                        seatMapDetails = new SeatMap(seatMapName, seatMapImage);
                 }
 
                 rs.close();
@@ -183,19 +226,34 @@ public class AdminRepo {
                 ps.close();
 
         }
+
+        public void rejectEvents(int eventId)
+                        throws Exception {
+                Class.forName(Baseconnection.nameClass);
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                PreparedStatement ps = con.prepareStatement(
+                                "UPDATE Event SET is_approve = 3 WHERE event_id = ?");
+                ps.setInt(1, eventId);
+
+                ps.executeUpdate();
+                ps.close();
+
+        }
+
         public void deleteEventById(int eventId) throws Exception {
                 Class.forName(Baseconnection.nameClass);
-                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password)) {
-                    String sql = "DELETE FROM Event WHERE event_id = ?";
-                    try (PreparedStatement ps = con.prepareStatement(sql)) {
-                        ps.setInt(1, eventId);
-                        ps.executeUpdate();
-                    }
+                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password)) {
+                        String sql = "DELETE FROM Event WHERE event_id = ?";
+                        try (PreparedStatement ps = con.prepareStatement(sql)) {
+                                ps.setInt(1, eventId);
+                                ps.executeUpdate();
+                        }
                 } catch (SQLException e) {
-                    e.printStackTrace();
-                    throw new Exception("Error deleting event", e);
+                        e.printStackTrace();
+                        throw new Exception("Error deleting event", e);
                 }
-            }
-
+        }
 
 }
