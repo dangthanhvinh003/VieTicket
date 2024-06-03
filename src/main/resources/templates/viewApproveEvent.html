@@ -9,59 +9,121 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <style>
+        .description-box {
+            height: 300px;
+            /* Chiều cao tối đa của ô mô tả */
+            overflow-y: auto;
+            /* Hiển thị thanh cuộn dọc nếu nội dung vượt quá chiều cao */
+            border: 1px solid #ccc;
+            /* Viền ô mô tả */
+            padding: 10px;
+            /* Khoảng cách giữa nội dung và viền */
+            margin-bottom: 10px;
+            /* Khoảng cách dưới */
+        }
 
+        .description-box img {
+            max-width: 100%;
+            /* Giới hạn chiều rộng ảnh trong ô mô tả */
+            height: auto;
+            /* Giữ tỷ lệ ảnh */
+        }
+    </style>
 </head>
 
 <body class="bg-light">
     <div class="container mt-5">
         <h2 class="mb-4">List of Event to Approve</h2>
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Name</th>
-                        <th>Decripsion</th>
-                        <th>Ticket Sale Date</th>
-                        <th>Location</th>
-                        <th>Type</th>
-                        <th>Star Date</th>
-                        <th>Date End</th>
-                        <th>Organizer Name</th>
-                        <th>Organizer Phone</th>
-                        <th>Organizer Email</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Sử dụng Thymeleaf để lặp qua danh sách các Organizer và hiển thị thông tin của từng Organizer -->
-                    <tr th:each="event : ${events}">
-                        <td th:text="${event.name}"></td>
-                        <td th:text="${event.description}"></td>
-                        <td th:text="${#dates.format(event.ticketSaleDate, 'dd/MM/yyyy')}"></td>
-                        <td th:text="${event.location}"></td>
-                        <td th:text="${event.type}"></td>
-                        <td th:text="${#dates.format(event.startDate, 'dd/MM/yyyy')}"></td>
-                        <td th:text="${#dates.format(event.endDate, 'dd/MM/yyyy')}"></td>
-                        <td th:text="${event.organizer.fullName}"></td>
-                        <td th:text="${event.organizer.phone}"></td>
-                        <td th:text="${event.organizer.email}"></td>
-                        <td class="d-flex justify-content-center">
-                            <form th:action="@{/approveEvent}" method="post" class="me-2">
-                                <input type="hidden" name="eventId" th:value="${event.eventId}">
-                                <button type="submit" class="btn btn-success btn-sm">
-                                    <i class="bi bi-check"></i>
+        <div class="container mt-4">
+            <div class="row">
+                <!-- Sử dụng Thymeleaf để lặp qua danh sách các Organizer và hiển thị thông tin của từng Organizer -->
+                <div class="col-md-4 mb-4" th:each="event : ${events}">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${event.name}">Event Name</h5>
+                            <p class="card-text">
+                            <p>
+                                <strong>Description:</strong>
+                            <div class="description-box">
+                                <span th:utext="${event.description}">Description</span>
+                            </div>
+                            </p>
+                            <strong>Ticket Sale Date:</strong> <span
+                                th:text="${#dates.format(event.ticketSaleDate, 'dd/MM/yyyy')}">Date</span><br>
+                            <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
+                            <strong>Type:</strong> <span th:text="${event.type}">Type</span><br>
+                            <strong>Start Date:</strong> <span
+                                th:text="${#dates.format(event.startDate, 'dd/MM/yyyy')}">Start Date</span><br>
+                            <strong>End Date:</strong> <span th:text="${#dates.format(event.endDate, 'dd/MM/yyyy')}">End
+                                Date</span><br>
+                            <strong>Organizer Name:</strong> <span th:text="${event.organizer.fullName}">Organizer
+                                Name</span><br>
+                            <strong>Organizer Phone:</strong> <span th:text="${event.organizer.phone}">Phone</span><br>
+                            <strong>Organizer Email:</strong> <span th:text="${event.organizer.email}">Email</span>
+                            </p>
+
+                            <!-- Hiển thị danh sách giá tiền của các khu vực -->
+                            <div>
+                                <strong>Areas and Prices:</strong>
+                                <ul class="area-list list-group">
+                                    <li class="list-group-item" th:each="area : ${event.areas}">
+                                        <span th:text="${area.name}">Area Name</span>:
+                                        <span class="price" th:data-price="${area.ticketPrice}" th:text="${area.ticketPrice}">Price</span>
+                                    </li>
+                                    <!-- Nếu không có khu vực nào, hiển thị thông báo -->
+                                    <li class="list-group-item" th:style="${event.areas == null || event.areas.isEmpty()} ? 'color:red;' : ''" th:if="${event.areas == null || event.areas.isEmpty()}">
+                                        No areas available</li>
+                                </ul>
+                            </div>
+
+                            <!-- Hiển thị ảnh sơ đồ chỗ ngồi -->
+                            <div class="mt-3">
+                                <strong>SeatMap Name:</strong>
+                                <span th:style="${event.seatMap == null} ? 'color:red;' : ''"
+                                    th:text="${event.seatMap != null ? event.seatMap.name : 'No seat map available'}">SeatMap
+                                    Name</span><br>
+                                <strong>Seat Map:</strong>
+                                <img th:if="${event.seatMap != null}" th:src="@{${event.seatMap.img}}" alt="Seat Map"
+                                    class="seat-map img-fluid" style="height: 200px;">
+                                <span th:style="${event.seatMap == null} ? 'color:red;' : ''" th:if="${event.seatMap == null}">No seat map available</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <form th:action="@{/approveEvent}" method="post" class="me-2">
+                                    <input type="hidden" name="eventId" th:value="${event.eventId}">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="bi bi-check"></i> Approve
+                                    </button>
+                                </form>
+                                <form th:action="@{/DeleteEvent}" method="post" class="me-2">
+                                    <input type="hidden" name="eventId" th:value="${event.eventId}">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-check"></i> Delete Event
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-x"></i> Reject
                                 </button>
-                            </form>
-                            <button type="button" class="btn btn-danger btn-sm">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceElements = document.querySelectorAll('.price');
+            priceElements.forEach(function(priceElement) {
+                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(priceValue)) {
+                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                }
+            });
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 </body>

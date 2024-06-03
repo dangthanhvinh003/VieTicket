@@ -34,7 +34,7 @@ public class AdminController {
     }
     @GetMapping(value = ("/ViewAllApproveEvent"))
     public String approveEventPage(Model model) throws Exception {
-        ArrayList<Event> events = adminRepo.viewAllListAprroveEvent();
+        ArrayList<Event> events = adminRepo.viewAllListApproveEvent();
         model.addAttribute("events", events);
         return "viewApproveEvent";
     }
@@ -43,6 +43,11 @@ public class AdminController {
         adminRepo.approveEvents(eventId);
         return "redirect:/ViewAllApproveEvent";
 
+    }
+    @PostMapping(value = ("/DeleteEvent"))
+    public String deleteEvent(@RequestParam("eventId") int eventId) throws Exception{
+        adminRepo.deleteEventById(eventId);
+        return "redirect:/ViewAllApproveEvent";
     }
 
 }

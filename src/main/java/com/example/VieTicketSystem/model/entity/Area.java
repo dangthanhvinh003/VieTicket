@@ -11,13 +11,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SeatMap {
-    private String seatMapID;
-    private Event event;
+public class Area {
+    private int areaId;
     private String name;
-    private String img;
-    public SeatMap (String name, String img){
-        this.name = name;
-        this.img = img;
-    }
+    private int totalTickets;
+    private float ticketPrice;
+    private int eventId; 
 }

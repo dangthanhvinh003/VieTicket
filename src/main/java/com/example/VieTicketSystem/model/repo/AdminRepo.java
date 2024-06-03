@@ -6,17 +6,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
+import com.example.VieTicketSystem.model.entity.SeatMap;
 
 @Repository
 public class AdminRepo {
-        @Autowired 
+        @Autowired
         OrganizerRepo organizerRepo = new OrganizerRepo();
+
         public ArrayList<Organizer> viewAllListAprrove() throws ClassNotFoundException, SQLException {
                 ArrayList<Organizer> organizersList = new ArrayList<>();
                 Class.forName(Baseconnection.nameClass);
@@ -77,14 +81,16 @@ public class AdminRepo {
 
         }
 
-        public ArrayList<Event> viewAllListAprroveEvent() throws Exception {
+        public ArrayList<Event> viewAllListApproveEvent() throws Exception {
                 ArrayList<Event> eventList = new ArrayList<>();
                 Class.forName(Baseconnection.nameClass);
                 Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                                 Baseconnection.password);
-                PreparedStatement ps = con.prepareStatement(
-                               "SELECT * FROM Event WHERE is_approve = 0");
+
+                String query = "SELECT * FROM Event WHERE is_approve = 0";
+                PreparedStatement ps = con.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
+
                 while (rs.next()) {
                         Event event = new Event();
                         event.setEventId(rs.getInt("event_id"));
@@ -95,15 +101,75 @@ public class AdminRepo {
                         event.setType(rs.getString("type"));
                         event.setTicketSaleDate(rs.getDate("ticket_sale_date"));
                         event.setEndDate(rs.getDate("end_date"));
-                        event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id")));
+                        event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id"))); // Assuming findById is a
+                                                                                               // method in
+                                                                                               // OrganizerRepository
                         event.setPoster(rs.getString("poster"));
                         event.setBanner(rs.getString("banner"));
                         event.setApprove(rs.getBoolean("is_approve"));
-        
+
+                        // Lấy danh sách các khu vực và giá tiền
+                        event.setAreas(getAreasByEventId(event.getEventId()));
+
+                        // Lấy ảnh sơ đồ chỗ ngồi
+                        event.setSeatMap((getSeatMapDetailsByEventId(event.getEventId())));
+
                         eventList.add(event);
                 }
+
+                rs.close();
+                ps.close();
+                con.close();
+
                 return eventList;
         }
+
+        private List<Area> getAreasByEventId(int eventId) throws Exception {
+                List<Area> areas = new ArrayList<>();
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                String query = "SELECT * FROM Area WHERE event_id = ?";
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setInt(1, eventId);
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                        Area area = new Area();
+                        area.setAreaId(rs.getInt("area_id"));
+                        area.setName(rs.getString("name"));
+                        area.setTicketPrice(rs.getFloat("ticket_price"));
+                        areas.add(area);
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
+
+                return areas;
+        }
+
+        private SeatMap getSeatMapDetailsByEventId(int eventId) throws Exception {
+                SeatMap seatMapDetails = null;
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                String query = "SELECT img, name FROM SeatMap WHERE event_id = ?";
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setInt(1, eventId);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                        String seatMapImage = rs.getString("img");
+                        String seatMapName = rs.getString("name");
+                        seatMapDetails = new SeatMap( seatMapName, seatMapImage);
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
+
+                return seatMapDetails;
+        }
+
         public void approveEvents(int eventId)
                         throws Exception {
                 Class.forName(Baseconnection.nameClass);
@@ -117,5 +183,19 @@ public class AdminRepo {
                 ps.close();
 
         }
+        public void deleteEventById(int eventId) throws Exception {
+                Class.forName(Baseconnection.nameClass);
+                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password)) {
+                    String sql = "DELETE FROM Event WHERE event_id = ?";
+                    try (PreparedStatement ps = con.prepareStatement(sql)) {
+                        ps.setInt(1, eventId);
+                        ps.executeUpdate();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    throw new Exception("Error deleting event", e);
+                }
+            }
+
 
 }

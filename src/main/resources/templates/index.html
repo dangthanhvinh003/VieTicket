@@ -82,7 +82,7 @@
                                     <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'o'}">
-                                    <li><a class="dropdown-item" href="#">View List Event</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/viewMyListEvent}">View List Event</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'a'}">
                                     <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List

@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +57,7 @@ public class EventController {
     FileUpload fileUpload;
     @Autowired
     Cloudinary cloudinary;
-
+   
     @PostMapping(value = ("/add-event"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
             @RequestParam("start_date") Date startDate, @RequestParam("location") String location,
@@ -71,12 +72,13 @@ public class EventController {
         User user = (User) httpSession.getAttribute("activeUser");
         System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
-                organizerRepo.findById(user.getUserId()), type, imageURL, imageURL1, false);
+                organizerRepo.findById(user.getUserId()),imageURL, imageURL1, false);
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(),
                 imageURL, imageURL1);
         httpSession.setAttribute("idNewEvent", idNewEvent);
+        httpSession.setAttribute("eventCreated", true); // Đặt thuộc tính eventCreated
         return "redirect:/seatMap";
     }
 
@@ -85,10 +87,15 @@ public class EventController {
         return "seatMap";
     }
 
-    @GetMapping(value = ("/seatMap/NoSeatMap"))
-    public String NoSeatMap(HttpSession httpSession) throws ClassNotFoundException, SQLException {
+    @PostMapping(value = ("/seatMap/NoSeatMap"))
+    public String NoSeatMap(@RequestParam ("quantity") int total, @RequestParam ("price") String price,HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
         seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", "");
+        areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
+        rowRepo.addRow("NoSeatMap", areaRepo.getIdAreaEventId(idNewEvent));
+        for (int i = 0; i < total; i++) {
+            seatRepo.addSeat(Integer.toString(i), price, rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
+        }
         return "createEventSuccess";
     }
 
@@ -100,7 +107,7 @@ public class EventController {
     @PostMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage(HttpSession httpSession, @RequestParam("seatMapImg") MultipartFile multipartFile1,
             @RequestParam("additionalData") String additionalDataJson)
-            throws ClassNotFoundException, SQLException, IOException {
+            throws ClassNotFoundException, SQLException, IOException, ParseException {
         // Đọc dữ liệu JSON
         ObjectMapper objectMapper = new ObjectMapper();
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);
@@ -116,13 +123,12 @@ public class EventController {
         // Event event = (Event) httpSession.getAttribute("newEvent");
         // Event event2 = eventRepo.get(event.getName());
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
-        System.out.println(idNewEvent + "Id new event");
         String imageURL1 = fileUpload.uploadFile(multipartFile1);
         seatMapRepo.addSeatMap(idNewEvent, "SeatMapBeta", imageURL1);
         // add area normal
         if (additionalData.getTotalSelectedSeats() != 0) {
             areaRepo.addArea("Normal", additionalData.getTotalSelectedSeats(), idNewEvent,
-                    additionalData.getNormalPrice());
+                    additionalData.getNormalPrice(),seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
 
             ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
             System.out.println("allSeatNormal : " + allSeatNormal);
@@ -182,7 +188,7 @@ public class EventController {
         if (additionalData.getTotalVIPSeats() != 0) {
 
             areaRepo.addArea("Vip", additionalData.getTotalVIPSeats(), idNewEvent,
-                    additionalData.getVipPrice());
+                    additionalData.getVipPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
             ArrayList<String> allSeatVip = additionalData.getVipSeats();
             System.out.println("allSeatNormal : " + allSeatVip);
             Set<Character> uniqueFirstLetters = new HashSet<>();
