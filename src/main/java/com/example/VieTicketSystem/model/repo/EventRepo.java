@@ -26,15 +26,77 @@ public class EventRepo {
             throw new RuntimeException("Failed to load MySQL driver", e);
         }
     }
+
     @Autowired
     OrganizerRepo organizerRepo = new OrganizerRepo();
+
+    private static final String SELECT_BY_ID_SQL = "SELECT * FROM Event WHERE event_id = ?";
+
+    public Event findById(int id) throws Exception {
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+             PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);) {
+
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                Event event = null;
+                if (rs.next()) {
+                    event = new Event();
+                    event.setEventId(rs.getInt("event_id"));
+                    event.setName(rs.getString("name"));
+                    event.setDescription(rs.getString("description"));
+                    event.setStartDate(rs.getDate("start_date"));
+                    event.setLocation(rs.getString("location"));
+                    event.setType(rs.getString("type"));
+                    event.setTicketSaleDate(rs.getDate("ticket_sale_date"));
+                    event.setEndDate(rs.getDate("end_date"));
+                    event.setPoster(rs.getString("poster"));
+                    event.setBanner(rs.getString("banner"));
+                    event.setApprove(rs.getBoolean("is_approve"));
+                    event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id")));
+                }
+                return event;
+            }
+        }
+    }
+
+    public List<Event> findUpcomingByOrganizerId(int organizerId) throws SQLException {
+        List<Event> events = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE organizer_id = ? AND end_date >= ?");) {
+
+            statement.setInt(1, organizerId);
+            statement.setDate(2, new Date(System.currentTimeMillis()));
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Event event = new Event();
+                    event.setEventId(resultSet.getInt("event_id"));
+                    event.setName(resultSet.getString("name"));
+                    event.setDescription(resultSet.getString("description"));
+                    event.setStartDate(resultSet.getDate("start_date"));
+                    event.setLocation(resultSet.getString("location"));
+                    event.setType(resultSet.getString("type"));
+                    event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
+                    event.setEndDate(resultSet.getDate("end_date"));
+                    event.setPoster(resultSet.getString("poster"));
+                    event.setBanner(resultSet.getString("banner"));
+                    event.setApprove(resultSet.getBoolean("is_approve"));
+                    // Set the organizer if applicable
+                    events.add(event);
+                }
+            }
+        }
+        return events;
+    }
 
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
@@ -62,7 +124,7 @@ public class EventRepo {
         Event event = null;
         try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE name = ?");) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE name = ?");) {
 
             statement.setString(1, eventName); // Truyền tên sự kiện cụ thể vào câu lệnh SQL
 
@@ -90,42 +152,42 @@ public class EventRepo {
     }
 
     public int addEvent(String name, String description, Date startDate, String location, String type,
-                    Date ticketSaleDate, Date endDate, int organizerId, String poster, String banner)
-                    throws ClassNotFoundException, SQLException {
+                        Date ticketSaleDate, Date endDate, int organizerId, String poster, String banner)
+            throws ClassNotFoundException, SQLException {
 
-    Class.forName(Baseconnection.nameClass);
-    Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
-    
-    // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
-    PreparedStatement ps = connection.prepareStatement(
-            "INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            Statement.RETURN_GENERATED_KEYS);
-    
-    ps.setString(1, name);
-    ps.setString(2, description);
-    ps.setDate(3, startDate);
-    ps.setString(4, location);
-    ps.setString(5, type);
-    ps.setDate(6, ticketSaleDate);
-    ps.setDate(7, endDate);
-    ps.setInt(8, organizerId);
-    ps.setString(9, poster);
-    ps.setString(10, banner);
-    ps.setBoolean(11, false);
-    ps.executeUpdate();
-    
-    // Lấy khóa tự động tăng vừa được tạo
-    ResultSet rs = ps.getGeneratedKeys();
-    int eventId = 0;
-    if (rs.next()) {
-        eventId = rs.getInt(1);
+        Class.forName(Baseconnection.nameClass);
+        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+
+        // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
+        PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS);
+
+        ps.setString(1, name);
+        ps.setString(2, description);
+        ps.setDate(3, startDate);
+        ps.setString(4, location);
+        ps.setString(5, type);
+        ps.setDate(6, ticketSaleDate);
+        ps.setDate(7, endDate);
+        ps.setInt(8, organizerId);
+        ps.setString(9, poster);
+        ps.setString(10, banner);
+        ps.setBoolean(11, false);
+        ps.executeUpdate();
+
+        // Lấy khóa tự động tăng vừa được tạo
+        ResultSet rs = ps.getGeneratedKeys();
+        int eventId = 0;
+        if (rs.next()) {
+            eventId = rs.getInt(1);
+        }
+
+        rs.close();
+        ps.close();
+        connection.close();
+
+        return eventId;
     }
-    
-    rs.close();
-    ps.close();
-    connection.close();
-    
-    return eventId;
-}
 
 }

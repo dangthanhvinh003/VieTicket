@@ -14,7 +14,6 @@ public class Seat {
     private int seatId;
     private String number;
     private float ticketPrice;
-    private boolean isBuy;
-    private boolean isCheckedIn;
-    private int rowId;
+    private boolean isTaken;
+    private Row row;
 }

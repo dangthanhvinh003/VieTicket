@@ -13,5 +13,5 @@ import lombok.ToString;
 public class Row {
     private String rowName;
     private int rowId;
-    private int areaId; 
+    private Area area;
 }

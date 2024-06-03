@@ -41,13 +41,13 @@ import javax.print.attribute.standard.Chromaticity;
 public class EventController {
 
     @Autowired
-    EventRepo eventRepo = new EventRepo();
+    EventRepo eventRepo;
     @Autowired
-    AreaRepo areaRepo = new AreaRepo();
+    AreaRepo areaRepo;
     @Autowired
-    RowRepo rowRepo = new RowRepo();
+    RowRepo rowRepo;
     @Autowired
-    SeatRepo seatRepo = new SeatRepo();
+    SeatRepo seatRepo;
     @Autowired
     SeatMapRepo seatMapRepo;
     @Autowired
@@ -100,7 +100,7 @@ public class EventController {
     @PostMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage(HttpSession httpSession, @RequestParam("seatMapImg") MultipartFile multipartFile1,
             @RequestParam("additionalData") String additionalDataJson)
-            throws ClassNotFoundException, SQLException, IOException {
+            throws Exception {
         // Đọc dữ liệu JSON
         ObjectMapper objectMapper = new ObjectMapper();
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);

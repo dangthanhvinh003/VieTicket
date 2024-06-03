@@ -26,6 +26,4 @@ public class Event {
     private String poster;
     private String banner;
     private boolean isApprove;
-
-    
 }

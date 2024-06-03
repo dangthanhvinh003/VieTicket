@@ -1,10 +1,7 @@
 package com.example.VieTicketSystem.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
 import java.sql.Date;
 
 @Getter
@@ -12,6 +9,7 @@ import java.sql.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Organizer extends User{
     private Date foundedDate;
     private String website;

@@ -15,6 +15,8 @@ public class Ticket {
     private int ticketId;
     private String qrCode;
     private Date purchaseDate;
-    private int orderId; // Đại diện cho quan hệ với bảng Order
-    private int seatId; 
+    private Order order;
+    private Seat seat;
+    private boolean isReturned;
+    private boolean isCheckedIn;
 }
