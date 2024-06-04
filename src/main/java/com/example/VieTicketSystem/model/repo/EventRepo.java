@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,9 +15,12 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
+import com.example.VieTicketSystem.model.entity.EventStatistics;
 import com.example.VieTicketSystem.model.entity.SeatMap;
 
 @Repository
@@ -47,11 +52,28 @@ public class EventRepo {
                     event.setEventId(rs.getInt("event_id"));
                     event.setName(rs.getString("name"));
                     event.setDescription(rs.getString("description"));
-                    event.setStartDate(rs.getDate("start_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp startTimestamp = rs.getTimestamp("start_date");
+                    if (startTimestamp != null) {
+                        event.setStartDate(startTimestamp.toLocalDateTime());
+                    }
+
                     event.setLocation(rs.getString("location"));
                     event.setType(rs.getString("type"));
-                    event.setTicketSaleDate(rs.getDate("ticket_sale_date"));
-                    event.setEndDate(rs.getDate("end_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp ticketSaleTimestamp = rs.getTimestamp("ticket_sale_date");
+                    if (ticketSaleTimestamp != null) {
+                        event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                    }
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp endTimestamp = rs.getTimestamp("end_date");
+                    if (endTimestamp != null) {
+                        event.setEndDate(endTimestamp.toLocalDateTime());
+                    }
+
                     event.setPoster(rs.getString("poster"));
                     event.setBanner(rs.getString("banner"));
                     event.setApproved(rs.getInt("is_approve"));
@@ -78,11 +100,28 @@ public class EventRepo {
                     event.setEventId(resultSet.getInt("event_id"));
                     event.setName(resultSet.getString("name"));
                     event.setDescription(resultSet.getString("description"));
-                    event.setStartDate(resultSet.getDate("start_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp startTimestamp = resultSet.getTimestamp("start_date");
+                    if (startTimestamp != null) {
+                        event.setStartDate(startTimestamp.toLocalDateTime());
+                    }
+
                     event.setLocation(resultSet.getString("location"));
                     event.setType(resultSet.getString("type"));
-                    event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
-                    event.setEndDate(resultSet.getDate("end_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
+                    if (ticketSaleTimestamp != null) {
+                        event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                    }
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp endTimestamp = resultSet.getTimestamp("end_date");
+                    if (endTimestamp != null) {
+                        event.setEndDate(endTimestamp.toLocalDateTime());
+                    }
+
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
@@ -98,19 +137,36 @@ public class EventRepo {
         List<Event> events = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                 Baseconnection.password);
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
-             ResultSet resultSet = statement.executeQuery()) {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
+                ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
                 event.setEventId(resultSet.getInt("event_id"));
                 event.setName(resultSet.getString("name"));
                 event.setDescription(resultSet.getString("description"));
-                event.setStartDate(resultSet.getDate("start_date"));
+
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp startTimestamp = resultSet.getTimestamp("start_date");
+                if (startTimestamp != null) {
+                    event.setStartDate(startTimestamp.toLocalDateTime());
+                }
+
                 event.setLocation(resultSet.getString("location"));
                 event.setType(resultSet.getString("type"));
-                event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
-                event.setEndDate(resultSet.getDate("end_date"));
+
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
+                if (ticketSaleTimestamp != null) {
+                    event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                }
+
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp endTimestamp = resultSet.getTimestamp("end_date");
+                if (endTimestamp != null) {
+                    event.setEndDate(endTimestamp.toLocalDateTime());
+                }
+
                 event.setPoster(resultSet.getString("poster"));
                 event.setBanner(resultSet.getString("banner"));
                 event.setApproved(resultSet.getInt("is_approve"));
@@ -137,11 +193,28 @@ public class EventRepo {
                     event.setEventId(resultSet.getInt("event_id"));
                     event.setName(resultSet.getString("name"));
                     event.setDescription(resultSet.getString("description"));
-                    event.setStartDate(resultSet.getDate("start_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp startTimestamp = resultSet.getTimestamp("start_date");
+                    if (startTimestamp != null) {
+                        event.setStartDate(startTimestamp.toLocalDateTime());
+                    }
+
                     event.setLocation(resultSet.getString("location"));
                     event.setType(resultSet.getString("type"));
-                    event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
-                    event.setEndDate(resultSet.getDate("end_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
+                    if (ticketSaleTimestamp != null) {
+                        event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                    }
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp endTimestamp = resultSet.getTimestamp("end_date");
+                    if (endTimestamp != null) {
+                        event.setEndDate(endTimestamp.toLocalDateTime());
+                    }
+
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
@@ -154,48 +227,165 @@ public class EventRepo {
         return event;
     }
 
-    public int addEvent(String name, String description, Date startDate, String location, String type,
-            Date ticketSaleDate, Date endDate, int organizerId, String poster, String banner)
+    public EventStatistics getEventStatisticsByEventId(int eventId) {
+        EventStatistics stats = null;
+
+        String sql = "SELECT " +
+                "SUM(CASE WHEN t.is_returned = 0 THEN s.ticket_price ELSE 0 END) AS total_revenue, " +
+                "COUNT(CASE WHEN t.is_returned = 0 THEN 1 END) AS tickets_sold, " +
+                "COUNT(CASE WHEN t.is_returned = 1 THEN 1 END) AS tickets_returned, " +
+                "(SELECT COUNT(*) FROM Seat s2 " +
+                "JOIN `Row` r2 ON s2.row_id = r2.row_id " +
+                "JOIN Area a2 ON r2.area_id = a2.area_id " +
+                "WHERE a2.event_id = ?) " + // Sử dụng tham số
+                "- COUNT(CASE WHEN t.is_returned = 0 THEN 1 END) " +
+                "- COUNT(CASE WHEN t.is_returned = 1 THEN 1 END) AS tickets_remaining " +
+                "FROM " +
+                "Ticket t " +
+                "JOIN " +
+                "Seat s ON t.seat_id = s.seat_id " +
+                "JOIN " +
+                "`Row` r ON s.row_id = r.row_id " +
+                "JOIN " +
+                "Area a ON r.area_id = a.area_id " +
+                "WHERE " +
+                "a.event_id = ?;";
+
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, eventId);
+            statement.setInt(2, eventId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    stats = new EventStatistics();
+                    stats.setTotalRevenue(resultSet.getDouble("total_revenue"));
+                    stats.setTicketsSold(resultSet.getInt("tickets_sold"));
+                    stats.setTicketsReturned(resultSet.getInt("tickets_returned"));
+                    stats.setTicketsRemaining(resultSet.getInt("tickets_remaining"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stats;
+    }
+
+    public Map<String, Double> getDailyRevenueByEventId(int eventId) {
+        Map<String, Double> dailyRevenueMap = new HashMap<>();
+
+        String sql = "SELECT DATE(t.purchase_date) AS date, SUM(s.ticket_price) AS daily_revenue " +
+                "FROM Ticket t " +
+                "JOIN Seat s ON t.seat_id = s.seat_id " +
+                "JOIN `Row` r ON s.row_id = r.row_id " +
+                "JOIN Area a ON r.area_id = a.area_id " +
+                "WHERE a.event_id = ? AND t.is_returned = 0 " + // Chỉ lấy vé không bị hoàn trả
+                "GROUP BY DATE(t.purchase_date);";
+
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, eventId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    String date = resultSet.getString("date");
+                    Double dailyRevenue = resultSet.getDouble("daily_revenue");
+                    dailyRevenueMap.put(date, dailyRevenue);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return dailyRevenueMap;
+    }
+
+    public int addEvent(String name, String description, LocalDateTime startDate, String location, String type,
+            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-
-        // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
-        PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                Statement.RETURN_GENERATED_KEYS);
-
-        ps.setString(1, name);
-        ps.setString(2, description);
-        ps.setDate(3, startDate);
-        ps.setString(4, location);
-        ps.setString(5, type);
-        ps.setDate(6, ticketSaleDate);
-        ps.setDate(7, endDate);
-        ps.setInt(8, organizerId);
-        ps.setString(9, poster);
-        ps.setString(10, banner);
-        ps.setBoolean(11, false);
-        ps.executeUpdate();
-
-        // Lấy khóa tự động tăng vừa được tạo
-        ResultSet rs = ps.getGeneratedKeys();
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         int eventId = 0;
-        if (rs.next()) {
-            eventId = rs.getInt(1);
-        }
 
-        rs.close();
-        ps.close();
-        connection.close();
+        try {
+            connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                    Baseconnection.password);
+
+            // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
+            ps = connection.prepareStatement(
+                    "INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+
+            ps.setString(1, name);
+            ps.setString(2, description);
+
+            // Chuyển đổi LocalDateTime sang Timestamp
+            if (startDate != null) {
+                ps.setTimestamp(3, Timestamp.valueOf(startDate));
+            } else {
+                ps.setTimestamp(3, null);
+            }
+
+            ps.setString(4, location);
+            ps.setString(5, type);
+
+            // Chuyển đổi LocalDateTime sang Timestamp
+            if (ticketSaleDate != null) {
+                ps.setTimestamp(6, Timestamp.valueOf(ticketSaleDate));
+            } else {
+                ps.setTimestamp(6, null);
+            }
+
+            // Chuyển đổi LocalDateTime sang Timestamp
+            if (endDate != null) {
+                ps.setTimestamp(7, Timestamp.valueOf(endDate));
+            } else {
+                ps.setTimestamp(7, null);
+            }
+
+            ps.setInt(8, organizerId);
+            ps.setString(9, poster);
+            ps.setString(10, banner);
+            ps.setBoolean(11, false);
+
+            // Thực thi câu lệnh SQL
+            int affectedRows = ps.executeUpdate();
+
+            // Kiểm tra nếu có dòng nào bị ảnh hưởng
+            if (affectedRows > 0) {
+                // Lấy khóa tự động tăng vừa được tạo
+                rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    eventId = rs.getInt(1);
+                }
+            }
+        } finally {
+            // Đóng các tài nguyên
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
 
         return eventId;
     }
 
-    public int updateEvent(int eventId, String name, String description, Date startDate, String location, String type,
-            Date ticketSaleDate, Date endDate, int organizerId, String poster, String banner)
+    public int updateEvent(int eventId, String name, String description, LocalDateTime startDate, String location,
+            String type,
+            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
@@ -211,15 +401,35 @@ public class EventRepo {
 
         ps.setString(1, name);
         ps.setString(2, description);
-        ps.setDate(3, startDate);
+
+        // Chuyển đổi LocalDateTime sang Timestamp
+        if (startDate != null) {
+            ps.setTimestamp(3, Timestamp.valueOf(startDate));
+        } else {
+            ps.setTimestamp(3, null);
+        }
+
         ps.setString(4, location);
         ps.setString(5, type);
-        ps.setDate(6, ticketSaleDate);
-        ps.setDate(7, endDate);
+
+        // Chuyển đổi LocalDateTime sang Timestamp
+        if (ticketSaleDate != null) {
+            ps.setTimestamp(6, Timestamp.valueOf(ticketSaleDate));
+        } else {
+            ps.setTimestamp(6, null);
+        }
+
+        // Chuyển đổi LocalDateTime sang Timestamp
+        if (endDate != null) {
+            ps.setTimestamp(7, Timestamp.valueOf(endDate));
+        } else {
+            ps.setTimestamp(7, null);
+        }
+
         ps.setInt(8, organizerId);
         ps.setString(9, poster);
         ps.setString(10, banner);
-        ps.setBoolean(11, false); // Giả sử trạng thái phê duyệt không thay đổi
+        ps.setBoolean(11, false);
         ps.setInt(12, eventId);
 
         int rowsUpdated = ps.executeUpdate();
@@ -246,11 +456,28 @@ public class EventRepo {
                     event.setEventId(resultSet.getInt("event_id"));
                     event.setName(resultSet.getString("name"));
                     event.setDescription(resultSet.getString("description"));
-                    event.setStartDate(resultSet.getDate("start_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp startTimestamp = resultSet.getTimestamp("start_date");
+                    if (startTimestamp != null) {
+                        event.setStartDate(startTimestamp.toLocalDateTime());
+                    }
+
                     event.setLocation(resultSet.getString("location"));
                     event.setType(resultSet.getString("type"));
-                    event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
-                    event.setEndDate(resultSet.getDate("end_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
+                    if (ticketSaleTimestamp != null) {
+                        event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                    }
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp endTimestamp = resultSet.getTimestamp("end_date");
+                    if (endTimestamp != null) {
+                        event.setEndDate(endTimestamp.toLocalDateTime());
+                    }
+
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
@@ -285,11 +512,28 @@ public class EventRepo {
                     event.setEventId(resultSet.getInt("event_id"));
                     event.setName(resultSet.getString("name"));
                     event.setDescription(resultSet.getString("description"));
-                    event.setStartDate(resultSet.getDate("start_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp startTimestamp = resultSet.getTimestamp("start_date");
+                    if (startTimestamp != null) {
+                        event.setStartDate(startTimestamp.toLocalDateTime());
+                    }
+
                     event.setLocation(resultSet.getString("location"));
                     event.setType(resultSet.getString("type"));
-                    event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
-                    event.setEndDate(resultSet.getDate("end_date"));
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
+                    if (ticketSaleTimestamp != null) {
+                        event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                    }
+
+                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    Timestamp endTimestamp = resultSet.getTimestamp("end_date");
+                    if (endTimestamp != null) {
+                        event.setEndDate(endTimestamp.toLocalDateTime());
+                    }
+
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));

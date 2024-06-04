@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,12 @@ public class TicketRepo {
                 Baseconnection.password);
         PreparedStatement ps = con.prepareStatement(INSERT_STATEMENT);
         ps.setString(1, ticket.getQrCode());
-        ps.setDate(2, new Date(ticket.getPurchaseDate().getTime())); // Convert to SQL Date
+        // Chuyển đổi LocalDateTime sang Timestamp
+        if (ticket.getPurchaseDate() != null) {
+            ps.setTimestamp(2, Timestamp.valueOf(ticket.getPurchaseDate()));
+        } else {
+            ps.setTimestamp(2, null); // Xử lý trường hợp purchaseDate là null nếu cần thiết
+        }
         ps.setInt(3, ticket.getOrder().getOrderId());
         ps.setInt(4, ticket.getSeat().getSeatId());
         ps.setBoolean(5, ticket.isReturned());
@@ -54,7 +60,11 @@ public class TicketRepo {
                 Baseconnection.password);
         PreparedStatement ps = con.prepareStatement(UPDATE_STATEMENT);
         ps.setString(1, ticket.getQrCode());
-        ps.setDate(2, new Date(ticket.getPurchaseDate().getTime())); // Convert to SQL Date
+        if (ticket.getPurchaseDate() != null) {
+            ps.setTimestamp(2, Timestamp.valueOf(ticket.getPurchaseDate()));
+        } else {
+            ps.setTimestamp(2, null); // Xử lý trường hợp purchaseDate là null nếu cần thiết
+        }
         ps.setInt(3, ticket.getOrder().getOrderId());
         ps.setInt(4, ticket.getSeat().getSeatId());
         ps.setBoolean(5, ticket.isReturned());
@@ -78,7 +88,13 @@ public class TicketRepo {
             Ticket ticket = new Ticket();
             ticket.setTicketId(rs.getInt("ticket_id"));
             ticket.setQrCode(rs.getString("qr_code"));
-            ticket.setPurchaseDate(rs.getDate("purchase_date"));
+            // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+            Timestamp timestamp = rs.getTimestamp("purchase_date");
+            if (timestamp != null) {
+                ticket.setPurchaseDate(timestamp.toLocalDateTime());
+            } else {
+                ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+            }
             ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
             ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
             ticket.setReturned(rs.getBoolean("is_returned"));
@@ -105,7 +121,13 @@ public class TicketRepo {
             Ticket ticket = new Ticket();
             ticket.setTicketId(rs.getInt("ticket_id"));
             ticket.setQrCode(rs.getString("qr_code"));
-            ticket.setPurchaseDate(rs.getDate("purchase_date"));
+            // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+            Timestamp timestamp = rs.getTimestamp("purchase_date");
+            if (timestamp != null) {
+                ticket.setPurchaseDate(timestamp.toLocalDateTime());
+            } else {
+                ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+            }
             ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
             ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
             ticket.setReturned(rs.getBoolean("is_returned"));
@@ -147,7 +169,13 @@ public class TicketRepo {
             ticket = new Ticket();
             ticket.setTicketId(rs.getInt("ticket_id"));
             ticket.setQrCode(rs.getString("qr_code"));
-            ticket.setPurchaseDate(rs.getDate("purchase_date"));
+            // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+            Timestamp timestamp = rs.getTimestamp("purchase_date");
+            if (timestamp != null) {
+                ticket.setPurchaseDate(timestamp.toLocalDateTime());
+            } else {
+                ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+            }
             ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
             ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
             ticket.setReturned(rs.getBoolean("is_returned"));

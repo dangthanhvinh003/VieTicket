@@ -120,16 +120,22 @@
                                             No areas available</li>
                                     </ul>
                                     <div class="d-flex justify-content-between mt-3">
-                                        <button class="btn btn-primary">Statistic</button>
-                                        <form th:action="@{/eventEditPage}" method="post" style="display:inline;">
+                                        <form th:action="@{/viewStatistics}" method="post" style="display:inline;">
                                             <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                            <button type="submit" class="btn btn-custom">Edit Event</button>
+                                            <button type="submit" class="btn btn-custom">Statistic Event</button>
                                         </form>
-                                        
-                                        <form th:action="@{/seatMapEditPage}" method="post" style="display:inline;">
-                                            <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                            <button type="submit" class="btn btn-custom">Edit Seat Map</button>
-                                        </form>
+                                    
+                                        <div th:if="${pageType == 'pending'}">
+                                            <form th:action="@{/eventEditPage}" method="post" style="display:inline;">
+                                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
+                                                <button type="submit" class="btn btn-custom">Edit Event</button>
+                                            </form>
+                                            
+                                            <form th:action="@{/seatMapEditPage}" method="post" style="display:inline;">
+                                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
+                                                <button type="submit" class="btn btn-custom">Edit Seat Map</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

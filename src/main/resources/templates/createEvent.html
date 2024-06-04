@@ -110,6 +110,7 @@
             max-width: 100%;
             height: auto;
         }
+
         .hidden {
             display: none;
         }
@@ -133,7 +134,8 @@
                     <div class="upload-container" style="height: 320px;">
                         <img id="uploadIcon1" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
                         <p id="uploadText1">Input poster (720×958)</p>
-                        <input type="file" name="poster" accept="image/*" onchange="previewImage(event, 'posterPreview')">
+                        <input type="file" name="poster" accept="image/*"
+                            onchange="previewImage(event, 'posterPreview')">
                         <img id="posterPreview" alt="Poster Preview">
                     </div>
                 </div>
@@ -147,43 +149,44 @@
                     <div class="mb-3">
                         <label for="location" class="form-label">Location :</label>
                         <input type="text" class="form-control" id="location" name="location" required>
-                    </div>
-                    <!-- Start Date -->
-                    <div class="mb-3">
-                        <label for="start_date" class="form-label">Start Date :</label>
-                        <input type="date" class="form-control" id="start_date" name="start_date" required>
-                    </div>
-                    <!-- End Date -->
-                    <div class="mb-3">
-                        <label for="end_date" class="form-label">End Date :</label>
-                        <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        <!-- Start Date -->
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date :</label>
+                            <input type="datetime-local" class="form-control" id="start_date" name="start_date"
+                                required>
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">End Date :</label>
+                            <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                        </div>
+
                     </div>
 
                 </div>
+                <!--Type -->
+                <div class="mb-3">
+                    <label for="end_date" class="form-label">Type :</label>
+                    <input type="text" class="form-control" id="type" name="type" required>
+                </div>
+                <!-- TicketSaleDate-->
+                <div class="mb-3">
+                    <label for="end_date" class="form-label">Ticket Sale Date :</label>
+                    <input type="datetime-local" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required>
+                </div>
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="editor" class="form-label">Description :</label>
+                    <textarea id="editor"></textarea>
 
-            </div>
-            <!--Type -->
-            <div class="mb-3">
-                <label for="end_date" class="form-label">Type :</label>
-                <input type="text" class="form-control" id="type" name="type" required>
-            </div>
-            <!-- TicketSaleDate-->
-            <div class="mb-3">
-                <label for="end_date" class="form-label">End Date :</label>
-                <input type="date" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required>
-            </div>
-            <!-- Description -->
-            <div class="mb-3">
-                <label for="editor" class="form-label">Description :</label>
-                <textarea id="editor"></textarea>
-
-                <!-- Hidden textarea to store the content from CKEditor -->
-                <textarea id="hiddenDescription" name="description" style="display:none;"></textarea>
-            </div>
-            <!-- Submit Button -->
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">Create Event</button>
-            </div>
+                    <!-- Hidden textarea to store the content from CKEditor -->
+                    <textarea id="hiddenDescription" name="description" style="display:none;"></textarea>
+                </div>
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Create Event</button>
+                </div>
         </form>
     </div>
     <!-- Bootstrap JS -->
@@ -193,7 +196,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const preview = document.getElementById(previewElementId);
                     preview.src = e.target.result;
                     preview.style.display = 'block';

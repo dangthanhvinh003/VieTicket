@@ -43,7 +43,7 @@ CREATE TABLE Event
     FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
     poster           TEXT,
     banner           TEXT,
-    is_approve       BOOLEAN
+    is_approve       int
 );
 
 CREATE TABLE SeatMap

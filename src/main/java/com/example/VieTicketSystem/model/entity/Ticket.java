@@ -1,5 +1,6 @@
 package com.example.VieTicketSystem.model.entity;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.ToString;
 public class Ticket {
     private int ticketId;
     private String qrCode;
-    private Date purchaseDate;
+    private LocalDateTime purchaseDate;
     private Order order;
     private Seat seat;
     private boolean isReturned;

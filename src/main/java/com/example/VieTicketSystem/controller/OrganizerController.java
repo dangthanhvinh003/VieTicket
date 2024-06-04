@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.entity.AdditionalData;
 import com.example.VieTicketSystem.model.entity.Event;
+import com.example.VieTicketSystem.model.entity.EventStatistics;
 import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AreaRepo;
@@ -68,6 +70,14 @@ public class OrganizerController {
     public String inactiveAccountPage() {
         return "inactive-account";
     }
+    @PostMapping(value = ("/viewStatistics"))
+    public String statisticsPage(@RequestParam("eventId") int eventId, Model model) {
+        EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(eventId);
+        Map<String, Double> dailyRevenueMap = eventRepo.getDailyRevenueByEventId(eventId);
+        model.addAttribute("eventStatistics", eventStatistics);
+        model.addAttribute("dailyStatistics", dailyRevenueMap);
+        return "statistics";
+    }
 
     @GetMapping(value = "/viewMyListEvent")
     public String viewMyListEvent(@RequestParam(value = "search", required = false) String search, Model model,
@@ -85,6 +95,7 @@ public class OrganizerController {
 
     @GetMapping(value = "/allEvents")
     public String allEvents(Model model, HttpSession httpSession) {
+        model.addAttribute("pageType", "all");
         return viewMyListEvent(null, model, httpSession);
     }
 
@@ -96,18 +107,23 @@ public class OrganizerController {
                 .filter(event -> event.getApproved() == 0 || event.getApproved() == 3)
                 .collect(Collectors.toList());
         model.addAttribute("eventList", pendingEvents);
+        model.addAttribute("pageType", "pending");
         return "viewMyListEvent";
     }
 
+   
     @GetMapping(value = "/approvedEvents")
     public String approvedEvents(Model model, HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("activeUser");
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
-        java.util.Date currentDate = new java.util.Date();
+        LocalDateTime currentDate = LocalDateTime.now();
+        
         List<Event> approvedEvents = eventList.stream()
-                .filter(event -> event.getApproved() == 1  && event.getEndDate().after(currentDate))
+                .filter(event -> event.getApproved() == 1 && event.getEndDate().isAfter(currentDate))
                 .collect(Collectors.toList());
+        
         model.addAttribute("eventList", approvedEvents);
+        model.addAttribute("pageType", "approved");
         return "viewMyListEvent";
     }
 
@@ -115,10 +131,14 @@ public class OrganizerController {
     public String passedEvents(Model model, HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("activeUser");
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
-        java.util.Date currentDate = new java.util.Date();
-        List<Event> passedEvents = eventList.stream().filter(event -> event.getEndDate().before(currentDate))
+        LocalDateTime currentDate = LocalDateTime.now();
+        
+        List<Event> passedEvents = eventList.stream()
+                .filter(event -> event.getEndDate().isBefore(currentDate))
                 .collect(Collectors.toList());
+        
         model.addAttribute("eventList", passedEvents);
+        model.addAttribute("pageType", "passed");
         return "viewMyListEvent";
     }
 
@@ -131,9 +151,9 @@ public String eventEditPage(@RequestParam("eventId") int eventId, Model model, H
 }
     @PostMapping(value = ("/eventEditSubmit"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
-                           @RequestParam("start_date") Date startDate, @RequestParam("location") String location,
-                           @RequestParam("type") String type, @RequestParam("ticket_sale_date") Date ticketSaleDate,
-                           @RequestParam("end_date") Date endDate, @RequestParam("poster") MultipartFile multipartFile,
+                           @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
+                           @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
+                           @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
                            @RequestParam("banner") MultipartFile multipartFile1,
                            @RequestParam("currentPoster") String currentPoster,
                            @RequestParam("currentBanner") String currentBanner,
