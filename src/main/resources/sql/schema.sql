@@ -127,8 +127,8 @@ CREATE TABLE Ticket
 (
     ticket_id     INT AUTO_INCREMENT
         PRIMARY KEY,
-    qr_code       TEXT UNIQUE,
-    INDEX qr_code_index (qr_code(32)),
+    qr_code       VARCHAR(64) UNIQUE,
+    INDEX qr_code_index (qr_code),
     purchase_date DATE,
     order_id      INT,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
