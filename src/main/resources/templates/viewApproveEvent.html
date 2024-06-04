@@ -29,14 +29,26 @@
             height: auto;
             /* Giữ tỷ lệ ảnh */
         }
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Khoảng cách đều giữa các phần tử */
+        }
+        .header-container h2 {
+            margin: 0;
+        }
     </style>
 </head>
 
 <body class="bg-light">
     <div class="container mt-5">
-        <h2 class="mb-4">List of Event to Approve</h2>
-        <a href="/ViewAllApproveEvent" class="btn btn-custom" id="pendingEvents">Approve</a>
-        <a href="/ViewAllRejectEvent" class="btn btn-custom" id="pendingEvents">Rejected</a>
+        <div class="header-container">
+            <h2 class="mb-4">List of Event to Approve</h2>
+            <div>
+                <a href="/ViewAllApproveEvent" class="btn btn-primary" id="pendingEvents">Approve</a>
+                <a href="/ViewAllRejectEvent" class="btn btn-danger" id="pendingEvents">Rejected</a>
+            </div>
+        </div>
         
         <div class="container mt-4">
             <div class="row">

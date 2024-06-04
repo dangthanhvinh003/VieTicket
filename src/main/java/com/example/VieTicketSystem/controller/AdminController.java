@@ -78,10 +78,10 @@ public class AdminController {
         String conten = "<html><body style='font-family: sans-serif;'>" +
                 "<h1 style='color: #007bff;'>VinhTicket Account</h1>" +
                 "<p style='font-size: 16px;'>Hello " + organizerEmail + ",</p>" +
-                "<p style='font-size: 16px;'>Your event" + eventName + " has been rejected.</p>"
+                "<p style='font-size: 16px;'>Your event <strong>" + eventName + "</strong> has been rejected.</p>"
                 +
-                "<p style='font-size: 24px; font-weight: bold; color: #f00;'>Please edit it within 5 days</p>" +
-                "<p style='font-size: 16px;'>If you do not edit, we will be forced to delete your event</p>" +
+                "<p style='font-size: 24px;'>Please edit it within <strong style='font-weight: bold; color: #f00;'>5 days<strong></p>" +
+                "<p style='font-size: 16px;'>If you do not make the necessary changes, we will be forced to delete your event.</p>" +
                 "<p style='font-size: 16px;'>Thank you for using VinhTicket!</p>" +
                 "<p style='font-size: 14px; color: #777;'>This is an automated email, please do not reply to this email.</p>"
                 +
