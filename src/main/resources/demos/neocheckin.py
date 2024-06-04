@@ -85,13 +85,12 @@ def check_in(qr_code):
     response = requests.post(CHECKIN_URL, json=payload)
     data = response.json()
     if response.status_code == 200:
-        generate_beep(frequency=1000, duration=50)  # one fast beep for success
+        generate_beep(frequency=1000, duration=175)  # one fast beep for success
         formatted_data = format_checkin_data(data)
         messagebox.showinfo("Check-In", f"Check-in successful:\n{formatted_data}")
     else:
-        for _ in range(3):  
-            generate_beep(frequency=1000, duration=12)
-            time.sleep(0.15)
+        for _ in range(2):  
+            generate_beep(frequency=360, duration=125)
         formatted_data = format_checkin_data(data)
         messagebox.showerror("Check-In", f"Check-in failed:\n{formatted_data}")
 

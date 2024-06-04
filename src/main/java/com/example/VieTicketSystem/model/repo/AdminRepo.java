@@ -106,7 +106,7 @@ public class AdminRepo {
                                                                                                // OrganizerRepository
                         event.setPoster(rs.getString("poster"));
                         event.setBanner(rs.getString("banner"));
-                        event.setIsApprove(rs.getInt("is_approve"));
+                        event.setApproved(rs.getInt("is_approve"));
 
                         // Lấy danh sách các khu vực và giá tiền
                         event.setAreas(getAreasByEventId(event.getEventId()));
@@ -149,7 +149,7 @@ public class AdminRepo {
                                                                                                // OrganizerRepository
                         event.setPoster(rs.getString("poster"));
                         event.setBanner(rs.getString("banner"));
-                        event.setIsApprove(rs.getInt("is_approve"));
+                        event.setApproved(rs.getInt("is_approve"));
 
                         // Lấy danh sách các khu vực và giá tiền
                         event.setAreas(getAreasByEventId(event.getEventId()));

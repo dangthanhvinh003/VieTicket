@@ -86,7 +86,9 @@ CREATE TABLE Area
     total_tickets INT,
     ticket_price  FLOAT,
     event_id      INT,
-    FOREIGN KEY (event_id) REFERENCES Event (event_id)
+    FOREIGN KEY (event_id) REFERENCES Event (event_id) ON DELETE CASCADE,
+    seat_map_id   INT,
+    FOREIGN KEY (seat_map_id) REFERENCES SeatMap (seat_map_id) ON DELETE CASCADE
 );
 
 CREATE TABLE `Row`
@@ -95,7 +97,7 @@ CREATE TABLE `Row`
         PRIMARY KEY,
     row_name VARCHAR(16),
     area_id  INT,
-    FOREIGN KEY (area_id) REFERENCES Area (area_id)
+    FOREIGN KEY (area_id) REFERENCES Area (area_id) ON DELETE CASCADE
 );
 
 CREATE TABLE RefundOrder
@@ -118,7 +120,7 @@ CREATE TABLE Seat
     ticket_price FLOAT,
     is_taken     BOOLEAN,
     row_id       INT,
-    FOREIGN KEY (row_id) REFERENCES `Row` (row_id)
+    FOREIGN KEY (row_id) REFERENCES `Row` (row_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Ticket

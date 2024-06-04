@@ -49,8 +49,7 @@ public class SeatRepo {
                 ps.setString(1, seatNumber);
                 ps.setFloat(2, Float.parseFloat(ticketPrice));
                 ps.setBoolean(3, false);
-                ps.setBoolean(4, false);
-                ps.setInt(5, rowId);
+                ps.setInt(4, rowId);
                 ps.executeUpdate();
                 ps.close();
         }

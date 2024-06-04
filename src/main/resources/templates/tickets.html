@@ -15,7 +15,7 @@
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th>Ticket ID</th>
+                    <th>Event name</th>
                     <th>QR Code</th>
                     <th>Purchase Date</th>
                     <th>Order ID</th>
@@ -24,7 +24,7 @@
             </thead>
             <tbody>
                 <tr th:each="ticket, stat : ${tickets}">
-                    <td th:text="${ticket.ticketId}"></td>
+                    <td th:text="${ticket.seat.row.area.event.name}"></td>
                     <td>
                         <button class="btn btn-primary show-qr-code">Show QR Code</button>
                         <div class="qr-code" style="display: none;">

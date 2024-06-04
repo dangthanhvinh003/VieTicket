@@ -42,15 +42,15 @@ import jakarta.servlet.http.HttpSession;
 public class OrganizerController {
 
     @Autowired
-    EventRepo eventRepo = new EventRepo();
+    EventRepo eventRepo;
     @Autowired
-    SeatMapRepo seatMapRepo = new SeatMapRepo();
+    SeatMapRepo seatMapRepo;
     @Autowired
-    AreaRepo areaRepo = new AreaRepo();
+    AreaRepo areaRepo;
     @Autowired
-    RowRepo rowRepo = new RowRepo();
+    RowRepo rowRepo;
     @Autowired
-    SeatRepo seatRepo = new SeatRepo();
+    SeatRepo seatRepo;
     @Autowired
     OrganizerRepo organizerRepo;
     @Autowired
@@ -93,7 +93,7 @@ public class OrganizerController {
         User user = (User) httpSession.getAttribute("activeUser");
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
         List<Event> pendingEvents = eventList.stream()
-                .filter(event -> event.getIsApprove() == 0 || event.getIsApprove() == 3)
+                .filter(event -> event.getApproved() == 0 || event.getApproved() == 3)
                 .collect(Collectors.toList());
         model.addAttribute("eventList", pendingEvents);
         return "viewMyListEvent";
@@ -105,7 +105,7 @@ public class OrganizerController {
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
         java.util.Date currentDate = new java.util.Date();
         List<Event> approvedEvents = eventList.stream()
-                .filter(event -> event.getIsApprove() == 1  && event.getEndDate().after(currentDate))
+                .filter(event -> event.getApproved() == 1  && event.getEndDate().after(currentDate))
                 .collect(Collectors.toList());
         model.addAttribute("eventList", approvedEvents);
         return "viewMyListEvent";
@@ -208,7 +208,7 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
     @PostMapping(value = ("/seatMap/SeatMapBetaEdit"))
     public String SeatMapBetaPage(HttpSession httpSession, @RequestParam("seatMapImg") MultipartFile multipartFile1,
             @RequestParam("additionalData") String additionalDataJson)
-            throws ClassNotFoundException, SQLException, IOException, ParseException {
+            throws Exception {
         // Đọc dữ liệu JSON
         ObjectMapper objectMapper = new ObjectMapper();
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);

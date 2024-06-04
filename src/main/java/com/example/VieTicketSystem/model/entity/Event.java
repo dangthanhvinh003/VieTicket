@@ -25,7 +25,7 @@ public class Event {
     private Organizer organizer;
     private String poster;
     private String banner;
-    private int isApprove;
+    private int approved;
     private List<Area> areas; // Danh sách các khu vực và giá tiền
     private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
     public Event(int eventId, String name, String description, Date startDate, String location, String type,
@@ -41,7 +41,7 @@ public class Event {
         this.organizer = organizer;
         this.poster = poster;
         this.banner = banner;
-        this.isApprove = isApprove;
+        this.approved = isApprove;
     }
     
 
