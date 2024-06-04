@@ -11,6 +11,7 @@ import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.RowRepo;
 import com.example.VieTicketSystem.model.repo.SeatMapRepo;
 import com.example.VieTicketSystem.model.repo.SeatRepo;
+import com.example.VieTicketSystem.model.repo.UserRepo;
 import com.example.VieTicketSystem.model.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,6 +56,8 @@ public class EventController {
     FileUpload fileUpload;
     @Autowired
     Cloudinary cloudinary;
+    @Autowired
+    UserRepo userRepo;
 
     @PostMapping(value = ("/add-event"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
@@ -162,5 +166,18 @@ public class EventController {
 
         return "redirect:/createEventSuccess";
     }
+
+    
+
+    @GetMapping("/viewdetailEvent/{id}")
+    public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception{
+        Event event = eventRepo.findById(eventId);
+        model.addAttribute("event", event);
+        // model.addAttribute("organizerAsUser", userRepo.findById((organizerRepo.getOrganizerByEventId(eventId).getUserId())));
+        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+        System.out.println(organizerRepo.getOrganizerByEventId(eventId));
+        return "viewdetailEvent";
+    }
+   
 
 }

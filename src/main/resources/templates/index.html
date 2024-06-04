@@ -84,7 +84,7 @@
                     </th:block>
                     <th:block th:if="${session.activeUser == null}">
                         <li class="nav-item">
-                            <a class="nav-link" th:href="@{/auth/login}">Đăng nhập / Đăng ký</a>
+                            <a class="nav-link" th:href="@{/auth/login}">Sign in / Sign up</a>
                         </li>
                     </th:block>
                 </ul>
@@ -166,15 +166,21 @@
                         <p class="card-text m-0 p-2">
                             Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
                         </p>
-                        <div class="d-flex">
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
+                        <div class="d-flex"> 
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
+                            
+                            
+                            
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a> 
                         </div>
+                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    
 
 
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>

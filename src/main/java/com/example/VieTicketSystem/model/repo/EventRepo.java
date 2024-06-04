@@ -26,6 +26,7 @@ public class EventRepo {
             throw new RuntimeException("Failed to load MySQL driver", e);
         }
     }
+
     @Autowired
     OrganizerRepo organizerRepo = new OrganizerRepo();
 
@@ -93,39 +94,69 @@ public class EventRepo {
                     Date ticketSaleDate, Date endDate, int organizerId, String poster, String banner)
                     throws ClassNotFoundException, SQLException {
 
-    Class.forName(Baseconnection.nameClass);
-    Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
-    
-    // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
-    PreparedStatement ps = connection.prepareStatement(
-            "INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            Statement.RETURN_GENERATED_KEYS);
-    
-    ps.setString(1, name);
-    ps.setString(2, description);
-    ps.setDate(3, startDate);
-    ps.setString(4, location);
-    ps.setString(5, type);
-    ps.setDate(6, ticketSaleDate);
-    ps.setDate(7, endDate);
-    ps.setInt(8, organizerId);
-    ps.setString(9, poster);
-    ps.setString(10, banner);
-    ps.setBoolean(11, false);
-    ps.executeUpdate();
-    
-    // Lấy khóa tự động tăng vừa được tạo
-    ResultSet rs = ps.getGeneratedKeys();
-    int eventId = 0;
-    if (rs.next()) {
-        eventId = rs.getInt(1);
+        Class.forName(Baseconnection.nameClass);
+        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        
+        // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
+        PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date, organizer_id, poster, banner, is_approve) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS);
+        
+        ps.setString(1, name);
+        ps.setString(2, description);
+        ps.setDate(3, startDate);
+        ps.setString(4, location);
+        ps.setString(5, type);
+        ps.setDate(6, ticketSaleDate);
+        ps.setDate(7, endDate);
+        ps.setInt(8, organizerId);
+        ps.setString(9, poster);
+        ps.setString(10, banner);
+        ps.setBoolean(11, false);
+        ps.executeUpdate();
+        
+        // Lấy khóa tự động tăng vừa được tạo
+        ResultSet rs = ps.getGeneratedKeys();
+        int eventId = 0;
+        if (rs.next()) {
+            eventId = rs.getInt(1);
+        }
+        
+        rs.close();
+        ps.close();
+        connection.close();
+        
+        return eventId;
     }
-    
-    rs.close();
-    ps.close();
-    connection.close();
-    
-    return eventId;
-}
 
+    public Event findById(int eventId) {
+        Event event = null;
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE event_id = ?")) {
+
+            statement.setInt(1, eventId); // Truyền eventId cụ thể vào câu lệnh SQL
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    event = new Event();
+                    event.setEventId(resultSet.getInt("event_id"));
+                    event.setName(resultSet.getString("name"));
+                    event.setDescription(resultSet.getString("description"));
+                    event.setStartDate(resultSet.getDate("start_date"));
+                    event.setLocation(resultSet.getString("location"));
+                    event.setType(resultSet.getString("type"));
+                    event.setTicketSaleDate(resultSet.getDate("ticket_sale_date"));
+                    event.setEndDate(resultSet.getDate("end_date"));
+                    event.setPoster(resultSet.getString("poster"));
+                    event.setBanner(resultSet.getString("banner"));
+                    event.setApprove(resultSet.getBoolean("is_approve"));
+                    // Set the organizer if applicable
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return event;
+    }
 }
