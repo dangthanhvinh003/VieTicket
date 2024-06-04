@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,7 @@ import com.example.VieTicketSystem.model.entity.Row;
 @Repository
 public class RowRepo {
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM `Row` WHERE row_id = ?";
+    private static final String SELECT_BY_AREA_ID_SQL = "SELECT * FROM `Row` WHERE area_id = ?";
     private final AreaRepo areaRepo;
 
     public RowRepo(AreaRepo areaRepo) {
@@ -38,6 +40,27 @@ public class RowRepo {
         ps.close();
         connection.close();
         return row;
+    }
+
+    public List<Row> findByAreaId(int areaId) throws Exception {
+        Class.forName(Baseconnection.nameClass);
+        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+        PreparedStatement ps = connection.prepareStatement(SELECT_BY_AREA_ID_SQL);
+        ps.setInt(1, areaId);
+        ResultSet rs = ps.executeQuery();
+        List<Row> rows = new ArrayList<>();
+        while (rs.next()) {
+            Row row = new Row();
+            row.setRowId(rs.getInt("row_id"));
+            row.setRowName(rs.getString("row_name"));
+            row.setArea(areaRepo.findById(rs.getInt("area_id")));
+            rows.add(row);
+        }
+        rs.close();
+        ps.close();
+        connection.close();
+        return rows;
     }
 
     public void addRow(String rowName, int AreaId)

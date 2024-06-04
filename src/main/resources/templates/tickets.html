@@ -17,9 +17,10 @@
                 <tr>
                     <th>Event name</th>
                     <th>QR Code</th>
-                    <th>Purchase Date</th>
-                    <th>Order ID</th>
-                    <th>Seat ID</th>
+                    <th>Purchased on</th>
+                    <th>Seat</th>
+                    <th>Area</th>
+                    <th>Price</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,8 +33,9 @@
                         </div>
                     </td>
                     <td th:text="${ticket.purchaseDate}"></td>
-                    <td th:text="${ticket.order.orderId}"></td>
-                    <td th:text="${ticket.seat.seatId}"></td>
+                    <td th:text="${ticket.seat.number}"></td>
+                    <td th:text="${ticket.seat.row.area.name}"></td>
+                    <td th:text="${ticket.seat.ticketPrice}"></td>
                 </tr>
             </tbody>
         </table>

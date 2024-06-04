@@ -7,10 +7,44 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.example.VieTicketSystem.model.entity.SeatMap;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class SeatMapRepo {
+
+    private final EventRepo eventRepo;
+
+    public SeatMapRepo(EventRepo eventRepo) {
+        this.eventRepo = eventRepo;
+    }
+
+    public SeatMap getSeatMapByEventId(int eventId)
+            throws ClassNotFoundException, SQLException {
+        Class.forName(Baseconnection.nameClass);
+        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+
+        String query = "SELECT * FROM SeatMap WHERE event_id = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, eventId);
+
+        ResultSet rs = ps.executeQuery();
+        SeatMap seatMap = null;
+        if (rs.next()) {
+            seatMap = new SeatMap();
+            seatMap.setSeatMapId(rs.getInt("seat_map_id"));
+            seatMap.setEvent(eventRepo.getEventById(rs.getInt("event_id")));
+            seatMap.setName(rs.getString("name"));
+            seatMap.setImg(rs.getString("img"));
+        }
+
+        rs.close();
+        ps.close();
+        connection.close();
+
+        return seatMap;
+    }
 
     public void addSeatMap(int eventId, String name, String img)
             throws ClassNotFoundException, SQLException {
