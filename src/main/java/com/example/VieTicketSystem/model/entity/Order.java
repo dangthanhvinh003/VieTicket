@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import java.sql.Date;
+import java.time.LocalDateTime;
+
+import org.springframework.cglib.core.Local;
 
 @Getter
 @Setter
@@ -14,7 +17,7 @@ import java.sql.Date;
 @NoArgsConstructor
 public class Order {
     private int orderId;
-    private Date date;
+    private LocalDateTime date;
     private int total;
     private User user;
     private String vnpayData;

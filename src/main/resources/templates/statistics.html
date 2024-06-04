@@ -147,7 +147,7 @@
                     const priceElement = box.querySelector('.price');
                     const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
                     if (!isNaN(originalPrice)) {
-                        const discountedPrice = originalPrice * 0.8; // Tính giá giảm 20%
+                        const discountedPrice = originalPrice * 0.9; // Tính giá giảm 10%
                         priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
                     }
                 });

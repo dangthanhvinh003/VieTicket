@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 
 @Repository
 public class OrderRepo {
@@ -23,7 +24,11 @@ public class OrderRepo {
         Class.forName(Baseconnection.nameClass);
         try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password)) {
             PreparedStatement ps = con.prepareStatement(INSERT_ORDER_SQL);
-            ps.setDate(1, order.getDate());
+            if (order.getDate() != null) {
+                ps.setTimestamp(1, Timestamp.valueOf(order.getDate()));
+            } else {
+                ps.setTimestamp(1, null); // Xử lý trường hợp order.getDate() là null nếu cần thiết
+            }
             ps.setInt(2, order.getTotal());
             ps.setInt(3, order.getUser().getUserId());
             ps.setString(4, order.getVnpayData());
@@ -40,7 +45,11 @@ public class OrderRepo {
             if (rs.next()) {
                 Order order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
-                order.setDate(rs.getDate("date"));
+                if (order.getDate() != null) {
+                    ps.setTimestamp(1, Timestamp.valueOf(order.getDate()));
+                } else {
+                    ps.setTimestamp(1, null); // Xử lý trường hợp order.getDate() là null nếu cần thiết
+                }
                 order.setTotal(rs.getInt("total"));
                 order.setUser(userRepo.findById(rs.getInt("user_id")));
                 order.setVnpayData(rs.getString("vnpay_data"));
