@@ -230,6 +230,10 @@ public class UserController {
             model.addAttribute("error", "New passwords do not match");
             return "change-password";
         }
+        if (!userRepo.isValidPassword(newPassword)) {
+            model.addAttribute("error", "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
+            return "change-password";
+        }
 
         userRepo.updatePassword(activeUser.getUserId(), passwordEncoder.encode(newPassword));
         model.addAttribute("message", "Password changed successfully");
@@ -252,7 +256,7 @@ public class UserController {
         return "redirect:/change";
     }
 
-    // khanh
+    
     @GetMapping("/signup")
     public String signupPage() {
         return "signup"; // Trả về trang signup.html
@@ -275,18 +279,22 @@ public class UserController {
                          Model model, HttpSession httpSession) throws Exception {
 
         if (userRepo.existsByPhone(phone)) {
-            model.addAttribute("errorMessage", "Phone already exists.");
-            return "redirect:/signup";
+            model.addAttribute("error", "Phone already exists.");
+            return "signup";
         }
         // Check if username already exists
         if (userRepo.existsByUsername(username)) {
-            model.addAttribute("errorMessage", "Username already exists.");
-            return "redirect:/signup";
+            model.addAttribute("error", "Username already exists.");
+            return "signup";
         }
 
         // Check if email already exists
         if (userRepo.existsByEmail(email)) {
-            model.addAttribute("errorMessage", "Email already exists.");
+            model.addAttribute("error", "Email already exists.");
+            return "signup";
+        }
+        if (!userRepo.isValidPassword(password)) {
+            model.addAttribute("error", "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
             return "signup";
         }
 

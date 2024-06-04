@@ -15,8 +15,10 @@ public class OrganizerRepo {
 
     public void saveNew(Organizer organizer) throws Exception {
         Class.forName(Baseconnection.nameClass);
-        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password)) {
-            CallableStatement cs = con.prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password)) {
+            CallableStatement cs = con
+                    .prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
             cs.setString(1, organizer.getFullName());
             cs.setString(2, organizer.getUsername());
             cs.setString(3, organizer.getPassword());
@@ -109,7 +111,7 @@ public class OrganizerRepo {
             Class.forName(Baseconnection.nameClass);
             try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
                     Baseconnection.password);
-                 PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                    PreparedStatement preparedStatement = con.prepareStatement(sql)) {
                 preparedStatement.setInt(1, userId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
@@ -120,6 +122,53 @@ public class OrganizerRepo {
                         organizer.setActive(resultSet.getBoolean("is_active"));
                         organizer.setOrganizerAddr(resultSet.getString("organizer_addr"));
                         organizer.setOrganizerType(resultSet.getString("organizer_type"));
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return organizer;
+    }
+
+    public Organizer getOrganizerByEventId(int eventId) {
+        Organizer organizer = null;
+        String sql = "SELECT "
+                + "User.user_id, User.full_name, User.username, User.password, User.phone, User.dob, User.gender, User.avatar, User.role, User.email, "
+                + "Organizer.founded_date, Organizer.website, Organizer.organizer_addr, Organizer.organizer_type, Organizer.is_active "
+                + "FROM Organizer "
+                + "JOIN User ON Organizer.organizer_id = User.user_id "
+                + "JOIN Event ON Organizer.organizer_id = Event.organizer_id "
+                + "WHERE Event.event_id = ?;";
+
+        try {
+            Class.forName(Baseconnection.nameClass);
+            try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                    Baseconnection.password);
+                    PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                preparedStatement.setInt(1, eventId);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        organizer = new Organizer();
+
+                        // Set User attributes
+                        organizer.setUserId(resultSet.getInt("user_id"));
+                        organizer.setFullName(resultSet.getString("full_name"));
+                        organizer.setUsername(resultSet.getString("username"));
+                        organizer.setPassword(resultSet.getString("password"));
+                        organizer.setPhone(resultSet.getString("phone"));
+                        organizer.setDob(resultSet.getDate("dob"));
+                        organizer.setGender(resultSet.getString("gender").charAt(0));
+                        organizer.setAvatar(resultSet.getString("avatar"));
+                        organizer.setRole(resultSet.getString("role").charAt(0));
+                        organizer.setEmail(resultSet.getString("email"));
+
+                        // Set Organizer-specific attributes
+                        organizer.setFoundedDate(resultSet.getDate("founded_date"));
+                        organizer.setWebsite(resultSet.getString("website"));
+                        organizer.setOrganizerAddr(resultSet.getString("organizer_addr"));
+                        organizer.setOrganizerType(resultSet.getString("organizer_type"));
+                        organizer.setActive(resultSet.getBoolean("is_active"));
                     }
                 }
             }

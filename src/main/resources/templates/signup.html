@@ -87,6 +87,9 @@
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">Sign Up</h2>
+        <div class="col-12">
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+        </div>
         <form th:action="@{/signup}" method="post" onsubmit="return validateForm()">
             <div class="mb-3">
                 <label for="fullName" class="form-label">Full Name:</label>

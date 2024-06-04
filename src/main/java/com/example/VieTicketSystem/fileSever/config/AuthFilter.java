@@ -70,7 +70,9 @@ public class AuthFilter implements Filter {
         if ((requestURI.equals("/auth/login") || requestURI.equals("/auth/login/oauth2/google") || requestURI.isEmpty()
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
-                || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.startsWith("/api")) && !isUnverified) {
+                || requestURI.equals("/auth/log-out") || requestURI.equals("/")
+                || requestURI.startsWith("/viewdetailEvent") || requestURI.startsWith("/api"))
+                && !isUnverified) {
             chain.doFilter(request, response);
             return;
         }
@@ -113,9 +115,9 @@ public class AuthFilter implements Filter {
                                 || (requestURI.startsWith("/seatMap/NoSeatMapEdit")) ||
                                 (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
                                 || requestURI.startsWith("/editSuccess"))
-                                || requestURI.startsWith("/eventEditPage")
-                                || requestURI.startsWith("/eventEditSubmit")
-                                || requestURI.startsWith("/viewStatistics")) {
+                        || requestURI.startsWith("/eventEditPage")
+                        || requestURI.startsWith("/eventEditSubmit")
+                        || requestURI.startsWith("/viewStatistics")) {
                     if (requestURI.startsWith("/createEvent")) {
                         session.setAttribute("eventCreated", true);
                     }
