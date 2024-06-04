@@ -82,7 +82,7 @@
 
         #posterPreview,
         #bannerPreview {
-            display: none;
+            display: block;
             width: 100%;
             height: auto;
         }
@@ -120,73 +120,74 @@
 <body>
     <div class="container">
         <h1>Create New Events</h1>
-        <form method="post" th:action="@{/add-event}" enctype="multipart/form-data" class="form">
+        <form method="post" th:action="@{/eventEditSubmit}" enctype="multipart/form-data" class="form">
             <!-- Banner Upload -->
             <div class="upload-container mb-3" style="height: 480px;">
-                <img id="uploadIcon" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
-                <p id="uploadText">Input banner (1280×720)</p>
                 <input type="file" name="banner" accept="image/*" onchange="previewImage(event, 'bannerPreview')">
-                <img id="bannerPreview" alt="Banner Preview" style="height:720px; ">
+                <img id="bannerPreview" alt="Banner Preview" style="height:720px;" th:src="${eventEdit.banner}">
+                <input type="hidden" name="currentBanner" th:value="${eventEdit.banner}">
             </div>
             <div class="row">
-                <!-- Poster Upload -->
                 <div class="col-lg-4 mb-3">
                     <div class="upload-container" style="height: 320px;">
-                        <img id="uploadIcon1" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
-                        <p id="uploadText1">Input poster (720×958)</p>
                         <input type="file" name="poster" accept="image/*"
                             onchange="previewImage(event, 'posterPreview')">
-                        <img id="posterPreview" alt="Poster Preview">
+                        <img id="posterPreview" alt="Poster Preview" th:src="${eventEdit.poster}">
+                        <input type="hidden" name="currentPoster" th:value="${eventEdit.poster}">
                     </div>
                 </div>
+
                 <div class="col-lg-8">
                     <!-- Name -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Name Event :</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <input type="text" class="form-control" id="name" name="name" required
+                            th:value="${eventEdit.name}">
                     </div>
                     <!-- Location -->
                     <div class="mb-3">
                         <label for="location" class="form-label">Location :</label>
-                        <input type="text" class="form-control" id="location" name="location" required>
-                        <!-- Start Date -->
-                        <div class="mb-3">
-                            <label for="start_date" class="form-label">Start Date :</label>
-                            <input type="datetime-local" class="form-control" id="start_date" name="start_date"
-                                required>
-                        </div>
-
-                        <!-- End Date -->
-                        <div class="mb-3">
-                            <label for="end_date" class="form-label">End Date :</label>
-                            <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
-                        </div>
-
+                        <input type="text" class="form-control" id="location" name="location" required
+                            th:value="${eventEdit.location}">
                     </div>
+                    <!-- Start Date -->
+                    <div class="mb-3">
+                        <label for="start_date" class="form-label">Start Date :</label>
+                        <input type="datetime-local" class="form-control" id="start_date" name="start_date" required
+                            th:value="${eventEdit.startDate}">
+                    </div>
+                    <!-- End Date -->
+                    <div class="mb-3">
+                        <label for="end_date" class="form-label">End Date :</label>
+                        <input type="datetime-local" class="form-control" id="end_date" name="end_date" required
+                            th:value="${eventEdit.endDate}">
+                    </div>
+                </div>
 
-                </div>
-                <!--Type -->
-                <div class="mb-3">
-                    <label for="end_date" class="form-label">Type :</label>
-                    <input type="text" class="form-control" id="type" name="type" required>
-                </div>
-                <!-- TicketSaleDate-->
-                <div class="mb-3">
-                    <label for="end_date" class="form-label">Ticket Sale Date :</label>
-                    <input type="datetime-local" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required>
-                </div>
-                <!-- Description -->
-                <div class="mb-3">
-                    <label for="editor" class="form-label">Description :</label>
-                    <textarea id="editor"></textarea>
+            </div>
+            <!--Type -->
+            <div class="mb-3">
+                <label for="end_date" class="form-label">Type :</label>
+                <input type="text" class="form-control" id="type" name="type" required th:value="${eventEdit.type}">
+            </div>
+            <!-- TicketSaleDate-->
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date :</label>
+                <input type="datetime-local" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required
+                    th:value="${eventEdit.ticketSaleDate}">
+            </div>
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="editor" class="form-label">Description :</label>
+                <textarea id="editor" th:utext="${eventEdit.description}"></textarea>
 
-                    <!-- Hidden textarea to store the content from CKEditor -->
-                    <textarea id="hiddenDescription" name="description" style="display:none;"></textarea>
-                </div>
-                <!-- Submit Button -->
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Create Event</button>
-                </div>
+                <!-- Hidden textarea to store the content from CKEditor -->
+                <textarea id="hiddenDescription" name="description" style="display:none;"></textarea>
+            </div>
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Update Event</button>
+            </div>
         </form>
     </div>
     <!-- Bootstrap JS -->

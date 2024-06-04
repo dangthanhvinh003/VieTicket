@@ -43,7 +43,7 @@ CREATE TABLE Event
     FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
     poster           TEXT,
     banner           TEXT,
-    is_approve       BOOLEAN
+    is_approve       int
 );
 
 CREATE TABLE SeatMap
@@ -58,12 +58,13 @@ CREATE TABLE SeatMap
 
 CREATE TABLE `Order`
 (
-    order_id INT AUTO_INCREMENT
+    order_id   INT AUTO_INCREMENT
         PRIMARY KEY,
-    date     DATE,
-    total    INT,
-    user_id  INT,
-    FOREIGN KEY (user_id) REFERENCES User (user_id)
+    date       DATE,
+    total      INT,
+    user_id    INT,
+    FOREIGN KEY (user_id) REFERENCES User (user_id),
+    vnpay_data TEXT
 );
 
 CREATE TABLE Rating
@@ -85,7 +86,9 @@ CREATE TABLE Area
     total_tickets INT,
     ticket_price  FLOAT,
     event_id      INT,
-    FOREIGN KEY (event_id) REFERENCES Event (event_id)
+    FOREIGN KEY (event_id) REFERENCES Event (event_id) ON DELETE CASCADE,
+    seat_map_id   INT,
+    FOREIGN KEY (seat_map_id) REFERENCES SeatMap (seat_map_id) ON DELETE CASCADE
 );
 
 CREATE TABLE `Row`
@@ -94,7 +97,7 @@ CREATE TABLE `Row`
         PRIMARY KEY,
     row_name VARCHAR(16),
     area_id  INT,
-    FOREIGN KEY (area_id) REFERENCES Area (area_id)
+    FOREIGN KEY (area_id) REFERENCES Area (area_id) ON DELETE CASCADE
 );
 
 CREATE TABLE RefundOrder
@@ -105,7 +108,8 @@ CREATE TABLE RefundOrder
     user_id       INT,
     FOREIGN KEY (user_id) REFERENCES User (user_id),
     order_id      INT,
-    FOREIGN KEY (order_id) REFERENCES `Order` (order_id)
+    FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
+    vnpay_data    TEXT
 );
 
 CREATE TABLE Seat
@@ -114,21 +118,23 @@ CREATE TABLE Seat
         PRIMARY KEY,
     number       VARCHAR(64),
     ticket_price FLOAT,
-    is_buy       BOOLEAN,
-    is_checkedin BOOLEAN,
+    is_taken     BOOLEAN,
     row_id       INT,
-    FOREIGN KEY (row_id) REFERENCES `Row` (row_id)
+    FOREIGN KEY (row_id) REFERENCES `Row` (row_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Ticket
 (
     ticket_id     INT AUTO_INCREMENT
         PRIMARY KEY,
-    qr_code       TEXT,
+    qr_code       VARCHAR(64) UNIQUE,
+    INDEX qr_code_index (qr_code),
     purchase_date DATE,
     order_id      INT,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
     seat_id       INT,
+    is_returned   BOOLEAN,
+    is_checked_in BOOLEAN,
     FOREIGN KEY (seat_id) REFERENCES Seat (seat_id)
 );
 
@@ -158,6 +164,18 @@ CREATE TABLE UnverifiedUsers
     userid     INT NOT NULL
         PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE OrganizerVerificationToken
+(
+    id            INT AUTO_INCREMENT
+        PRIMARY KEY,
+    organizer_id  INT,
+    FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
+    token         VARCHAR(256),
+    familiar_name VARCHAR(64) UNIQUE,
+    expiry_date   TIMESTAMP,
+    created_at    TIMESTAMP
 );
 
 CREATE TABLE googleOauth
@@ -191,6 +209,8 @@ SELECT `VieTicket1`.`Ticket`.`ticket_id`     AS `ticket_id`,
        `VieTicket1`.`Ticket`.`purchase_date` AS `purchase_date`,
        `VieTicket1`.`Ticket`.`order_id`      AS `order_id`,
        `VieTicket1`.`Ticket`.`seat_id`       AS `seat_id`,
+       `VieTicket1`.`Ticket`.`is_returned`   AS `is_returned`,
+       `VieTicket1`.`Ticket`.is_checked_in   AS `is_checked_in`,
        `VieTicket1`.`Order`.`user_id`        AS `user_id`
 FROM (`VieTicket1`.`Ticket` JOIN `VieTicket1`.`Order`
       ON ((`VieTicket1`.`Ticket`.`order_id` = `VieTicket1`.`Order`.`order_id`)));
@@ -274,7 +294,7 @@ VALUES (3, '2021-01-01', 'https://www.hoangnpv.id.vn', 1, 'Hà Nội', 'Music'),
 
 -- Table Event
 INSERT INTO Event (name, description, start_date, location, type, ticket_sale_date, end_date,
-                             organizer_id, poster, banner, is_approve)
+                   organizer_id, poster, banner, is_approve)
 VALUES ('NTPMM', 'Những thành phố mơ màng', '2024-06-01', 'Hà Nội', 'Music', '2024-05-20', '2024-06-02', 3,
         'https://salt.tkbcdn.com/ts/ds/68/6f/ba/6f8121616c6643b2cbb3868b26bb4331.jpg',
         'https://salt.tkbcdn.com/ts/ds/68/6f/ba/6f8121616c6643b2cbb3868b26bb4331.jpg', 1),

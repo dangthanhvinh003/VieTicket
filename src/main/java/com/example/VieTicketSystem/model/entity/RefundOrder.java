@@ -17,4 +17,5 @@ public class RefundOrder {
     private Date date;
     private User user; // Đại diện cho quan hệ với bảng User
     private Order order;
+    private String vnpayData;
 }

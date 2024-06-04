@@ -105,7 +105,7 @@ public class OrganizerRepo {
 
     public Organizer getOrganizerByUserId(int userId) {
         Organizer organizer = null;
-        String sql = "SELECT * FROM Organizer WHERE organizer_id = ?";
+        String sql = "SELECT * FROM `Organizer` WHERE organizer_id = ?";
 
         try {
             Class.forName(Baseconnection.nameClass);

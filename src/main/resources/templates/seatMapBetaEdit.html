@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -188,7 +188,11 @@
                 <input type="text" class="form-control" id="vipTicketPrice" name="vipTicketPrice" required
                     pattern="[0-9,]+" title="Vui lòng nhập số tiền hợp lệ. Ví dụ : 5,000,000">
                 <button id="vipButton" style="width: 100%; margin: 10px 0px;">Choose Vip Stage</button>
-                <button id="saveImageButton" style=" display: none;">Save Image</button>
+                <button id="saveImageButton" style=" display: none;" onclick="showSubmitButton()">Save Image</button>
+                <form th:action="@{/editSuccess}" method="get">
+                    <button type="submit" id="submitButton" style="display: none;">Submit</button>
+                </form>
+
             </div>
 
         </div>
@@ -203,6 +207,13 @@
                 <div class="selection-box" id="selectionBox"></div>
             </div>
         </div>
+        <script>
+            // Hàm để hiển thị nút Submit
+            function showSubmitButton() {
+                var submitButton = document.getElementById('submitButton');
+                submitButton.style.display = 'block';
+            }
+        </script>
         <script>
             const normalTicketPriceInput = document.getElementById('normalTicketPrice');
             const vipTicketPriceInput = document.getElementById('vipTicketPrice');
@@ -593,7 +604,7 @@
 
                 if (seatCountsDiv) {
                     seatCountsDiv.innerHTML = `
-           
+                    
             <p>Total Selected Seats: ${seatCounts.totalSelected}</p>
             <p>Total VIP Seats: ${seatCounts.totalVIP}</p>
             
@@ -624,7 +635,7 @@
                         // Chuyển đổi dữ liệu bổ sung thành chuỗi JSON và thêm vào FormData
                         formData.append('additionalData', JSON.stringify(additionalData));
 
-                        fetch('/seatMap/SeatMapBeta', {
+                        fetch('/seatMap/SeatMapBetaEdit', {
                             method: 'POST',
                             body: formData
                         })

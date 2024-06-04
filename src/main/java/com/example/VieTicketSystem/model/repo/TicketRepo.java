@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,14 +16,19 @@ import com.example.VieTicketSystem.model.entity.Ticket;
 @Repository
 public class TicketRepo {
 
-    private static final String INSERT_STATEMENT = "INSERT INTO Ticket (qr_code, purchase_date, order_id, seat_id) VALUES (?, ?, ?, ?)";
-    private static final String UPDATE_STATEMENT = "UPDATE Ticket SET qr_code = ?, purchase_date = ?, order_id = ?, seat_id = ? WHERE ticket_id = ?";
-    // private static final String READ_STATEMENT = "SELECT * FROM Ticket WHERE ticket_id = ?";
-    // private static final String DELETE_STATEMENT = "DELETE FROM Ticket WHERE ticket_id = ?";
-    // private static final String SELECT_ALL_STATEMENT = "SELECT * FROM Ticket";
+    private static final String INSERT_STATEMENT = "INSERT INTO Ticket (qr_code, purchase_date, order_id, seat_id, is_returned, is_checked_in) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE_STATEMENT = "UPDATE Ticket SET qr_code = ?, purchase_date = ?, order_id = ?, seat_id = ?, is_returned = ?, is_checked_in = ? WHERE ticket_id = ?";
     private static final String SELECT_BY_USER_ID_STATEMENT = "SELECT * FROM ticket_with_user WHERE user_id = ?";
     private static final String SELECT_BY_USER_ID_WITH_LIMIT = "SELECT * FROM ticket_with_user WHERE user_id = ? LIMIT ? OFFSET ?";
     private static final String COUNT_BY_USER_ID_STATEMENT = "SELECT COUNT(*) FROM ticket_with_user WHERE user_id = ?";
+    private static final String SELECT_BY_QR_CODE_STATEMENT = "SELECT * FROM Ticket WHERE qr_code LIKE ?";
+    private final OrderRepo orderRepo;
+    private final SeatRepo seatRepo;
+
+    public TicketRepo(OrderRepo orderRepo, SeatRepo seatRepo) {
+        this.orderRepo = orderRepo;
+        this.seatRepo = seatRepo;
+    }
 
     public void saveNew(Ticket ticket) throws Exception {
 
@@ -31,9 +37,16 @@ public class TicketRepo {
                 Baseconnection.password);
         PreparedStatement ps = con.prepareStatement(INSERT_STATEMENT);
         ps.setString(1, ticket.getQrCode());
-        ps.setDate(2, new Date(ticket.getPurchaseDate().getTime())); // Convert to SQL Date
-        ps.setInt(3, ticket.getOrderId());
-        ps.setInt(4, ticket.getSeatId());
+        // Chuyển đổi LocalDateTime sang Timestamp
+        if (ticket.getPurchaseDate() != null) {
+            ps.setTimestamp(2, Timestamp.valueOf(ticket.getPurchaseDate()));
+        } else {
+            ps.setTimestamp(2, null); // Xử lý trường hợp purchaseDate là null nếu cần thiết
+        }
+        ps.setInt(3, ticket.getOrder().getOrderId());
+        ps.setInt(4, ticket.getSeat().getSeatId());
+        ps.setBoolean(5, ticket.isReturned());
+        ps.setBoolean(6, ticket.isCheckedIn());
 
         ps.executeUpdate();
         ps.close();
@@ -47,10 +60,16 @@ public class TicketRepo {
                 Baseconnection.password);
         PreparedStatement ps = con.prepareStatement(UPDATE_STATEMENT);
         ps.setString(1, ticket.getQrCode());
-        ps.setDate(2, new Date(ticket.getPurchaseDate().getTime())); // Convert to SQL Date
-        ps.setInt(3, ticket.getOrderId());
-        ps.setInt(4, ticket.getSeatId());
-        ps.setInt(5, ticket.getTicketId());
+        if (ticket.getPurchaseDate() != null) {
+            ps.setTimestamp(2, Timestamp.valueOf(ticket.getPurchaseDate()));
+        } else {
+            ps.setTimestamp(2, null); // Xử lý trường hợp purchaseDate là null nếu cần thiết
+        }
+        ps.setInt(3, ticket.getOrder().getOrderId());
+        ps.setInt(4, ticket.getSeat().getSeatId());
+        ps.setBoolean(5, ticket.isReturned());
+        ps.setBoolean(6, ticket.isCheckedIn());
+        ps.setInt(7, ticket.getTicketId());
 
         ps.executeUpdate();
         ps.close();
@@ -69,9 +88,17 @@ public class TicketRepo {
             Ticket ticket = new Ticket();
             ticket.setTicketId(rs.getInt("ticket_id"));
             ticket.setQrCode(rs.getString("qr_code"));
-            ticket.setPurchaseDate(rs.getDate("purchase_date"));
-            ticket.setOrderId(rs.getInt("order_id"));
-            ticket.setSeatId(rs.getInt("seat_id"));
+            // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+            Timestamp timestamp = rs.getTimestamp("purchase_date");
+            if (timestamp != null) {
+                ticket.setPurchaseDate(timestamp.toLocalDateTime());
+            } else {
+                ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+            }
+            ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
+            ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
+            ticket.setReturned(rs.getBoolean("is_returned"));
+            ticket.setCheckedIn(rs.getBoolean("is_checked_in"));
             tickets.add(ticket);
         }
         rs.close();
@@ -94,9 +121,17 @@ public class TicketRepo {
             Ticket ticket = new Ticket();
             ticket.setTicketId(rs.getInt("ticket_id"));
             ticket.setQrCode(rs.getString("qr_code"));
-            ticket.setPurchaseDate(rs.getDate("purchase_date"));
-            ticket.setOrderId(rs.getInt("order_id"));
-            ticket.setSeatId(rs.getInt("seat_id"));
+            // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+            Timestamp timestamp = rs.getTimestamp("purchase_date");
+            if (timestamp != null) {
+                ticket.setPurchaseDate(timestamp.toLocalDateTime());
+            } else {
+                ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+            }
+            ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
+            ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
+            ticket.setReturned(rs.getBoolean("is_returned"));
+            ticket.setCheckedIn(rs.getBoolean("is_checked_in"));
             tickets.add(ticket);
         }
         rs.close();
@@ -120,5 +155,35 @@ public class TicketRepo {
         ps.close();
         con.close();
         return count;
+    }
+
+    public Ticket findByQrCode(String qrCode) throws Exception {
+        Class.forName(Baseconnection.nameClass);
+        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+        PreparedStatement ps = con.prepareStatement(SELECT_BY_QR_CODE_STATEMENT);
+        ps.setString(1, qrCode);
+        ResultSet rs = ps.executeQuery();
+        Ticket ticket = null;
+        if (rs.next()) {
+            ticket = new Ticket();
+            ticket.setTicketId(rs.getInt("ticket_id"));
+            ticket.setQrCode(rs.getString("qr_code"));
+            // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+            Timestamp timestamp = rs.getTimestamp("purchase_date");
+            if (timestamp != null) {
+                ticket.setPurchaseDate(timestamp.toLocalDateTime());
+            } else {
+                ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+            }
+            ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
+            ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
+            ticket.setReturned(rs.getBoolean("is_returned"));
+            ticket.setCheckedIn(rs.getBoolean("is_checked_in"));
+        }
+        rs.close();
+        ps.close();
+        con.close();
+        return ticket;
     }
 }

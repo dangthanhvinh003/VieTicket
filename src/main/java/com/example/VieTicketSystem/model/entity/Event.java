@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,16 +18,32 @@ public class Event {
     private int eventId;
     private String name;
     private String description;
-    private Date startDate;
+    private LocalDateTime  startDate;
     private String location;
     private String type;
-    private Date ticketSaleDate;
-    private Date endDate;
+    private LocalDateTime  ticketSaleDate;
+    private LocalDateTime  endDate;
     private Organizer organizer;
-    private String seatMap;
     private String poster;
     private String banner;
-    private boolean isApprove;
-
+    private int approved;
+    private List<Area> areas; // Danh sách các khu vực và giá tiền
+    private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
+    public Event(int eventId, String name, String description, LocalDateTime  startDate, String location, String type,
+    LocalDateTime  ticketSaleDate, LocalDateTime  endDate, Organizer organizer, String poster, String banner, int isApprove) {
+        this.eventId = eventId;
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.location = location;
+        this.type = type;
+        this.ticketSaleDate = ticketSaleDate;
+        this.endDate = endDate;
+        this.organizer = organizer;
+        this.poster = poster;
+        this.banner = banner;
+        this.approved = isApprove;
+    }
     
+
 }

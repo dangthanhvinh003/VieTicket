@@ -44,7 +44,8 @@ public class PasswordResetService {
             userRepository.save(user);
         }
 
-        String censored_email = user.getEmail().replaceAll("(?<=.).(?=[^@]*?.@)", "*");
+        email = user.getEmail();
+        String censored_email = email.replaceAll("(^.).+(.)(?=@)", "$1********$2").replaceAll("(@.).+(.)\\.", "$1****$2.");
 
         // Check if user have a reset token created less than OTP_TIME_WINDOW_MINUTES
         PasswordResetToken token = tokenRepository.getToken(user.getUserId());
@@ -99,6 +100,10 @@ public class PasswordResetService {
         if (!otpService.validateOTP(secretKey, otp)) {
             throw new Exception("Invalid OTP");
         }
+
+        // Rotate the secret key
+        secretKey = SecretGenerator.generateSecret();
+        userSecretsRepo.rotateSecretKey(user.getUserId(), secretKey);
 
         // Retrieve the reset token from the database
         String resetToken = tokenRepository.getTokenString(user.getUserId());

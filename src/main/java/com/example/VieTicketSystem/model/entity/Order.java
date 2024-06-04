@@ -16,5 +16,6 @@ public class Order {
     private int orderId;
     private Date date;
     private int total;
-    private int userId; 
+    private User user;
+    private String vnpayData;
 }

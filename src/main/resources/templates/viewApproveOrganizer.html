@@ -7,44 +7,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
-    
+    <link rel="icon" type="image/png"
+        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+
 </head>
 
 <body class="bg-light">
     <div class="container mt-5">
         <h2 class="mb-4">List of Organizers to Approve</h2>
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>User ID</th>
-                        <th>Full Name</th>
-                        <th>Phone</th>
-                        <th>Date of Birth</th>
-                        <th>Gender</th>
-                        <th>Email</th>
-                        <th>Founded Date</th>
-                        <th>Website</th>
-                        <th>Organizer Address</th>
-                        <th>Organizer Type</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Sử dụng Thymeleaf để lặp qua danh sách các Organizer và hiển thị thông tin của từng Organizer -->
-                    <tr th:each="organizer : ${organizers}">
-                        <td th:text="${organizer.userId}"></td>
-                        <td th:text="${organizer.fullName}"></td>
-                        <td th:text="${organizer.phone}"></td>
-                        <td th:text="${#dates.format(organizer.dob, 'dd/MM/yyyy')}"></td>
-                        <td th:text="${organizer.gender}"></td>
-                        <td th:text="${organizer.email}"></td>
-                        <td th:text="${#dates.format(organizer.foundedDate, 'dd/MM/yyyy')}"></td>
-                        <td th:text="${organizer.website}"></td>
-                        <td th:text="${organizer.organizerAddr}"></td>
-                        <td th:text="${organizer.organizerType}"></td>
-                        <td class="d-flex justify-content-center">
+        <div class="row">
+            <!-- Sử dụng Thymeleaf để lặp qua danh sách các Organizer và hiển thị thông tin của từng Organizer -->
+            <div class="col-md-4 mb-4" th:each="organizer : ${organizers}">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${organizer.fullName}">Full Name</h5>
+                        <p class="card-text">
+                            <strong>User ID:</strong> <span th:text="${organizer.userId}">User ID</span><br>
+                            <strong>Phone:</strong> <span th:text="${organizer.phone}">Phone</span><br>
+                            <strong>Date of Birth:</strong> <span
+                                th:text="${#dates.format(organizer.dob, 'dd/MM/yyyy')}">Date of Birth</span><br>
+                            <strong>Gender:</strong> <span th:text="${organizer.gender}">Gender</span><br>
+                            <strong>Email:</strong> <span th:text="${organizer.email}">Email</span><br>
+                            <strong>Founded Date:</strong> <span
+                                th:text="${#dates.format(organizer.foundedDate, 'dd/MM/yyyy')}">Founded Date</span><br>
+                            <strong>Website:</strong> <span th:text="${organizer.website}">Website</span><br>
+                            <strong>Organizer Address:</strong> <span th:text="${organizer.organizerAddr}">Organizer
+                                Address</span><br>
+                            <strong>Organizer Type:</strong> <span th:text="${organizer.organizerType}">Organizer
+                                Type</span>
+                        </p>
+                        <div class="d-flex justify-content-center">
                             <form th:action="@{/approveOrganizer}" method="post" class="me-2">
                                 <input type="hidden" name="organizerId" th:value="${organizer.userId}">
                                 <button type="submit" class="btn btn-success btn-sm">
@@ -54,10 +46,10 @@
                             <button type="button" class="btn btn-danger btn-sm">
                                 <i class="bi bi-x"></i>
                             </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -27,6 +27,22 @@
             padding: 20px;
             box-shadow: 0px 2px 8px 0px #F0F1F2;
         }
+
+        .card-img-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 1);
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        /* Khi navbar tàng hình */
+        .navbar-transparent {
+            background-color: rgba(255, 255, 255, 0);
+        }
     </style>
 </head>
 
@@ -66,7 +82,7 @@
                                     <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'o'}">
-                                    <li><a class="dropdown-item" href="#">View List Event</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/viewMyListEvent}">View List Event</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'a'}">
                                     <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List
@@ -157,7 +173,7 @@
     <div class="container mt-5">
         <h2 id="eventsTitle">Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-            <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.isApprove == true}">
+            <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
                 <div class="card border-0 shadow">
                     <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
                         style="width: 100%; max-width: 800px; height: 200px;object-fit: cover;">
@@ -168,9 +184,6 @@
                         </p>
                         <div class="d-flex"> 
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
-                            
-                            
-                            
                             <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a> 
                         </div>
                         
@@ -180,12 +193,7 @@
         </div>
     </div>
 
-    
-
-
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" th:src="@{/static/js/index.js}"></script>
-
 </body>
-
 </html>
