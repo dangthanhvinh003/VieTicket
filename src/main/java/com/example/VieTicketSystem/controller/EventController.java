@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,9 +61,9 @@ public class EventController {
    
     @PostMapping(value = ("/add-event"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
-            @RequestParam("start_date") Date startDate, @RequestParam("location") String location,
-            @RequestParam("type") String type, @RequestParam("ticket_sale_date") Date ticketSaleDate,
-            @RequestParam("end_date") Date endDate, @RequestParam("poster") MultipartFile multipartFile,
+            @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
+            @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
+            @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
             @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
             throws Exception {
         String imageURL = fileUpload.uploadFile(multipartFile);

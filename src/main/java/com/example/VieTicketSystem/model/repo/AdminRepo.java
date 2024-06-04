@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,17 +97,34 @@ public class AdminRepo {
                         event.setEventId(rs.getInt("event_id"));
                         event.setName(rs.getString("name"));
                         event.setDescription(rs.getString("description"));
-                        event.setStartDate(rs.getDate("start_date"));
+
+                        // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                        Timestamp startTimestamp = rs.getTimestamp("start_date");
+                        if (startTimestamp != null) {
+                                event.setStartDate(startTimestamp.toLocalDateTime());
+                        }
+
                         event.setLocation(rs.getString("location"));
                         event.setType(rs.getString("type"));
-                        event.setTicketSaleDate(rs.getDate("ticket_sale_date"));
-                        event.setEndDate(rs.getDate("end_date"));
-                        event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id"))); // Assuming findById is a
-                                                                                               // method in
-                                                                                               // OrganizerRepository
+
+                        // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                        Timestamp ticketSaleTimestamp = rs.getTimestamp("ticket_sale_date");
+                        if (ticketSaleTimestamp != null) {
+                                event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                        }
+
+                        // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                        Timestamp endTimestamp = rs.getTimestamp("end_date");
+                        if (endTimestamp != null) {
+                                event.setEndDate(endTimestamp.toLocalDateTime());
+                        }
+
                         event.setPoster(rs.getString("poster"));
                         event.setBanner(rs.getString("banner"));
                         event.setApproved(rs.getInt("is_approve"));
+
+                        // Giả sử bạn có một phương thức để tìm organizer theo ID
+                        event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id")));
 
                         // Lấy danh sách các khu vực và giá tiền
                         event.setAreas(getAreasByEventId(event.getEventId()));
@@ -139,17 +157,34 @@ public class AdminRepo {
                         event.setEventId(rs.getInt("event_id"));
                         event.setName(rs.getString("name"));
                         event.setDescription(rs.getString("description"));
-                        event.setStartDate(rs.getDate("start_date"));
+
+                        // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                        Timestamp startTimestamp = rs.getTimestamp("start_date");
+                        if (startTimestamp != null) {
+                                event.setStartDate(startTimestamp.toLocalDateTime());
+                        }
+
                         event.setLocation(rs.getString("location"));
                         event.setType(rs.getString("type"));
-                        event.setTicketSaleDate(rs.getDate("ticket_sale_date"));
-                        event.setEndDate(rs.getDate("end_date"));
-                        event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id"))); // Assuming findById is a
-                                                                                               // method in
-                                                                                               // OrganizerRepository
+
+                        // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                        Timestamp ticketSaleTimestamp = rs.getTimestamp("ticket_sale_date");
+                        if (ticketSaleTimestamp != null) {
+                                event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                        }
+
+                        // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                        Timestamp endTimestamp = rs.getTimestamp("end_date");
+                        if (endTimestamp != null) {
+                                event.setEndDate(endTimestamp.toLocalDateTime());
+                        }
+
                         event.setPoster(rs.getString("poster"));
                         event.setBanner(rs.getString("banner"));
                         event.setApproved(rs.getInt("is_approve"));
+
+                        // Giả sử bạn có một phương thức để tìm organizer theo ID
+                        event.setOrganizer(organizerRepo.findById(rs.getInt("organizer_id")));
 
                         // Lấy danh sách các khu vực và giá tiền
                         event.setAreas(getAreasByEventId(event.getEventId()));

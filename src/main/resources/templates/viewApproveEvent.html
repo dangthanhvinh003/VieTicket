@@ -65,12 +65,12 @@
                             </div>
                             </p>
                             <strong>Ticket Sale Date:</strong> <span
-                                th:text="${#dates.format(event.ticketSaleDate, 'dd/MM/yyyy')}">Date</span><br>
+                                th:text="${event.ticketSaleDate}">Date</span><br>
                             <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
                             <strong>Type:</strong> <span th:text="${event.type}">Type</span><br>
                             <strong>Start Date:</strong> <span
-                                th:text="${#dates.format(event.startDate, 'dd/MM/yyyy')}">Start Date</span><br>
-                            <strong>End Date:</strong> <span th:text="${#dates.format(event.endDate, 'dd/MM/yyyy')}">End
+                                th:text="${event.startDate}">Start Date</span><br>
+                            <strong>End Date:</strong> <span th:text="${event.endDate}">End
                                 Date</span><br>
                             <strong>Organizer Name:</strong> <span th:text="${event.organizer.fullName}">Organizer
                                 Name</span><br>
