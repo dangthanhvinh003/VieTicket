@@ -34,11 +34,11 @@ CREATE TABLE Event
         PRIMARY KEY,
     `name`           VARCHAR(64),
     `description`    TEXT,
-    start_date       DATE,
+    start_date       DATETIME,
     location         VARCHAR(256),
     `type`           VARCHAR(64),
-    ticket_sale_date DATE,
-    end_date         DATE,
+    ticket_sale_date DATETIME,
+    end_date         DATETIME,
     organizer_id     INT,
     FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
     poster           TEXT,
@@ -60,7 +60,7 @@ CREATE TABLE `Order`
 (
     order_id   INT AUTO_INCREMENT
         PRIMARY KEY,
-    date       DATE,
+    date       DATETIME,
     total      INT,
     user_id    INT,
     FOREIGN KEY (user_id) REFERENCES User (user_id),
@@ -104,7 +104,7 @@ CREATE TABLE RefundOrder
 (
     refundoder_id INT AUTO_INCREMENT
         PRIMARY KEY,
-    date          DATE,
+    date          DATETIME,
     user_id       INT,
     FOREIGN KEY (user_id) REFERENCES User (user_id),
     order_id      INT,
@@ -129,7 +129,7 @@ CREATE TABLE Ticket
         PRIMARY KEY,
     qr_code       VARCHAR(64) UNIQUE,
     INDEX qr_code_index (qr_code),
-    purchase_date DATE,
+    purchase_date DATETIME,
     order_id      INT,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
     seat_id       INT,
