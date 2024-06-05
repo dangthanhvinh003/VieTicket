@@ -144,6 +144,9 @@ public class UserController {
             httpSession.removeAttribute("redirect");
             return "redirect:" + redirect;
         }
+        if(user.getRole() == 'a'){
+            return "redirect:/dashboardAdmin";
+        }
 
         return "redirect:/";
     }

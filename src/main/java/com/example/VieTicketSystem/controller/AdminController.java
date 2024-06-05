@@ -96,4 +96,13 @@ public class AdminController {
         return "redirect:/ViewAllApproveEvent";
     }
 
+    @GetMapping(value = ("/dashboardAdmin"))
+    public String dashboardPage(Model model) throws Exception {
+        // ArrayList<Event> events = adminRepo.viewAllListRejectEvent();
+        // model.addAttribute("status", "reject");
+        // model.addAttribute("events", events);
+
+        return "dashboardAdmin";
+    }
+
 }
