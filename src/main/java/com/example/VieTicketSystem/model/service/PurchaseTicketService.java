@@ -40,4 +40,12 @@ public class PurchaseTicketService {
         }
         return new EventWithAreas(event, areasWithRows);
     }
+
+    public boolean isTicketSaleDateStarted(int eventId) throws Exception {
+        return eventRepo.findById(eventId).getTicketSaleDate().isAfter(java.time.LocalDateTime.now());
+    }
+
+    public boolean isEventPassed(int eventId) throws Exception {
+        return eventRepo.findById(eventId).getEndDate().isBefore(java.time.LocalDateTime.now());
+    }
 }
