@@ -42,7 +42,18 @@ public class PurchaseTicketController {
             return "redirect:/";
         }
 
-        // TODO: Check for event's start date
+        // Check for event's ticket sale date
+        if (purchaseTicketService.isTicketSaleDateStarted(eventId)) {
+            redirectAttributes.addFlashAttribute("error", "Ticket sale date not started");
+            return "redirect:/viewdetailEvent/" + eventId;
+        }
+
+        // Check if event passed
+        if (purchaseTicketService.isEventPassed(eventId)) {
+            redirectAttributes.addFlashAttribute("error", "Event has passed");
+            return "redirect:/viewdetailEvent/" + eventId;
+        }
+
 
         model.addAttribute("event", purchaseTicketService.getEventWithAreas(eventId));
         model.addAttribute("seatMap", seatMapRepo.getSeatMapByEventId(eventId));
