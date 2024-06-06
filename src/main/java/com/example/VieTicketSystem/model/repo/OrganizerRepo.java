@@ -15,8 +15,7 @@ public class OrganizerRepo {
 
     public void saveNew(Organizer organizer) throws Exception {
         Class.forName(Baseconnection.nameClass);
-        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password)) {
+        try (Connection con = ConnectionPoolManager.getConnection()) {
             CallableStatement cs = con
                     .prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
             cs.setString(1, organizer.getFullName());
@@ -44,8 +43,7 @@ public class OrganizerRepo {
     public void save(Organizer organizer) throws Exception {
 
         Class.forName(Baseconnection.nameClass);
-        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement(UPDATE_STATEMENT);
         ps.setInt(1, organizer.getUserId());
         ps.setString(2, organizer.getFullName());
@@ -71,8 +69,7 @@ public class OrganizerRepo {
     public Organizer findById(int id) throws Exception {
 
         Class.forName(Baseconnection.nameClass);
-        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement(SELECT_STATEMENT);
         ps.setInt(1, id);
 
@@ -109,8 +106,7 @@ public class OrganizerRepo {
 
         try {
             Class.forName(Baseconnection.nameClass);
-            try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                    Baseconnection.password);
+            try (Connection con = ConnectionPoolManager.getConnection();
                     PreparedStatement preparedStatement = con.prepareStatement(sql)) {
                 preparedStatement.setInt(1, userId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -143,8 +139,7 @@ public class OrganizerRepo {
 
         try {
             Class.forName(Baseconnection.nameClass);
-            try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                    Baseconnection.password);
+            try (Connection con = ConnectionPoolManager.getConnection();
                     PreparedStatement preparedStatement = con.prepareStatement(sql)) {
                 preparedStatement.setInt(1, eventId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {

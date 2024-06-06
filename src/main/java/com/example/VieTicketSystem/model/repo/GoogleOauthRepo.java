@@ -14,8 +14,7 @@ import org.springframework.stereotype.Repository;
 public class GoogleOauthRepo {
   public static Map<String, String> getOauthDetails() throws Exception {
     Class.forName(Baseconnection.nameClass);
-    Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-        Baseconnection.password);
+    Connection connection = ConnectionPoolManager.getConnection();
     PreparedStatement ps = connection.prepareStatement("Select * from googleOauth");
     ResultSet rs = ps.executeQuery();
     if (rs.next()) {

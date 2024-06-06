@@ -15,8 +15,7 @@ import com.example.VieTicketSystem.model.entity.User;
 public class LoginRepo {
     public User CheckLogin(String usernameInput, String passwordInput) throws Exception {
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement("Select * from User where username = ? and password = ?");
         ps.setString(1, usernameInput);
         ps.setString(2, passwordInput);
@@ -40,7 +39,7 @@ public class LoginRepo {
     }
     public boolean checkPassword(String username, String password) throws Exception {
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM User WHERE username = ? AND password = ?");
         ps.setString(1, username);
         ps.setString(2, password);

@@ -63,6 +63,7 @@ CREATE TABLE `Order`
     date       DATETIME,
     total      INT,
     user_id    INT,
+    status     TINYINT,
     FOREIGN KEY (user_id) REFERENCES User (user_id),
     vnpay_data TEXT
 );
@@ -133,8 +134,7 @@ CREATE TABLE Ticket
     order_id      INT,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
     seat_id       INT,
-    is_returned   BOOLEAN,
-    is_checked_in BOOLEAN,
+    status        TINYINT,
     FOREIGN KEY (seat_id) REFERENCES Seat (seat_id)
 );
 

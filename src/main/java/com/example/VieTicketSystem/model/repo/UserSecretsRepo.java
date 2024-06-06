@@ -16,7 +16,7 @@ public class UserSecretsRepo {
     private static final String DELETE_SECRET_KEY_SQL = "DELETE FROM UserSecrets WHERE user_id = ?";
 
     public void insertSecretKey(int userId, String secretKey) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SECRET_KEY_SQL)) {
 
             preparedStatement.setInt(1, userId);
@@ -27,7 +27,7 @@ public class UserSecretsRepo {
     }
 
     public String getSecretKey(int userId) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SECRET_KEY_SQL)) {
 
             preparedStatement.setInt(1, userId);
@@ -43,7 +43,7 @@ public class UserSecretsRepo {
     }
 
     public void deleteSecretKey(int userId) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SECRET_KEY_SQL)) {
 
             preparedStatement.setInt(1, userId);

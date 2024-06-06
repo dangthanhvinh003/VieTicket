@@ -24,8 +24,7 @@ public class RowRepo {
 
     public Row findById(int id) throws Exception {
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);
         ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
@@ -44,8 +43,7 @@ public class RowRepo {
 
     public List<Row> findByAreaId(int areaId) throws Exception {
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_AREA_ID_SQL);
         ps.setInt(1, areaId);
         ResultSet rs = ps.executeQuery();
@@ -67,8 +65,7 @@ public class RowRepo {
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO `Row` (row_name, area_id) VALUES (?, ?)");
 
@@ -82,8 +79,7 @@ public class RowRepo {
         int rowId = -1; // Giá trị mặc định khi không tìm thấy hàng
 
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "SELECT row_id FROM `Row` WHERE area_id = ?");
         ps.setInt(1, area);
@@ -103,7 +99,7 @@ public class RowRepo {
         ArrayList<Integer> rowIds = new ArrayList<>();
 
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         
         String sql = "SELECT row_id FROM `Row` WHERE area_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -125,7 +121,7 @@ public class RowRepo {
         ArrayList<Row> rows = new ArrayList<>();
 
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         
         String sql = "SELECT row_id, row_name, area_id FROM `Row` WHERE area_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
