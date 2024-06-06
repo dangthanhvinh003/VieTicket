@@ -12,10 +12,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.example.VieTicketSystem.model.entity.AdminStatistics;
 import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.SeatMap;
+import com.example.VieTicketSystem.model.entity.TableAdminStatistics;
+import com.example.VieTicketSystem.model.entity.User;
 
 @Repository
 public class AdminRepo {
@@ -289,6 +292,256 @@ public class AdminRepo {
                         e.printStackTrace();
                         throw new Exception("Error deleting event", e);
                 }
+        }
+
+        public AdminStatistics getStatisticsForAdmin() throws Exception {
+                Class.forName(Baseconnection.nameClass);
+                AdminStatistics stats = new AdminStatistics();
+
+                String sql = "SELECT "
+                                + "(SELECT SUM(s.ticket_price) "
+                                + " FROM Ticket t "
+                                + " JOIN Seat s ON t.seat_id = s.seat_id "
+                                + " JOIN Area a ON s.row_id = a.area_id "
+                                + " JOIN Event e ON a.event_id = e.event_id "
+                                + " WHERE t.is_returned = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
+                                + "(SELECT COUNT(*) "
+                                + " FROM Event "
+                                + " WHERE end_date > NOW()) AS total_ongoing_events, "
+                                + "(SELECT COUNT(*) "
+                                + " FROM Event "
+                                + " WHERE is_approve = 0) AS total_approved_events, "
+                                + "(SELECT COUNT(*) "
+                                + " FROM Event "
+                                + " WHERE is_approve = 3) AS total_rejected_events, "
+                                + "(SELECT COUNT(*) "
+                                + " FROM Organizer "
+                                + " WHERE is_active = 0) AS total_inactive_organizers, "
+                                + "(SELECT COUNT(*) "
+                                + " FROM Organizer "
+                                + " WHERE is_active = 1) AS total_active_organizers, "
+                                + "(SELECT COUNT(*) "
+                                + " FROM User u "
+                                + " WHERE u.role NOT IN ('a', 'b','p')) AS total_users_excluding_organizers, "
+                                + "(SELECT COUNT(*) "
+                                + " FROM User "
+                                + " WHERE role = 'b' OR role ='p') AS total_banned_users";
+
+                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                                PreparedStatement ps = con.prepareStatement(sql);
+                                ResultSet rs = ps.executeQuery()) {
+
+                        if (rs.next()) {
+                                stats.setTotalSoldAmountActiveEvents(rs.getDouble("total_sold_amount_active_events"));
+                                stats.setTotalOngoingEvents(rs.getInt("total_ongoing_events"));
+                                stats.setTotalApprovedEvents(rs.getInt("total_approved_events"));
+                                stats.setTotalRejectedEvents(rs.getInt("total_rejected_events"));
+                                stats.setTotalInactiveOrganizers(rs.getInt("total_inactive_organizers"));
+                                stats.setTotalActiveOrganizers(rs.getInt("total_active_organizers"));
+                                stats.setTotalUsersExcludingOrganizers(rs.getInt("total_users_excluding_organizers"));
+                                stats.setTotalBannedUsers(rs.getInt("total_banned_users")); // Thêm dòng này
+                        }
+
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                        throw new Exception("Error retrieving statistics", e);
+                }
+
+                return stats;
+        }
+
+        public List<Integer> getDailyRevenue() throws Exception {
+                List<Integer> dailyRevenue = new ArrayList<>();
+                Class.forName(Baseconnection.nameClass);
+                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password)) {
+                        String sql = "SELECT DATE(t.purchase_date) AS `day`, SUM(s.ticket_price) AS daily_revenue " +
+                                        "FROM Ticket t " +
+                                        "JOIN Seat s ON t.seat_id = s.seat_id " +
+                                        "WHERE t.is_returned = 0 " +
+                                        "GROUP BY DATE(t.purchase_date) " +
+                                        "ORDER BY DATE(t.purchase_date);";
+                        try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+                                while (rs.next()) {
+                                        dailyRevenue.add(rs.getInt("daily_revenue"));
+                                }
+                        }
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                        throw new Exception("Error retrieving daily revenue", e);
+                }
+                return dailyRevenue;
+        }
+
+        public List<Integer> getMonthlyRevenue() throws Exception {
+                List<Integer> monthlyRevenue = new ArrayList<>();
+                Class.forName(Baseconnection.nameClass);
+                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password)) {
+                        String sql = "SELECT DATE_FORMAT(t.purchase_date, '%Y-%m') AS `month`, SUM(s.ticket_price) AS monthly_revenue "
+                                        +
+                                        "FROM Ticket t " +
+                                        "JOIN Seat s ON t.seat_id = s.seat_id " +
+                                        "WHERE t.is_returned = 0 " +
+                                        "GROUP BY DATE_FORMAT(t.purchase_date, '%Y-%m') " +
+                                        "ORDER BY DATE_FORMAT(t.purchase_date, '%Y-%m');";
+                        try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+                                while (rs.next()) {
+                                        monthlyRevenue.add(rs.getInt("monthly_revenue"));
+                                }
+                        }
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                        throw new Exception("Error retrieving monthly revenue", e);
+                }
+                return monthlyRevenue;
+        }
+
+        public List<TableAdminStatistics> getEventRevenues() throws Exception {
+                List<TableAdminStatistics> eventRevenues = new ArrayList<>();
+                String sql = "SELECT e.name AS eventName, u.full_name AS organizerName, SUM(a.ticket_price) AS revenue "
+                                +
+                                "FROM Event e " +
+                                "JOIN Organizer o ON e.organizer_id = o.organizer_id " +
+                                "JOIN User u ON o.organizer_id = u.user_id " +
+                                "JOIN Area a ON e.event_id = a.event_id " +
+                                "JOIN Seat s ON a.area_id = s.row_id " +
+                                "JOIN Ticket t ON s.seat_id = t.seat_id " +
+                                "JOIN `Order` r ON t.order_id = r.order_id " +
+                                "WHERE t.is_returned = FALSE " +
+                                "GROUP BY e.event_id, u.full_name";
+
+                Class.forName(Baseconnection.nameClass);
+                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                                PreparedStatement ps = con.prepareStatement(sql);
+                                ResultSet rs = ps.executeQuery()) {
+
+                        while (rs.next()) {
+                                String eventName = rs.getString("eventName");
+                                String organizerName = rs.getString("organizerName");
+                                double revenue = rs.getDouble("revenue");
+                                eventRevenues.add(new TableAdminStatistics(eventName, organizerName, revenue));
+                        }
+                } catch (SQLException e) {
+                        e.printStackTrace();
+                        throw new Exception("Error retrieving event revenues", e);
+                }
+
+                return eventRevenues;
+        }
+
+        public ArrayList<User> getAllUser() throws Exception {
+                ArrayList<User> users = new ArrayList<>();
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                String query = "SELECT * FROM User WHERE role != 'a' AND  role != 'b' AND  role != 'p'";
+                PreparedStatement ps = con.prepareStatement(query);
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                        User user = new User();
+                        user.setUserId(rs.getInt("user_id"));
+                        user.setFullName(rs.getString("full_name"));
+                        user.setUsername(rs.getString("username"));
+                        user.setPassword(rs.getString("password"));
+                        user.setPhone(rs.getString("phone"));
+                        user.setDob(rs.getDate("dob"));
+                        user.setGender(rs.getString("gender").charAt(0));
+                        user.setAvatar(rs.getString("avatar"));
+                        user.setRole(rs.getString("role").charAt(0));
+                        user.setEmail(rs.getString("email"));
+                        users.add(user);
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
+
+                return users;
+        }
+
+        public ArrayList<User> getAllBanner() throws Exception {
+                ArrayList<User> users = new ArrayList<>();
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                String query = "SELECT * FROM User WHERE role = 'b' OR role = 'p'";
+                PreparedStatement ps = con.prepareStatement(query);
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                        User user = new User();
+                        user.setUserId(rs.getInt("user_id"));
+                        user.setFullName(rs.getString("full_name"));
+                        user.setUsername(rs.getString("username"));
+                        user.setPassword(rs.getString("password"));
+                        user.setPhone(rs.getString("phone"));
+                        user.setDob(rs.getDate("dob"));
+                        user.setGender(rs.getString("gender").charAt(0));
+                        user.setAvatar(rs.getString("avatar"));
+                        user.setRole(rs.getString("role").charAt(0));
+                        user.setEmail(rs.getString("email"));
+                        users.add(user);
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
+
+                return users;
+        }
+
+        public void lockUser(int userId, char currentRole) throws Exception {
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                String query;
+                if (currentRole == 'u') {
+                        query = "UPDATE User SET role = 'b' WHERE user_id = ?";
+                } else if (currentRole == 'o') {
+                        query = "UPDATE User SET role = 'p' WHERE user_id = ?";
+                } else {
+                        throw new IllegalArgumentException("Invalid role: " + currentRole);
+                }
+
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setInt(1, userId);
+                int rowsUpdated = ps.executeUpdate();
+
+                if (rowsUpdated > 0) {
+                        System.out.println("User with ID " + userId + " has been locked.");
+                } else {
+                        System.out.println("No user with ID " + userId + " found.");
+                }
+
+                ps.close();
+                con.close();
+        }
+
+        public void unlockUser(int userId, char currentRole) throws Exception {
+                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                                Baseconnection.password);
+                String query;
+                if (currentRole == 'b') {
+                        query = "UPDATE User SET role = 'u' WHERE user_id = ?";
+                } else if (currentRole == 'p') {
+                        query = "UPDATE User SET role = 'o' WHERE user_id = ?";
+                } else {
+                        throw new IllegalArgumentException("Invalid role: " + currentRole);
+                }
+
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setInt(1, userId);
+                int rowsUpdated = ps.executeUpdate();
+
+                if (rowsUpdated > 0) {
+                        System.out.println("User with ID " + userId + " has been unlocked.");
+                } else {
+                        System.out.println("No user with ID " + userId + " found.");
+                }
+
+                ps.close();
+                con.close();
         }
 
 }

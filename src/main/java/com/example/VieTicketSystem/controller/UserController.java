@@ -147,6 +147,9 @@ public class UserController {
         if(user.getRole() == 'a'){
             return "redirect:/dashboardAdmin";
         }
+        if(user.getRole() == 'p' || user.getRole()=='b'){
+            return "banned";
+        }
 
         return "redirect:/";
     }

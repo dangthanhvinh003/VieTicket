@@ -29,11 +29,14 @@
             height: auto;
             /* Giữ tỷ lệ ảnh */
         }
+
         .header-container {
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Khoảng cách đều giữa các phần tử */
+            justify-content: space-between;
+            /* Khoảng cách đều giữa các phần tử */
         }
+
         .header-container h2 {
             margin: 0;
         }
@@ -43,13 +46,10 @@
 <body class="bg-light">
     <div class="container mt-5">
         <div class="header-container">
+            <a th:href="@{/dashboardAdmin}" class="btn btn-primary">Back to Dashboard</a>
             <h2 class="mb-4">List of Event to Approve</h2>
-            <div>
-                <a href="/ViewAllApproveEvent" class="btn btn-primary" id="pendingEvents">Approve</a>
-                <a href="/ViewAllRejectEvent" class="btn btn-danger" id="pendingEvents">Rejected</a>
-            </div>
         </div>
-        
+
         <div class="container mt-4">
             <div class="row">
                 <!-- Sử dụng Thymeleaf để lặp qua danh sách các Organizer và hiển thị thông tin của từng Organizer -->
@@ -64,12 +64,10 @@
                                 <span th:utext="${event.description}">Description</span>
                             </div>
                             </p>
-                            <strong>Ticket Sale Date:</strong> <span
-                                th:text="${event.ticketSaleDate}">Date</span><br>
+                            <strong>Ticket Sale Date:</strong> <span th:text="${event.ticketSaleDate}">Date</span><br>
                             <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
                             <strong>Type:</strong> <span th:text="${event.type}">Type</span><br>
-                            <strong>Start Date:</strong> <span
-                                th:text="${event.startDate}">Start Date</span><br>
+                            <strong>Start Date:</strong> <span th:text="${event.startDate}">Start Date</span><br>
                             <strong>End Date:</strong> <span th:text="${event.endDate}">End
                                 Date</span><br>
                             <strong>Organizer Name:</strong> <span th:text="${event.organizer.fullName}">Organizer
@@ -108,7 +106,7 @@
                                     th:if="${event.seatMap == null}">No seat map available</span>
                             </div>
 
-                            <div >
+                            <div>
                                 <div th:if="${status == 'approve'}" class="d-flex justify-content-between mt-3">
                                     <form th:action="@{/approveEvent}" method="post" class="me-2">
                                         <input type="hidden" name="eventId" th:value="${event.eventId}">
@@ -116,16 +114,105 @@
                                             <i class="bi bi-check"></i> Approve
                                         </button>
                                     </form>
-                                    <form th:action="@{/rejectEvent}" method="post" class="me-2">
-                                        <input type="hidden" name="eventId" th:value="${event.eventId}">
-                                        <input type="hidden" name="eventName" th:value="${event.name}">
-                                        <input type="hidden" name="organizerEmail" th:value="${event.organizer.email}">
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="bi bi-x"></i> Reject
-                                        </button>
-                                    </form>
+                                    <!-- Button to trigger modal -->
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#rejectModal">
+                                        <i class="bi bi-x"></i> Reject
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="rejectModal" tabindex="-1"
+                                        aria-labelledby="rejectModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="rejectModalLabel">Select Corrections
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form id="rejectForm" th:action="@{/rejectEvent}" method="post">
+                                                        <input type="hidden" name="eventId" th:value="${event.eventId}">
+                                                        <input type="hidden" name="eventName" th:value="${event.name}">
+                                                        <input type="hidden" name="organizerEmail"
+                                                            th:value="${event.organizer.email}">
+
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="eventName"
+                                                                id="eventNameCheck">
+                                                            <label class="form-check-label" for="eventNameCheck">Tên sự
+                                                                kiện</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="ticketPrice"
+                                                                id="ticketPriceCheck">
+                                                            <label class="form-check-label" for="ticketPriceCheck">Giá
+                                                                vé</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="seatMap" id="seatMapCheck">
+                                                            <label class="form-check-label" for="seatMapCheck">Seat
+                                                                map</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="description"
+                                                                id="descriptionCheck">
+                                                            <label class="form-check-label"
+                                                                for="descriptionCheck">Description</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="posterImage"
+                                                                id="posterImageCheck">
+                                                            <label class="form-check-label" for="posterImageCheck">Ảnh
+                                                                poster</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="bannerImage"
+                                                                id="bannerImageCheck">
+                                                            <label class="form-check-label" for="bannerImageCheck">Ảnh
+                                                                banner</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="ticketSaleDate"
+                                                                id="ticketSaleDateCheck">
+                                                            <label class="form-check-label"
+                                                                for="ticketSaleDateCheck">Ngày bán vé</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="eventStartDate"
+                                                                id="eventStartDateCheck">
+                                                            <label class="form-check-label"
+                                                                for="eventStartDateCheck">Ngày bắt đầu sự kiện</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="corrections" value="eventEndDate"
+                                                                id="eventEndDateCheck">
+                                                            <label class="form-check-label" for="eventEndDateCheck">Ngày
+                                                                kết thúc sự kiện</label>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        onclick="submitRejectForm()">Đồng ý</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                
+
                                 <div th:if="${status == 'reject'}" class="d-flex justify-content-between mt-3">
                                     <form th:action="@{/approveEvent}" method="post" class="me-2">
                                         <input type="hidden" name="eventId" th:value="${event.eventId}">
@@ -159,6 +246,11 @@
                 }
             });
         });
+    </script>
+    <script>
+        function submitRejectForm() {
+            document.getElementById('rejectForm').submit();
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
