@@ -1,23 +1,39 @@
-<!-- searchResults.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Search Results</title>
-    <!-- Bao gồm các file CSS/JS cần thiết -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Search Results</h1>
-    <div th:if="${events.isEmpty()}">
-        <p>No events found.</p>
+    <div class="container mt-5">
+        <h2 id="eventsTitle">Search Results</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+            <!-- Kiểm tra nếu không có sự kiện nào -->
+            <div class="col mb-4" th:if="${events == null || events.size() == 0}">
+                <p>No events found.</p>
+            </div>
+            <!-- Lặp qua các sự kiện và hiển thị nếu đã được phê duyệt -->
+            <div class="col mb-4" th:each="event : ${events}" th:if="${event.isApprove == true}">
+                <div class="card border-0 shadow">
+                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                        style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
+                    <div class="card-body p-0">
+                        <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                        <p class="card-text m-0 p-2">
+                            Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                        </p>
+                        <div class="d-flex">
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div th:unless="${events.isEmpty()}">
-        <ul>
-            <li th:each="event : ${events}">
-                <h2 th:text="${event.name}">Event Name</h2>
-                <p th:text="${event.description}">Event Description</p>
-                <!-- Hiển thị các thông tin khác của sự kiện nếu cần -->
-            </li>
-        </ul>
-    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

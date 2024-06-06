@@ -218,6 +218,7 @@ public class EventRepo {
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
+                    event.setView(resultSet.getInt("view"));
                     // Set the organizer if applicable
                 }
             }
@@ -603,11 +604,22 @@ public List<Event> searchEvents(String keyword) {
     List<Event> events = getAllEvents();
     List<Event> findEvents = new ArrayList<>();
     for (int i = 0; i < events.size(); i++) {
-        if(events.get(i).getName().contains(keyword)){
+        if(events.get(i).getName().toLowerCase().contains(keyword)){
             findEvents.add(events.get(i));
         }
     }    
     return findEvents;
+}
+
+public void incrementClickCount(int eventId) {
+    String sql = "UPDATE Event SET view = view + 1 WHERE id = ?";
+    try (Connection conn = Baseconnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, eventId);
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
 }
 
 

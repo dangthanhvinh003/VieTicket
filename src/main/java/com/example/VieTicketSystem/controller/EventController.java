@@ -76,7 +76,7 @@ public class EventController {
         User user = (User) httpSession.getAttribute("activeUser");
         System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
-                organizerRepo.findById(user.getUserId()),imageURL, imageURL1, 0);
+                organizerRepo.findById(user.getUserId()),imageURL, imageURL1, 0,0);
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(),
@@ -267,7 +267,12 @@ public class EventController {
         model.addAttribute("error", "Error searching for events: " + e.getMessage());
     }
     return "searchResults";
-}
+    }
 
 
+    @GetMapping("/count-view/{id}")
+    public String countView(@PathVariable("id") int eventId) {
+        eventRepo.incrementClickCount(eventId);
+        return "redirect:/event-detail/" + eventId; // Redirect to event detail page
+    }
 }
