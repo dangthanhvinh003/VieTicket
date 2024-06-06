@@ -311,3 +311,5 @@ VALUES ('NTPMM', 'Những thành phố mơ màng', '2024-06-01', 'Hà Nội', 'M
         '2024-06-06', 3, 'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg',
         'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg', 1);
 
+-- @block
+ALTER TABLE Event CHANGE COLUMN View view INT;

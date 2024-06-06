@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-header {
+            font-weight: bold;
+        }
+        .card-body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 80vw;
+        }
+        .table thead th {
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            width: 45%;
+            height: 400px;
+            margin: 20px;
+            display: inline-block;
+        }
+    
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        
+
+        <!-- Dashboard Content -->
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng doanh thu sự kiện đang hoạt động</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">1,234,567</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Tổng số sự kiện đang diễn ra</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">123</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng số sự kiện đã kết thúc</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">456</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Tổng số sự kiện bị hủy</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">789</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Doanh Thu Theo Ngày</h6>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="dailyRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-boldtext-primary">Doanh Thu Theo Tháng</h6>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="monthlyRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Thông Tin Sự Kiện</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Tên Sự Kiện</th>
+                                        <th>Thông Tin Tổ Chức</th>
+                                        <th>Doanh Thu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Sự Kiện A</td>
+                                        <td>Tổ Chức A</td>
+                                        <td>1,000,000 VND</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sự Kiện B</td>
+                                        <td>Tổ Chức B</td>
+                                        <td>2,000,000 VND</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sự Kiện C</td>
+                                        <td>Tổ Chức C</td>
+                                        <td>3,000,000 VND</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            $('#dataTable').DataTable();
+
+            // Initialize Charts
+            var ctxDaily = document.getElementById('dailyRevenueChart').getContext('2d');
+            var dailyRevenueChart = new Chart(ctxDaily, {
+                type: 'line',
+                data: {
+                    labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
+                    datasets: [{
+                        label: 'Doanh Thu',
+                        data: [1200000, 1500000, 800000, 2000000, 1700000, 900000, 1300000],
+                        backgroundColor: 'rgba(78, 115, 223, 0.2)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                                }
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tooltipItem.yLabel);
+                            }
+                        }
+                    }
+                }
+            });
+
+            var ctxMonthly = document.getElementById('monthlyRevenueChart').getContext('2d');
+            var monthlyRevenueChart = new Chart(ctxMonthly, {
+                type: 'bar',
+                data: {
+                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                    datasets: [{
+                        label: 'Doanh Thu',
+                        data: [12000000, 15000000, 8000000, 20000000, 17000000, 9000000, 13000000,16000000, 14000000, 18000000, 19000000, 22000000],
+                        backgroundColor: 'rgba(28, 200, 138, 0.2)',
+                        borderColor: 'rgba(28, 200, 138, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+                                }
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tooltipItem.yLabel);
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

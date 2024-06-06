@@ -6,12 +6,11 @@ import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AreaRepo;
 import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.RowRepo;
 import com.example.VieTicketSystem.model.repo.SeatMapRepo;
 import com.example.VieTicketSystem.model.repo.SeatRepo;
-import com.example.VieTicketSystem.model.repo.UserRepo;
+import com.example.VieTicketSystem.model.service.EventService;
 import com.example.VieTicketSystem.model.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -60,7 +59,9 @@ public class EventController {
     FileUpload fileUpload;
     @Autowired
     Cloudinary cloudinary;
-   
+    @Autowired
+    private EventService eventService;
+
     @PostMapping(value = ("/add-event"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
             @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
@@ -75,7 +76,7 @@ public class EventController {
         User user = (User) httpSession.getAttribute("activeUser");
         System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
-                organizerRepo.findById(user.getUserId()),imageURL, imageURL1, 0);
+                organizerRepo.findById(user.getUserId()),imageURL, imageURL1, 0,0);
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(),
@@ -257,5 +258,21 @@ public class EventController {
         return "viewdetailEvent";
     }
    
+    @PostMapping(value = "/search-event")
+    public String searchEvent(@RequestParam("keyword") String keyword, Model model) {
+    try {
+        List<Event> events = eventService.searchEvents(keyword);
+        model.addAttribute("events", events);
+    } catch (Exception e) {
+        model.addAttribute("error", "Error searching for events: " + e.getMessage());
+    }
+    return "searchResults";
+    }
 
+
+    @GetMapping("/count-view/{id}")
+    public String countView(@PathVariable("id") int eventId) {
+        eventRepo.incrementClickCount(eventId);
+        return "redirect:/event-detail/" + eventId; // Redirect to event detail page
+    }
 }

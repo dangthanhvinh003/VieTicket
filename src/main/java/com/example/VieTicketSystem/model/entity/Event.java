@@ -29,8 +29,9 @@ public class Event {
     private int approved;
     private List<Area> areas; // Danh sách các khu vực và giá tiền
     private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
+    private int view;
     public Event(int eventId, String name, String description, LocalDateTime  startDate, String location, String type,
-    LocalDateTime  ticketSaleDate, LocalDateTime  endDate, Organizer organizer, String poster, String banner, int isApprove) {
+    LocalDateTime  ticketSaleDate, LocalDateTime  endDate, Organizer organizer, String poster, String banner, int isApprove, int view) {
         this.eventId = eventId;
         this.name = name;
         this.description = description;
@@ -43,6 +44,7 @@ public class Event {
         this.poster = poster;
         this.banner = banner;
         this.approved = isApprove;
+        this.view = view;
     }
     
 
