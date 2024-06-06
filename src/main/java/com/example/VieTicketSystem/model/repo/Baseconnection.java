@@ -19,5 +19,4 @@ public class Baseconnection {
         }
         return DriverManager.getConnection(url, username, password);
     }
-
 }
