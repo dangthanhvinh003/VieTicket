@@ -55,8 +55,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarTogglerDemo02">
-                <form class="d-flex search-form" role="search">
-                    <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
+                <form th:action="@{/search-event}" method="post" class="d-flex search-form" role="search">
+                    <input name="keyword" id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
                         placeholder="Search" aria-label="Search">
 
                     <button class="btn btn-outline-success" type="submit">Search</button>

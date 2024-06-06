@@ -598,4 +598,17 @@ public class EventRepo {
 
         return seatMapDetails;
     }
+
+public List<Event> searchEvents(String keyword) {
+    List<Event> events = getAllEvents();
+    List<Event> findEvents = new ArrayList<>();
+    for (int i = 0; i < events.size(); i++) {
+        if(events.get(i).getName().contains(keyword)){
+            findEvents.add(events.get(i));
+        }
+    }    
+    return findEvents;
+}
+
+
 }

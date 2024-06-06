@@ -1,0 +1,23 @@
+<!-- searchResults.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Results</title>
+    <!-- Bao gồm các file CSS/JS cần thiết -->
+</head>
+<body>
+    <h1>Search Results</h1>
+    <div th:if="${events.isEmpty()}">
+        <p>No events found.</p>
+    </div>
+    <div th:unless="${events.isEmpty()}">
+        <ul>
+            <li th:each="event : ${events}">
+                <h2 th:text="${event.name}">Event Name</h2>
+                <p th:text="${event.description}">Event Description</p>
+                <!-- Hiển thị các thông tin khác của sự kiện nếu cần -->
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
