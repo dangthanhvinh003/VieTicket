@@ -41,7 +41,7 @@ public class EventRepo {
 
     public Event findById(int id) throws Exception {
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);) {
+             PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);) {
 
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -86,8 +86,8 @@ public class EventRepo {
     public List<Event> findUpcomingByOrganizerId(int organizerId) throws SQLException {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection
-                        .prepareStatement("SELECT * FROM Event WHERE organizer_id = ? AND end_date >= ?");) {
+             PreparedStatement statement = connection
+                     .prepareStatement("SELECT * FROM Event WHERE organizer_id = ? AND end_date >= ?");) {
 
             statement.setInt(1, organizerId);
             statement.setDate(2, new Date(System.currentTimeMillis()));
@@ -134,8 +134,8 @@ public class EventRepo {
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
@@ -179,7 +179,7 @@ public class EventRepo {
     public Event getEventById(int eventid) {
         Event event = null;
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE event_id = ?");) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE event_id = ?");) {
 
             statement.setInt(1, eventid); // Truyền tên sự kiện cụ thể vào câu lệnh SQL
 
@@ -214,7 +214,7 @@ public class EventRepo {
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
-                    event.setView(resultSet.getInt("view"));
+                    event.setView(resultSet.getInt("eyeview"));
                     // Set the organizer if applicable
                 }
             }
@@ -249,7 +249,7 @@ public class EventRepo {
                 "a.event_id = ?;";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, eventId);
             statement.setInt(2, eventId);
@@ -282,7 +282,7 @@ public class EventRepo {
                 "GROUP BY DATE(t.purchase_date);";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, eventId);
 
@@ -301,7 +301,7 @@ public class EventRepo {
     }
 
     public int addEvent(String name, String description, LocalDateTime startDate, String location, String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
+                        LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
@@ -378,8 +378,8 @@ public class EventRepo {
     }
 
     public int updateEvent(int eventId, String name, String description, LocalDateTime startDate, String location,
-            String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
+                           String type,
+                           LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
@@ -438,7 +438,7 @@ public class EventRepo {
         String query = "SELECT * FROM Event WHERE organizer_id = ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, organizerId);
 
@@ -492,7 +492,7 @@ public class EventRepo {
         String query = "SELECT * FROM Event WHERE organizer_id = ? AND name LIKE ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, organizerId);
             statement.setString(2, "%" + name + "%");
@@ -588,25 +588,25 @@ public class EventRepo {
         return seatMapDetails;
     }
 
-public List<Event> searchEvents(String keyword) {
-    List<Event> events = getAllEvents();
-    List<Event> findEvents = new ArrayList<>();
-    for (int i = 0; i < events.size(); i++) {
-        if(events.get(i).getName().toLowerCase().contains(keyword)){
-            findEvents.add(events.get(i));
+    public List<Event> searchEvents(String keyword) {
+        List<Event> events = getAllEvents();
+        List<Event> findEvents = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            if (events.get(i).getName().toLowerCase().contains(keyword)) {
+                findEvents.add(events.get(i));
+            }
         }
-    }    
-    return findEvents;
-}
-
-public void incrementClickCount(int eventId) {
-    String sql = "UPDATE Event SET eyeview = eyeview + 1 WHERE event_id = ?";
-    try (Connection conn = Baseconnection.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setInt(1, eventId);
-        pstmt.executeUpdate();
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return findEvents;
     }
-}
+
+    public void incrementClickCount(int eventId) {
+        String sql = "UPDATE Event SET eyeview = eyeview + 1 WHERE event_id = ?";
+        try (Connection conn = ConnectionPoolManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, eventId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
