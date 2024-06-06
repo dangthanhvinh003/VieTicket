@@ -313,3 +313,6 @@ VALUES ('NTPMM', 'Những thành phố mơ màng', '2024-06-01', 'Hà Nội', 'M
 
 -- @block
 ALTER TABLE Event CHANGE COLUMN View view INT;
+
+-- @block
+UPDATE Event SET view = view + 1 WHERE event_id = 1
