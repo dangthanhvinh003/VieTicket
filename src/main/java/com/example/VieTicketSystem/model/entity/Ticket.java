@@ -18,6 +18,32 @@ public class Ticket {
     private LocalDateTime purchaseDate;
     private Order order;
     private Seat seat;
-    private boolean isReturned;
-    private boolean isCheckedIn;
+    private TicketStatus status;
+
+    public enum TicketStatus {
+        PURCHASED(0),
+        FAILED(1),
+        PENDING(2),
+        CANCELLED(3),
+        CHECKED_IN(4);
+
+        private final int value;
+
+        TicketStatus(int value) {
+            this.value = value;
+        }
+
+        public int toInteger() {
+            return value;
+        }
+
+        public static TicketStatus fromInteger(int value) {
+            for (TicketStatus status : TicketStatus.values()) {
+                if (status.value == value) {
+                    return status;
+                }
+            }
+            return null;
+        }
+    }
 }

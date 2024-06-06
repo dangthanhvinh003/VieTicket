@@ -40,9 +40,8 @@ public class EventRepo {
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM Event WHERE event_id = ?";
 
     public Event findById(int id) throws Exception {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);) {
 
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -86,10 +85,9 @@ public class EventRepo {
 
     public List<Event> findUpcomingByOrganizerId(int organizerId) throws SQLException {
         List<Event> events = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement statement = connection
-                        .prepareStatement("SELECT * FROM Event WHERE organizer_id = ? AND end_date >= ?");) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection
+                     .prepareStatement("SELECT * FROM Event WHERE organizer_id = ? AND end_date >= ?");) {
 
             statement.setInt(1, organizerId);
             statement.setDate(2, new Date(System.currentTimeMillis()));
@@ -135,10 +133,9 @@ public class EventRepo {
 
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
-                ResultSet resultSet = statement.executeQuery()) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
@@ -181,9 +178,8 @@ public class EventRepo {
 
     public Event getEventById(int eventid) {
         Event event = null;
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE event_id = ?");) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE event_id = ?");) {
 
             statement.setInt(1, eventid); // Truyền tên sự kiện cụ thể vào câu lệnh SQL
 
@@ -218,6 +214,7 @@ public class EventRepo {
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
+                    event.setView(resultSet.getInt("eyeview"));
                     // Set the organizer if applicable
                 }
             }
@@ -251,9 +248,8 @@ public class EventRepo {
                 "WHERE " +
                 "a.event_id = ?;";
 
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, eventId);
             statement.setInt(2, eventId);
@@ -285,9 +281,8 @@ public class EventRepo {
                 "WHERE a.event_id = ? AND t.is_returned = 0 " + // Chỉ lấy vé không bị hoàn trả
                 "GROUP BY DATE(t.purchase_date);";
 
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, eventId);
 
@@ -306,7 +301,7 @@ public class EventRepo {
     }
 
     public int addEvent(String name, String description, LocalDateTime startDate, String location, String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
+                        LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
@@ -316,8 +311,7 @@ public class EventRepo {
         int eventId = 0;
 
         try {
-            connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                    Baseconnection.password);
+            connection = ConnectionPoolManager.getConnection();
 
             // Sử dụng tùy chọn RETURN_GENERATED_KEYS để lấy khóa tự động tăng
             ps = connection.prepareStatement(
@@ -384,13 +378,12 @@ public class EventRepo {
     }
 
     public int updateEvent(int eventId, String name, String description, LocalDateTime startDate, String location,
-            String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
+                           String type,
+                           LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
 
         // Câu lệnh SQL để cập nhật sự kiện
         PreparedStatement ps = connection.prepareStatement(
@@ -444,9 +437,8 @@ public class EventRepo {
         ArrayList<Event> events = new ArrayList<>();
         String query = "SELECT * FROM Event WHERE organizer_id = ?";
 
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, organizerId);
 
@@ -499,9 +491,8 @@ public class EventRepo {
         ArrayList<Event> events = new ArrayList<>();
         String query = "SELECT * FROM Event WHERE organizer_id = ? AND name LIKE ?";
 
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, organizerId);
             statement.setString(2, "%" + name + "%");
@@ -555,8 +546,7 @@ public class EventRepo {
 
     private List<Area> getAreasByEventId(int eventId) throws Exception {
         List<Area> areas = new ArrayList<>();
-        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection con = ConnectionPoolManager.getConnection();
         String query = "SELECT * FROM Area WHERE event_id = ?";
         PreparedStatement ps = con.prepareStatement(query);
         ps.setInt(1, eventId);
@@ -579,8 +569,7 @@ public class EventRepo {
 
     private SeatMap getSeatMapDetailsByEventId(int eventId) throws Exception {
         SeatMap seatMapDetails = null;
-        Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection con = ConnectionPoolManager.getConnection();
         String query = "SELECT img, name FROM SeatMap WHERE event_id = ?";
         PreparedStatement ps = con.prepareStatement(query);
         ps.setInt(1, eventId);
@@ -597,5 +586,27 @@ public class EventRepo {
         con.close();
 
         return seatMapDetails;
+    }
+
+    public List<Event> searchEvents(String keyword) {
+        List<Event> events = getAllEvents();
+        List<Event> findEvents = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            if (events.get(i).getName().toLowerCase().contains(keyword)) {
+                findEvents.add(events.get(i));
+            }
+        }
+        return findEvents;
+    }
+
+    public void incrementClickCount(int eventId) {
+        String sql = "UPDATE Event SET eyeview = eyeview + 1 WHERE event_id = ?";
+        try (Connection conn = ConnectionPoolManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, eventId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

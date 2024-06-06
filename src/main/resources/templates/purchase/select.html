@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Ticket</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .taken {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Seat map image -->
+            <div th:if="${seatMap != null and seatMap.img != null and seatMap.img != ''}">
+                <img th:src="${seatMap.img}" alt="Seat Map" class="img-fluid">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <!-- Seat selection -->
+            <form id="seatSelectionForm">
+                <input type="hidden" id="eventId" th:value="${event.event.eventId}"/>
+                <div th:each="area : ${event.areas}">
+                    <h3 th:text="${area.area.name}"></h3>
+                    <div th:each="row : ${area.rows}">
+                        <h4 th:text="${row.row.rowName}"></h4>
+                        <div th:each="seat : ${row.seats}" class="form-check">
+                            <input class="form-check-input" type="checkbox" th:value="${seat.seatId}"
+                                   th:id="${'seat' + seat.seatId}" th:name="seats" th:disabled="${seat.taken}"
+                                   th:classappend="${seat.taken} ? 'taken' : ''" th:data-price="${seat.ticketPrice}">
+                            <label class="form-check-label" th:for="${'seat' + seat.seatId}">
+                                Seat: <span th:text="${seat.number}"></span>, Price: <span
+                                    th:text="${seat.ticketPrice}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <p><strong>Total amount: </strong><span id="totalAmount">0.00</span></p>
+                <hr>
+                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                <p class="small">After clicking <strong>Proceed to Payment</strong>, you will be redirected to the payment platform.</p>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('seatSelectionForm').addEventListener('change', function (event) {
+        let totalAmount = 0;
+        this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
+            let price = parseFloat(checkbox.dataset.price);
+            totalAmount += price;
+        });
+
+        // Display the total amount
+        document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+    });
+
+    document.getElementById('seatSelectionForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        let selectedSeats = [];
+        this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
+            selectedSeats.push(parseInt(checkbox.value));
+        });
+
+        // Check if any seats are selected
+        if (selectedSeats.length === 0) {
+            // Prevent form from being submitted
+            event.preventDefault();
+            // Show an alert to the user
+            alert('Please select at least one seat.');
+            return;
+        }
+
+        let data = {
+            seats: selectedSeats,
+            eventId: document.getElementById('eventId').value
+        };
+
+        fetch('/purchase/select-tickets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(function (response) {
+                if (response.ok) {
+                    return response.text();  // Get the response text
+                } else {
+                    throw new Error('Server response was not ok.');
+                }
+            })
+            .then(async function (paymentUrl) {
+                // Redirect to payment URL
+                window.location.href = await paymentUrl;
+            })
+            .catch(function (error) {
+                // Handle error based on response status and message
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+
+    });
+</script>
+</body>
+</html>

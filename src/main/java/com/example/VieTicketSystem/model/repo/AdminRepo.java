@@ -1,7 +1,6 @@
 package com.example.VieTicketSystem.model.repo;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,8 +27,7 @@ public class AdminRepo {
         public ArrayList<Organizer> viewAllListAprrove() throws ClassNotFoundException, SQLException {
                 ArrayList<Organizer> organizersList = new ArrayList<>();
                 Class.forName(Baseconnection.nameClass);
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(
                                 "SELECT " +
                                                 "o.organizer_id, " +
@@ -74,8 +72,7 @@ public class AdminRepo {
         public void approveOrganizers(int organizer_id)
                         throws Exception {
                 Class.forName(Baseconnection.nameClass);
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(
                                 "UPDATE Organizer SET is_active = 1 WHERE organizer_id = ?");
                 ps.setInt(1, organizer_id);
@@ -88,8 +85,7 @@ public class AdminRepo {
         public ArrayList<Event> viewAllListApproveEvent() throws Exception {
                 ArrayList<Event> eventList = new ArrayList<>();
                 Class.forName(Baseconnection.nameClass);
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
 
                 String query = "SELECT * FROM Event WHERE is_approve = 0";
                 PreparedStatement ps = con.prepareStatement(query);
@@ -148,8 +144,7 @@ public class AdminRepo {
         public ArrayList<Event> viewAllListRejectEvent() throws Exception {
                 ArrayList<Event> eventList = new ArrayList<>();
                 Class.forName(Baseconnection.nameClass);
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
 
                 String query = "SELECT * FROM Event WHERE is_approve = 3";
                 PreparedStatement ps = con.prepareStatement(query);
@@ -207,8 +202,7 @@ public class AdminRepo {
 
         private List<Area> getAreasByEventId(int eventId) throws Exception {
                 List<Area> areas = new ArrayList<>();
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
                 String query = "SELECT * FROM Area WHERE event_id = ?";
                 PreparedStatement ps = con.prepareStatement(query);
                 ps.setInt(1, eventId);
@@ -231,8 +225,7 @@ public class AdminRepo {
 
         private SeatMap getSeatMapDetailsByEventId(int eventId) throws Exception {
                 SeatMap seatMapDetails = null;
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
                 String query = "SELECT img, name FROM SeatMap WHERE event_id = ?";
                 PreparedStatement ps = con.prepareStatement(query);
                 ps.setInt(1, eventId);
@@ -254,8 +247,7 @@ public class AdminRepo {
         public void approveEvents(int eventId)
                         throws Exception {
                 Class.forName(Baseconnection.nameClass);
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(
                                 "UPDATE Event SET is_approve = 1 WHERE event_id = ?");
                 ps.setInt(1, eventId);
@@ -268,8 +260,7 @@ public class AdminRepo {
         public void rejectEvents(int eventId)
                         throws Exception {
                 Class.forName(Baseconnection.nameClass);
-                Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password);
+                Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(
                                 "UPDATE Event SET is_approve = 3 WHERE event_id = ?");
                 ps.setInt(1, eventId);
@@ -281,8 +272,7 @@ public class AdminRepo {
 
         public void deleteEventById(int eventId) throws Exception {
                 Class.forName(Baseconnection.nameClass);
-                try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                                Baseconnection.password)) {
+                try (Connection con = ConnectionPoolManager.getConnection()) {
                         String sql = "DELETE FROM Event WHERE event_id = ?";
                         try (PreparedStatement ps = con.prepareStatement(sql)) {
                                 ps.setInt(1, eventId);

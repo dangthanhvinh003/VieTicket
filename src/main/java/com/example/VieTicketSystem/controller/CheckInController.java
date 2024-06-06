@@ -101,7 +101,7 @@ public class CheckInController {
 
         // Check if ticket exists and is not returned
         Ticket ticket = ticketRepo.findByQrCode(qrCode);
-        if (ticket == null || ticket.isReturned()) {
+        if (ticket == null || ticket.getStatus() != Ticket.TicketStatus.PURCHASED && ticket.getStatus() != Ticket.TicketStatus.CHECKED_IN) {
             String response = objectMapper.writeValueAsString(Map.of("message", "Ticket not found"));
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
@@ -123,14 +123,13 @@ public class CheckInController {
         response.put("lead_visitor", ticket.getOrder().getUser().getFullName());
         response.put("event", ticket.getSeat().getRow().getArea().getEvent().getName());
         response.put("seat", ticket.getSeat().getRow().getArea().getName() + " " + ticket.getSeat().getNumber());
-        response.put("is_checked_in", String.valueOf(ticket.isCheckedIn()));
+        response.put("status", String.valueOf(ticket.getStatus()));
 
-        if (ticket.isCheckedIn()) {
-            response.replace("message", "Already checked in");
+        if (ticket.getStatus() == Ticket.TicketStatus.CHECKED_IN) {
             return ResponseEntity.badRequest().body(objectMapper.writeValueAsString(response));
         }
 
-        ticket.setCheckedIn(true);
+        ticket.setStatus(Ticket.TicketStatus.CHECKED_IN);
         ticketRepo.updateExisting(ticket);
         return ResponseEntity.ok(objectMapper.writeValueAsString(response));
     }
