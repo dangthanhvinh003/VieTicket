@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -252,6 +253,7 @@ public class EventController {
     @GetMapping("/viewdetailEvent/{id}")
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception{
         Event event = eventRepo.findById(eventId);
+        eventRepo.incrementClickCount(event.getEventId());
         model.addAttribute("event", event);
         model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
         System.out.println(organizerRepo.getOrganizerByEventId(eventId));
@@ -267,12 +269,5 @@ public class EventController {
         model.addAttribute("error", "Error searching for events: " + e.getMessage());
     }
     return "searchResults";
-    }
-
-
-    @GetMapping("/count-view/{id}")
-    public String countView(@PathVariable("id") int eventId) {
-        eventRepo.incrementClickCount(eventId);
-        return "redirect:/event-detail/" + eventId; // Redirect to event detail page
     }
 }

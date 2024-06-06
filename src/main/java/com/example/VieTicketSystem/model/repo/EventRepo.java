@@ -612,7 +612,7 @@ public List<Event> searchEvents(String keyword) {
 }
 
 public void incrementClickCount(int eventId) {
-    String sql = "UPDATE Event SET view = view + 1 WHERE id = ?";
+    String sql = "UPDATE Event SET eyeview = eyeview + 1 WHERE event_id = ?";
     try (Connection conn = Baseconnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
         pstmt.setInt(1, eventId);
@@ -621,6 +621,4 @@ public void incrementClickCount(int eventId) {
         e.printStackTrace();
     }
 }
-
-
 }
