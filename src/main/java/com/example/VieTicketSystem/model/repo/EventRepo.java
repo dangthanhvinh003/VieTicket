@@ -220,15 +220,15 @@ public class EventRepo {
         EventStatistics stats = null;
 
         String sql = "SELECT " +
-                "SUM(CASE WHEN t.is_returned = 0 THEN s.ticket_price ELSE 0 END) AS total_revenue, " +
-                "COUNT(CASE WHEN t.is_returned = 0 THEN 1 END) AS tickets_sold, " +
-                "COUNT(CASE WHEN t.is_returned = 1 THEN 1 END) AS tickets_returned, " +
+                "SUM(CASE WHEN t.status = 0 THEN s.ticket_price ELSE 0 END) AS total_revenue, " +
+                "COUNT(CASE WHEN t.status = 0 THEN 1 END) AS tickets_sold, " +
+                "COUNT(CASE WHEN t.status = 1 THEN 1 END) AS tickets_returned, " +
                 "(SELECT COUNT(*) FROM Seat s2 " +
                 "JOIN `Row` r2 ON s2.row_id = r2.row_id " +
                 "JOIN Area a2 ON r2.area_id = a2.area_id " +
                 "WHERE a2.event_id = ?) " + // Sử dụng tham số
-                "- COUNT(CASE WHEN t.is_returned = 0 THEN 1 END) " +
-                "- COUNT(CASE WHEN t.is_returned = 1 THEN 1 END) AS tickets_remaining " +
+                "- COUNT(CASE WHEN t.status = 0 THEN 1 END) " +
+                "- COUNT(CASE WHEN t.status = 1 THEN 1 END) AS tickets_remaining " +
                 "FROM " +
                 "Ticket t " +
                 "JOIN " +
@@ -270,7 +270,7 @@ public class EventRepo {
                 "JOIN Seat s ON t.seat_id = s.seat_id " +
                 "JOIN `Row` r ON s.row_id = r.row_id " +
                 "JOIN Area a ON r.area_id = a.area_id " +
-                "WHERE a.event_id = ? AND t.is_returned = 0 " + // Chỉ lấy vé không bị hoàn trả
+                "WHERE a.event_id = ? AND t.status = 0 " + // Chỉ lấy vé không bị hoàn trả
                 "GROUP BY DATE(t.purchase_date);";
 
         try (Connection connection = ConnectionPoolManager.getConnection();

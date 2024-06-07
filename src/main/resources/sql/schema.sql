@@ -275,13 +275,13 @@ DELIMITER ;
 -- Table User
 -- All passwords: 123456
 INSERT INTO User (full_name, username, password, phone, dob, gender, avatar, role, email)
-VALUES ('Nguyễn Bảo Việt', 'admin', '$2a$10$sJw8p99iHalBmTkimlQUFuWRvG.wGqyhqk4ixMuBHIAp9R/O2.oTa', '0123456789',
+VALUES ('Nguyễn Bảo Việt', 'a', '$2a$10$V5zUxwMWdxxFIg0evnKM2uOXjB/nTXBvXjj2xtjm7TWU2n8j9wSay', '0123456789',
         '1990-01-01', 'M', 'http://res.cloudinary.com/djcowpoua/image/upload/v1716728282/l64joxafrjbnonptizds.jpg', 'a',
         'vietnb6@hoangnpv.id.vn'),
-       ('Nguyễn Văn A', 'nguyenvana', '$2a$10$0DYtcWrBruHHtvzDKGfNX.qZTbonjyZ6D1KvqELoli/DgXEwW0TAy', '0123456789',
+       ('Nguyễn Văn A', 'u', '$2a$10$V5zUxwMWdxxFIg0evnKM2uOXjB/nTXBvXjj2xtjm7TWU2n8j9wSay', '0123456789',
         '1990-01-01', 'M', 'http://res.cloudinary.com/djcowpoua/image/upload/v1716339770/hla22jkantkibhjdtay2.jpg', 'u',
         'hoangnpv@hoangnpv.id.vn'),
-       ('Trần Thị B', 'o1', '$2a$10$0DYtcWrBruHHtvzDKGfNX.qZTbonjyZ6D1KvqELoli/DgXEwW0TAy', '0987654321', '1995-05-15',
+       ('Trần Thị B', 'o1', '$2a$10$V5zUxwMWdxxFIg0evnKM2uOXjB/nTXBvXjj2xtjm7TWU2n8j9wSay', '0987654321', '1995-05-15',
         'F', 'http://res.cloudinary.com/djcowpoua/image/upload/v1716339881/qxagzwjvk1hzuq1tgbis.jpg', 'o',
         'azzv8qn375d52608ff@gmail.com'),
        ('Ngô Trần Xuân H', 'o2', '$2a$10$0DYtcWrBruHHtvzDKGfNX.qZTbonjyZ6D1KvqELoli/DgXEwW0TAy', '0989999999',
@@ -311,12 +311,3 @@ VALUES ('NTPMM', 'Những thành phố mơ màng', '2024-06-01', 'Hà Nội', 'M
        ('Rick Astley - Never Gonna Give You Up', 'Lễ hội pháo bông', '2024-06-03', 'Hà Nội', 'Music', '2024-05-20',
         '2024-06-06', 3, 'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg',
         'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg', 1);
-
--- @block
-ALTER TABLE Event
-    CHANGE COLUMN View view INT;
-
--- @block
-UPDATE Event
-SET view = view + 1
-WHERE event_id = 1
