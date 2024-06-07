@@ -9,7 +9,7 @@ public class Baseconnection {
     static String username = "root";
     static String password = "2Bthere4u";
     static String nameClass = "com.mysql.cj.jdbc.Driver";
-    
+
     public static Connection getConnection() throws SQLException {
         try {
             Class.forName(nameClass);
