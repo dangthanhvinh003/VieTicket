@@ -15,25 +15,26 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
-    
+
     private int eventId;
     private String name;
     private String description;
-    private LocalDateTime  startDate;
+    private LocalDateTime startDate;
     private String location;
     private String type;
-    private LocalDateTime  ticketSaleDate;
-    private LocalDateTime  endDate;
+    private LocalDateTime ticketSaleDate;
+    private LocalDateTime endDate;
     private Organizer organizer;
     private String poster;
     private String banner;
     private int approved;
-    private int eyeview;
     private List<Area> areas; // Danh sách các khu vực và giá tiền
     private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
     private int eyeView;
-    public Event(int eventId, String name, String description, LocalDateTime  startDate, String location, String type,
-    LocalDateTime  ticketSaleDate, LocalDateTime  endDate, Organizer organizer, String poster, String banner, int isApprove, int eyeView) {
+
+    public Event(int eventId, String name, String description, LocalDateTime startDate, String location, String type,
+            LocalDateTime ticketSaleDate, LocalDateTime endDate, Organizer organizer, String poster, String banner,
+            int isApprove, int eyeView) {
         this.eventId = eventId;
         this.name = name;
         this.description = description;
@@ -48,6 +49,5 @@ public class Event {
         this.approved = isApprove;
         this.eyeView = eyeView;
     }
-    
 
 }

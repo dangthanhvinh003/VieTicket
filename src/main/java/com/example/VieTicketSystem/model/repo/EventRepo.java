@@ -140,8 +140,7 @@ public class EventRepo {
 
     public List<Event> getTopHotEvents() throws Exception {
         List<Event> events = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
                 ResultSet resultSet = statement.executeQuery()) {
 
@@ -150,7 +149,7 @@ public class EventRepo {
                 event.setEventId(resultSet.getInt("event_id"));
                 event.setName(resultSet.getString("name"));
                 event.setBanner(resultSet.getString("banner"));
-                event.setEyeview(resultSet.getInt("eyeview"));
+                event.setEyeView(resultSet.getInt("eyeView"));
                 event.setApproved(resultSet.getInt("is_approve"));
                 events.add(event);
             }
@@ -194,7 +193,7 @@ public class EventRepo {
                 event.setPoster(resultSet.getString("poster"));
                 event.setBanner(resultSet.getString("banner"));
                 event.setApproved(resultSet.getInt("is_approve"));
-                event.setEyeview(resultSet.getInt("eyeview"));
+                event.setEyeView(resultSet.getInt("eyeView"));
 
                 // Lấy danh sách areas và gán vào event
                 List<Area> areas = getAreasForEvent(event.getEventId(), connection);

@@ -271,7 +271,7 @@
                             style="height: 300px; object-fit: cover;">
                         <div class="overlay">
                             <i class="fa fa-eye" aria-hidden="true"></i>
-                            <span class="ms-2" th:text="${event.eyeview} + '+'"></span>
+                            <span class="ms-2" th:text="${event.eyeView} + '+'"></span>
                         </div>
                     </div>
                     <div class="card-body">
@@ -301,7 +301,7 @@
                                 th:if="${event.areas.size() > 0}" th:text="${event.areas.get(0).ticketPrice}">
                             </a>
 
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill" th:text="${event.eyeview}"></a>
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill" th:text="${event.eyeView}"></a>
                         </div>
 
                     </div>
