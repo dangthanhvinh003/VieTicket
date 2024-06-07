@@ -1,6 +1,5 @@
 package com.example.VieTicketSystem.model.repo;
 
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -206,7 +205,7 @@ public class EventRepo {
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
-                    event.setView(resultSet.getInt("eyeview"));
+                    event.setEyeView(resultSet.getInt("eyeview"));
                     // Set the organizer if applicable
                 }
             }
