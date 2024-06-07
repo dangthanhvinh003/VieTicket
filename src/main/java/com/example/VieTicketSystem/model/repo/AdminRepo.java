@@ -1,6 +1,7 @@
 package com.example.VieTicketSystem.model.repo;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -295,7 +296,7 @@ public class AdminRepo {
                 + " JOIN Seat s ON t.seat_id = s.seat_id "
                 + " JOIN Area a ON s.row_id = a.area_id "
                 + " JOIN Event e ON a.event_id = e.event_id "
-                + " WHERE t.is_returned = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
+                + " WHERE t.status = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
                 + "(SELECT COUNT(*) "
                 + " FROM Event "
                 + " WHERE end_date > NOW()) AS total_ongoing_events, "
@@ -345,7 +346,7 @@ public class AdminRepo {
             String sql = "SELECT DATE(t.purchase_date) AS `day`, SUM(s.ticket_price) AS daily_revenue " +
                     "FROM Ticket t " +
                     "JOIN Seat s ON t.seat_id = s.seat_id " +
-                    "WHERE t.is_returned = 0 " +
+                    "WHERE t.status = 0 " +
                     "GROUP BY DATE(t.purchase_date) " +
                     "ORDER BY DATE(t.purchase_date);";
             try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
@@ -368,7 +369,7 @@ public class AdminRepo {
                     +
                     "FROM Ticket t " +
                     "JOIN Seat s ON t.seat_id = s.seat_id " +
-                    "WHERE t.is_returned = 0 " +
+                    "WHERE t.status = 0 " +
                     "GROUP BY DATE_FORMAT(t.purchase_date, '%Y-%m') " +
                     "ORDER BY DATE_FORMAT(t.purchase_date, '%Y-%m');";
             try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
@@ -394,7 +395,7 @@ public class AdminRepo {
                 "JOIN Seat s ON a.area_id = s.row_id " +
                 "JOIN Ticket t ON s.seat_id = t.seat_id " +
                 "JOIN `Order` r ON t.order_id = r.order_id " +
-                "WHERE t.is_returned = FALSE " +
+                "WHERE t.status = FALSE " +
                 "GROUP BY e.event_id, u.full_name";
 
         Class.forName(Baseconnection.nameClass);
