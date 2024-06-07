@@ -24,6 +24,7 @@ public class TicketRepo {
     private static final String SELECT_BY_ORDER_ID_STATEMENT = "SELECT * FROM Ticket WHERE order_id = ?";
     private static final String UPDATE_SUCCESS_IN_BULK_SQL = "UPDATE Ticket SET purchase_date = ?, status = ? WHERE ticket_id = ?";
     private static final String UPDATE_FAILURE_IN_BULK_SQL = "UPDATE Ticket SET status = ? WHERE ticket_id = ?";
+    private static final String UPDATE_STATUS_BY_ORDER_ID_SQL = "UPDATE Ticket SET status = ? WHERE order_id = ?";
 
     private final OrderRepo orderRepo;
     private final SeatRepo seatRepo;
@@ -31,6 +32,17 @@ public class TicketRepo {
     public TicketRepo(OrderRepo orderRepo, SeatRepo seatRepo, ConnectionPoolManager connectionPoolManager) {
         this.orderRepo = orderRepo;
         this.seatRepo = seatRepo;
+    }
+
+    public void updateStatusByOrderId(int orderId, int status) throws Exception {
+
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(UPDATE_STATUS_BY_ORDER_ID_SQL);
+            ps.setInt(1, status);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+            ps.close();
+        }
     }
 
     public void setSuccessInBulk(List<Integer> ticketIds, LocalDateTime purchaseDate, int successStatus) throws Exception {

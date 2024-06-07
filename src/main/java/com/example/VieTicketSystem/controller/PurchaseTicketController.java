@@ -9,6 +9,7 @@ import com.example.VieTicketSystem.model.repo.SeatRepo;
 import com.example.VieTicketSystem.model.repo.TicketRepo;
 import com.example.VieTicketSystem.model.service.OrderService;
 import com.example.VieTicketSystem.model.service.PurchaseTicketService;
+import com.example.VieTicketSystem.model.service.QRCodeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.*;
@@ -38,8 +39,9 @@ public class PurchaseTicketController {
     private final SeatRepo seatRepo;
     private final OrderRepo orderRepo;
     private final TicketRepo ticketRepo;
+    private final QRCodeService qrCodeService;
 
-    public PurchaseTicketController(SeatMapRepo seatMapRepo, HttpSession httpSession, PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo, OrderRepo orderRepo, TicketRepo ticketRepo) {
+    public PurchaseTicketController(SeatMapRepo seatMapRepo, HttpSession httpSession, PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo, OrderRepo orderRepo, TicketRepo ticketRepo, QRCodeService qrCodeService) {
         this.seatMapRepo = seatMapRepo;
         this.httpSession = httpSession;
         this.purchaseTicketService = purchaseTicketService;
@@ -47,6 +49,7 @@ public class PurchaseTicketController {
         this.seatRepo = seatRepo;
         this.orderRepo = orderRepo;
         this.ticketRepo = ticketRepo;
+        this.qrCodeService = qrCodeService;
     }
 
     @GetMapping("/select-tickets")
@@ -201,6 +204,44 @@ public class PurchaseTicketController {
         model.addAttribute("tickets", tickets);
 
         return "purchase/failure";
+    }
+
+    @GetMapping("/purchase-success")
+    public String showPurchaseSuccess(@RequestParam("orderId") int orderId, Model model, RedirectAttributes redirectAttributes) throws Exception {
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            httpSession.setAttribute("redirect", "/purchase/purchase-success?orderId=" + orderId);
+            redirectAttributes.addFlashAttribute("error", "Please login to continue");
+            return "redirect:/auth/login";
+        } else if (user.getRole() != 'u') {
+            return "redirect:/";
+        }
+
+        Order order = orderRepo.findById(orderId);
+        if (order == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
+        }
+        if (order.getUser().getUserId() != user.getUserId()) {
+            return "redirect:/";
+        }
+        if (!order.getStatus().equals(Order.PaymentStatus.SUCCESS)) {
+            return "redirect:/purchase/purchase-failure?orderId=" + orderId;
+        }
+
+        List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
+
+        // Generate QR Code images for each ticket
+        Map<Integer, String> qrCodeImages = new HashMap<>();
+        for (Ticket ticket : tickets) {
+            String qrCodeImage = qrCodeService.generateQRCodeImageBase64(ticket.getQrCode()); // Replace with your method to generate QR Code image
+            qrCodeImages.put(ticket.getTicketId(), qrCodeImage);
+        }
+
+        model.addAttribute("order", order);
+        model.addAttribute("tickets", tickets);
+        model.addAttribute("qrCodeImages", qrCodeImages); // Add qrCodeImages to the model
+
+        return "purchase/success";
     }
 
     @Getter
