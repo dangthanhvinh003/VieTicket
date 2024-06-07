@@ -8,7 +8,8 @@
     <link th:href="@{/static/css/index.css}" rel="stylesheet">
 
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
@@ -17,31 +18,119 @@
             height: 600px;
             object-fit: cover;
             object-position: center top;
-            /* Định vị video để cắt phần dưới */
             width: 100%;
         }
-
-        #hiddenFeature {
-            display: none;
-            background: white;
-            padding: 20px;
-            box-shadow: 0px 2px 8px 0px #F0F1F2;
-        }
-
-        .card-img-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-        }
-
 
         .navbar {
             background-color: rgba(255, 255, 255, 1);
             transition: background-color 0.3s ease-in-out;
         }
 
-        /* Khi navbar tàng hình */
-        .navbar-transparent {
-            background-color: rgba(255, 255, 255, 0);
+        .nav-item .nav-link {
+            margin-right: 15px;
+        }
+
+        .mode-switch-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .sign-in-link {
+            margin-right: 15px;
+        }
+
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 0 0 10px 10px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .card:hover .overlay {
+            display: flex;
+        }
+
+        .card-body {
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        .card-img-top {
+            border-bottom: 0;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-hotevent {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: transparent;
+            border: 2px solid #007bff;
+        }
+
+        .event-name {
+            margin-top: 10px;
+        }
+
+        footer {
+            background-color: #1c1c2b;
+            padding: 20px 0;
+            border-top: 2px solid #4c4c6d;
+            color: #bbb;
+        }
+
+        .footer-column {
+            margin-bottom: 20px;
+        }
+
+        .footer-column h5 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .footer-column ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            color: white;
+            margin-right: 15px;
+            font-size: 1.5em;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            color: #007bff;
         }
     </style>
     <script>
@@ -71,7 +160,6 @@
                         <li class="nav-item">
                             <a class="btn btn-outline-success" th:href="@{/createEvent}">Create Event</a>
                         </li>
-
                     </th:block>
                     <th:block th:if="${session.activeUser != null}">
                         <li class="nav-item dropdown">
@@ -99,26 +187,26 @@
                                             Event</a>
                                     </li>
                                 </th:block>
-                                <li><a class=" dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
+                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
                             </ul>
                         </li>
                     </th:block>
                     <th:block th:if="${session.activeUser == null}">
-                        <li class="nav-item">
+                        <li class="nav-item sign-in-link">
                             <a class="nav-link" th:href="@{/auth/login}">Sign in / Sign up</a>
                         </li>
                     </th:block>
                 </ul>
-                <!-- Dark Mode / Light Mode Toggle Button -->
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="modeSwitch">
-                    <label class="form-check-label" for="modeSwitch">Dark Mode</label>
+                <div class="mode-switch-container">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="modeSwitch">
+                        <label class="form-check-label" for="modeSwitch">Dark Mode</label>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
-    <!--
-    -->
+
     <div id="carouselExampleDark" class="carousel carousel-dark slide">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active"
@@ -173,8 +261,27 @@
         </button>
     </div>
 
+    <div class="container mt-5">
+        <h2>Hot Events</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+            <div class="col mb-4" th:each="event : ${session.hotevents}" th:if="${event.approved == 1}">
+                <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-link">
+                    <div class="card card-hotevent">
+                        <img th:src="${event.banner}" alt="Event Image" class="card-img-top"
+                            style="height: 300px; object-fit: cover;">
+                        <div class="overlay">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            <span class="ms-2" th:text="${event.eyeview} + '+'"></span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="event-name" th:text="${event.name}">Name Event</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 
-    <!---->
     <div class="container mt-5">
         <h2 id="eventsTitle">Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
@@ -187,18 +294,67 @@
                         <p class="card-text m-0 p-2">
                             Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
                         </p>
-                        <div class="d-flex"> 
-                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
-                            <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
+                        <div class="d-flex">
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill"
+                                th:if="${event.areas.size() > 0}" th:text="${event.areas.get(0).ticketPrice}">
+                            </a>
+
+                            <a href="#" class="btn btn-sm btn-outline-success flex-fill" th:text="${event.eyeview}"></a>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>VieTicket</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>Topic</h5>
+                    <ul>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>Topic</h5>
+                    <ul>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>Topic</h5>
+                    <ul>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" th:src="@{/static/js/index.js}"></script>
+
 </body>
+
 </html>

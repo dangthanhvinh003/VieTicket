@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
+    
     private int eventId;
     private String name;
     private String description;
@@ -27,6 +28,7 @@ public class Event {
     private String poster;
     private String banner;
     private int approved;
+    private int eyeview;
     private List<Area> areas; // Danh sách các khu vực và giá tiền
     private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
     private int eyeView;

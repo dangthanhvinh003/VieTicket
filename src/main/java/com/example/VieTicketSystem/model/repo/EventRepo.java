@@ -122,6 +122,42 @@ public class EventRepo {
         return events;
     }
 
+    private List<Area> getAreasForEvent(int eventId, Connection connection) throws SQLException {
+        List<Area> areas = new ArrayList<>();
+        String query = "SELECT ticket_price FROM Area WHERE event_id = ?";
+        try (PreparedStatement areaStatement = connection.prepareStatement(query)) {
+            areaStatement.setInt(1, eventId);
+            try (ResultSet areaResultSet = areaStatement.executeQuery()) {
+                while (areaResultSet.next()) {
+                    Area area = new Area();
+                    area.setTicketPrice(areaResultSet.getFloat("ticket_price"));
+                    areas.add(area);
+                }
+            }
+        }
+        return areas;
+    }
+
+    public List<Event> getTopHotEvents() throws Exception {
+        List<Event> events = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
+                Baseconnection.password);
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
+                ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Event event = new Event();
+                event.setEventId(resultSet.getInt("event_id"));
+                event.setName(resultSet.getString("name"));
+                event.setBanner(resultSet.getString("banner"));
+                event.setEyeview(resultSet.getInt("eyeview"));
+                event.setApproved(resultSet.getInt("is_approve"));
+                events.add(event);
+            }
+        }
+        return events;
+    }
+
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
@@ -158,8 +194,15 @@ public class EventRepo {
                 event.setPoster(resultSet.getString("poster"));
                 event.setBanner(resultSet.getString("banner"));
                 event.setApproved(resultSet.getInt("is_approve"));
+                event.setEyeview(resultSet.getInt("eyeview"));
+
+                // Lấy danh sách areas và gán vào event
+                List<Area> areas = getAreasForEvent(event.getEventId(), connection);
+                event.setAreas(areas);
+
                 // Set the organizer if applicable
                 events.add(event);
+                
             }
         } catch (Exception e) {
             e.printStackTrace();
