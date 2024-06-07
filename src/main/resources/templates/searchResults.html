@@ -4,27 +4,30 @@
     <meta charset="UTF-8">
     <title>Search Results</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
+    <link th:href="@{/static/css/searchResults.css}" rel="stylesheet"></head>
 <body>
     <div class="container mt-5">
-        <h2 id="eventsTitle">Search Results</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+        <form class="d-flex search-form mb-4" role="search">
+            <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search" placeholder="Search events...">
+        </form>
+        <h2 id="eventsTitle">Search Result</h2>
+        <div id="eventCards" class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
             <!-- Kiểm tra nếu không có sự kiện nào -->
             <div class="col mb-4" th:if="${events == null || events.size() == 0}">
                 <p>No events found.</p>
             </div>
             <!-- Lặp qua các sự kiện và hiển thị nếu đã được phê duyệt -->
-            <div class="col mb-4" th:each="event : ${events}" th:if="${event.approved == 1}">
+            <div class="col mb-4" th:each="event : ${events}" th:if="${event.approved == 1}" th:data-user="${event.name.toLowerCase()}">
                 <div class="card border-0 shadow">
                     <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
-                        style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
+                         style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
                     <div class="card-body p-0">
                         <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
                         <p class="card-text m-0 p-2">
                             Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
                         </p>
                         <div class="d-flex">
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
                             <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
                         </div>
                     </div>
@@ -32,7 +35,21 @@
             </div>
         </div>
     </div>
-
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function() {
+            let filter = this.value.toLowerCase();
+            let cards = document.querySelectorAll('#eventCards .col.mb-4');
+        
+            cards.forEach(card => {
+                let event = card.getAttribute('data-user');
+                if (event.includes(filter)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>

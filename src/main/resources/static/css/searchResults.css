@@ -1,0 +1,53 @@
+body {
+    background-color: #15132b;
+    color: #a7a9be;
+    font-family: 'Arial', sans-serif;
+}
+
+h2#eventsTitle {
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: #16161a;
+    color: #a7a9be;
+    border: none;
+}
+
+.card-title {
+    color: #fffffe;
+}
+
+.card-text .small {
+    color: #fffffe;
+}
+
+.btn-outline-success {
+    color: #fffffe;
+    border-color: #7f5af0;
+}
+
+.btn-outline-success:hover {
+    background-color: #7f5af0;
+    color: #fffffe;
+    border-color: #6466E9;
+}
+
+.form-control {
+    background-color: #191825;
+    color: #fffffe;
+    border: none;
+}
+
+.form-control::placeholder {
+    color: #a7a9be;
+}
+
+.search-form {
+    margin-bottom: 20px;
+}
+
+.container {
+    max-width: 1200px;
+}

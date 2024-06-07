@@ -260,14 +260,25 @@ public class EventController {
         return "viewdetailEvent";
     }
    
-    @PostMapping(value = "/search-event")
-    public String searchEvent(@RequestParam("keyword") String keyword, Model model) {
-    try {
-        List<Event> events = eventService.searchEvents(keyword);
+    // @PostMapping(value = "/search-event")
+    // public String searchEvent(@RequestParam("keyword") String keyword, Model model) {
+    // try {
+    //     List<Event> events = eventService.searchEvents(keyword);
+    //     model.addAttribute("events", events);
+    //     model.addAttribute("keyword", keyword);
+    // } catch (Exception e) {
+    //     model.addAttribute("error", "Error searching for events: " + e.getMessage());
+    // }
+    // return "searchResults";
+    // }
+
+    @GetMapping("/viewAllEvent")
+    public String getAllEvents(Model model) {
+        List<Event> events = eventRepo.getAllEvents();
         model.addAttribute("events", events);
-    } catch (Exception e) {
-        model.addAttribute("error", "Error searching for events: " + e.getMessage());
+
+        // Chuyển hướng tới trang hiển thị danh sách sự kiện
+        return "searchResults"; // Tên của template hiển thị danh sách sự kiện
     }
-    return "searchResults";
-    }
+
 }

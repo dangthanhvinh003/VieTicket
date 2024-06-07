@@ -44,6 +44,11 @@
             background-color: rgba(255, 255, 255, 0);
         }
     </style>
+    <script>
+        function redirectToAllEvents() {
+            window.location.href = "/viewAllEvent";
+        }
+    </script>
 </head>
 
 <body class="dark-mode">
@@ -55,9 +60,9 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarTogglerDemo02">
-                <form th:action="@{/search-event}" method="post" class="d-flex search-form" role="search">
-                    <input name="keyword" id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
-                        placeholder="Search" aria-label="Search">
+                <form class="d-flex search-form" role="search">
+                    <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
+                        placeholder="Search" aria-label="Search" onclick="redirectToAllEvents()">
 
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>

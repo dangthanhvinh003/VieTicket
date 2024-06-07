@@ -604,7 +604,7 @@ public List<Event> searchEvents(String keyword) {
     List<Event> events = getAllEvents();
     List<Event> findEvents = new ArrayList<>();
     for (int i = 0; i < events.size(); i++) {
-        if(events.get(i).getName().toLowerCase().contains(keyword)){
+        if(events.get(i).getName().toLowerCase().contains(keyword.toLowerCase())){
             findEvents.add(events.get(i));
         }
     }    
