@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Ticket</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .taken {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6" th:if="${seatMap != null and seatMap.img != null and seatMap.img != ''}">
+            <!-- Seat map image -->
+            <div>
+                <img th:src="${seatMap.img}" alt="Seat Map" class="img-fluid">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <!-- Seat selection -->
+            <form id="seatSelectionForm">
+                <input type="hidden" id="eventId" th:value="${event.event.eventId}"/>
+                <input type="hidden" id="ticketPrice" th:value="${event.areas.get(0).area.ticketPrice}"/>
+                <div th:if="${chooseNumberOfSeats}">
+                    <h3>Choose number of seats</h3>
+                    <p>Available seats: <span th:text="${availableSeats}"></span></p>
+                    <input type="number" id="numberOfSeats" min="1" max="${availableSeats}" required>
+                </div>
+                <div th:if="${!chooseNumberOfSeats}" th:each="area : ${event.areas}">
+                    <h3 th:text="${area.area.name}"></h3>
+                    <div th:each="row : ${area.rows}">
+                        <h4 th:text="${row.row.rowName}"></h4>
+                        <div th:each="seat : ${row.seats}" class="form-check">
+                            <input class="form-check-input" type="checkbox" th:value="${seat.seatId}"
+                                   th:id="${'seat' + seat.seatId}" th:name="seats" th:disabled="${seat.taken}"
+                                   th:classappend="${seat.taken} ? 'taken' : ''" th:data-price="${seat.ticketPrice}">
+                            <label class="form-check-label" th:for="${'seat' + seat.seatId}">
+                                Seat: <span th:text="${seat.number}"></span>, Price: <span
+                                    th:text="${seat.ticketPrice}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <p><strong>Total amount: </strong><span id="totalAmount">0.00</span></p>
+                <hr>
+                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                <p class="small">After clicking <strong>Proceed to Payment</strong>, you will be redirected to the
+                    payment platform.</p>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('seatSelectionForm').addEventListener('change', function (event) {
+        let totalAmount = 0;
+        this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
+            let price = parseFloat(checkbox.dataset.price);
+            totalAmount += price;
+        });
+
+        // Display the total amount
+        document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+    });
+
+    document.getElementById('seatSelectionForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        let chooseNumberOfSeats = document.getElementById('numberOfSeats') !== null;
+        let selectedSeats = [];
+        if (chooseNumberOfSeats) {
+            selectedSeats.push(parseInt(document.getElementById('numberOfSeats').value));
+        } else {
+            this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
+                selectedSeats.push(parseInt(checkbox.value));
+            });
+        }
+
+        // Check if any seats are selected
+        if (selectedSeats.length === 0) {
+            // Prevent form from being submitted
+            event.preventDefault();
+            // Show an alert to the user
+            alert('Please select at least one seat.');
+            return;
+        }
+
+        let data = {
+            seats: selectedSeats,
+            eventId: document.getElementById('eventId').value
+        };
+
+        fetch('/purchase/select-tickets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(function (response) {
+                if (response.ok) {
+                    return response.text();  // Get the response text
+                } else {
+                    // Throw an error with content from response
+                    return response.text().then(function (text) {
+                        throw new Error(text);
+                    });
+                }
+            })
+            .then(async function (paymentUrl) {
+                // Redirect to payment URL
+                window.location.href = await paymentUrl;
+            })
+            .catch(function (error) {
+                // Print the message sent by server
+                alert(error.message);
+                // Reload the page to update the current number of seats left
+                document.getElementById('seatSelectionForm').reset();
+                location.reload();
+            });
+    });
+
+    if (document.getElementById('numberOfSeats') !== null) {
+        let numberOfSeatsInput = document.getElementById('numberOfSeats');
+        let availableSeats = parseInt(numberOfSeatsInput.max);
+        let seatPrice = parseFloat(document.getElementById('ticketPrice').value);
+
+        numberOfSeatsInput.addEventListener('input', function () {
+            let numberOfSeats = this.value ? parseInt(this.value) : 0;
+
+            // Check if the number of inputted seats exceeds the number of available seats
+            if (numberOfSeats > availableSeats) {
+                alert('The number of seats you selected exceeds the number of available seats.');
+                document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = true;
+            } else {
+                document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = false;
+            }
+
+            // Calculate and display the total order amount
+            let totalAmount = numberOfSeats * seatPrice;
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+        });
+    }
+</script>
+</body>
+</html>

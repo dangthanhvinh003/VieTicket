@@ -17,16 +17,72 @@ public class SeatRepo {
             JOIN VieTicket1.Area A ON R.area_id = A.area_id
             WHERE event_id = 5""";
     private static final String SELECT_BY_ROW_ID_SQL = "SELECT * FROM Seat WHERE row_id = ?";
+    private static final String UPDATE_SQL = "UPDATE Seat SET is_taken = ? WHERE seat_id = ?";
+    private static final String SELECT_PRICE_SQL = "SELECT ticket_price FROM Seat WHERE seat_id = ?";
+    private static final String UPDATE_IN_BULK_SQL = "UPDATE Seat SET is_taken = ? WHERE seat_id = ?";
     private final RowRepo rowRepo;
 
     public SeatRepo(RowRepo rowRepo) {
         this.rowRepo = rowRepo;
     }
 
+    public List<Integer> findAvailableSeatsByEventId(int eventId) throws Exception {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement("SELECT seat_id FROM Seat S JOIN `Row` R ON S.row_id = R.row_id JOIN Area A ON R.area_id = A.area_id WHERE A.event_id = ? AND is_taken = FALSE");
+        ps.setInt(1, eventId);
+        ResultSet rs = ps.executeQuery();
+        List<Integer> seats = new ArrayList<>();
+        while (rs.next()) {
+            seats.add(rs.getInt("seat_id"));
+        }
+        rs.close();
+        ps.close();
+        connection.close();
+        return seats;
+    }
+
+    public void updateSeats(List<Integer> seatIds, boolean isTaken) throws Exception {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement(UPDATE_IN_BULK_SQL);
+
+        for (Integer seatId : seatIds) {
+            ps.setBoolean(1, isTaken);
+            ps.setInt(2, seatId);
+            ps.addBatch();
+        }
+
+        ps.executeBatch();
+        ps.close();
+        connection.close();
+    }
+
+    public float getPrice(int seatId) throws Exception {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement(SELECT_PRICE_SQL);
+        ps.setInt(1, seatId);
+        ResultSet rs = ps.executeQuery();
+        float price = 0;
+        if (rs.next()) {
+            price = rs.getFloat("ticket_price");
+        }
+        rs.close();
+        ps.close();
+        connection.close();
+        return price;
+    }
+
+    public void updateSeat(int seatId, boolean isTaken) throws Exception {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement(UPDATE_SQL);
+        ps.setBoolean(1, isTaken);
+        ps.setInt(2, seatId);
+        ps.executeUpdate();
+        ps.close();
+        connection.close();
+    }
+
     public Seat findById(int id) throws Exception {
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);
         ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
@@ -45,14 +101,9 @@ public class SeatRepo {
         return seat;
     }
 
-    public void addSeat(String seatNumber, String ticketPrice, int rowId)
-            throws ClassNotFoundException, SQLException {
-
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-        PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES (?, ?, ?, ?)");
+    public void addSeat(String seatNumber, String ticketPrice, int rowId) throws SQLException {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES (?, ?, ?, ?)");
 
         ps.setString(1, seatNumber);
         ps.setFloat(2, Float.parseFloat(ticketPrice));
@@ -60,12 +111,11 @@ public class SeatRepo {
         ps.setInt(4, rowId);
         ps.executeUpdate();
         ps.close();
+        connection.close();
     }
 
     public List<Seat> findByEventId(int eventId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_EVENT_ID_SQL);
         ResultSet rs = ps.executeQuery();
         List<Seat> seats = new ArrayList<>();
@@ -84,11 +134,10 @@ public class SeatRepo {
         return seats;
     }
 
-    public List<Seat> findByAreaId(int areaId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+    public List<Seat> findByRowId(int areaId) throws Exception {
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_ROW_ID_SQL);
+        ps.setInt(1, areaId);
         ResultSet rs = ps.executeQuery();
         List<Seat> seats = new ArrayList<>();
         while (rs.next()) {
@@ -104,5 +153,20 @@ public class SeatRepo {
         ps.close();
         connection.close();
         return seats;
+    }
+
+    public int getAvailableSeatsCount(int eventId) throws Exception {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM Seat S JOIN `Row` R ON S.row_id = R.row_id JOIN Area A ON R.area_id = A.area_id WHERE A.event_id = ? AND is_taken = FALSE");
+        ps.setInt(1, eventId);
+        ResultSet rs = ps.executeQuery();
+        int count = 0;
+        if (rs.next()) {
+            count = rs.getInt(1);
+        }
+        rs.close();
+        ps.close();
+        connection.close();
+        return count;
     }
 }

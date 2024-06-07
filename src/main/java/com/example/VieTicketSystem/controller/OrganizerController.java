@@ -210,7 +210,7 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
     public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
             HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
         int idNewEvent = (int) httpSession.getAttribute("eventIdEdit");
-        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", "");
+        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
         rowRepo.addRow("NoSeatMap", areaRepo.getIdAreaEventId(idNewEvent));
         for (int i = 0; i < total; i++) {

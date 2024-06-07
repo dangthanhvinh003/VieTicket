@@ -20,7 +20,7 @@ public class OrganizerVerificationTokenRepo {
     }
 
     public void insertToken(OrganizerVerificationToken token) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_TOKEN)) {
             preparedStatement.setInt(1, token.getOrganizer().getUserId());
             preparedStatement.setString(2, token.getToken());
@@ -33,7 +33,7 @@ public class OrganizerVerificationTokenRepo {
     }
 
     public OrganizerVerificationToken getToken(String token) throws Exception {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOKEN)) {
             preparedStatement.setString(1, token);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -52,7 +52,7 @@ public class OrganizerVerificationTokenRepo {
     }
 
     public void deleteToken(String token) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_TOKEN)) {
             preparedStatement.setString(1, token);
             preparedStatement.executeUpdate();
@@ -60,7 +60,7 @@ public class OrganizerVerificationTokenRepo {
     }
 
     public void deleteExpiredTokens() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username, Baseconnection.password);
+        try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_EXPIRED_TOKENS)) {
             preparedStatement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             preparedStatement.executeUpdate();

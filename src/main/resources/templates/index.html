@@ -189,7 +189,7 @@
                         </p>
                         <div class="d-flex"> 
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a> 
+                            <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
                         </div>
                         
                     </div>

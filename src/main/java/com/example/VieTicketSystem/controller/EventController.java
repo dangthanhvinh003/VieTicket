@@ -25,14 +25,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
-
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,7 +76,7 @@ public class EventController {
         User user = (User) httpSession.getAttribute("activeUser");
         System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
-                organizerRepo.findById(user.getUserId()),imageURL, imageURL1, 0,0);
+                organizerRepo.findById(user.getUserId()), imageURL, imageURL1, 0, 0);
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(),
@@ -93,13 +92,15 @@ public class EventController {
     }
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
-    public String NoSeatMap(@RequestParam ("quantity") int total, @RequestParam ("price") String price,HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
+    public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
+            HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
-        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", "");
+        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
         rowRepo.addRow("NoSeatMap", areaRepo.getIdAreaEventId(idNewEvent));
         for (int i = 0; i < total; i++) {
-            seatRepo.addSeat(Integer.toString(i), price, rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
+            seatRepo.addSeat(Integer.toString(i), price,
+                    rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         return "createEventSuccess";
     }
@@ -133,7 +134,7 @@ public class EventController {
         // add area normal
         if (additionalData.getTotalSelectedSeats() != 0) {
             areaRepo.addArea("Normal", additionalData.getTotalSelectedSeats(), idNewEvent,
-                    additionalData.getNormalPrice(),seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
+                    additionalData.getNormalPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
 
             ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
             System.out.println("allSeatNormal : " + allSeatNormal);
@@ -248,29 +249,24 @@ public class EventController {
         return "redirect:/createEventSuccess";
     }
 
-    
-
     @GetMapping("/viewdetailEvent/{id}")
-    public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception{
+    public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
         eventRepo.incrementClickCount(event.getEventId());
         model.addAttribute("event", event);
         model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+        List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
+
+        // Tìm giá vé thấp nhất
+        Float minPrice = null;
+        if (!ticketPrices.isEmpty()) {
+            minPrice = Collections.min(ticketPrices);
+        }
+        model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
+
         System.out.println(organizerRepo.getOrganizerByEventId(eventId));
         return "viewdetailEvent";
     }
-   
-    // @PostMapping(value = "/search-event")
-    // public String searchEvent(@RequestParam("keyword") String keyword, Model model) {
-    // try {
-    //     List<Event> events = eventService.searchEvents(keyword);
-    //     model.addAttribute("events", events);
-    //     model.addAttribute("keyword", keyword);
-    // } catch (Exception e) {
-    //     model.addAttribute("error", "Error searching for events: " + e.getMessage());
-    // }
-    // return "searchResults";
-    // }
 
     @GetMapping("/viewAllEvent")
     public String getAllEvents(Model model) {

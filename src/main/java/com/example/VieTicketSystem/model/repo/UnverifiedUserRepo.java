@@ -18,9 +18,8 @@ public class UnverifiedUserRepo {
     private static final String DELETE_STATEMENT = "DELETE FROM UnverifiedUsers WHERE userid = ?";
 
     public void saveNew(UnverifiedUser unverifiedUser) throws Exception {
-        Class.forName(Baseconnection.nameClass);
-        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+
+        try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(INSERT_STATEMENT)) {
 
             ps.setInt(1, unverifiedUser.getUserId());
@@ -31,9 +30,8 @@ public class UnverifiedUserRepo {
     }
 
     public boolean isUnverified(int userId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
-        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+
+        try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(SELECT_STATEMENT)) {
 
             ps.setInt(1, userId);
@@ -45,9 +43,8 @@ public class UnverifiedUserRepo {
     }
 
     public UnverifiedUser findById(int userId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
-        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+
+        try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(SELECT_STATEMENT)) {
 
             ps.setInt(1, userId);
@@ -65,9 +62,8 @@ public class UnverifiedUserRepo {
     }
 
     public void deleteById(int userId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
-        try (Connection con = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+
+        try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(DELETE_STATEMENT)) {
 
             ps.setInt(1, userId);
