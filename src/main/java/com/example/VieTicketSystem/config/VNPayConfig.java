@@ -2,6 +2,7 @@ package com.example.VieTicketSystem.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -16,6 +17,7 @@ import java.util.*;
 // Original author: https://github.com/pad1092/VNPAY-Springboot-Demo
 
 @Component
+@Configuration
 public class VNPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_Returnurl = "/vnpay-return";

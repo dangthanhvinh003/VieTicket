@@ -1,6 +1,7 @@
 package com.example.VieTicketSystem.model.service;
 
 import com.example.VieTicketSystem.model.entity.Order;
+import com.example.VieTicketSystem.model.entity.Seat;
 import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.OrderRepo;
@@ -113,5 +114,25 @@ public class OrderService {
             totalPrice += Math.round(seatRepo.getPrice(seatId));
         }
         return totalPrice;
+    }
+
+    // Invalidate pending orders that have not been updated for a certain period of time
+    public void invalidatePendingOrders() throws Exception {
+        // Get the current time
+        LocalDateTime now = LocalDateTime.now();
+
+        // Find all orders that are in a pending state and have not been updated for a certain period of time
+        List<Order> orders = orderRepo.findByStatusAndUpdatedAtBefore(Order.PaymentStatus.PENDING, now.minusMinutes(15));
+
+        for (Order order : orders) {
+            // Update the order status to FAILED
+            orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.FAILED);
+
+            // Find the associated tickets and update their status to FAILED
+            ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.FAILED.toInteger());
+            List<Ticket> tickets = ticketRepo.findByOrderId(order.getOrderId());
+            List<Integer> seatIds = tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).toList();
+            seatRepo.updateSeats(seatIds, false);
+        }
     }
 }
