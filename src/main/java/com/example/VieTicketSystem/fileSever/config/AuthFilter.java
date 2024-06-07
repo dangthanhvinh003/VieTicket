@@ -1,6 +1,7 @@
 package com.example.VieTicketSystem.fileSever.config;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,9 +71,10 @@ public class AuthFilter implements Filter {
         if ((requestURI.equals("/auth/login") || requestURI.equals("/auth/login/oauth2/google") || requestURI.isEmpty()
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
-                || requestURI.equals("/auth/log-out") || requestURI.equals("/")
-                || requestURI.startsWith("/viewdetailEvent") || requestURI.startsWith("/api"))
-                && !isUnverified) {
+                || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event")
+                || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent")
+                || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent")
+                || requestURI.startsWith("/api")) && !isUnverified) {
             chain.doFilter(request, response);
             return;
         }
@@ -81,42 +83,40 @@ public class AuthFilter implements Filter {
         if (isAdmin(user)) {
             // Người dùng có role ADMIN được truy cập tất cả các trang
             chain.doFilter(request, response);
-        } else if (isUser(user) && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))
+        } else if (isUser(user)
+                && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
+                        || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))
                 || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else if (isOrganizer(user)) {
             // Tìm thông tin Organizer dựa trên userId
-            Organizer organizer = organizerRepo.getOrganizerByUserId(user.getUserId());
+            Organizer organizer = null;
+            try {
+                organizer = organizerRepo.getOrganizerByUserId(user.getUserId());
+            } catch (SQLException e) {
+                throw new ServletException(e.getMessage(), e);
+            }
 
             if (organizer != null) {
                 boolean eventCreated = Boolean.TRUE.equals(session.getAttribute("eventCreated"));
                 if (organizer.isActive() && requestURI.startsWith("/createEvent")
                         || requestURI.startsWith("/inactive-account")
-                        || (requestURI.startsWith("/change")
-                                || requestURI.startsWith("/editUser")
-                                || requestURI.startsWith("/upload")
-                                || requestURI.startsWith("/upload/poster")
-                                || requestURI.startsWith("/upload/banner")
-                                || requestURI.startsWith("/add-event")
-                                || requestURI.startsWith("createEvent") ||
-                                (requestURI.startsWith("/seatMap") && eventCreated) ||
-                                (requestURI.startsWith("/seatMap/NoSeatMap") && eventCreated) ||
-                                (requestURI.startsWith("/seatMap/SeatMapBeta") && eventCreated)
-                                || requestURI.startsWith("/viewMyListEvent")
-                                || requestURI.startsWith("/allEvents")
-                                || requestURI.startsWith("/pendingEvents")
-                                || requestURI.startsWith("/approvedEvents")
-                                || requestURI.startsWith("/passedEvents")
-                                || requestURI.startsWith("/seatMapEdit")
-                                || requestURI.startsWith("/seatMapDelete")
-                                || requestURI.startsWith("/noModelEditPage")
-                                || (requestURI.startsWith("/seatMap/NoSeatMapEdit")) ||
-                                (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
+                        || (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
+                                || requestURI.startsWith("/upload") || requestURI.startsWith("/upload/poster")
+                                || requestURI.startsWith("/upload/banner") || requestURI.startsWith("/add-event")
+                                || requestURI.startsWith("createEvent")
+                                || (requestURI.startsWith("/seatMap") && eventCreated)
+                                || (requestURI.startsWith("/seatMap/NoSeatMap") && eventCreated)
+                                || (requestURI.startsWith("/seatMap/SeatMapBeta") && eventCreated)
+                                || requestURI.startsWith("/viewMyListEvent") || requestURI.startsWith("/allEvents")
+                                || requestURI.startsWith("/pendingEvents") || requestURI.startsWith("/approvedEvents")
+                                || requestURI.startsWith("/passedEvents") || requestURI.startsWith("/seatMapEdit")
+                                || requestURI.startsWith("/seatMapDelete") || requestURI.startsWith("/noModelEditPage")
+                                || (requestURI.startsWith("/seatMap/NoSeatMapEdit"))
+                                || (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
                                 || requestURI.startsWith("/editSuccess"))
-                        || requestURI.startsWith("/eventEditPage")
-                        || requestURI.startsWith("/eventEditSubmit")
+                        || requestURI.startsWith("/eventEditPage") || requestURI.startsWith("/eventEditSubmit")
                         || requestURI.startsWith("/viewStatistics")) {
                     if (requestURI.startsWith("/createEvent")) {
                         session.setAttribute("eventCreated", true);

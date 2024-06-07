@@ -21,9 +21,8 @@ public class PasswordResetTokenRepository {
     private static final String CLEAN_UP_EXPIRED_TOKENS_SQL = "DELETE FROM PasswordResetToken WHERE expiry_date < NOW()";
 
     public void insertToken(PasswordResetToken token) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement preparedStatement = connection.prepareStatement(INSERT_TOKEN_SQL)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_TOKEN_SQL)) {
 
             preparedStatement.setInt(1, token.getUserId());
             preparedStatement.setString(2, token.getToken());
@@ -35,9 +34,8 @@ public class PasswordResetTokenRepository {
     }
 
     public String getTokenString(int userId) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOKEN_SQL)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_TOKEN_SQL)) {
 
             preparedStatement.setInt(1, userId);
 
@@ -52,9 +50,8 @@ public class PasswordResetTokenRepository {
     }
 
     public PasswordResetToken getToken(int userId) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement preparedStatement = connection.prepareStatement(GET_TOKEN_AS_OBJECT_SQL)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_TOKEN_AS_OBJECT_SQL)) {
 
             preparedStatement.setInt(1, userId);
 
@@ -74,9 +71,8 @@ public class PasswordResetTokenRepository {
     }
 
     public void deleteToken(int userId) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement preparedStatement = connection.prepareStatement(DELETE_TOKEN_SQL)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_TOKEN_SQL)) {
 
             preparedStatement.setInt(1, userId);
 
@@ -85,9 +81,8 @@ public class PasswordResetTokenRepository {
     }
 
     public PasswordResetToken findByToken(String token) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_TOKEN_SQL)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_TOKEN_SQL)) {
 
             preparedStatement.setString(1, token);
 
@@ -107,9 +102,8 @@ public class PasswordResetTokenRepository {
     }
 
     public void cleanUpExpiredTokens() throws SQLException {
-        try (Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
-                PreparedStatement preparedStatement = connection.prepareStatement(CLEAN_UP_EXPIRED_TOKENS_SQL)) {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(CLEAN_UP_EXPIRED_TOKENS_SQL)) {
 
             preparedStatement.executeUpdate();
         }

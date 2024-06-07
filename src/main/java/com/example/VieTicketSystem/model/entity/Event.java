@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.sql.Date;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,8 +31,9 @@ public class Event {
     private int eyeview;
     private List<Area> areas; // Danh sách các khu vực và giá tiền
     private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
+    private int eyeView;
     public Event(int eventId, String name, String description, LocalDateTime  startDate, String location, String type,
-    LocalDateTime  ticketSaleDate, LocalDateTime  endDate, Organizer organizer, String poster, String banner, int isApprove, int eyeview) {
+    LocalDateTime  ticketSaleDate, LocalDateTime  endDate, Organizer organizer, String poster, String banner, int isApprove, int eyeView) {
         this.eventId = eventId;
         this.name = name;
         this.description = description;
@@ -45,7 +46,7 @@ public class Event {
         this.poster = poster;
         this.banner = banner;
         this.approved = isApprove;
-        this.eyeview = eyeview;
+        this.eyeView = eyeView;
     }
     
 

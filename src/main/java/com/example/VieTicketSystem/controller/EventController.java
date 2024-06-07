@@ -6,12 +6,11 @@ import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AreaRepo;
 import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.RowRepo;
 import com.example.VieTicketSystem.model.repo.SeatMapRepo;
 import com.example.VieTicketSystem.model.repo.SeatRepo;
-import com.example.VieTicketSystem.model.repo.UserRepo;
+import com.example.VieTicketSystem.model.service.EventService;
 import com.example.VieTicketSystem.model.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,13 +25,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +59,9 @@ public class EventController {
     FileUpload fileUpload;
     @Autowired
     Cloudinary cloudinary;
-   
+    @Autowired
+    private EventService eventService;
+
     @PostMapping(value = ("/add-event"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
             @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
@@ -75,7 +76,7 @@ public class EventController {
         User user = (User) httpSession.getAttribute("activeUser");
         System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
-                organizerRepo.findById(user.getUserId()),imageURL, imageURL1, 0, 0);
+                organizerRepo.findById(user.getUserId()), imageURL, imageURL1, 0, 0);
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(),
@@ -91,13 +92,15 @@ public class EventController {
     }
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
-    public String NoSeatMap(@RequestParam ("quantity") int total, @RequestParam ("price") String price,HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
+    public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
+            HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
-        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", "");
+        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
         rowRepo.addRow("NoSeatMap", areaRepo.getIdAreaEventId(idNewEvent));
         for (int i = 0; i < total; i++) {
-            seatRepo.addSeat(Integer.toString(i), price, rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
+            seatRepo.addSeat(Integer.toString(i), price,
+                    rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         return "createEventSuccess";
     }
@@ -131,7 +134,7 @@ public class EventController {
         // add area normal
         if (additionalData.getTotalSelectedSeats() != 0) {
             areaRepo.addArea("Normal", additionalData.getTotalSelectedSeats(), idNewEvent,
-                    additionalData.getNormalPrice(),seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
+                    additionalData.getNormalPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
 
             ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
             System.out.println("allSeatNormal : " + allSeatNormal);
@@ -246,16 +249,32 @@ public class EventController {
         return "redirect:/createEventSuccess";
     }
 
-    
-
     @GetMapping("/viewdetailEvent/{id}")
-    public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception{
+    public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
+        eventRepo.incrementClickCount(event.getEventId());
         model.addAttribute("event", event);
         model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+        List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
+
+        // Tìm giá vé thấp nhất
+        Float minPrice = null;
+        if (!ticketPrices.isEmpty()) {
+            minPrice = Collections.min(ticketPrices);
+        }
+        model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
+
         System.out.println(organizerRepo.getOrganizerByEventId(eventId));
         return "viewdetailEvent";
     }
-   
+
+    @GetMapping("/viewAllEvent")
+    public String getAllEvents(Model model) {
+        List<Event> events = eventRepo.getAllEvents();
+        model.addAttribute("events", events);
+
+        // Chuyển hướng tới trang hiển thị danh sách sự kiện
+        return "searchResults"; // Tên của template hiển thị danh sách sự kiện
+    }
 
 }

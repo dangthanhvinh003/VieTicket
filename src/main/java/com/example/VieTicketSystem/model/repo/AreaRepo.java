@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import com.example.VieTicketSystem.model.entity.Area;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,9 +27,7 @@ public class AreaRepo {
 
     public List<Area> findByEventId(int eventId) throws Exception {
         try {
-            Class.forName(Baseconnection.nameClass);
-            Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                    Baseconnection.password);
+            Connection connection = ConnectionPoolManager.getConnection();
             PreparedStatement ps = connection.prepareStatement(SELECT_BY_EVENT_ID_SQL);
             ps.setInt(1, eventId);
             ResultSet rs = ps.executeQuery();
@@ -52,11 +51,25 @@ public class AreaRepo {
         }
     }
 
+    public List<Float> getTicketPricesByEventId(int eventId) throws Exception {
+        List<Float> ticketPrices = new ArrayList<>();
+        Connection connection = ConnectionPoolManager.getConnection();
+        String sql = "SELECT ticket_price FROM Area WHERE event_id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, eventId);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ticketPrices.add(rs.getFloat("ticket_price"));
+        }
+        rs.close();
+        ps.close();
+        connection.close();
+        return ticketPrices;
+    }
+
     public Area findById(int id) throws Exception {
         try {
-            Class.forName(Baseconnection.nameClass);
-            Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                    Baseconnection.password);
+            Connection connection = ConnectionPoolManager.getConnection();
             PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -82,9 +95,8 @@ public class AreaRepo {
     public void addArea(String areaName, int totalTicket, int eventId, String ticketPrice, int seatMapId)
             throws ClassNotFoundException, SQLException, ParseException {
         NumberFormat format = NumberFormat.getInstance(Locale.US);
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO Area (event_id, name, total_tickets, ticket_price, seat_map_id) VALUES (?, ?, ?, ?, ?)");
         ps.setInt(1, eventId);
@@ -94,14 +106,13 @@ public class AreaRepo {
         ps.setInt(5, seatMapId);
         ps.executeUpdate();
         ps.close();
+        connection.close();
     }
 
     public int getIdAreaEventId(int eventId) throws ClassNotFoundException, SQLException {
         int areaId = -1; // Giá trị mặc định khi không tìm thấy khu vực
 
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "SELECT area_id FROM Area WHERE event_id = ? ");
         ps.setInt(1, eventId);
@@ -121,9 +132,7 @@ public class AreaRepo {
     public int getIdAreaEventIdAndName(int eventId, String name) throws ClassNotFoundException, SQLException {
         int areaId = -1; // Giá trị mặc định khi không tìm thấy khu vực
 
-        Class.forName(Baseconnection.nameClass);
-        Connection connection = DriverManager.getConnection(Baseconnection.url, Baseconnection.username,
-                Baseconnection.password);
+        Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "SELECT area_id FROM Area WHERE event_id = ? and name = ? ");
         ps.setInt(1, eventId);
