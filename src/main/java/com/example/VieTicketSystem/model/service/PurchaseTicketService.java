@@ -78,6 +78,27 @@ public class PurchaseTicketService {
         }
     }
 
+    public List<Integer> assignVirtualSeatsToUser(int eventId, List<Integer> selectedSeats, int userId) throws Exception {
+        // Get the number of seats the user wants to purchase
+        int numberOfSeats = selectedSeats.get(0);
+
+        // Get the available seats for the event
+        List<Integer> availableSeats = seatRepo.findAvailableSeatsByEventId(eventId);
+
+        // Check if there are enough available seats
+        if (availableSeats.size() < numberOfSeats) {
+            return null;
+        }
+
+        // Get the seats to be assigned
+        List<Integer> seatsToBeAssigned = availableSeats.subList(0, numberOfSeats);
+
+        // Update the seats in batch and get the list of seat IDs
+        seatRepo.updateSeats(seatsToBeAssigned, true);
+
+        return seatsToBeAssigned;
+    }
+
     private Event extractEventFromResultSet(ResultSet resultSet) throws Exception {
         Event event = new Event();
         event.setEventId(resultSet.getInt("e.event_id"));

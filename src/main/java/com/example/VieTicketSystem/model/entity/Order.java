@@ -18,7 +18,7 @@ import org.springframework.cglib.core.Local;
 public class Order {
     private int orderId;
     private LocalDateTime date;
-    private int total;
+    private long total;
     private User user;
     private String vnpayData;
     private PaymentStatus status;

@@ -116,13 +116,25 @@ public class PurchaseTicketController {
             return new ResponseEntity<>("Event has passed", HttpStatus.BAD_REQUEST);
         }
 
-        // Check if any of the selected seats are already taken
-        if (purchaseTicketService.areSeatsTaken(selectedSeats)) {
-            return new ResponseEntity<>("One or more of the selected seats are already taken", HttpStatus.BAD_REQUEST);
-        }
+        // Check if the event has a seat map
+        if (seatMapRepo.getSeatMapByEventId(eventId).getImg() != null) {
+            // Check if any of the selected seats are already taken
+            if (purchaseTicketService.areSeatsTaken(selectedSeats)) {
+                return new ResponseEntity<>("One or more of the selected seats are already taken", HttpStatus.BAD_REQUEST);
+            }
 
-        // Set seats taken
-        seatRepo.updateSeats(ticketSelection.getSeats(), true);
+            // Set seats taken
+            seatRepo.updateSeats(ticketSelection.getSeats(), true);
+        } else {
+            // Handle the case where the event does not have a seat map
+            // Assign the selected number of seats to the user from the pool of available virtual seats
+            // This is a placeholder and should be replaced with your actual implementation
+            List<Integer> assignedSeats = purchaseTicketService.assignVirtualSeatsToUser(eventId, selectedSeats, user.getUserId());
+            if (assignedSeats == null) {
+                return new ResponseEntity<>("Not enough available seats", HttpStatus.BAD_REQUEST);
+            }
+            selectedSeats = assignedSeats;
+        }
 
         // Get the baseURL and the client's IP address
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();

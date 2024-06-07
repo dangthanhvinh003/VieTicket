@@ -26,6 +26,21 @@ public class SeatRepo {
         this.rowRepo = rowRepo;
     }
 
+    public List<Integer> findAvailableSeatsByEventId(int eventId) throws Exception {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement("SELECT seat_id FROM Seat S JOIN `Row` R ON S.row_id = R.row_id JOIN Area A ON R.area_id = A.area_id WHERE A.event_id = ? AND is_taken = FALSE");
+        ps.setInt(1, eventId);
+        ResultSet rs = ps.executeQuery();
+        List<Integer> seats = new ArrayList<>();
+        while (rs.next()) {
+            seats.add(rs.getInt("seat_id"));
+        }
+        rs.close();
+        ps.close();
+        connection.close();
+        return seats;
+    }
+
     public void updateSeats(List<Integer> seatIds, boolean isTaken) throws Exception {
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(UPDATE_IN_BULK_SQL);
@@ -86,7 +101,7 @@ public class SeatRepo {
         return seat;
     }
 
-    public void addSeat(String seatNumber, String ticketPrice, int rowId) throws ClassNotFoundException, SQLException {
+    public void addSeat(String seatNumber, String ticketPrice, int rowId) throws SQLException {
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES (?, ?, ?, ?)");
 

@@ -37,7 +37,7 @@ public class OrderService {
     // Create order and return payment URL
     public String createOrder(List<Integer> selectedSeats, String orderInformation, String urlReturn, String clientIp, User user) throws Exception {
 
-        int total = calculateTotalPrice(selectedSeats);
+        long total = calculateTotalPrice(selectedSeats);
         Map<String, String> vnp_Params = new HashMap<>();
         String paymentURL = vnPayService.createOrder(total, orderInformation, urlReturn, clientIp, vnp_Params);
 
@@ -107,11 +107,11 @@ public class OrderService {
     }
 
     // Calculate total price of selected seats
-    public int calculateTotalPrice(List<Integer> seatIds) throws Exception {
-        float totalPrice = 0;
+    public long calculateTotalPrice(List<Integer> seatIds) throws Exception {
+        long totalPrice = 0;
         for (int seatId : seatIds) {
-            totalPrice += seatRepo.getPrice(seatId);
+            totalPrice += Math.round(seatRepo.getPrice(seatId));
         }
-        return (int) totalPrice;
+        return totalPrice;
     }
 }

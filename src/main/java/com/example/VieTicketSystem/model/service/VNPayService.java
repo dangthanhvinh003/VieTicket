@@ -14,7 +14,7 @@ import java.util.*;
 @Service
 public class VNPayService {
 
-    public String createOrder(int total, String orderInformation, String urlReturn, String clientIp, Map<String, String> vnp_Params) {
+    public String createOrder(long total, String orderInformation, String urlReturn, String clientIp, Map<String, String> vnp_Params) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomAlphanumericString(64);
@@ -28,7 +28,7 @@ public class VNPayService {
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(total*100));
+        vnp_Params.put("vnp_Amount", String.valueOf(total * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
         
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);

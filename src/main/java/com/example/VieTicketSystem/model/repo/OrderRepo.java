@@ -42,7 +42,7 @@ public class OrderRepo {
                 order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
                 order.setDate(rs.getTimestamp("date").toLocalDateTime());
-                order.setTotal(rs.getInt("total"));
+                order.setTotal(rs.getLong("total"));
                 order.setUser(userRepo.findById(rs.getInt("user_id")));
                 order.setVnpayData(rs.getString("vnpay_data"));
                 order.setStatus(Order.PaymentStatus.fromInteger(rs.getInt("status")));
@@ -63,7 +63,7 @@ public class OrderRepo {
             } else {
                 ps.setTimestamp(1, null); // Handle the case where order.getDate() is null if necessary
             }
-            ps.setInt(2, order.getTotal());
+            ps.setLong(2, order.getTotal());
             ps.setInt(3, order.getUser().getUserId());
             ps.setString(4, order.getVnpayData());
             ps.setInt(5, order.getStatus().toInteger());
@@ -89,7 +89,7 @@ public class OrderRepo {
                 order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
                 order.setDate(rs.getTimestamp("date").toLocalDateTime());
-                order.setTotal(rs.getInt("total"));
+                order.setTotal(rs.getLong("total"));
                 order.setUser(userRepo.findById(rs.getInt("user_id")));
                 order.setVnpayData(rs.getString("vnpay_data"));
                 order.setStatus(Order.PaymentStatus.fromInteger(rs.getInt("status")));
