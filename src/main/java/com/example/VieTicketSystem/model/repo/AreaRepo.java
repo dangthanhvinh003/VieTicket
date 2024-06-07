@@ -54,7 +54,7 @@ public class AreaRepo {
     public List<Float> getTicketPricesByEventId(int eventId) throws Exception {
         List<Float> ticketPrices = new ArrayList<>();
         Connection connection = ConnectionPoolManager.getConnection();
-        String sql = "SELECT ticket_price FROM AREA WHERE event_id = ?";
+        String sql = "SELECT ticket_price FROM Area WHERE event_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, eventId);
         ResultSet rs = ps.executeQuery();
