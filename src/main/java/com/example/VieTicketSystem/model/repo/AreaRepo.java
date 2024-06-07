@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import com.example.VieTicketSystem.model.entity.Area;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +49,22 @@ public class AreaRepo {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<Float> getTicketPricesByEventId(int eventId) throws Exception {
+        List<Float> ticketPrices = new ArrayList<>();
+        Connection connection = ConnectionPoolManager.getConnection();
+        String sql = "SELECT ticket_price FROM AREA WHERE event_id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, eventId);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ticketPrices.add(rs.getFloat("ticket_price"));
+        }
+        rs.close();
+        ps.close();
+        connection.close();
+        return ticketPrices;
     }
 
     public Area findById(int id) throws Exception {
