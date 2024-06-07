@@ -397,7 +397,7 @@
                         <!-- Thay đổi từ Area.ticketPrice thành area.ticketPrice -->
                     </div>
                     <div style="margin-top: auto;">
-                        <a href="#" class="btn custom-btn">Buy Ticket</a>
+                        <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}" class="btn custom-btn">Buy Ticket</a>
                     </div>
                 </div>
                 <div class="event-banner">
