@@ -81,7 +81,14 @@ public class PurchaseTicketController {
         }
 
         model.addAttribute("event", purchaseTicketService.getEventWithAreas(eventId));
-        model.addAttribute("seatMap", seatMapRepo.getSeatMapByEventId(eventId));
+        if (seatMapRepo.getSeatMapByEventId(eventId).getImg() == null) {
+            model.addAttribute("chooseNumberOfSeats", true);
+            model.addAttribute("availableSeats", seatRepo.getAvailableSeatsCount(eventId));
+        } else {
+            model.addAttribute("chooseNumberOfSeats", false);
+            model.addAttribute("seatMap", seatMapRepo.getSeatMapByEventId(eventId));
+        }
+
 
         return "purchase/select";
     }

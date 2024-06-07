@@ -23,7 +23,6 @@ public class RowRepo {
     }
 
     public Row findById(int id) throws Exception {
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);
         ps.setInt(1, id);
@@ -42,7 +41,7 @@ public class RowRepo {
     }
 
     public List<Row> findByAreaId(int areaId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(SELECT_BY_AREA_ID_SQL);
         ps.setInt(1, areaId);
@@ -64,7 +63,6 @@ public class RowRepo {
     public void addRow(String rowName, int AreaId)
             throws ClassNotFoundException, SQLException {
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO `Row` (row_name, area_id) VALUES (?, ?)");
@@ -73,12 +71,12 @@ public class RowRepo {
         ps.setInt(2, AreaId);
         ps.executeUpdate();
         ps.close();
+        connection.close();
     }
 
     public int getIdRowByAreaId(int area) throws ClassNotFoundException, SQLException {
         int rowId = -1; // Giá trị mặc định khi không tìm thấy hàng
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "SELECT row_id FROM `Row` WHERE area_id = ?");
@@ -95,12 +93,12 @@ public class RowRepo {
 
         return rowId;
     }
+
     public ArrayList<Integer> getAllRowIdsByAreaId(int areaId) throws ClassNotFoundException, SQLException {
         ArrayList<Integer> rowIds = new ArrayList<>();
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
-        
+
         String sql = "SELECT row_id FROM `Row` WHERE area_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, areaId);
@@ -116,13 +114,13 @@ public class RowRepo {
 
         return rowIds;
     }
-     // Phương thức lấy tất cả các hàng theo area_id
+
+    // Phương thức lấy tất cả các hàng theo area_id
     public ArrayList<Row> getAllRowsByAreaId(int areaId) throws Exception {
         ArrayList<Row> rows = new ArrayList<>();
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
-        
+
         String sql = "SELECT row_id, row_name, area_id FROM `Row` WHERE area_id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, areaId);

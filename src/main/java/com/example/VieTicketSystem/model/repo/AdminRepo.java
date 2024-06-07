@@ -287,7 +287,7 @@ public class AdminRepo {
     }
 
     public AdminStatistics getStatisticsForAdmin() throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         AdminStatistics stats = new AdminStatistics();
 
         String sql = "SELECT "
@@ -341,7 +341,7 @@ public class AdminRepo {
 
     public List<Integer> getDailyRevenue() throws Exception {
         List<Integer> dailyRevenue = new ArrayList<>();
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection()) {
             String sql = "SELECT DATE(t.purchase_date) AS `day`, SUM(s.ticket_price) AS daily_revenue " +
                     "FROM Ticket t " +
@@ -363,7 +363,7 @@ public class AdminRepo {
 
     public List<Integer> getMonthlyRevenue() throws Exception {
         List<Integer> monthlyRevenue = new ArrayList<>();
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection()) {
             String sql = "SELECT DATE_FORMAT(t.purchase_date, '%Y-%m') AS `month`, SUM(s.ticket_price) AS monthly_revenue "
                     +
@@ -398,7 +398,6 @@ public class AdminRepo {
                 "WHERE t.status = FALSE " +
                 "GROUP BY e.event_id, u.full_name";
 
-        Class.forName(Baseconnection.nameClass);
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()) {

@@ -14,7 +14,7 @@ public class OrganizerRepo {
     private static final String SELECT_STATEMENT = "SELECT * FROM OrganizerDetails WHERE organizer_id = ?";
 
     public void saveNew(Organizer organizer) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection()) {
             CallableStatement cs = con
                     .prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
@@ -42,7 +42,6 @@ public class OrganizerRepo {
 
     public void save(Organizer organizer) throws Exception {
 
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement(UPDATE_STATEMENT);
         ps.setInt(1, organizer.getUserId());
@@ -68,7 +67,6 @@ public class OrganizerRepo {
 
     public Organizer findById(int id) throws Exception {
 
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement(SELECT_STATEMENT);
         ps.setInt(1, id);
@@ -100,34 +98,30 @@ public class OrganizerRepo {
         return organizer;
     }
 
-    public Organizer getOrganizerByUserId(int userId) {
+    public Organizer getOrganizerByUserId(int userId) throws SQLException {
         Organizer organizer = null;
         String sql = "SELECT * FROM `Organizer` WHERE organizer_id = ?";
 
-        try {
-            Class.forName(Baseconnection.nameClass);
-            try (Connection con = ConnectionPoolManager.getConnection();
-                    PreparedStatement preparedStatement = con.prepareStatement(sql)) {
-                preparedStatement.setInt(1, userId);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        organizer = new Organizer();
+        try (Connection con = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    organizer = new Organizer();
 
-                        organizer.setFoundedDate(resultSet.getDate("founded_date"));
-                        organizer.setWebsite(resultSet.getString("website"));
-                        organizer.setActive(resultSet.getBoolean("is_active"));
-                        organizer.setOrganizerAddr(resultSet.getString("organizer_addr"));
-                        organizer.setOrganizerType(resultSet.getString("organizer_type"));
-                    }
+                    organizer.setFoundedDate(resultSet.getDate("founded_date"));
+                    organizer.setWebsite(resultSet.getString("website"));
+                    organizer.setActive(resultSet.getBoolean("is_active"));
+                    organizer.setOrganizerAddr(resultSet.getString("organizer_addr"));
+                    organizer.setOrganizerType(resultSet.getString("organizer_type"));
                 }
             }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
         }
+
         return organizer;
     }
 
-    public Organizer getOrganizerByEventId(int eventId) {
+    public Organizer getOrganizerByEventId(int eventId) throws SQLException {
         Organizer organizer = null;
         String sql = "SELECT "
                 + "User.user_id, User.full_name, User.username, User.password, User.phone, User.dob, User.gender, User.avatar, User.role, User.email, "
@@ -137,39 +131,36 @@ public class OrganizerRepo {
                 + "JOIN Event ON Organizer.organizer_id = Event.organizer_id "
                 + "WHERE Event.event_id = ?;";
 
-        try {
-            Class.forName(Baseconnection.nameClass);
-            try (Connection con = ConnectionPoolManager.getConnection();
-                    PreparedStatement preparedStatement = con.prepareStatement(sql)) {
-                preparedStatement.setInt(1, eventId);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        organizer = new Organizer();
 
-                        // Set User attributes
-                        organizer.setUserId(resultSet.getInt("user_id"));
-                        organizer.setFullName(resultSet.getString("full_name"));
-                        organizer.setUsername(resultSet.getString("username"));
-                        organizer.setPassword(resultSet.getString("password"));
-                        organizer.setPhone(resultSet.getString("phone"));
-                        organizer.setDob(resultSet.getDate("dob"));
-                        organizer.setGender(resultSet.getString("gender").charAt(0));
-                        organizer.setAvatar(resultSet.getString("avatar"));
-                        organizer.setRole(resultSet.getString("role").charAt(0));
-                        organizer.setEmail(resultSet.getString("email"));
+        try (Connection con = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setInt(1, eventId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    organizer = new Organizer();
 
-                        // Set Organizer-specific attributes
-                        organizer.setFoundedDate(resultSet.getDate("founded_date"));
-                        organizer.setWebsite(resultSet.getString("website"));
-                        organizer.setOrganizerAddr(resultSet.getString("organizer_addr"));
-                        organizer.setOrganizerType(resultSet.getString("organizer_type"));
-                        organizer.setActive(resultSet.getBoolean("is_active"));
-                    }
+                    // Set User attributes
+                    organizer.setUserId(resultSet.getInt("user_id"));
+                    organizer.setFullName(resultSet.getString("full_name"));
+                    organizer.setUsername(resultSet.getString("username"));
+                    organizer.setPassword(resultSet.getString("password"));
+                    organizer.setPhone(resultSet.getString("phone"));
+                    organizer.setDob(resultSet.getDate("dob"));
+                    organizer.setGender(resultSet.getString("gender").charAt(0));
+                    organizer.setAvatar(resultSet.getString("avatar"));
+                    organizer.setRole(resultSet.getString("role").charAt(0));
+                    organizer.setEmail(resultSet.getString("email"));
+
+                    // Set Organizer-specific attributes
+                    organizer.setFoundedDate(resultSet.getDate("founded_date"));
+                    organizer.setWebsite(resultSet.getString("website"));
+                    organizer.setOrganizerAddr(resultSet.getString("organizer_addr"));
+                    organizer.setOrganizerType(resultSet.getString("organizer_type"));
+                    organizer.setActive(resultSet.getBoolean("is_active"));
                 }
             }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
         }
+
         return organizer;
     }
 }

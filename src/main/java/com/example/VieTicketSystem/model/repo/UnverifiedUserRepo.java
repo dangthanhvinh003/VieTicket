@@ -18,7 +18,7 @@ public class UnverifiedUserRepo {
     private static final String DELETE_STATEMENT = "DELETE FROM UnverifiedUsers WHERE userid = ?";
 
     public void saveNew(UnverifiedUser unverifiedUser) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(INSERT_STATEMENT)) {
 
@@ -30,7 +30,7 @@ public class UnverifiedUserRepo {
     }
 
     public boolean isUnverified(int userId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(SELECT_STATEMENT)) {
 
@@ -43,7 +43,7 @@ public class UnverifiedUserRepo {
     }
 
     public UnverifiedUser findById(int userId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(SELECT_STATEMENT)) {
 
@@ -62,7 +62,7 @@ public class UnverifiedUserRepo {
     }
 
     public void deleteById(int userId) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(DELETE_STATEMENT)) {
 

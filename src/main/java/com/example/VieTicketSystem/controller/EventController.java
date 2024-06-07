@@ -95,7 +95,7 @@ public class EventController {
     @PostMapping(value = ("/seatMap/NoSeatMap"))
     public String NoSeatMap(@RequestParam ("quantity") int total, @RequestParam ("price") String price,HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
-        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", "");
+        seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
         rowRepo.addRow("NoSeatMap", areaRepo.getIdAreaEventId(idNewEvent));
         for (int i = 0; i < total; i++) {

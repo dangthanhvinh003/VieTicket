@@ -19,9 +19,8 @@ public class SeatMapRepo {
         this.eventRepo = eventRepo;
     }
 
-    public SeatMap getSeatMapByEventId(int eventId)
-            throws ClassNotFoundException, SQLException {
-        Class.forName(Baseconnection.nameClass);
+    public SeatMap getSeatMapByEventId(int eventId) throws SQLException {
+
         Connection connection = ConnectionPoolManager.getConnection();
 
         String query = "SELECT * FROM SeatMap WHERE event_id = ?";
@@ -45,10 +44,8 @@ public class SeatMapRepo {
         return seatMap;
     }
 
-    public void addSeatMap(int eventId, String name, String img)
-            throws ClassNotFoundException, SQLException {
+    public void addSeatMap(int eventId, String name, String img) throws SQLException {
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO SeatMap (event_id, name, img) VALUES (?, ?, ?)");
@@ -57,11 +54,11 @@ public class SeatMapRepo {
         ps.setString(3, img);
         ps.executeUpdate();
         ps.close();
+        connection.close();
     }
 
-    public int getSeatMapIdByEventRepo(int eventId)
-            throws ClassNotFoundException, SQLException {
-        Class.forName(Baseconnection.nameClass);
+    public int getSeatMapIdByEventRepo(int eventId) throws SQLException {
+
         Connection connection = ConnectionPoolManager.getConnection();
 
         String query = "SELECT seat_map_id FROM SeatMap WHERE event_id = ?";
@@ -81,8 +78,8 @@ public class SeatMapRepo {
         return seatMapId;
     }
 
-    public void deleteSeatMapByEventId(int eventId) throws ClassNotFoundException, SQLException {
-        Class.forName(Baseconnection.nameClass);
+    public void deleteSeatMapByEventId(int eventId) throws SQLException {
+
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM SeatMap WHERE event_id = ?");

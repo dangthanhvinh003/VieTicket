@@ -17,22 +17,20 @@ public class UserRepo {
 
     public void EditImgUser(String img, int id) throws Exception {
 
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
-        PreparedStatement ps = con.prepareStatement(
-                "UPDATE User SET avatar = ? where user_id = ?");
+        PreparedStatement ps = con.prepareStatement("UPDATE User SET avatar = ? WHERE user_id = ?");
         ps.setString(1, img);
         ps.setInt(2, id);
         ps.executeUpdate();
         ps.close();
+        con.close();
     }
 
     public void editProfile(String name, String email, String phone, Date dob, char gender, int user_id)
             throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         Connection con = ConnectionPoolManager.getConnection();
-        PreparedStatement ps = con.prepareStatement(
-                "UPDATE User SET full_name = ?, phone = ?, dob= ?, gender = ?, email = ? where user_id = ?");
+        PreparedStatement ps = con.prepareStatement("UPDATE User SET full_name = ?, phone = ?, dob= ?, gender = ?, email = ? WHERE user_id = ?");
         ps.setString(1, name);
         ps.setString(2, phone);
         ps.setDate(3, dob);
@@ -41,11 +39,10 @@ public class UserRepo {
         ps.setInt(6, user_id);
         ps.executeUpdate();
         ps.close();
-
+        con.close();
     }
 
     public List<User> findAll() throws Exception {
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT * FROM User");
         ResultSet rs = ps.executeQuery();
@@ -74,7 +71,6 @@ public class UserRepo {
     }
 
     public User findById(int id) throws Exception {
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT * FROM User WHERE user_id = ?");
         ps.setInt(1, id);
@@ -103,7 +99,6 @@ public class UserRepo {
     }
 
     public User findByUsername(String email) throws Exception {
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT * FROM User WHERE username = ?");
         ps.setString(1, email);
@@ -132,7 +127,6 @@ public class UserRepo {
     }
 
     public User findByEmail(String email) throws Exception {
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT * FROM User WHERE email = ?");
         ps.setString(1, email);
@@ -171,7 +165,6 @@ public class UserRepo {
             throw new Exception("Phone number already exists");
         }
 
-        Class.forName(Baseconnection.nameClass);
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement(
                 "INSERT INTO User (full_name, username, password, phone, dob, gender, avatar, role, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
@@ -198,7 +191,7 @@ public class UserRepo {
     }
 
     public void save(User user) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement(
                 "UPDATE User SET full_name = ?, username = ?, password = ?, phone = ?, dob = ?, gender = ?, avatar = ?, role = ?, email = ? WHERE user_id = ?");
@@ -218,7 +211,7 @@ public class UserRepo {
     }
 
     public void updatePassword(int userId, String newPassword) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement("UPDATE User SET password = ? WHERE user_id = ?");
         ps.setString(1, newPassword);
@@ -229,7 +222,7 @@ public class UserRepo {
     }
 
     public boolean existsByUsername(String username) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT 1 FROM User WHERE username = ?");
         ps.setString(1, username);
@@ -245,12 +238,12 @@ public class UserRepo {
         if (password.length() < 8) {
             return false;
         }
-    
+
         boolean hasUpperCase = false;
         boolean hasLowerCase = false;
         boolean hasDigit = false;
         boolean hasSpecialChar = false;
-    
+
         for (char c : password.toCharArray()) {
             if (Character.isUpperCase(c)) {
                 hasUpperCase = true;
@@ -262,12 +255,12 @@ public class UserRepo {
                 hasSpecialChar = true;
             }
         }
-    
+
         return hasUpperCase && hasLowerCase && hasDigit && hasSpecialChar;
     }
 
     public boolean existsByEmail(String email) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT 1 FROM User WHERE email = ?");
         ps.setString(1, email);
@@ -280,7 +273,7 @@ public class UserRepo {
     }
 
     public boolean existsByPhone(String phone) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT 1 FROM User WHERE phone = ?");
         ps.setString(1, phone);
@@ -290,5 +283,5 @@ public class UserRepo {
         ps.close();
         con.close();
         return exists;
-    }    
+    }
 }

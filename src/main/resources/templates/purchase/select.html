@@ -13,9 +13,9 @@
 <body>
 <div class="container">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6" th:if="${seatMap != null and seatMap.img != null and seatMap.img != ''}">
             <!-- Seat map image -->
-            <div th:if="${seatMap != null and seatMap.img != null and seatMap.img != ''}">
+            <div>
                 <img th:src="${seatMap.img}" alt="Seat Map" class="img-fluid">
             </div>
         </div>
@@ -23,7 +23,13 @@
             <!-- Seat selection -->
             <form id="seatSelectionForm">
                 <input type="hidden" id="eventId" th:value="${event.event.eventId}"/>
-                <div th:each="area : ${event.areas}">
+                <input type="hidden" id="ticketPrice" th:value="${event.areas.get(0).area.ticketPrice}"/>
+                <div th:if="${chooseNumberOfSeats}">
+                    <h3>Choose number of seats</h3>
+                    <p>Available seats: <span th:text="${availableSeats}"></span></p>
+                    <input type="number" id="numberOfSeats" min="1" max="${availableSeats}" required>
+                </div>
+                <div th:if="${!chooseNumberOfSeats}" th:each="area : ${event.areas}">
                     <h3 th:text="${area.area.name}"></h3>
                     <div th:each="row : ${area.rows}">
                         <h4 th:text="${row.row.rowName}"></h4>
@@ -42,7 +48,8 @@
                 <p><strong>Total amount: </strong><span id="totalAmount">0.00</span></p>
                 <hr>
                 <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-                <p class="small">After clicking <strong>Proceed to Payment</strong>, you will be redirected to the payment platform.</p>
+                <p class="small">After clicking <strong>Proceed to Payment</strong>, you will be redirected to the
+                    payment platform.</p>
             </form>
         </div>
     </div>
@@ -62,10 +69,15 @@
     document.getElementById('seatSelectionForm').addEventListener('submit', function (event) {
         event.preventDefault();
 
+        let chooseNumberOfSeats = document.getElementById('numberOfSeats') !== null;
         let selectedSeats = [];
-        this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
-            selectedSeats.push(parseInt(checkbox.value));
-        });
+        if (chooseNumberOfSeats) {
+            selectedSeats.push(parseInt(document.getElementById('numberOfSeats').value));
+        } else {
+            this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
+                selectedSeats.push(parseInt(checkbox.value));
+            });
+        }
 
         // Check if any seats are selected
         if (selectedSeats.length === 0) {
@@ -92,7 +104,10 @@
                 if (response.ok) {
                     return response.text();  // Get the response text
                 } else {
-                    throw new Error('Server response was not ok.');
+                    // Throw an error with content from response
+                    return response.text().then(function (text) {
+                        throw new Error(text);
+                    });
                 }
             })
             .then(async function (paymentUrl) {
@@ -100,11 +115,35 @@
                 window.location.href = await paymentUrl;
             })
             .catch(function (error) {
-                // Handle error based on response status and message
-                console.error('There has been a problem with your fetch operation:', error);
+                // Print the message sent by server
+                alert(error.message);
+                // Reload the page to update the current number of seats left
+                document.getElementById('seatSelectionForm').reset();
+                location.reload();
             });
-
     });
+
+    if (document.getElementById('numberOfSeats') !== null) {
+        let numberOfSeatsInput = document.getElementById('numberOfSeats');
+        let availableSeats = parseInt(numberOfSeatsInput.max);
+        let seatPrice = parseFloat(document.getElementById('ticketPrice').value);
+
+        numberOfSeatsInput.addEventListener('input', function () {
+            let numberOfSeats = this.value ? parseInt(this.value) : 0;
+
+            // Check if the number of inputted seats exceeds the number of available seats
+            if (numberOfSeats > availableSeats) {
+                alert('The number of seats you selected exceeds the number of available seats.');
+                document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = true;
+            } else {
+                document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = false;
+            }
+
+            // Calculate and display the total order amount
+            let totalAmount = numberOfSeats * seatPrice;
+            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+        });
+    }
 </script>
 </body>
 </html>
