@@ -188,6 +188,7 @@
 
         .body {
             background: #191825;
+            overflow-x: hidden;
         }
 
         /* thong tin */
@@ -343,7 +344,7 @@
                         </th:block>
                     </ul>
                     <ul>
-                        <div style="margin-right: 10%; width: 300px;">
+                        <div style="margin-left: -30%; width: 200px;">
                             <th:block th:if="${session.activeUser == null}">
                                 <li>
                                     <a class="nav-link" th:href="@{/auth/login}">Sign in / Sign up</a>
@@ -389,7 +390,8 @@
                         </h6>
                         <p th:text="${#temporals.format(event.ticketSaleDate, 'yyyy-MM-dd hh:mm a')}"
                             style="margin-bottom: 20px;">Hà Nội</p>
-                        <h6 style="margin-top: 5px; display: inline;">
+                            <hr style="margin-top:10px ;">
+                        <h6 style="margin-top: 15px; display: inline;">
                             <i class="fas fa-dollar-sign"></i> Price: ~
                         </h6>
                         <p class="price" th:data-price="${minPrice}" th:text="${minPrice}"
