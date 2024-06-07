@@ -161,12 +161,16 @@ public class UserController {
     }
 
     @GetMapping(value = {"", "/"})
-    public String showLogin(HttpSession session) {
+    public String showLogin(HttpSession session) throws Exception {
         List<Event> events = eventRepo.getAllEvents();
+        List<Event> hotEvents = eventRepo.getTopHotEvents();
+        System.out.println(hotEvents);
+        session.setAttribute("hotevents", hotEvents);
         session.setAttribute("events", events);
         session.setAttribute("eventCreated", false);
         return "index";
     }
+   
 
     @GetMapping("/auth/login")
     public String loginPage() {
