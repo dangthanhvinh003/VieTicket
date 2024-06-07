@@ -69,18 +69,19 @@ public class EventController {
             @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
             @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
             throws Exception {
-        String imageURL = fileUpload.uploadFile(multipartFile);
-        model.addAttribute("poster", imageURL);
-        String imageURL1 = fileUpload.uploadFile(multipartFile1);
-        model.addAttribute("banner", imageURL1);
+        String posterURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958); // Kích thước cho poster
+        model.addAttribute("poster", posterURL);
+
+        String bannerURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720); // Kích thước cho banner
+        model.addAttribute("banner", bannerURL);
         User user = (User) httpSession.getAttribute("activeUser");
         System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
-                organizerRepo.findById(user.getUserId()), imageURL, imageURL1, 0, 0);
+                organizerRepo.findById(user.getUserId()), posterURL, bannerURL, 0, 0);
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(),
-                imageURL, imageURL1);
+                posterURL, bannerURL);
         httpSession.setAttribute("idNewEvent", idNewEvent);
         httpSession.setAttribute("eventCreated", true); // Đặt thuộc tính eventCreated
         return "redirect:/seatMap";
