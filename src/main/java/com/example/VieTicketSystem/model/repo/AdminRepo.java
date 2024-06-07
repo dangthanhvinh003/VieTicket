@@ -384,19 +384,19 @@ public class AdminRepo {
         return monthlyRevenue;
     }
 
-    public List<TableAdminStatistics> getEventRevenues() throws Exception {
-        List<TableAdminStatistics> eventRevenues = new ArrayList<>();
-        String sql = "SELECT e.name AS eventName, u.full_name AS organizerName, SUM(a.ticket_price) AS revenue "
-                +
-                "FROM Event e " +
-                "JOIN Organizer o ON e.organizer_id = o.organizer_id " +
-                "JOIN User u ON o.organizer_id = u.user_id " +
-                "JOIN Area a ON e.event_id = a.event_id " +
-                "JOIN Seat s ON a.area_id = s.row_id " +
-                "JOIN Ticket t ON s.seat_id = t.seat_id " +
-                "JOIN `Order` r ON t.order_id = r.order_id " +
-                "WHERE t.status = FALSE " +
-                "GROUP BY e.event_id, u.full_name";
+        public List<TableAdminStatistics> getEventRevenues() throws Exception {
+                List<TableAdminStatistics> eventRevenues = new ArrayList<>();
+                String sql = "SELECT e.name AS eventName, u.full_name AS organizerName, SUM(a.ticket_price) AS revenue "
+                                +
+                                "FROM Event e " +
+                                "JOIN Organizer o ON e.organizer_id = o.organizer_id " +
+                                "JOIN User u ON o.organizer_id = u.user_id " +
+                                "JOIN Area a ON e.event_id = a.event_id " +
+                                "JOIN Seat s ON a.area_id = s.row_id " +
+                                "JOIN Ticket t ON s.seat_id = t.seat_id " +
+                                "JOIN `Order` r ON t.order_id = r.order_id " +
+                                "WHERE t.status = 0 " +
+                                "GROUP BY e.event_id, u.full_name";
 
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
