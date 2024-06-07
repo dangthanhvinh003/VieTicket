@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
     <link th:href="@{/static/css/index.css}" rel="stylesheet">
-
+    
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -294,16 +294,26 @@
                         <p class="card-text m-0 p-2">
                             Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
                         </p>
-                        <div class="d-flex">
+                        <div style="display: flex; width: 100%;">
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
-                                class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill"
-                                th:if="${event.areas.size() > 0}" th:text="${event.areas.get(0).ticketPrice}">
+                               class="btn btn-sm btn-outline-success"
+                               style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                               <i class="fas fa-list"></i> View Detail
                             </a>
-
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill" th:text="${event.eyeView}"></a>
+                            <a href="#"
+                               class="btn btn-sm btn-outline-success"
+                               th:if="${event.areas.size() > 0}"
+                               style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                               <i class="fas fa-dollar-sign"></i>
+                                <span class="price" th:data-price="${event.areas.get(0).ticketPrice}" th:utext="${event.areas.get(0).ticketPrice}"></span>
+                            </a>
+                            <a href="#"
+                               class="btn btn-sm btn-outline-success"
+                               style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-eye"></i>
+                                <span th:utext="${event.eyeView}"></span>
+                            </a>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -348,7 +358,18 @@
             </div>
         </div>
     </footer>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceElements = document.querySelectorAll('.price');
+            priceElements.forEach(function (priceElement) {
+                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(priceValue)) {
+                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                }
+            })
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
