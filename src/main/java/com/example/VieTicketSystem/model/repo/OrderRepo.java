@@ -25,34 +25,36 @@ public class OrderRepo {
             ps.setInt(1, status.toInteger());
             ps.setInt(2, orderId);
             ps.executeUpdate();
+            ps.close();
         }
     }
 
     public Order findByTxnRef(String txnRef) throws Exception {
 
-        Class.forName(Baseconnection.nameClass);
+        Order order = null;
+
         try (Connection con = ConnectionPoolManager.getConnection();
              PreparedStatement ps = con.prepareStatement(SELECT_ORDER_BY_TXN_REF_SQL)) {
 
             ps.setString(1, txnRef);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Order order = new Order();
+                order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
                 order.setDate(rs.getTimestamp("date").toLocalDateTime());
                 order.setTotal(rs.getInt("total"));
                 order.setUser(userRepo.findById(rs.getInt("user_id")));
                 order.setVnpayData(rs.getString("vnpay_data"));
                 order.setStatus(Order.PaymentStatus.fromInteger(rs.getInt("status")));
-                return order;
-            } else {
-                return null;
             }
+            rs.close();
         }
+
+        return order;
     }
 
     public int save(Order order) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+
         try (Connection con = ConnectionPoolManager.getConnection();
              PreparedStatement ps = con.prepareStatement(INSERT_ORDER_SQL, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -77,24 +79,24 @@ public class OrderRepo {
     }
 
     public Order findById(int id) throws Exception {
-        Class.forName(Baseconnection.nameClass);
+        Order order =  null;
         try (Connection con = ConnectionPoolManager.getConnection();
              PreparedStatement ps = con.prepareStatement(SELECT_ORDER_SQL)) {
 
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Order order = new Order();
+                order = new Order();
                 order.setOrderId(rs.getInt("order_id"));
                 order.setDate(rs.getTimestamp("date").toLocalDateTime());
                 order.setTotal(rs.getInt("total"));
                 order.setUser(userRepo.findById(rs.getInt("user_id")));
                 order.setVnpayData(rs.getString("vnpay_data"));
                 order.setStatus(Order.PaymentStatus.fromInteger(rs.getInt("status")));
-                return order;
-            } else {
-                return null;
             }
+            rs.close();
         }
+
+        return order;
     }
 }

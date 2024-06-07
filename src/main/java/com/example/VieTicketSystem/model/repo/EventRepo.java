@@ -26,14 +26,6 @@ import com.example.VieTicketSystem.model.entity.SeatMap;
 @Repository
 public class EventRepo {
 
-    static {
-        try {
-            Class.forName(Baseconnection.nameClass);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Failed to load MySQL driver", e);
-        }
-    }
-
     @Autowired
     OrganizerRepo organizerRepo = new OrganizerRepo();
 
@@ -304,7 +296,6 @@ public class EventRepo {
                         LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;

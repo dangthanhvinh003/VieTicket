@@ -26,7 +26,6 @@ public class AreaRepo {
 
     public List<Area> findByEventId(int eventId) throws Exception {
         try {
-            Class.forName(Baseconnection.nameClass);
             Connection connection = ConnectionPoolManager.getConnection();
             PreparedStatement ps = connection.prepareStatement(SELECT_BY_EVENT_ID_SQL);
             ps.setInt(1, eventId);
@@ -53,7 +52,6 @@ public class AreaRepo {
 
     public Area findById(int id) throws Exception {
         try {
-            Class.forName(Baseconnection.nameClass);
             Connection connection = ConnectionPoolManager.getConnection();
             PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);
             ps.setInt(1, id);
@@ -80,7 +78,7 @@ public class AreaRepo {
     public void addArea(String areaName, int totalTicket, int eventId, String ticketPrice, int seatMapId)
             throws ClassNotFoundException, SQLException, ParseException {
         NumberFormat format = NumberFormat.getInstance(Locale.US);
-        Class.forName(Baseconnection.nameClass);
+
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO Area (event_id, name, total_tickets, ticket_price, seat_map_id) VALUES (?, ?, ?, ?, ?)");
@@ -91,12 +89,12 @@ public class AreaRepo {
         ps.setInt(5, seatMapId);
         ps.executeUpdate();
         ps.close();
+        connection.close();
     }
 
     public int getIdAreaEventId(int eventId) throws ClassNotFoundException, SQLException {
         int areaId = -1; // Giá trị mặc định khi không tìm thấy khu vực
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "SELECT area_id FROM Area WHERE event_id = ? ");
@@ -117,7 +115,6 @@ public class AreaRepo {
     public int getIdAreaEventIdAndName(int eventId, String name) throws ClassNotFoundException, SQLException {
         int areaId = -1; // Giá trị mặc định khi không tìm thấy khu vực
 
-        Class.forName(Baseconnection.nameClass);
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(
                 "SELECT area_id FROM Area WHERE event_id = ? and name = ? ");
