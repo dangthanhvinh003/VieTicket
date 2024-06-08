@@ -106,6 +106,11 @@ public class EventController {
         return "createEventSuccess";
     }
 
+    @GetMapping(value = ("/seatMap/SeatMapEditor"))
+    public String SeatMapEditor() {
+        return "SeatMapEditor";
+    }
+
     @GetMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage() {
         return "SeatMapBeta";
