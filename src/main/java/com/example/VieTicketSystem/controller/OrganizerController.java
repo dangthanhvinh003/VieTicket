@@ -246,7 +246,7 @@ public class OrganizerController {
         // Event event = (Event) httpSession.getAttribute("newEvent");
         // Event event2 = eventRepo.get(event.getName());
         int idNewEvent = (int) httpSession.getAttribute("eventIdEdit");
-        String imageURL1 = fileUpload.uploadFile(multipartFile1);
+        String imageURL1 = fileUpload.uploadFileSeatMap(multipartFile1);
         seatMapRepo.addSeatMap(idNewEvent, "SeatMapBeta", imageURL1);
         // add area normal
         if (additionalData.getTotalSelectedSeats() != 0) {
