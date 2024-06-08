@@ -125,6 +125,9 @@ public class AdminController {
         List<Integer> monthlyRevenue = adminRepo.getMonthlyRevenue();
         List<TableAdminStatistics> eventRevenues = adminRepo.getEventRevenues(); // Thêm dòng này
 
+        // System.out.println("dailyRevenue : " + dailyRevenue);
+        // System.out.println("monthlyRevenue : " + monthlyRevenue);
+
         model.addAttribute("statisticsOfAdmin", statistics);
         model.addAttribute("dailyRevenue", dailyRevenue);
         model.addAttribute("monthlyRevenue", monthlyRevenue);
