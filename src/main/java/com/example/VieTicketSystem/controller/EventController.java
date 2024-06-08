@@ -23,8 +23,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -105,10 +108,69 @@ public class EventController {
         }
         return "createEventSuccess";
     }
-    @GetMapping(value ={"/createEventSuccess"})
+
+    @GetMapping(value = ("/seatMap/SeatMapEditor"))
+    public String SeatMapEditor() {
+        return "SeatMapEditor";
+    }
+
+    @PostMapping(value = "/seatMap/SeatMapEditor")
+    public String SeatMapEditor(MultipartHttpServletRequest request, HttpSession session)
+            throws SQLException, ClassNotFoundException, ParseException, IOException {
+        int eventId = (int) session.getAttribute("idNewEvent");
+        String name = "SeatMap Name";
+
+        MultipartFile file = request.getFile("file");
+        String imageURL = fileUpload.uploadFile(file);
+        String shapesJson = request.getParameter("shapes");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, Object>> shapesData = objectMapper.readValue(shapesJson, List.class);
+        seatMapRepo.addSeatMapWithEditor(eventId, name, imageURL, shapesJson);
+
+        int seatMapId = seatMapRepo.getSeatMapIdByEventRepo(eventId); // Implement this method to get the last inserted
+        for (Map<String, Object> shapeWrapper : shapesData) {
+            Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
+            if ("Area".equals(shape.get("type"))) {
+                String areaName = shape.get("name").toString();
+                String ticketPrice = shape.get("ticketPrice").toString();
+                List<Map<String, Object>> areaShapes = (List<Map<String, Object>>) shape.get("shapes");
+                int totalTickets = 0;
+
+                for (Map<String, Object> areaShape : areaShapes) {
+                    if ("Row".equals(areaShape.get("type"))) {
+                        totalTickets += ((List<Map<String, Object>>) areaShape.get("seats")).size();
+                    }
+                }
+
+                areaRepo.addArea(areaName, totalTickets, eventId, ticketPrice, seatMapId);
+                int areaId = areaRepo.getIdAreaEventIdAndName(eventId, areaName); // Implement this method to get the
+                                                                                  // last inserted area ID.
+
+                for (Map<String, Object> areaShape : areaShapes) {
+                    if ("Row".equals(areaShape.get("type"))) {
+                        String rowName = areaShape.get("name").toString();
+                        rowRepo.addRow(rowName, areaId);
+                        int rowId = rowRepo.getIdRowByAreaIdAndRowName(areaId, rowName); // Implement this method to get
+                                                                                         // the last inserted row ID.
+
+                        List<Map<String, Object>> seats = (List<Map<String, Object>>) areaShape.get("seats");
+                        for (Map<String, Object> seat : seats) {
+                            String seatNumber = seat.get("number").toString();
+                            seatRepo.addSeat(seatNumber, ticketPrice, rowId);
+                        }
+                    }
+                }
+            }
+        }
+        return "redirect:/createEventSuccess";
+    }
+
+    @GetMapping(value = { "/createEventSuccess" })
     public String createEventSuccessPage() {
         return "createEventSuccess";
     }
+
     @GetMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage() {
         return "SeatMapBeta";
@@ -123,9 +185,10 @@ public class EventController {
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);
 
         // Sử dụng dữ liệu JSON (ví dụ: in ra để kiểm tra)
-        // System.out.println("Total Selected Seats: " + additionalData.getTotalSelectedSeats());
+        // System.out.println("Total Selected Seats: " +
+        // additionalData.getTotalSelectedSeats());
         // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
-    // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
+        // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
         // System.out.println("VIP Seats: " + additionalData.getVipSeats());
         // System.out.println("Normal Price: " + additionalData.getNormalPrice());
         // System.out.println("VIP Price: " + additionalData.getVipPrice());
@@ -141,7 +204,6 @@ public class EventController {
                     additionalData.getNormalPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
 
             ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
-            System.out.println("allSeatNormal : " + allSeatNormal);
             Set<Character> uniqueFirstLetters = new HashSet<>();
 
             if (additionalData.getSelectedSeats() != null) {

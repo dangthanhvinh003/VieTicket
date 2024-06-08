@@ -70,9 +70,10 @@ public class OrganizerController {
     public String inactiveAccountPage() {
         return "inactive-account";
     }
+
     @PostMapping(value = ("/viewStatistics"))
     public String statisticsPage(@RequestParam("eventId") int eventId, Model model) {
-        EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(eventId);    
+        EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(eventId);
         Map<String, Double> dailyRevenueMap = eventRepo.getDailyRevenueByEventId(eventId);
         model.addAttribute("eventStatistics", eventStatistics);
         model.addAttribute("dailyStatistics", dailyRevenueMap);
@@ -111,17 +112,16 @@ public class OrganizerController {
         return "viewMyListEvent";
     }
 
-   
     @GetMapping(value = "/approvedEvents")
     public String approvedEvents(Model model, HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("activeUser");
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
         LocalDateTime currentDate = LocalDateTime.now();
-        
+
         List<Event> approvedEvents = eventList.stream()
                 .filter(event -> event.getApproved() == 1 && event.getEndDate().isAfter(currentDate))
                 .collect(Collectors.toList());
-        
+
         model.addAttribute("eventList", approvedEvents);
         model.addAttribute("pageType", "approved");
         return "viewMyListEvent";
@@ -132,59 +132,60 @@ public class OrganizerController {
         User user = (User) httpSession.getAttribute("activeUser");
         List<Event> eventList = eventRepo.getAllEventsByOrganizerId(user.getUserId());
         LocalDateTime currentDate = LocalDateTime.now();
-        
+
         List<Event> passedEvents = eventList.stream()
                 .filter(event -> event.getEndDate().isBefore(currentDate))
                 .collect(Collectors.toList());
-        
+
         model.addAttribute("eventList", passedEvents);
         model.addAttribute("pageType", "passed");
         return "viewMyListEvent";
     }
 
     @PostMapping(value = "/eventEditPage")
-public String eventEditPage(@RequestParam("eventId") int eventId, Model model, HttpSession httpSession) {
-    httpSession.setAttribute("eventIdEdit", eventId);
-    Event event = eventRepo.getEventById(eventId);
-    model.addAttribute("eventEdit", event);
-    return "eventEdit";
-}
+    public String eventEditPage(@RequestParam("eventId") int eventId, Model model, HttpSession httpSession) {
+        httpSession.setAttribute("eventIdEdit", eventId);
+        Event event = eventRepo.getEventById(eventId);
+        model.addAttribute("eventEdit", event);
+        return "eventEdit";
+    }
+
     @PostMapping(value = ("/eventEditSubmit"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
-                           @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
-                           @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
-                           @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
-                           @RequestParam("banner") MultipartFile multipartFile1,
-                           @RequestParam("currentPoster") String currentPoster,
-                           @RequestParam("currentBanner") String currentBanner,
-                           HttpSession httpSession, Model model) throws Exception {
+            @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
+            @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
+            @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
+            @RequestParam("banner") MultipartFile multipartFile1,
+            @RequestParam("currentPoster") String currentPoster,
+            @RequestParam("currentBanner") String currentBanner,
+            HttpSession httpSession, Model model) throws Exception {
         int eventId = (int) httpSession.getAttribute("eventIdEdit");
         String posterUrl = currentPoster;
         String bannerUrl = currentBanner;
-    
+
         if (!multipartFile.isEmpty()) {
             posterUrl = fileUpload.uploadFile(multipartFile);
         }
         model.addAttribute("poster", posterUrl);
-    
+
         if (!multipartFile1.isEmpty()) {
             bannerUrl = fileUpload.uploadFile(multipartFile1);
         }
         model.addAttribute("banner", bannerUrl);
-    
+
         User user = (User) httpSession.getAttribute("activeUser");
-    
+
         eventRepo.updateEvent(eventId, name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(), posterUrl, bannerUrl);
-    
+
         return "redirect:/editSuccess";
     }
 
     @PostMapping(value = "/seatMapEditPage")
-public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession) {
-    httpSession.setAttribute("eventIdEdit", eventId);
-    return "seatMapEdit";
-}
+    public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession) {
+        httpSession.setAttribute("eventIdEdit", eventId);
+        return "seatMapEdit";
+    }
 
     @GetMapping(value = "/seatMapDelete")
     public String seatMapDelete(HttpSession httpSession, RedirectAttributes redirectAttributes)
@@ -234,7 +235,8 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);
 
         // Sử dụng dữ liệu JSON (ví dụ: in ra để kiểm tra)
-        // System.out.println("Total Selected Seats: " + additionalData.getTotalSelectedSeats());
+        // System.out.println("Total Selected Seats: " +
+        // additionalData.getTotalSelectedSeats());
         // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
         // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
         // System.out.println("VIP Seats: " + additionalData.getVipSeats());

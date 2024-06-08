@@ -63,12 +63,12 @@ public class FileUploadController {
         model.addAttribute("poster", imageURL);
         return "forward:/createEvent";
     }
-    
+
     @PostMapping("/upload/banner")
     public String uploadBanner(@RequestParam("banner") MultipartFile multipartFile, Model model) throws Exception {
         String imageURL = fileUpload.uploadFile(multipartFile);
         model.addAttribute("banner", imageURL);
         return "forward:/createEvent";
     }
-    
+
 }
