@@ -78,6 +78,7 @@ public class EventController {
         String bannerURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720); // Kích thước cho banner
         model.addAttribute("banner", bannerURL);
         User user = (User) httpSession.getAttribute("activeUser");
+        // System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
                 organizerRepo.findById(user.getUserId()), posterURL, bannerURL, 0, 0);
         httpSession.setAttribute("newEvent", event);
@@ -179,6 +180,13 @@ public class EventController {
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);
 
         // Sử dụng dữ liệu JSON (ví dụ: in ra để kiểm tra)
+        // System.out.println("Total Selected Seats: " +
+        // additionalData.getTotalSelectedSeats());
+        // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
+        // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
+        // System.out.println("VIP Seats: " + additionalData.getVipSeats());
+        // System.out.println("Normal Price: " + additionalData.getNormalPrice());
+        // System.out.println("VIP Price: " + additionalData.getVipPrice());
         // add 1 event
         // Event event = (Event) httpSession.getAttribute("newEvent");
         // Event event2 = eventRepo.get(event.getName());
@@ -199,7 +207,9 @@ public class EventController {
                         uniqueFirstLetters.add(seat.charAt(0));
                     }
                 }
+                // System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
                 ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
+                // System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
@@ -247,6 +257,7 @@ public class EventController {
             areaRepo.addArea("Vip", additionalData.getTotalVIPSeats(), idNewEvent,
                     additionalData.getVipPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
             ArrayList<String> allSeatVip = additionalData.getVipSeats();
+            // System.out.println("allSeatNormal : " + allSeatVip);
             Set<Character> uniqueFirstLetters = new HashSet<>();
 
             if (additionalData.getSelectedSeats() != null) {
@@ -255,7 +266,9 @@ public class EventController {
                         uniqueFirstLetters.add(seat.charAt(0));
                     }
                 }
+                // System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
                 ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
+                // System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
@@ -312,6 +325,7 @@ public class EventController {
         }
         model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
 
+        // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
         return "viewdetailEvent";
     }
 

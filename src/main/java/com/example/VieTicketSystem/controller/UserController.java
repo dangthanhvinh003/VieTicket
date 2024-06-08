@@ -165,6 +165,7 @@ public class UserController {
     public String showLogin(HttpSession session) throws Exception {
         List<Event> events = eventRepo.getAllEvents();
         List<Event> hotEvents = eventRepo.getTopHotEvents();
+        // System.out.println(hotEvents);
         session.setAttribute("hotevents", hotEvents);
         session.setAttribute("events", events);
         session.setAttribute("eventCreated", false);
@@ -181,6 +182,7 @@ public class UserController {
     public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
             HttpSession httpSession)
             throws Exception {
+        // System.out.println("hello");
         Oauth2Service oauth2 = new Oauth2Service();
         // Exchange the authorization code for an access token
         String accessToken = oauth2.getAccessToken(authorizationCode);
@@ -303,6 +305,7 @@ public class UserController {
 
         // Hash the password
         String hashedPassword = passwordEncoder.encode(password);
+        // System.out.println(hashedPassword);
 
         // Create new user and save to database
         // Convert LocalDate to java.sql.Date
