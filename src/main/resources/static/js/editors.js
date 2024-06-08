@@ -44,7 +44,18 @@ function roundedRectangleEditor(shape, mouseX, mouseY) {
 
     offsetX = mouseX - shape.x;
     offsetY = mouseY - shape.y;
-    setEditorTitle(`<h4>${selectedShape}</h4>`);
+    setEditorTitle(`<h4>${shape.name}</h4>`);
+
+    console.log(shape);
+    const ticketPriceInput =
+      shape.type === "Area"
+        ? `
+      <label for="ticketPrice">Ticket Price:</label>
+      <input type="text" id="ticketPrice" value="${shape.ticketPrice || ""}">
+      <br>
+    `
+        : "";
+
     setEditorContent(`
       <label for="areaName">Area Name:</label>
       <input type="text" id="areaName" value="${shape.name || ""}">
@@ -74,6 +85,7 @@ function roundedRectangleEditor(shape, mouseX, mouseY) {
         shape.rotation
       }">
       <br>
+      ${ticketPriceInput}
       <div class="dropdown">
         <div class="dropdown-toggle" id="advancedOptionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           Advanced
@@ -132,6 +144,12 @@ function roundedRectangleEditor(shape, mouseX, mouseY) {
 
     document.getElementById("curveHeight").addEventListener("input", (e) => {
       shape.height = parseInt(e.target.value, 10);
+      saveCanvasState();
+      drawAll();
+    });
+
+    document.getElementById("ticketPrice").addEventListener("input", (e) => {
+      shape.ticketPrice = e.target.value;
       saveCanvasState();
       drawAll();
     });

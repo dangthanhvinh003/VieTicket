@@ -122,22 +122,47 @@ redoButton.addEventListener("click", () => {
 });
 
 saveButton.addEventListener("click", () => {
-  const canvasData = {
-    shapes: shapes.map((shape) => ({
-      data: shape.serialize(),
-    })),
-  };
-  const json = JSON.stringify(canvasData);
+  const canvasImage = canvas.toDataURL();
+  const blob = dataURLToBlob(canvasImage);
 
-  const blob = new Blob([json], { type: "application/json" });
+  const formData = new FormData();
+  formData.append("file", blob, "canvasImage.png");
 
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "canvas_data.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const shapesData = shapes.map((shape) => ({
+    data: shape.serialize(),
+  }));
+  formData.append("shapes", JSON.stringify(shapesData));
+
+  fetch("/seatMap/SeatMapEditor", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Network response was not ok.");
+      }
+    })
+    .then((data) => {
+      console.log("Success:", data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 });
+
+// Helper function to convert dataURL to Blob
+function dataURLToBlob(dataURL) {
+  const byteString = atob(dataURL.split(",")[1]);
+  const mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
+}
 
 loadButton.addEventListener("click", () => {
   document.getElementById("fileInput").click();

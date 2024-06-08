@@ -198,6 +198,7 @@ class Area extends RoundedBorderRectangle {
     borderRadius = 0,
     color = "white",
     rotation = 0,
+    ticketPrice = 0,
     shapes = null,
   }) {
     super({
@@ -213,6 +214,7 @@ class Area extends RoundedBorderRectangle {
       color,
       rotation,
     });
+    this.ticketPrice = ticketPrice;
     this.type = "Area";
     this.name = name;
     this.shapes = shapes ?? [];
@@ -223,6 +225,7 @@ class Area extends RoundedBorderRectangle {
       ...super.serialize(),
       type: this.type,
       name: this.name,
+      ticketPrice: this.ticketPrice,
       shapes: this.shapes.map((shape) => shape.serialize()),
     };
   }
@@ -270,7 +273,6 @@ class Area extends RoundedBorderRectangle {
     seatSpacing = 10,
     rotation = 0,
   }) {
-    console.log(this.x, this.y, startX, startY, rotation, this.rotation);
     const row = new Row({
       name,
       startX: startX - this.x,

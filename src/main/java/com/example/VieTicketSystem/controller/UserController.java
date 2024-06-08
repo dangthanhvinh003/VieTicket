@@ -50,18 +50,18 @@ public class UserController {
     @Autowired
     private HttpSession httpSession;
 
-    @PostMapping(value = "/editUser")  // Them thuoc tinh cho organizer
+    @PostMapping(value = "/editUser") // Them thuoc tinh cho organizer
     public String editUser(@RequestParam("fullName") String nameInput,
-                           @RequestParam("phone") String phoneInput,
-                           @RequestParam("email") String emailInput,
-                           @RequestParam("dob") Date dobInput,
-                           @RequestParam("gender") Character genderInput,
-                           @RequestParam(value = "foundedDate", required = false) Date foundedDateInput,
-                           @RequestParam(value = "website", required = false) String websiteInput,
-                           @RequestParam(value = "organizerAddr", required = false) String organizerAddrInput,
-                           @RequestParam(value = "organizerType", required = false) String organizerTypeInput,
-                           Model model,
-                           HttpSession httpSession) throws Exception {
+            @RequestParam("phone") String phoneInput,
+            @RequestParam("email") String emailInput,
+            @RequestParam("dob") Date dobInput,
+            @RequestParam("gender") Character genderInput,
+            @RequestParam(value = "foundedDate", required = false) Date foundedDateInput,
+            @RequestParam(value = "website", required = false) String websiteInput,
+            @RequestParam(value = "organizerAddr", required = false) String organizerAddrInput,
+            @RequestParam(value = "organizerType", required = false) String organizerTypeInput,
+            Model model,
+            HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         // Update common user attributes
@@ -90,7 +90,8 @@ public class UserController {
                 activeOrganizer.setOrganizerType(organizerTypeInput);
             }
 
-            // Call repository method to update organizer-specific attributes in the database
+            // Call repository method to update organizer-specific attributes in the
+            // database
             organizerRepo.save(activeOrganizer);
             httpSession.setAttribute("activeOrganizer", activeOrganizer);
         }
@@ -100,7 +101,6 @@ public class UserController {
 
         return "redirect:/change";
     }
-
 
     @GetMapping("/auth/verify-email")
     public String showVerifyEmailPage(Model model, HttpSession session) throws Exception {
@@ -113,8 +113,8 @@ public class UserController {
 
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
-                          @RequestParam("password") String passwordInput,
-                          Model model, HttpSession httpSession) throws Exception {
+            @RequestParam("password") String passwordInput,
+            Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
         if (user == null) {
             model.addAttribute("error", "Invalid login, please try again");
@@ -128,7 +128,6 @@ public class UserController {
 
         httpSession.setAttribute("activeUser", user);
 
-
         if (user.getRole() == 'o') {
             Organizer organizer = organizerRepo.findById(user.getUserId());
             httpSession.setAttribute("activeOrganizer", organizer);
@@ -140,10 +139,10 @@ public class UserController {
             httpSession.removeAttribute("redirect");
             return "redirect:" + redirect;
         }
-        if(user.getRole() == 'a'){
+        if (user.getRole() == 'a') {
             return "redirect:/dashboardAdmin";
         }
-        if(user.getRole() == 'p' || user.getRole()=='b'){
+        if (user.getRole() == 'p' || user.getRole() == 'b') {
             return "banned";
         }
 
@@ -162,17 +161,15 @@ public class UserController {
         return "redirect:/";
     }
 
-    @GetMapping(value = {"", "/"})
+    @GetMapping(value = { "", "/" })
     public String showLogin(HttpSession session) throws Exception {
         List<Event> events = eventRepo.getAllEvents();
         List<Event> hotEvents = eventRepo.getTopHotEvents();
-        System.out.println(hotEvents);
         session.setAttribute("hotevents", hotEvents);
         session.setAttribute("events", events);
         session.setAttribute("eventCreated", false);
         return "index";
     }
-   
 
     @GetMapping("/auth/login")
     public String loginPage() {
@@ -182,9 +179,8 @@ public class UserController {
 
     @GetMapping("/auth/login/oauth2/google")
     public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
-                                    HttpSession httpSession)
+            HttpSession httpSession)
             throws Exception {
-        System.out.println("hello");
         Oauth2Service oauth2 = new Oauth2Service();
         // Exchange the authorization code for an access token
         String accessToken = oauth2.getAccessToken(authorizationCode);
@@ -217,10 +213,10 @@ public class UserController {
 
     @PostMapping(value = "/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
-                                 @RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmPassword") String confirmPassword,
-                                 Model model,
-                                 HttpSession httpSession) throws Exception {
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Model model,
+            HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         if (activeUser == null) {
@@ -237,7 +233,8 @@ public class UserController {
             return "change-password";
         }
         if (!userRepo.isValidPassword(newPassword)) {
-            model.addAttribute("error", "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
+            model.addAttribute("error",
+                    "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
             return "change-password";
         }
 
@@ -262,7 +259,6 @@ public class UserController {
         return "redirect:/change";
     }
 
-    
     @GetMapping("/signup")
     public String signupPage() {
         return "signup"; // Trả về trang signup.html
@@ -270,19 +266,19 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
-                         @RequestParam("phone") String phone,
-                         @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
-                         @RequestParam("gender") char gender,
-                         @RequestParam("email") String email,
-                         @RequestParam("username") String username,
-                         @RequestParam("password") String password,
-                         @RequestParam("confirmPassword") String confirmPassword,
-                         @RequestParam("role") char role,
-                         @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
-                         @RequestParam(value = "website", required = false) String website,
-                         @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
-                         @RequestParam(value = "organizerType", required = false) String organizerType,
-                         Model model, HttpSession httpSession) throws Exception {
+            @RequestParam("phone") String phone,
+            @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
+            @RequestParam("gender") char gender,
+            @RequestParam("email") String email,
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("confirmPassword") String confirmPassword,
+            @RequestParam("role") char role,
+            @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
+            @RequestParam(value = "website", required = false) String website,
+            @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
+            @RequestParam(value = "organizerType", required = false) String organizerType,
+            Model model, HttpSession httpSession) throws Exception {
 
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("error", "Phone already exists.");
@@ -300,13 +296,13 @@ public class UserController {
             return "signup";
         }
         if (!userRepo.isValidPassword(password)) {
-            model.addAttribute("error", "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
+            model.addAttribute("error",
+                    "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
             return "signup";
         }
 
         // Hash the password
         String hashedPassword = passwordEncoder.encode(password);
-        System.out.println(hashedPassword);
 
         // Create new user and save to database
         // Convert LocalDate to java.sql.Date

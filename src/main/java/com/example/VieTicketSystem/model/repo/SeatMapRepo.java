@@ -57,6 +57,20 @@ public class SeatMapRepo {
         connection.close();
     }
 
+    public void addSeatMapWithEditor(int eventId, String name, String img, String json) throws SQLException {
+
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO SeatMap (event_id, name, img, map_file) VALUES (?, ?, ?, ?)");
+        ps.setInt(1, eventId);
+        ps.setString(2, name);
+        ps.setString(3, img);
+        ps.setString(4, json);
+        ps.executeUpdate();
+        ps.close();
+        connection.close();
+    }
+
     public int getSeatMapIdByEventRepo(int eventId) throws SQLException {
 
         Connection connection = ConnectionPoolManager.getConnection();

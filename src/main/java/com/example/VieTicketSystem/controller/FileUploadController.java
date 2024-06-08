@@ -47,7 +47,6 @@ public class FileUploadController {
 
         // Thêm URL ảnh vào model
         model.addAttribute("imageURL", imageURL);
-        System.out.println(imageURL);
         // Cập nhật thông tin người dùng
         User user = (User) httpSession.getAttribute("activeUser");
         userRepo.EditImgUser(imageURL, user.getUserId());
@@ -63,12 +62,12 @@ public class FileUploadController {
         model.addAttribute("poster", imageURL);
         return "forward:/createEvent";
     }
-    
+
     @PostMapping("/upload/banner")
     public String uploadBanner(@RequestParam("banner") MultipartFile multipartFile, Model model) throws Exception {
         String imageURL = fileUpload.uploadFile(multipartFile);
         model.addAttribute("banner", imageURL);
         return "forward:/createEvent";
     }
-    
+
 }
