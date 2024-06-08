@@ -68,9 +68,10 @@
         }
 
         .upload-container img {
-             max-width: 100%;
+            max-width: 100%;
             max-height: 100%;
-            object-fit: cover; /* Hoặc cover, tùy theo nhu cầu */
+            object-fit: cover;
+            /* Hoặc cover, tùy theo nhu cầu */
             margin-bottom: 10px;
         }
 
@@ -171,8 +172,16 @@
                 </div>
                 <!--Type -->
                 <div class="mb-3">
-                    <label for="end_date" class="form-label">Type :</label>
-                    <input type="text" class="form-control" id="type" name="type" required>
+                    <label for="type" class="form-label">Type :</label>
+                    <select class="form-control" id="type" name="type" required>
+                        <option value="" disabled selected>Select a type</option>
+                        <option value="music">Music</option>
+                        <option value="sport">Sport</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="comedy">Comedy</option>
+                        <option value="art">Art</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
                 <!-- TicketSaleDate-->
                 <div class="mb-3">
