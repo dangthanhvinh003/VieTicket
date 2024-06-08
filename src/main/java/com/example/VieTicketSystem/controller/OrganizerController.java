@@ -234,13 +234,13 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);
 
         // Sử dụng dữ liệu JSON (ví dụ: in ra để kiểm tra)
-        System.out.println("Total Selected Seats: " + additionalData.getTotalSelectedSeats());
-        System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
-        System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
-        System.out.println("VIP Seats: " + additionalData.getVipSeats());
-        System.out.println("Normal Price: " + additionalData.getNormalPrice());
-        System.out.println("VIP Price: " + additionalData.getVipPrice());
-        // add 1 event
+        // System.out.println("Total Selected Seats: " + additionalData.getTotalSelectedSeats());
+        // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
+        // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
+        // System.out.println("VIP Seats: " + additionalData.getVipSeats());
+        // System.out.println("Normal Price: " + additionalData.getNormalPrice());
+        // System.out.println("VIP Price: " + additionalData.getVipPrice());
+        // // add 1 event
         // Event event = (Event) httpSession.getAttribute("newEvent");
         // Event event2 = eventRepo.get(event.getName());
         int idNewEvent = (int) httpSession.getAttribute("eventIdEdit");
@@ -252,7 +252,7 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
                     additionalData.getNormalPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
 
             ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
-            System.out.println("allSeatNormal : " + allSeatNormal);
+            // System.out.println("allSeatNormal : " + allSeatNormal);
             Set<Character> uniqueFirstLetters = new HashSet<>();
 
             if (additionalData.getSelectedSeats() != null) {
@@ -261,9 +261,9 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
                         uniqueFirstLetters.add(seat.charAt(0));
                     }
                 }
-                System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
+                // System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
                 ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
-                System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
+                // System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
@@ -311,7 +311,7 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
             areaRepo.addArea("Vip", additionalData.getTotalVIPSeats(), idNewEvent,
                     additionalData.getVipPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
             ArrayList<String> allSeatVip = additionalData.getVipSeats();
-            System.out.println("allSeatNormal : " + allSeatVip);
+            // System.out.println("allSeatNormal : " + allSeatVip);
             Set<Character> uniqueFirstLetters = new HashSet<>();
 
             if (additionalData.getSelectedSeats() != null) {
@@ -320,9 +320,9 @@ public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession 
                         uniqueFirstLetters.add(seat.charAt(0));
                     }
                 }
-                System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
+                // System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
                 ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
-                System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
+                // System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
