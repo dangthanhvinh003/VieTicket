@@ -390,17 +390,22 @@
                         </h6>
                         <p th:text="${#temporals.format(event.ticketSaleDate, 'yyyy-MM-dd hh:mm a')}"
                             style="margin-bottom: 20px;">Hà Nội</p>
+                        <div style="margin-top: 10%;">
                             <hr style="margin-top:10px ;">
-                        <h6 style="margin-top: 15px; display: inline;">
-                            <i class="fas fa-dollar-sign"></i> Price: ~
-                        </h6>
-                        <p class="price" th:data-price="${minPrice}" th:text="${minPrice}"
-                            style="margin-bottom: 20px; display: inline;">
-                        </p>
-                        <!-- Thay đổi từ Area.ticketPrice thành area.ticketPrice -->
-                    </div>
-                    <div style="margin-top: auto;">
-                        <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}" class="btn custom-btn">Buy Ticket</a>
+                            <h6 style="margin-top: 15px; display: inline;">
+                                <i class="fas fa-dollar-sign"></i> Price: ~
+                            </h6>
+                            <p class="price" th:data-price="${minPrice}" th:text="${minPrice}"
+                                style="margin-bottom: 20px; display: inline;">
+                            </p>
+                            <!-- Thay đổi từ Area.ticketPrice thành area.ticketPrice -->
+
+                            <div style="margin-bottom: 5%; margin-top: 2%;">
+                                <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}" class="btn custom-btn"
+                                    style="width: 100%; height: 27px; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;">Buy
+                                    Ticket</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="event-banner">
