@@ -263,13 +263,13 @@ public class EventRepo {
         String sql = "SELECT " +
                 "SUM(CASE WHEN t.status = 0 THEN s.ticket_price ELSE 0 END) AS total_revenue, " +
                 "COUNT(CASE WHEN t.status = 0 THEN 1 END) AS tickets_sold, " +
-                "COUNT(CASE WHEN t.status = 1 THEN 1 END) AS tickets_returned, " +
+                "COUNT(CASE WHEN t.status = 3 THEN 1 END) AS tickets_returned, " +
                 "(SELECT COUNT(*) FROM Seat s2 " +
                 "JOIN `Row` r2 ON s2.row_id = r2.row_id " +
                 "JOIN Area a2 ON r2.area_id = a2.area_id " +
                 "WHERE a2.event_id = ?) " + // Sử dụng tham số
                 "- COUNT(CASE WHEN t.status = 0 THEN 1 END) " +
-                "- COUNT(CASE WHEN t.status = 1 THEN 1 END) AS tickets_remaining " +
+                "- COUNT(CASE WHEN t.status = 3 THEN 1 END) AS tickets_remaining " +
                 "FROM " +
                 "Ticket t " +
                 "JOIN " +

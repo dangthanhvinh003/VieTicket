@@ -122,7 +122,7 @@ public class EventController {
         // Sử dụng dữ liệu JSON (ví dụ: in ra để kiểm tra)
         // System.out.println("Total Selected Seats: " + additionalData.getTotalSelectedSeats());
         // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
-        // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
+    // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
         // System.out.println("VIP Seats: " + additionalData.getVipSeats());
         // System.out.println("Normal Price: " + additionalData.getNormalPrice());
         // System.out.println("VIP Price: " + additionalData.getVipPrice());
