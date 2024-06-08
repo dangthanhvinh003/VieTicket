@@ -1,149 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Purchase Ticket</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .seat-map {
+            width: 100vw;
+            height: auto;
+            /* Chiều cao bằng chiều cao của viewport */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .seat-map img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Đảm bảo hình ảnh bao phủ đầy đủ vùng chứa */
+            border: 2px solid #007bff;
+            border-radius: 10px;
+        }
+
         .taken {
-            color: gray;
+            color: red;
+        }
+
+        .total-amount {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .small-text {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .seat-container {
+            max-height: 400px;
+            /* Adjust as needed */
+            overflow-y: auto;
+        }
+
+       .seat-row {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .seat-row h4 {
+            flex-shrink: 0;
+            margin-right: 5px;
+            min-width: 50px;
+        }
+
+        .seat {
+            display: flex;
+            align-items: center;
+            margin-right: 5px;
+        }
+
+        .seat input[type="checkbox"] {
+            display: none;
+        }
+
+        .seat label {
+            display: block;
+            width: 40px;
+            height: 40px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .seat input[type="checkbox"]:checked+label {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .seat input[type="checkbox"]:disabled+label {
+
+            border-color: #dee2e6;
+            background-color: red;
+            cursor: not-allowed;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+        }
+
+        .legend-color.taken {
+            background-color: red;
+        }
+
+        .legend-color.selected {
+            background-color: #007bff;
+        }
+
+        .legend-color.empty {
+            background-color: #f8f9fa;
+        }
+        .legend-color.pending {
+            background-color: #02ff4e;
         }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-6" th:if="${seatMap != null and seatMap.img != null and seatMap.img != ''}">
-            <!-- Seat map image -->
-            <div>
-                <img th:src="${seatMap.img}" alt="Seat Map" class="img-fluid">
+    <div class="col-12 seat-map" th:if="${seatMap != null and seatMap.img != null and seatMap.img != ''}">
+        <!-- Seat map image -->
+        <img th:src="${seatMap.img}" alt="Seat Map" class="img-fluid">
+    </div>
+    <div class="container">
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color taken"></div>
+                <span>Ghế đã chọn</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color selected"></div>
+                <span>Ghế đang chọn</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color pending"></div>
+                <span>Ghế đang chờ</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color empty"></div>
+                <span>Ghế trống</span>
             </div>
         </div>
-        <div class="col-md-6">
-            <!-- Seat selection -->
-            <form id="seatSelectionForm">
-                <input type="hidden" id="eventId" th:value="${event.event.eventId}"/>
-                <input type="hidden" id="ticketPrice" th:value="${event.areas.get(0).area.ticketPrice}"/>
-                <div th:if="${chooseNumberOfSeats}">
-                    <h3>Choose number of seats</h3>
-                    <p>Available seats: <span th:text="${availableSeats}"></span></p>
-                    <input type="number" id="numberOfSeats" min="1" max="${availableSeats}" required>
-                </div>
-                <div th:if="${!chooseNumberOfSeats}" th:each="area : ${event.areas}">
-                    <h3 th:text="${area.area.name}"></h3>
-                    <div th:each="row : ${area.rows}">
-                        <h4 th:text="${row.row.rowName}"></h4>
-                        <div th:each="seat : ${row.seats}" class="form-check">
-                            <input class="form-check-input" type="checkbox" th:value="${seat.seatId}"
-                                   th:id="${'seat' + seat.seatId}" th:name="seats" th:disabled="${seat.taken}"
-                                   th:classappend="${seat.taken} ? 'taken' : ''" th:data-price="${seat.ticketPrice}">
-                            <label class="form-check-label" th:for="${'seat' + seat.seatId}">
-                                Seat: <span th:text="${seat.number}"></span>, Price: <span
-                                    th:text="${seat.ticketPrice}"></span>
-                            </label>
+        <div class="row">
+           
+            <div class="col-12 seat-selection">
+                <!-- Seat selection -->
+                <form id="seatSelectionForm">
+                    <input type="hidden" id="eventId" th:value="${event.event.eventId}" />
+                    <input type="hidden" id="ticketPrice" th:value="${event.areas.get(0).area.ticketPrice}" />
+
+                    <div th:if="${chooseNumberOfSeats}">
+                        <h3>Choose number of seats</h3>
+                        <p>Available seats: <span th:text="${availableSeats}"></span></p>
+                        <input type="number" id="numberOfSeats" min="1" max="${availableSeats}" class="form-control"
+                            required>
+                    </div>
+
+                    <div class="row" th:if="${!chooseNumberOfSeats}">
+                        <div th:each="area : ${event.areas}" class="col-12 col-md-6"
+                            th:classappend="${event.areas.size() == 1} ? 'col-12' : 'col-6'">
+                            <h3 th:text="${area.area.name}"></h3>
+                            <h3 class="price" th:data-price="${area.area.ticketPrice}"
+                                th:text="${area.area.ticketPrice}"></h3>
+                            <div th:each="row : ${area.rows}" class="seat-row">
+                                <h4 th:text="${row.row.rowName}"></h4>
+                                <div th:each="seat : ${row.seats}" class="seat">
+                                    <input class="form-check-input" type="checkbox" th:value="${seat.seatId}"
+                                        th:id="${'seat' + seat.seatId}" th:name="seats" th:disabled="${seat.taken}"
+                                        th:classappend="${seat.taken} ? 'taken' : ''"
+                                        th:data-price="${seat.ticketPrice}">
+                                    <label class="form-check-label" th:for="${'seat' + seat.seatId}">
+                                        <span th:text="${seat.number}"></span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <hr>
-                <p><strong>Total amount: </strong><span id="totalAmount">0.00</span></p>
-                <hr>
-                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-                <p class="small">After clicking <strong>Proceed to Payment</strong>, you will be redirected to the
-                    payment platform.</p>
-            </form>
+
+                    <hr>
+                    <p class="total-amount price">Total amount: <span id="totalAmount">0.00</span></p>
+                    <hr>
+                    <button type="submit" class="btn btn-primary btn-block">Proceed to Payment</button>
+                    <p class="small-text">After clicking <strong>Proceed to Payment</strong>, you will be redirected to
+                        the payment platform.</p>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-<script>
-    document.getElementById('seatSelectionForm').addEventListener('change', function (event) {
-        let totalAmount = 0;
-        this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
-            let price = parseFloat(checkbox.dataset.price);
-            totalAmount += price;
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceElements = document.querySelectorAll('.price');
+            priceElements.forEach(function (priceElement) {
+                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(priceValue)) {
+                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                }
+            });
+        });
+    </script>
+    <script>
+        document.getElementById('seatSelectionForm').addEventListener('change', function (event) {
+            let totalAmount = 0;
+            this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
+                let price = parseFloat(checkbox.dataset.price);
+                totalAmount += price;
+            });
+
+
+            // Định dạng giá trị với dấu phân cách hàng nghìn và ký hiệu "đ"
+            const formattedAmount = totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+            // Hiển thị giá trị đã định dạng trong phần tử có id 'totalAmount'
+            document.getElementById('totalAmount').textContent = formattedAmount;
         });
 
-        // Display the total amount
-        document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
-    });
-
-    document.getElementById('seatSelectionForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        let chooseNumberOfSeats = document.getElementById('numberOfSeats') !== null;
-        let selectedSeats = [];
-        if (chooseNumberOfSeats) {
-            selectedSeats.push(parseInt(document.getElementById('numberOfSeats').value));
-        } else {
-            this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
-                selectedSeats.push(parseInt(checkbox.value));
-            });
-        }
-
-        // Check if any seats are selected
-        if (selectedSeats.length === 0) {
-            // Prevent form from being submitted
+        document.getElementById('seatSelectionForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            // Show an alert to the user
-            alert('Please select at least one seat.');
-            return;
-        }
 
-        let data = {
-            seats: selectedSeats,
-            eventId: document.getElementById('eventId').value
-        };
-
-        fetch('/purchase/select-tickets', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(function (response) {
-                if (response.ok) {
-                    return response.text();  // Get the response text
-                } else {
-                    // Throw an error with content from response
-                    return response.text().then(function (text) {
-                        throw new Error(text);
-                    });
-                }
-            })
-            .then(async function (paymentUrl) {
-                // Redirect to payment URL
-                window.location.href = await paymentUrl;
-            })
-            .catch(function (error) {
-                // Print the message sent by server
-                alert(error.message);
-                // Reload the page to update the current number of seats left
-                document.getElementById('seatSelectionForm').reset();
-                location.reload();
-            });
-    });
-
-    if (document.getElementById('numberOfSeats') !== null) {
-        let numberOfSeatsInput = document.getElementById('numberOfSeats');
-        let availableSeats = parseInt(numberOfSeatsInput.max);
-        let seatPrice = parseFloat(document.getElementById('ticketPrice').value);
-
-        numberOfSeatsInput.addEventListener('input', function () {
-            let numberOfSeats = this.value ? parseInt(this.value) : 0;
-
-            // Check if the number of inputted seats exceeds the number of available seats
-            if (numberOfSeats > availableSeats) {
-                alert('The number of seats you selected exceeds the number of available seats.');
-                document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = true;
+            let chooseNumberOfSeats = document.getElementById('numberOfSeats') !== null;
+            let selectedSeats = [];
+            if (chooseNumberOfSeats) {
+                selectedSeats.push(parseInt(document.getElementById('numberOfSeats').value));
             } else {
-                document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = false;
+                this.querySelectorAll('input[type=checkbox]:checked').forEach(function (checkbox) {
+                    selectedSeats.push(parseInt(checkbox.value));
+                });
             }
 
-            // Calculate and display the total order amount
-            let totalAmount = numberOfSeats * seatPrice;
-            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+            // Check if any seats are selected
+            if (selectedSeats.length === 0) {
+                // Prevent form from being submitted
+                event.preventDefault();
+                // Show an alert to the user
+                alert('Please select at least one seat.');
+                return;
+            }
+
+            let data = {
+                seats: selectedSeats,
+                eventId: document.getElementById('eventId').value
+            };
+
+            fetch('/purchase/select-tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.text();  // Get the response text
+                    } else {
+                        // Throw an error with content from response
+                        return response.text().then(function (text) {
+                            throw new Error(text);
+                        });
+                    }
+                })
+                .then(async function (paymentUrl) {
+                    // Redirect to payment URL
+                    window.location.href = await paymentUrl;
+                })
+                .catch(function (error) {
+                    // Print the message sent by server
+                    alert(error.message);
+                    // Reload the page to update the current number of seats left
+                    document.getElementById('seatSelectionForm').reset();
+                    location.reload();
+                });
         });
-    }
-</script>
+
+        if (document.getElementById('numberOfSeats') !== null) {
+            let numberOfSeatsInput = document.getElementById('numberOfSeats');
+            let availableSeats = parseInt(numberOfSeatsInput.max);
+            let seatPrice = parseFloat(document.getElementById('ticketPrice').value);
+
+            numberOfSeatsInput.addEventListener('input', function () {
+                let numberOfSeats = this.value ? parseInt(this.value) : 0;
+
+                // Check if the number of inputted seats exceeds the number of available seats
+                if (numberOfSeats > availableSeats) {
+                    alert('The number of seats you selected exceeds the number of available seats.');
+                    document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = true;
+                } else {
+                    document.getElementById('seatSelectionForm').querySelector('button[type=submit]').disabled = false;
+                }
+
+                // Calculate and display the total order amount
+                let totalAmount = numberOfSeats * seatPrice;
+
+                // Định dạng giá trị với dấu phân cách hàng nghìn và ký hiệu "đ"
+                const formattedAmount = totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+                // Hiển thị giá trị đã định dạng trong phần tử có id 'totalAmount'
+                document.getElementById('totalAmount').textContent = formattedAmount;
+            });
+        }
+    </script>
 </body>
+
 </html>

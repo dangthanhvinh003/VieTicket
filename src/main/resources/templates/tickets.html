@@ -4,75 +4,118 @@
 <head>
     <title>Tickets</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="icon" type="image/png"
-          href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
 </head>
+<style>
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody+tbody {
+        border-top: 2px solid #dee2e6;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-bordered thead th,
+    .table-bordered thead td {
+        border-bottom-width: 2px;
+    }
+
+    .qr-code {
+        margin-top: 10px;
+    }
+</style>
 
 <body>
-<div class="container mt-4">
-    <h2 class="mb-3">Tickets</h2>
+    <div class="container mt-4">
+        <h2 class="mb-3">Tickets</h2>
 
-    <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th>Event name</th>
-            <th>QR Code</th>
-            <th>Purchased on</th>
-            <th>Seat</th>
-            <th>Area</th>
-            <th>Price</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="ticket, stat : ${tickets}">
-            <td th:text="${ticket.seat.row.area.event.name}"></td>
-            <td>
-                <button class="btn btn-primary show-qr-code">Show QR Code</button>
-                <div class="qr-code" style="display: none;">
-                    <img th:src="@{'data:image/png;base64,' + ${qrCodeImages[stat.index]}}"/>
-                </div>
-            </td>
-            <td th:text="${utils.formatDate(ticket.purchaseDate)}"></td>
-            <td th:text="${ticket.seat.number}"></td>
-            <td th:text="${ticket.seat.row.area.name}"></td>
-            <td th:text="${ticket.seat.ticketPrice}"></td>
-            <td>
-                <span th:style="'color:' + (${ticket.status.toString()} == 'PURCHASED' ? '#40a02b' : (${ticket.status.toString()} == 'PENDING' ? '#df8e1d' : '#d20f39'))"
-                      th:text="${ticket.status}"></span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Event name</th>
+                    <th>QR Code</th>
+                    <th>Purchased on</th>
+                    <th>Seat</th>
+                    <th>Area</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ticket, stat : ${tickets}">
+                    <td th:text="${ticket.seat.row.area.event.name}"></td>
+                    <td>
+                        <button class="btn btn-primary show-qr-code"
+                            th:onclick="'showQRCode(' + ${stat.index} + ')'">Show QR Code</button>
+                        <div class="qr-code" th:id="'qr-code-' + ${stat.index}" style="display: none;">
+                            <img th:src="@{'data:image/png;base64,' + ${qrCodeImages[stat.index]}}" />
+                        </div>
+                    </td>
+                    <td th:text="${utils.formatDate(ticket.purchaseDate)}"></td>
+                    <td th:text="${ticket.seat.number}"></td>
+                    <td th:text="${ticket.seat.row.area.name}"></td>
+                    <td th:text="${ticket.seat.ticketPrice}"></td>
+                    <td>
+                        <span
+                            th:style="'color:' + (${ticket.status.toString()} == 'PURCHASED' ? '#40a02b' : (${ticket.status.toString()} == 'PENDING' ? '#df8e1d' : '#d20f39'))"
+                            th:text="${ticket.status}"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${currentPage <= 0} ? 'disabled'">
-                <a class="page-link" th:if="${currentPage > 0}"
-                   th:href="@{/tickets(page=${currentPage - 1}, size=${size})}">Previous</a>
-            </li>
-            <li class="page-item active" aria-current="page">
-                <span class="page-link" th:text="${currentPage + 1}"></span>
-            </li>
-            <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                <a class="page-link" th:if="${currentPage < totalPages - 1}"
-                   th:href="@{/tickets(page=${currentPage + 1}, size=${size})}">Next</a>
-            </li>
-        </ul>
-    </nav>
-</div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage <= 0} ? 'disabled'">
+                    <a class="page-link" th:if="${currentPage > 0}"
+                        th:href="@{/tickets(page=${currentPage - 1}, size=${size})}">Previous</a>
+                </li>
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link" th:text="${currentPage + 1}"></span>
+                </li>
+                <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:if="${currentPage < totalPages - 1}"
+                        th:href="@{/tickets(page=${currentPage + 1}, size=${size})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
-<script>
-    document.querySelectorAll('.show-qr-code').forEach(function (button) {
-        button.addEventListener('click', function () {
-            var qrCode = button.nextElementSibling;
-            qrCode.style.display = qrCode.style.display === 'none' ? 'block' : 'none';
+    <script>
+        document.querySelectorAll('.show-qr-code').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var qrCode = button.nextElementSibling;
+                qrCode.style.display = qrCode.style.display === 'none' ? 'block' : 'none';
+            });
         });
-    });
-</script>
+    </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
 </body>
