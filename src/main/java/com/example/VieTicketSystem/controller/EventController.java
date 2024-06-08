@@ -166,6 +166,11 @@ public class EventController {
         return "redirect:/createEventSuccess";
     }
 
+    @GetMapping(value = { "/createEventSuccess" })
+    public String createEventSuccessPage() {
+        return "createEventSuccess";
+    }
+
     @GetMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage() {
         return "SeatMapBeta";
@@ -183,7 +188,7 @@ public class EventController {
         // System.out.println("Total Selected Seats: " +
         // additionalData.getTotalSelectedSeats());
         // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
-    // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
+        // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
         // System.out.println("VIP Seats: " + additionalData.getVipSeats());
         // System.out.println("Normal Price: " + additionalData.getNormalPrice());
         // System.out.println("VIP Price: " + additionalData.getVipPrice());
