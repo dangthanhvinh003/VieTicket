@@ -60,6 +60,27 @@ public class RowRepo {
         return rows;
     }
 
+    public int getIdRowByAreaIdAndRowName(int areaId, String rowName) throws SQLException {
+        int rowId = -1; // Default value if no row is found
+
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement(
+                "SELECT row_id FROM `Row` WHERE area_id = ? AND row_name = ?");
+        ps.setInt(1, areaId);
+        ps.setString(2, rowName);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            rowId = rs.getInt("row_id");
+        }
+
+        rs.close();
+        ps.close();
+        connection.close();
+
+        return rowId;
+    }
+
     public void addRow(String rowName, int AreaId)
             throws ClassNotFoundException, SQLException {
 

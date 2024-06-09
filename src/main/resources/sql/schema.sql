@@ -54,6 +54,7 @@ CREATE TABLE SeatMap
     event_id    INT UNIQUE,
     FOREIGN KEY (event_id) REFERENCES Event (event_id) ON DELETE CASCADE,
     `name`      VARCHAR(64),
+    map_file    json,
     img         TEXT
 );
 

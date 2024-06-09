@@ -167,8 +167,16 @@
             </div>
             <!--Type -->
             <div class="mb-3">
-                <label for="end_date" class="form-label">Type :</label>
-                <input type="text" class="form-control" id="type" name="type" required th:value="${eventEdit.type}">
+                <label for="type" class="form-label">Type :</label>
+                <select class="form-control" id="type" name="type" required>
+                    <option value="${eventEdit.type }" disabled>Select a type</option>
+                    <option value="music" th:selected="${eventEdit.type == 'music'}">Music</option>
+                    <option value="sport" th:selected="${eventEdit.type == 'sport'}">Sport</option>
+                    <option value="workshop" th:selected="${eventEdit.type == 'workshop'}">Workshop</option>
+                    <option value="comedy" th:selected="${eventEdit.type == 'comedy'}">Comedy</option>
+                    <option value="art" th:selected="${eventEdit.type == 'art'}">Art</option>
+                    <option value="other" th:selected="${eventEdit.type == 'other'}">Other</option>
+                </select>
             </div>
             <!-- TicketSaleDate-->
             <div class="mb-3">
