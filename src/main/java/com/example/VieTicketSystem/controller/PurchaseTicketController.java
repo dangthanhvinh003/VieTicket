@@ -1,6 +1,7 @@
 package com.example.VieTicketSystem.controller;
 
 import com.example.VieTicketSystem.model.entity.Order;
+import com.example.VieTicketSystem.model.entity.Seat;
 import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.OrderRepo;
@@ -86,7 +87,7 @@ public class PurchaseTicketController {
         model.addAttribute("event", purchaseTicketService.getEventWithAreas(eventId));
         if (seatMapRepo.getSeatMapByEventId(eventId).getImg() == null) {
             model.addAttribute("chooseNumberOfSeats", true);
-            model.addAttribute("availableSeats", seatRepo.getAvailableSeatsCount(eventId));
+            model.addAttribute("availableSeats", seatRepo.getAvailableSeatsCount(eventId, Seat.TakenStatus.AVAILABLE.toInteger()));
         } else {
             model.addAttribute("chooseNumberOfSeats", false);
             model.addAttribute("seatMap", seatMapRepo.getSeatMapByEventId(eventId));
@@ -127,7 +128,7 @@ public class PurchaseTicketController {
             }
 
             // Set seats taken
-            seatRepo.updateSeats(ticketSelection.getSeats(), true);
+            seatRepo.updateSeats(ticketSelection.getSeats(), Seat.TakenStatus.RESERVED);
         } else {
             // Handle the case where the event does not have a seat map
             // Assign the selected number of seats to the user from the pool of available virtual seats

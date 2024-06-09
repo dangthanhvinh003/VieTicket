@@ -20,6 +20,7 @@ public class SeatRepo {
     private static final String UPDATE_SQL = "UPDATE Seat SET is_taken = ? WHERE seat_id = ?";
     private static final String SELECT_PRICE_SQL = "SELECT ticket_price FROM Seat WHERE seat_id = ?";
     private static final String UPDATE_IN_BULK_SQL = "UPDATE Seat SET is_taken = ? WHERE seat_id = ?";
+    private static final String COUNT_SEATS_WITH_STATUS = "SELECT COUNT(*) FROM Seat S JOIN `Row` R ON S.row_id = R.row_id JOIN Area A ON R.area_id = A.area_id WHERE A.event_id = ? AND is_taken = ?";
     private final RowRepo rowRepo;
 
     public SeatRepo(RowRepo rowRepo) {
@@ -41,12 +42,12 @@ public class SeatRepo {
         return seats;
     }
 
-    public void updateSeats(List<Integer> seatIds, boolean isTaken) throws Exception {
+    public void updateSeats(List<Integer> seatIds, Seat.TakenStatus isTaken) throws Exception {
         Connection connection = ConnectionPoolManager.getConnection();
         PreparedStatement ps = connection.prepareStatement(UPDATE_IN_BULK_SQL);
 
         for (Integer seatId : seatIds) {
-            ps.setBoolean(1, isTaken);
+            ps.setInt(1, isTaken.toInteger());
             ps.setInt(2, seatId);
             ps.addBatch();
         }
@@ -92,7 +93,7 @@ public class SeatRepo {
             seat.setSeatId(rs.getInt("seat_id"));
             seat.setNumber(rs.getString("number"));
             seat.setTicketPrice(rs.getFloat("ticket_price"));
-            seat.setTaken(rs.getBoolean("is_taken"));
+            seat.setTaken(Seat.TakenStatus.fromInteger(rs.getInt("is_taken")));
             seat.setRow(rowRepo.findById(rs.getInt("row_id")));
         }
         rs.close();
@@ -107,7 +108,7 @@ public class SeatRepo {
 
         ps.setString(1, seatNumber);
         ps.setFloat(2, Float.parseFloat(ticketPrice));
-        ps.setBoolean(3, false);
+        ps.setInt(3, Seat.TakenStatus.AVAILABLE.toInteger());
         ps.setInt(4, rowId);
         ps.executeUpdate();
         ps.close();
@@ -124,7 +125,7 @@ public class SeatRepo {
             seat.setSeatId(rs.getInt("seat_id"));
             seat.setNumber(rs.getString("number"));
             seat.setTicketPrice(rs.getFloat("ticket_price"));
-            seat.setTaken(rs.getBoolean("is_taken"));
+            seat.setTaken(Seat.TakenStatus.fromInteger(rs.getInt("is_taken")));
             seat.setRow(rowRepo.findById(rs.getInt("row_id")));
             seats.add(seat);
         }
@@ -145,7 +146,7 @@ public class SeatRepo {
             seat.setSeatId(rs.getInt("seat_id"));
             seat.setNumber(rs.getString("number"));
             seat.setTicketPrice(rs.getFloat("ticket_price"));
-            seat.setTaken(rs.getBoolean("is_taken"));
+            seat.setTaken(Seat.TakenStatus.fromInteger(rs.getInt("is_taken")));
             seat.setRow(rowRepo.findById(rs.getInt("row_id")));
             seats.add(seat);
         }
@@ -155,10 +156,11 @@ public class SeatRepo {
         return seats;
     }
 
-    public int getAvailableSeatsCount(int eventId) throws Exception {
+    public int getAvailableSeatsCount(int eventId, int status) throws Exception {
         Connection connection = ConnectionPoolManager.getConnection();
-        PreparedStatement ps = connection.prepareStatement("SELECT COUNT(*) FROM Seat S JOIN `Row` R ON S.row_id = R.row_id JOIN Area A ON R.area_id = A.area_id WHERE A.event_id = ? AND is_taken = FALSE");
+        PreparedStatement ps = connection.prepareStatement(COUNT_SEATS_WITH_STATUS);
         ps.setInt(1, eventId);
+        ps.setInt(2, status);
         ResultSet rs = ps.executeQuery();
         int count = 0;
         if (rs.next()) {

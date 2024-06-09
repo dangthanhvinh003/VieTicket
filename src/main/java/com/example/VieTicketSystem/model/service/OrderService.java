@@ -1,9 +1,6 @@
 package com.example.VieTicketSystem.model.service;
 
-import com.example.VieTicketSystem.model.entity.Order;
-import com.example.VieTicketSystem.model.entity.RefundOrder;
-import com.example.VieTicketSystem.model.entity.Ticket;
-import com.example.VieTicketSystem.model.entity.User;
+import com.example.VieTicketSystem.model.entity.*;
 import com.example.VieTicketSystem.model.repo.OrderRepo;
 import com.example.VieTicketSystem.model.repo.RefundOrderRepo;
 import com.example.VieTicketSystem.model.repo.SeatRepo;
@@ -90,8 +87,10 @@ public class OrderService {
                 // Update ticket status to success and set ticket purchase date
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
                 LocalDateTime payDate = LocalDateTime.parse(params.get("vnp_PayDate"), formatter);
-
                 ticketRepo.setSuccessInBulk(ticketIds, payDate, Ticket.TicketStatus.PURCHASED.toInteger());
+
+                // Set seats to taken
+                seatRepo.updateSeats(tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.TAKEN);
 
                 // TODO: Send email to user
             }
@@ -104,7 +103,7 @@ public class OrderService {
                 ticketRepo.setStatusInBulk(ticketIds, Ticket.TicketStatus.FAILED.toInteger());
 
                 // Set seats to available
-                seatRepo.updateSeats(tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), false);
+                seatRepo.updateSeats(tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.AVAILABLE);
             }
         }
 
@@ -159,7 +158,7 @@ public class OrderService {
                         try {
                             orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.REFUNDED);
                             ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.REFUNDED.toInteger());
-                            seatRepo.updateSeats(ticketRepo.findByOrderId(order.getOrderId()).stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), false);
+                            seatRepo.updateSeats(ticketRepo.findByOrderId(order.getOrderId()).stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.AVAILABLE);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -204,7 +203,7 @@ public class OrderService {
             ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.FAILED.toInteger());
             List<Ticket> tickets = ticketRepo.findByOrderId(order.getOrderId());
             List<Integer> seatIds = tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).toList();
-            seatRepo.updateSeats(seatIds, false);
+            seatRepo.updateSeats(seatIds, Seat.TakenStatus.AVAILABLE);
         }
     }
 }
