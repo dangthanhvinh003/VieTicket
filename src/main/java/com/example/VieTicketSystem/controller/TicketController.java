@@ -3,11 +3,11 @@ package com.example.VieTicketSystem.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +26,8 @@ public class TicketController {
 
     @Autowired
     private QRCodeService qrCodeService;
+    @Autowired
+    private HttpSession httpSession;
 
     public TicketController(TicketRepo ticketRepo) {
         this.ticketRepo = ticketRepo;
@@ -40,11 +42,6 @@ public class TicketController {
 
         List<Ticket> tickets = ticketRepo.findByUserId(userId, size, offset);
         tickets.sort(Comparator.comparing(Ticket::getTicketId).reversed());
-        List<String> qrCodeImages = new ArrayList<>();
-        for (Ticket ticket : tickets) {
-            String qrCodeImage = qrCodeService.generateQRCodeImageBase64(ticket.getQrCode());
-            qrCodeImages.add(qrCodeImage);
-        }
 
         int totalTickets = ticketRepo.countByUserId(userId);
         int totalPages = (totalTickets + size - 1) / size;
@@ -53,10 +50,27 @@ public class TicketController {
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", totalPages);
-        model.addAttribute("qrCodeImages", qrCodeImages);
         model.addAttribute("utils", new Utils());
 
-        return "tickets";
+        return "/tickets/list-all-tickets";
+    }
+
+    @GetMapping("/tickets/view-ticket")
+    public String viewTicket(Model model, @RequestParam int ticketId) throws Exception {
+        User activeUser = (User) httpSession.getAttribute("activeUser");
+        if (activeUser == null) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        Ticket ticket = ticketRepo.findById(ticketId);
+        if (ticket == null || ticket.getOrder().getUser().getUserId() != activeUser.getUserId()) {
+            throw new AccessDeniedException("Not your ticket");
+        }
+
+        model.addAttribute("ticket", ticket);
+        model.addAttribute("qrCode", qrCodeService.generateQRCodeImageBase64(ticket.getQrCode()));
+        model.addAttribute("utils", new Utils());
+        return "/tickets/view-ticket";
     }
 
     public static class Utils {

@@ -52,16 +52,16 @@ public class UserController {
 
     @PostMapping(value = "/editUser") // Them thuoc tinh cho organizer
     public String editUser(@RequestParam("fullName") String nameInput,
-            @RequestParam("phone") String phoneInput,
-            @RequestParam("email") String emailInput,
-            @RequestParam("dob") Date dobInput,
-            @RequestParam("gender") Character genderInput,
-            @RequestParam(value = "foundedDate", required = false) Date foundedDateInput,
-            @RequestParam(value = "website", required = false) String websiteInput,
-            @RequestParam(value = "organizerAddr", required = false) String organizerAddrInput,
-            @RequestParam(value = "organizerType", required = false) String organizerTypeInput,
-            Model model,
-            HttpSession httpSession) throws Exception {
+                           @RequestParam("phone") String phoneInput,
+                           @RequestParam("email") String emailInput,
+                           @RequestParam("dob") Date dobInput,
+                           @RequestParam("gender") Character genderInput,
+                           @RequestParam(value = "foundedDate", required = false) Date foundedDateInput,
+                           @RequestParam(value = "website", required = false) String websiteInput,
+                           @RequestParam(value = "organizerAddr", required = false) String organizerAddrInput,
+                           @RequestParam(value = "organizerType", required = false) String organizerTypeInput,
+                           Model model,
+                           HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         // Update common user attributes
@@ -113,8 +113,8 @@ public class UserController {
 
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
-            @RequestParam("password") String passwordInput,
-            Model model, HttpSession httpSession) throws Exception {
+                          @RequestParam("password") String passwordInput,
+                          Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
         if (user == null) {
             model.addAttribute("error", "Invalid login, please try again");
@@ -161,7 +161,7 @@ public class UserController {
         return "redirect:/";
     }
 
-    @GetMapping(value = { "", "/" })
+    @GetMapping(value = {"", "/"})
     public String showLogin(HttpSession session) throws Exception {
         List<Event> events = eventRepo.getAllEvents();
         List<Event> hotEvents = eventRepo.getTopHotEvents();
@@ -180,7 +180,7 @@ public class UserController {
 
     @GetMapping("/auth/login/oauth2/google")
     public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
-            HttpSession httpSession)
+                                    HttpSession httpSession)
             throws Exception {
         // System.out.println("hello");
         Oauth2Service oauth2 = new Oauth2Service();
@@ -215,10 +215,10 @@ public class UserController {
 
     @PostMapping(value = "/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
-            @RequestParam("newPassword") String newPassword,
-            @RequestParam("confirmPassword") String confirmPassword,
-            Model model,
-            HttpSession httpSession) throws Exception {
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Model model,
+                                 HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         if (activeUser == null) {
@@ -268,19 +268,19 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
-            @RequestParam("phone") String phone,
-            @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
-            @RequestParam("gender") char gender,
-            @RequestParam("email") String email,
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("confirmPassword") String confirmPassword,
-            @RequestParam("role") char role,
-            @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
-            @RequestParam(value = "website", required = false) String website,
-            @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
-            @RequestParam(value = "organizerType", required = false) String organizerType,
-            Model model, HttpSession httpSession) throws Exception {
+                         @RequestParam("phone") String phone,
+                         @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
+                         @RequestParam("gender") char gender,
+                         @RequestParam("email") String email,
+                         @RequestParam("username") String username,
+                         @RequestParam("password") String password,
+                         @RequestParam("confirmPassword") String confirmPassword,
+                         @RequestParam("role") char role,
+                         @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
+                         @RequestParam(value = "website", required = false) String website,
+                         @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
+                         @RequestParam(value = "organizerType", required = false) String organizerType,
+                         Model model, HttpSession httpSession) throws Exception {
 
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("error", "Phone already exists.");
@@ -348,11 +348,7 @@ public class UserController {
             httpSession.setAttribute("activeUser", newUser);
         }
 
-        try {
-            verifyEmailService.sendOTP(email);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        verifyEmailService.sendOTP(email);
 
         return "redirect:/auth/verify-email";
     }

@@ -121,16 +121,17 @@ public class CheckInController {
         }
 
         Map<String, String> response = new java.util.HashMap<>();
-        response.put("message", "Check in successful");
         response.put("lead_visitor", ticket.getOrder().getUser().getFullName());
         response.put("event", ticket.getSeat().getRow().getArea().getEvent().getName());
         response.put("seat", ticket.getSeat().getRow().getArea().getName() + " " + ticket.getSeat().getNumber());
         response.put("status", String.valueOf(ticket.getStatus()));
 
         if (ticket.getStatus() == Ticket.TicketStatus.CHECKED_IN) {
+            response.put("message", "Ticket already checked in");
             return ResponseEntity.badRequest().body(objectMapper.writeValueAsString(response));
         }
 
+        response.put("message", "Check in successful");
         ticket.setStatus(Ticket.TicketStatus.CHECKED_IN);
         ticketRepo.updateExisting(ticket);
         return ResponseEntity.ok(objectMapper.writeValueAsString(response));

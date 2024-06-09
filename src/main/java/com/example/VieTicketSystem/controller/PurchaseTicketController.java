@@ -199,10 +199,7 @@ public class PurchaseTicketController {
             return "redirect:/purchase/purchase-failure?orderId=" + orderId;
         }
 
-        List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
-
         model.addAttribute("order", order);
-        model.addAttribute("tickets", tickets);
 
         return "purchase/failure";
     }
@@ -231,16 +228,8 @@ public class PurchaseTicketController {
 
         List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
 
-        // Generate QR Code images for each ticket
-        Map<Integer, String> qrCodeImages = new HashMap<>();
-        for (Ticket ticket : tickets) {
-            String qrCodeImage = qrCodeService.generateQRCodeImageBase64(ticket.getQrCode()); // Replace with your method to generate QR Code image
-            qrCodeImages.put(ticket.getTicketId(), qrCodeImage);
-        }
-
         model.addAttribute("order", order);
         model.addAttribute("tickets", tickets);
-        model.addAttribute("qrCodeImages", qrCodeImages); // Add qrCodeImages to the model
 
         return "purchase/success";
     }

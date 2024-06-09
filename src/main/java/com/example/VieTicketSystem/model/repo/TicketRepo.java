@@ -25,6 +25,7 @@ public class TicketRepo {
     private static final String UPDATE_SUCCESS_IN_BULK_SQL = "UPDATE Ticket SET purchase_date = ?, status = ? WHERE ticket_id = ?";
     private static final String UPDATE_FAILURE_IN_BULK_SQL = "UPDATE Ticket SET status = ? WHERE ticket_id = ?";
     private static final String UPDATE_STATUS_BY_ORDER_ID_SQL = "UPDATE Ticket SET status = ? WHERE order_id = ?";
+    private static final String FIND_BY_ID_SQL = "SELECT * FROM Ticket WHERE ticket_id = ?";
 
     private final OrderRepo orderRepo;
     private final SeatRepo seatRepo;
@@ -32,6 +33,33 @@ public class TicketRepo {
     public TicketRepo(OrderRepo orderRepo, SeatRepo seatRepo, ConnectionPoolManager connectionPoolManager) {
         this.orderRepo = orderRepo;
         this.seatRepo = seatRepo;
+    }
+
+    public Ticket findById(int ticketId) throws Exception {
+        Ticket ticket = null;
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(FIND_BY_ID_SQL);
+            ps.setInt(1, ticketId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                ticket = new Ticket();
+                ticket.setTicketId(rs.getInt("ticket_id"));
+                ticket.setQrCode(rs.getString("qr_code"));
+                // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+                Timestamp timestamp = rs.getTimestamp("purchase_date");
+                if (timestamp != null) {
+                    ticket.setPurchaseDate(timestamp.toLocalDateTime());
+                } else {
+                    ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+                }
+                ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
+                ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
+                ticket.setStatus(Ticket.TicketStatus.fromInteger(rs.getInt("status")));
+            }
+            rs.close();
+            ps.close();
+        }
+        return ticket;
     }
 
     public void updateStatusByOrderId(int orderId, int status) throws Exception {
