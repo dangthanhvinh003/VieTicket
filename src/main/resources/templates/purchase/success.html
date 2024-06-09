@@ -39,25 +39,22 @@
         <thead>
         <tr>
             <th>Event name</th>
-            <th>QR Code</th>
             <th>Seat</th>
             <th>Area</th>
             <th>Price</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="ticket : ${tickets}">
             <td th:text="${ticket.seat.row.area.event.name}"></td>
-            <td>
-                <button class="btn btn-primary show-qr-code">Show QR Code</button>
-                <div class="qr-code" style="display: none;">
-                    <img th:src="@{'data:image/png;base64,' + ${qrCodeImages[ticket.ticketId]}}"
-                         th:alt="@{Check-in info: {uuid}(uuid=${ticket.qrCode})}"/>
-                </div>
-            </td>
             <td th:text="${ticket.seat.number}"></td>
             <td th:text="${ticket.seat.row.area.name}"></td>
             <td th:text="${ticket.seat.ticketPrice}"></td>
+            <td>
+                <a th:href="@{/tickets/view-ticket?ticketId={id}(id=${ticket.ticketId})}" class="btn btn-primary">
+                    <span class="bi bi-eye"></span>
+                </a>
         </tr>
         </tbody>
     </table>
@@ -66,15 +63,6 @@
 <!-- jQuery and Bootstrap Bundle (includes Popper) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
-<!-- Custom JS -->
-<script>
-    $(document).ready(function () {
-        $('.show-qr-code').click(function () {
-            $(this).next('.qr-code').toggle();
-        });
-    });
-</script>
 
 </body>
 </html>
