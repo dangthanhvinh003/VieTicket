@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import java.sql.Date;
-import java.time.LocalDateTime;
 
-import org.springframework.cglib.core.Local;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,25 +22,29 @@ public class Order {
     private PaymentStatus status;
 
     public enum PaymentStatus {
-        PENDING, SUCCESS, FAILED, REFUND;
+        SUCCESS(0),
+        FAILED(1),
+        PENDING(2),
+        REFUNDED(3),
+        PENDING_REFUND(4);
 
-        public static PaymentStatus fromInteger(int x) {
-            return switch (x) {
-                case 0 -> SUCCESS;
-                case 1 -> FAILED;
-                case 2 -> PENDING;
-                case 3 -> REFUND;
-                default -> null;
-            };
+        private final int value;
+
+        PaymentStatus(int value) {
+            this.value = value;
         }
 
         public int toInteger() {
-            return switch (this) {
-                case SUCCESS -> 0;
-                case FAILED -> 1;
-                case PENDING -> 2;
-                case REFUND -> 3;
-            };
+            return value;
+        }
+
+        public static PaymentStatus fromInteger(int value) {
+            for (PaymentStatus status : PaymentStatus.values()) {
+                if (status.value == value) {
+                    return status;
+                }
+            }
+            return null;
         }
     }
 }

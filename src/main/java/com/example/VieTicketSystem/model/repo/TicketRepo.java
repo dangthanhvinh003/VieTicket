@@ -59,7 +59,7 @@ public class TicketRepo {
         }
     }
 
-    public void setFailureInBulk(List<Integer> ticketIds, int failureStatus) throws Exception {
+    public void setStatusInBulk(List<Integer> ticketIds, int failureStatus) throws Exception {
         try (Connection con = ConnectionPoolManager.getConnection()) {
             PreparedStatement ps = con.prepareStatement(UPDATE_FAILURE_IN_BULK_SQL);
             for (Integer ticketId : ticketIds) {
