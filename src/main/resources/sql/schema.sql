@@ -105,14 +105,11 @@ CREATE TABLE `Row`
 
 CREATE TABLE RefundOrder
 (
-    refundoder_id INT AUTO_INCREMENT
+    order_id   INT AUTO_INCREMENT
         PRIMARY KEY,
-    date          DATETIME,
-    user_id       INT,
-    FOREIGN KEY (user_id) REFERENCES User (user_id),
-    order_id      INT,
-    FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
-    vnpay_data    TEXT
+        FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
+    created_on DATETIME,
+    status     TINYINT
 );
 
 CREATE TABLE Seat

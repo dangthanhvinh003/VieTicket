@@ -3,74 +3,87 @@
 
 <head>
     <title>Verify Email</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
-<body>
-    <h2>Verify Your Email</h2>
-    <a href="/auth/log-out">Log Out</a>
-    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
-    <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
+<body class="d-flex justify-content-center align-items-center vh-100">
+<div class="container col-md-8 col-lg-6 col-xl-6 col-xxl-6 p-5 border rounded shadow">
+    <div>
+        <h2 class="mb-4">Verify Your Email</h2>
+        <a href="/auth/log-out" class="btn btn-secondary mb-3">Log Out</a>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
-    <form id="otp-form" th:action="@{/auth/verify-otp}" method="post">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required readonly
-            th:value="${session.activeUser != null} ? ${session.activeUser.email} : ''"><br>
+    <form id="otp-form" th:action="@{/auth/verify-otp}" method="post" class="mb-3">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required readonly
+                   th:value="${session.activeUser != null} ? ${session.activeUser.email} : ''" class="form-control">
+        </div>
 
-        <label for="userOTP">OTP:</label>
-        <input type="text" id="otp" name="userOTP" required><br>
+        <div class="form-group">
+            <label for="userOTP">OTP:</label>
+            <input type="text" id="otp" name="userOTP" required class="form-control">
+        </div>
 
-        <button type="submit">Verify</button>
+        <button type="submit" class="btn btn-primary">Verify</button>
     </form>
-    <p>Didn't receive the OTP? <a href="#" th:onclick="resendOTP()">Resend OTP</a></p>
+    <p>Didn't receive the OTP? <a href="#" th:onclick="resendOTP()" class="text-primary">Resend OTP</a></p>
+</div>
 
-    <script th:inline="javascript">
-        const email = document.getElementById('email').value;
-        function resendOTP() {
-            fetch('/auth/password-reset', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: email }),
+<script th:inline="javascript">
+    const email = document.getElementById('email').value;
+
+    function resendOTP() {
+        fetch('/auth/password-reset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({email: email}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Alert the message
+                alert(data.message);
             })
-                .then(response => response.json())
-                .then(data => {
-                    // Alert the message
-                    alert(data.message);
-                })
-                .catch(error => {
-                    // Hide loading div
-                    document.getElementById('loading').style.display = 'none';
+            .catch(error => {
+                // Hide loading div
+                document.getElementById('loading').style.display = 'none';
 
-                    alert("Error: " + error.message); // Display the error message from the server
-                });
-        }
+                alert("Error: " + error.message); // Display the error message from the server
+            });
+    }
 
-        document.getElementById('otp-form').addEventListener('submit', function (event) {
-            event.preventDefault();
+    document.getElementById('otp-form').addEventListener('submit', function (event) {
+        event.preventDefault();
 
-            const otp = document.getElementById('otp').value;
+        const otp = document.getElementById('otp').value;
 
-            fetch('/auth/verify-otp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: email, otp: otp }),
+        fetch('/auth/verify-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({email: email, otp: otp}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Alert the message
+                alert(data.message);
+                if (data.success) {
+                    window.location.href = '/'; // Redirect to the home page
+                }
             })
-                .then(response => response.json())
-                .then(data => {
-                    // Alert the message
-                    alert(data.message);
-                    if (data.success) {
-                        window.location.href = '/'; // Redirect to the home page
-                    }
-                })
-                .catch(error => {
-                    alert("Error: " + error.message); // Display the error message from the server
-                });
-        });
-    </script>
+            .catch(error => {
+                alert("Error: " + error.message); // Display the error message from the server
+            });
+    });
+</script>
+
+<!-- Add Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
 

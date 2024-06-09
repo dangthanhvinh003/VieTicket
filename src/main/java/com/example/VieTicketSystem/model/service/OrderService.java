@@ -1,15 +1,19 @@
 package com.example.VieTicketSystem.model.service;
 
 import com.example.VieTicketSystem.model.entity.Order;
-import com.example.VieTicketSystem.model.entity.Seat;
+import com.example.VieTicketSystem.model.entity.RefundOrder;
 import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.OrderRepo;
+import com.example.VieTicketSystem.model.repo.RefundOrderRepo;
 import com.example.VieTicketSystem.model.repo.SeatRepo;
 import com.example.VieTicketSystem.model.repo.TicketRepo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -26,13 +30,15 @@ public class OrderService {
     private final OrderRepo orderRepo;
     private final SeatRepo seatRepo;
     private final TicketRepo ticketRepo;
+    private final RefundOrderRepo refundOrderRepo;
 
-    public OrderService(VNPayService vnPayService, ObjectMapper jacksonObjectMapper, OrderRepo orderRepo, SeatRepo seatRepo, TicketRepo ticketRepo) {
+    public OrderService(VNPayService vnPayService, ObjectMapper jacksonObjectMapper, OrderRepo orderRepo, SeatRepo seatRepo, TicketRepo ticketRepo, RefundOrderRepo refundOrderRepo) {
         this.vnPayService = vnPayService;
         this.objectMapper = jacksonObjectMapper;
         this.orderRepo = orderRepo;
         this.seatRepo = seatRepo;
         this.ticketRepo = ticketRepo;
+        this.refundOrderRepo = refundOrderRepo;
     }
 
     // Create order and return payment URL
@@ -43,11 +49,9 @@ public class OrderService {
         String paymentURL = vnPayService.createOrder(total, orderInformation, urlReturn, clientIp, vnp_Params);
 
         // Persist vnpay data
-        Map<String, String> vnpayPersist = new HashMap<>();
-        vnpayPersist.put("vnp_TxnRef", vnp_Params.get("vnp_TxnRef"));
-        vnpayPersist.put("vnp_Amount", vnp_Params.get("vnp_Amount"));
-        vnpayPersist.put("vnp_OrderInfo", vnp_Params.get("vnp_OrderInfo"));
-        vnpayPersist.put("vnp_CreateDate", vnp_Params.get("vnp_CreateDate"));
+        Map<String, String> vnPayPersist = new HashMap<>();
+        vnPayPersist.put("vnp_TxnRef", vnp_Params.get("vnp_TxnRef"));
+        vnPayPersist.put("vnp_CreateDate", vnp_Params.get("vnp_CreateDate"));
 
         // Save order to database
         Order order = new Order();
@@ -55,7 +59,7 @@ public class OrderService {
         order.setDate(LocalDateTime.now());
         order.setTotal(total);
         order.setStatus(Order.PaymentStatus.PENDING);
-        order.setVnpayData(objectMapper.writeValueAsString(vnpayPersist));
+        order.setVnpayData(objectMapper.writeValueAsString(vnPayPersist));
         int orderId = orderRepo.save(order);
 
         // Generate pending tickets
@@ -97,7 +101,7 @@ public class OrderService {
                 orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.FAILED);
 
                 // Update ticket status to failed
-                ticketRepo.setFailureInBulk(ticketIds, Ticket.TicketStatus.FAILED.toInteger());
+                ticketRepo.setStatusInBulk(ticketIds, Ticket.TicketStatus.FAILED.toInteger());
 
                 // Set seats to available
                 seatRepo.updateSeats(tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), false);
@@ -105,6 +109,71 @@ public class OrderService {
         }
 
         return order;
+    }
+
+    // Create refund order and request refund from VNPay
+    public RefundOrder createRefundOrder(Order order, long amount) throws Exception {
+        if (amount > order.getTotal()) {
+            throw new IllegalArgumentException("Refund amount cannot exceed the total amount of the order");
+        }
+
+        // Get VNPay data
+        Map<String, String> vnPayPersist = objectMapper.readValue(order.getVnpayData(),
+                new TypeReference<>() {
+                });
+
+        // Create refund order
+        RefundOrder refundOrder = new RefundOrder();
+        refundOrder.setCreatedOn(LocalDateTime.now());
+        refundOrder.setOrder(order);
+        refundOrder.setStatus(RefundOrder.RefundStatus.PENDING);
+
+        // Set order status to PENDING_REFUND
+        order.setStatus(Order.PaymentStatus.PENDING_REFUND);
+        orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.PENDING_REFUND);
+
+        // Save refund order
+        refundOrderRepo.save(refundOrder);
+
+        // Request refund from VNPay
+        vnPayService.refundOrder(vnPayPersist, amount)
+                .doOnError(e -> {
+                    refundOrder.setStatus(RefundOrder.RefundStatus.FAILED);
+                    try {
+                        refundOrderRepo.updateStatus(refundOrder);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
+                .subscribe(response -> {
+                    Map<String, String> responseMap;
+                    try {
+                        responseMap = objectMapper.readValue(response, new TypeReference<>() {
+                        });
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (vnPayService.refundResponse(responseMap) == VNPayService.VNPayStatus.SUCCESS) {
+                        order.setStatus(Order.PaymentStatus.REFUNDED);
+                        refundOrder.setStatus(RefundOrder.RefundStatus.SUCCESS);
+                        try {
+                            orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.REFUNDED);
+                            ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.REFUNDED.toInteger());
+                            seatRepo.updateSeats(ticketRepo.findByOrderId(order.getOrderId()).stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), false);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        refundOrder.setStatus(RefundOrder.RefundStatus.FAILED);
+                    }
+                    try {
+                        refundOrderRepo.updateStatus(refundOrder);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        return refundOrder;
     }
 
     // Calculate total price of selected seats
@@ -125,6 +194,9 @@ public class OrderService {
         List<Order> orders = orderRepo.findByStatusAndUpdatedAtBefore(Order.PaymentStatus.PENDING, now.minusMinutes(15));
 
         for (Order order : orders) {
+
+            // TODO: Query VNPay to check the status of the order
+
             // Update the order status to FAILED
             orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.FAILED);
 

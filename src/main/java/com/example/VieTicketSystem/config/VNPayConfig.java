@@ -1,6 +1,7 @@
 package com.example.VieTicketSystem.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -19,10 +20,17 @@ import java.util.*;
 @Component
 @Configuration
 public class VNPayConfig {
+
+    public static String vnp_Version = "2.1.0";
+    public static String vnp_Locale = "vn";
+    public static String vnp_CurrCode = "VND";
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+    public static String vnp_APIURL = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
     public static String vnp_Returnurl = "/vnpay-return";
-    public static String vnp_TmnCode;
-    public static String vnp_HashSecret;
+    @Getter
+    private static String vnp_TmnCode;
+    @Getter
+    private static String vnp_HashSecret;
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     @Value("${vnp_TmnCode}")
@@ -89,7 +97,7 @@ public class VNPayConfig {
                 sb.append("&");
             }
         }
-        return hmacSHA512(vnp_HashSecret,sb.toString());
+        return hmacSHA512(vnp_HashSecret, sb.toString());
     }
 
     public static String hmacSHA512(final String key, final String data) {

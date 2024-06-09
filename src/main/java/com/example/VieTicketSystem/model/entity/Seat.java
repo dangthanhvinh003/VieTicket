@@ -16,4 +16,8 @@ public class Seat {
     private float ticketPrice;
     private boolean isTaken;
     private Row row;
+
+    private enum TakenStatus {
+        TAKEN, PENDING, NOT_TAKEN
+    }
 }
