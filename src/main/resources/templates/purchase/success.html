@@ -22,7 +22,7 @@
     <table class="table table-striped">
         <tr>
             <td>Total:</td>
-            <td th:text="${order.total}"></td>
+            <td class="price" th:attr="data-price=${order.total}"></td>
         </tr>
         <tr>
             <td>Time:</td>
@@ -50,7 +50,7 @@
             <td th:text="${ticket.seat.row.area.event.name}"></td>
             <td th:text="${ticket.seat.number}"></td>
             <td th:text="${ticket.seat.row.area.name}"></td>
-            <td th:text="${ticket.seat.ticketPrice}"></td>
+            <td class="price" th:attr="data-price=${ticket.seat.ticketPrice}"></td>
             <td>
                 <a th:href="@{/tickets/view-ticket?ticketId={id}(id=${ticket.ticketId})}" class="btn btn-primary">
                     <span class="bi bi-eye"></span>
@@ -63,6 +63,14 @@
 <!-- jQuery and Bootstrap Bundle (includes Popper) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let priceElements = document.querySelectorAll('.price');
+    priceElements.forEach(priceElement => {
+        let price = priceElement.dataset.price;
+        priceElement.textContent = Number(price).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

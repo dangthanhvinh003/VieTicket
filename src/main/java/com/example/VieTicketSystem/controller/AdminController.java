@@ -26,7 +26,7 @@ public class AdminController {
     @Autowired
     AdminRepo adminRepo = new AdminRepo();
     @Autowired
-    EmailService emailService = new EmailService();
+    EmailService emailService;
     @Autowired
     UserRepo userRepo = new UserRepo();
 

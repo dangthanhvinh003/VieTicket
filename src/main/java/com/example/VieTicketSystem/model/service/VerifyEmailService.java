@@ -14,26 +14,26 @@ import com.example.VieTicketSystem.model.repo.UserSecretsRepo;
 
 @Service
 public class VerifyEmailService {
-    @Autowired
-    EmailService emailService;
+    private final EmailService emailService;
+    private final double timeWindow;
+    private final UserRepo userRepo;
+    private final UnverifiedUserRepo unverifiedUserRepo;
+    private final UserSecretsRepo userSecretsRepo;
+    private final OTPService otpService;
 
-    @Value("${OTP_TIME_WINDOW_MINUTES}")
-    double timeWindow;
-
-    @Autowired
-    UserRepo userRepo;
-
-    @Autowired
-    PasswordResetService passwordResetService;
-
-    @Autowired
-    UnverifiedUserRepo unverifiedUserRepo;
-
-    @Autowired
-    UserSecretsRepo userSecretsRepo;
-
-    @Autowired
-    OTPService otpService;
+    public VerifyEmailService(EmailService emailService,
+                              @Value("${OTP_TIME_WINDOW_MINUTES}") double timeWindow,
+                              UserRepo userRepo,
+                              UnverifiedUserRepo unverifiedUserRepo,
+                              UserSecretsRepo userSecretsRepo,
+                              OTPService otpService) {
+        this.emailService = emailService;
+        this.timeWindow = timeWindow;
+        this.userRepo = userRepo;
+        this.unverifiedUserRepo = unverifiedUserRepo;
+        this.userSecretsRepo = userSecretsRepo;
+        this.otpService = otpService;
+    }
 
     public boolean isUnverified(String email) throws Exception {
         User user = userRepo.findByEmail(email);

@@ -8,8 +8,10 @@ import com.example.VieTicketSystem.model.repo.TicketRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.zxing.WriterException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 @Service
 public class OrderService {
@@ -28,14 +33,18 @@ public class OrderService {
     private final SeatRepo seatRepo;
     private final TicketRepo ticketRepo;
     private final RefundOrderRepo refundOrderRepo;
+    private final EmailService emailService;
+    private final QRCodeService qrCodeService;
 
-    public OrderService(VNPayService vnPayService, ObjectMapper jacksonObjectMapper, OrderRepo orderRepo, SeatRepo seatRepo, TicketRepo ticketRepo, RefundOrderRepo refundOrderRepo) {
+    public OrderService(VNPayService vnPayService, ObjectMapper jacksonObjectMapper, OrderRepo orderRepo, SeatRepo seatRepo, TicketRepo ticketRepo, RefundOrderRepo refundOrderRepo, EmailService emailService, QRCodeService qrCodeService) {
         this.vnPayService = vnPayService;
         this.objectMapper = jacksonObjectMapper;
         this.orderRepo = orderRepo;
         this.seatRepo = seatRepo;
         this.ticketRepo = ticketRepo;
         this.refundOrderRepo = refundOrderRepo;
+        this.emailService = emailService;
+        this.qrCodeService = qrCodeService;
     }
 
     // Create order and return payment URL
@@ -87,12 +96,22 @@ public class OrderService {
                 // Update ticket status to success and set ticket purchase date
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
                 LocalDateTime payDate = LocalDateTime.parse(params.get("vnp_PayDate"), formatter);
+                for (Ticket ticket : tickets) {
+                    ticket.setStatus(Ticket.TicketStatus.PURCHASED);
+                }
                 ticketRepo.setSuccessInBulk(ticketIds, payDate, Ticket.TicketStatus.PURCHASED.toInteger());
 
                 // Set seats to taken
                 seatRepo.updateSeats(tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.TAKEN);
 
-                // TODO: Send email to user
+                // Send email to user
+                String emailContent = createEmailContent(order, tickets);
+                CompletableFuture<Void> future = emailService.sendEmail(order.getUser().getEmail(), "Order Confirmation", emailContent);
+                future.exceptionally(ex -> {
+                    // Handle the exception here
+                    ex.printStackTrace();
+                    return null;
+                });
             }
             case FAILED -> {
                 // Set payment status to failed
@@ -108,6 +127,38 @@ public class OrderService {
         }
 
         return order;
+    }
+
+    // Create email content
+    private String createEmailContent(Order order, List<Ticket> tickets) throws IOException, WriterException {
+        StringBuilder emailContent = new StringBuilder();
+
+        emailContent.append("<html><head><style>")
+                .append(".ticket {border: 1px solid #000; margin: 10px; padding: 10px;}")
+                .append("</style></head><body>");
+        emailContent.append("<h1>Order Confirmation</h1>");
+        emailContent.append("<p>Order ID: ").append(order.getOrderId()).append("</p>");
+        emailContent.append("<p>Total: ").append(order.getTotal()).append("</p>");
+        emailContent.append("<p>Status: ").append(order.getStatus()).append("</p>");
+        emailContent.append("<h2>Tickets:</h2>");
+
+        for (Ticket ticket : tickets) {
+            emailContent.append("<div class='ticket'>");
+            emailContent.append("<p>Event: ").append(ticket.getSeat().getRow().getArea().getEvent().getName()).append("</p>");
+            emailContent.append("<p>Date&Time: ").append(ticket.getSeat().getRow().getArea().getEvent().getStartDate()).append(" - ").append(ticket.getSeat().getRow().getArea().getEvent().getEndDate()).append("</p>");
+            emailContent.append("<p>Area: ").append(ticket.getSeat().getRow().getArea().getName()).append("</p>");
+            emailContent.append("<p>Row: ").append(ticket.getSeat().getRow().getRowName()).append("</p>");
+            emailContent.append("<p>Seat: ").append(ticket.getSeat().getNumber()).append("</p>");
+            emailContent.append("<p>Price: ").append(ticket.getSeat().getTicketPrice()).append("</p>");
+            emailContent.append("<p>QR Code:</p>");
+            emailContent.append("<img src='data:image/png;base64,").append(qrCodeService.generateQRCodeImageBase64(ticket.getQrCode())).append("' />");
+            emailContent.append("<p>QR Code Text: ").append(ticket.getQrCode()).append("</p>");
+            emailContent.append("</div>");
+        }
+
+        emailContent.append("</body></html>");
+
+        return emailContent.toString();
     }
 
     // Create refund order and request refund from VNPay
