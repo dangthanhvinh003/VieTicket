@@ -275,21 +275,21 @@ function startSeatDrawing(event) {
   if (selectedType === "grid") {
     if (clickCount === 0) {
       isDrawing = true;
-      startX = event.clientX;
-      startY = event.clientY;
+      startX = event.clientX - translateX;
+      startY = event.clientY - translateY;
       clickCount++;
       canvas.addEventListener("mousemove", drawSeatPreview);
     } else if (clickCount === 1) {
-      secondX = event.clientX;
-      secondY = event.clientY;
+      secondX = event.clientX - translateX;
+      secondY = event.clientY - translateY;
       clickCount++;
       canvas.removeEventListener("click", startSeatDrawing);
       canvas.addEventListener("click", finishSeatDrawing);
     }
   } else if (selectedType === "row") {
     isDrawing = true;
-    startX = event.clientX;
-    startY = event.clientY;
+    startX = event.clientX - translateX;
+    startY = event.clientY - translateY;
 
     canvas.removeEventListener("click", startSeatDrawing);
     canvas.addEventListener("mousemove", drawSeatPreview);
@@ -300,8 +300,8 @@ function startSeatDrawing(event) {
 function drawSeatPreview(event) {
   if (!isDrawing) return;
 
-  const currentX = event.clientX;
-  const currentY = event.clientY;
+  const currentX = event.clientX - translateX;
+  const currentY = event.clientY - translateY;
   drawAll();
 
   if (selectedType === "grid") {
@@ -378,8 +378,8 @@ function finishSeatDrawing(event) {
   canvas.removeEventListener("mousemove", drawSeatPreview);
   canvas.removeEventListener("click", finishSeatDrawing);
 
-  const endX = event.clientX;
-  const endY = event.clientY;
+  const endX = event.clientX - translateX;
+  const endY = event.clientY - translateY;
 
   if (selectedType === "row") {
     const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI);
