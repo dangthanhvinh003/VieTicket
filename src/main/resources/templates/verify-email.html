@@ -36,7 +36,7 @@
     const email = document.getElementById('email').value;
 
     function resendOTP() {
-        fetch('/auth/password-reset', {
+        fetch('/api/v1/auth/password-reset/request-reset', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -61,7 +61,7 @@
 
         const otp = document.getElementById('otp').value;
 
-        fetch('/auth/verify-otp', {
+        fetch('/api/v1/auth/verify-otp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
