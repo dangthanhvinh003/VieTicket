@@ -75,7 +75,11 @@
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
                     </div>
-                    <a th:href="@{/eventUsers(eventId=${session.IdEventTolistAllUser})}" class="small-box-footer">More infor <i class="fas fa-arrow-circle-right"></i></a>
+                    <form th:action="@{/eventUsers}" method="post">
+                        <input type="hidden" th:value="${session.IdEventTolistAllUser}" name="eventId"/>
+                        <button type="submit" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></button>
+                    </form>
+                   
                 </div>
             </div>
             <div class="col-lg-3 col-6 mb-4">
