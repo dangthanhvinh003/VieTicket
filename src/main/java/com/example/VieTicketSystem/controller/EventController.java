@@ -343,4 +343,12 @@ public class EventController {
         return "searchResults"; // Tên của template hiển thị danh sách sự kiện
     }
 
+    @PostMapping("/eventUsers")
+    public String getUsersByEventId(@RequestParam("eventId") int eventId, Model model) {
+        List<User> users = eventRepo.getUsersWithTicketsByEventId(eventId);
+        model.addAttribute("users", users);
+
+        // Chuyển hướng tới trang hiển thị danh sách người dùng
+        return "eventUsers"; // Tên của template hiển thị danh sách người dùng
+    }
 }

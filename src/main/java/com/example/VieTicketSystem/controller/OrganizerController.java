@@ -35,6 +35,7 @@ import com.example.VieTicketSystem.model.repo.RowRepo;
 import com.example.VieTicketSystem.model.repo.SeatMapRepo;
 import com.example.VieTicketSystem.model.repo.SeatRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
+import com.example.VieTicketSystem.model.service.EmailService;
 import com.example.VieTicketSystem.model.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -59,6 +60,8 @@ public class OrganizerController {
     FileUpload fileUpload;
     @Autowired
     Cloudinary cloudinary;
+    @Autowired
+    EmailService emailService;
 
     @GetMapping(value = ("/createEvent"))
     public String createEventPage(HttpSession httpSession) {
@@ -72,7 +75,8 @@ public class OrganizerController {
     }
 
     @PostMapping(value = ("/viewStatistics"))
-    public String statisticsPage(@RequestParam("eventId") int eventId, Model model) {
+    public String statisticsPage(@RequestParam("eventId") int eventId, Model model, HttpSession session) {
+        session.setAttribute("IdEventTolistAllUser", eventId);
         EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(eventId);
         Map<String, Double> dailyRevenueMap = eventRepo.getDailyRevenueByEventId(eventId);
         model.addAttribute("eventStatistics", eventStatistics);
@@ -366,4 +370,35 @@ public class OrganizerController {
         return "redirect:/createEventSuccess";
     }
 
+    @PostMapping(value = "/sendMailToAllUser")
+    public String SendMailToAllUser(
+            @RequestParam("Title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("organizerEmails") List<String> organizerEmails,
+            Model model) throws Exception {
+
+        // Tạo tiêu đề email
+        String subject = title;
+
+        // Tạo nội dung email với các mục cần sửa
+        String emailContent = "<html><body style='font-family: sans-serif;'>" +
+                
+                  content 
+                +
+
+                "<p style='font-size: 16px;'>Thank you for using VinhTicket!</p>" +
+                "<p style='font-size: 14px; color: #777;'>This is an automated email, please do not reply to this email.</p>"
+                +
+                "<br>" +
+                "<p style='font-size: 12px; color: #555;'>(c) 2024 VinhTicket. All rights reserved</p>" +
+                "</body></html>";
+
+        // Gửi email thông báo tới từng người dùng
+        for (String email : organizerEmails) {
+            emailService.sendEmail(email, subject, emailContent);
+        }
+
+       
+        return "/eventUsers";
+    }
 }

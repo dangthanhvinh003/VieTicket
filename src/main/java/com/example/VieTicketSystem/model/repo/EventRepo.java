@@ -21,6 +21,7 @@ import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.EventStatistics;
 import com.example.VieTicketSystem.model.entity.SeatMap;
+import com.example.VieTicketSystem.model.entity.User;
 
 @Repository
 public class EventRepo {
@@ -141,7 +142,8 @@ public class EventRepo {
     public List<Event> getTopHotEvents() throws Exception {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
+                PreparedStatement statement = connection
+                        .prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
                 ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -201,7 +203,7 @@ public class EventRepo {
 
                 // Set the organizer if applicable
                 events.add(event);
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -641,5 +643,47 @@ public class EventRepo {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<User> getUsersWithTicketsByEventId(int eventId) {
+        List<User> users = new ArrayList<>();
+
+        String sql = "SELECT DISTINCT u.user_id, u.full_name, u.username, u.password, u.phone, u.dob, u.gender, u.avatar, u.role, u.email "
+                +
+                "FROM User u " +
+                "JOIN `Order` o ON u.user_id = o.user_id " +
+                "JOIN Ticket t ON o.order_id = t.order_id " +
+                "JOIN Seat s ON t.seat_id = s.seat_id " +
+                "JOIN `Row` r ON s.row_id = r.row_id " +
+                "JOIN Area a ON r.area_id = a.area_id " +
+                "WHERE a.event_id = ? AND t.status = 0";
+
+        try (Connection connection = ConnectionPoolManager.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, eventId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = new User();
+                    user.setUserId(resultSet.getInt("user_id"));
+                    user.setFullName(resultSet.getString("full_name"));
+                    user.setUsername(resultSet.getString("username"));
+                    user.setPassword(resultSet.getString("password")); // Cần mã hóa hoặc xử lý bảo mật
+                    user.setPhone(resultSet.getString("phone"));
+                    user.setDob(resultSet.getDate("dob"));
+                    user.setGender(resultSet.getString("gender").charAt(0));
+                    user.setAvatar(resultSet.getString("avatar"));
+                    user.setRole(resultSet.getString("role").charAt(0));
+                    user.setEmail(resultSet.getString("email"));
+
+                    users.add(user);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return users;
     }
 }
