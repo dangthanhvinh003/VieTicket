@@ -23,7 +23,7 @@ public class Ticket {
         PURCHASED(0),
         FAILED(1),
         PENDING(2),
-        REFUNDED(3),
+        RETURNED(3),
         CHECKED_IN(4);
 
         private final int value;

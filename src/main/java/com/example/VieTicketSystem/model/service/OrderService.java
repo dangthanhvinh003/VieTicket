@@ -22,8 +22,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.DatatypeConverter;
-
 @Service
 public class OrderService {
 
@@ -144,6 +142,7 @@ public class OrderService {
 
         for (Ticket ticket : tickets) {
             emailContent.append("<div class='ticket'>");
+            emailContent.append("<p>Lead visitor: ").append(ticket.getOrder().getUser().getFullName()).append("</p>");
             emailContent.append("<p>Event: ").append(ticket.getSeat().getRow().getArea().getEvent().getName()).append("</p>");
             emailContent.append("<p>Date&Time: ").append(ticket.getSeat().getRow().getArea().getEvent().getStartDate()).append(" - ").append(ticket.getSeat().getRow().getArea().getEvent().getEndDate()).append("</p>");
             emailContent.append("<p>Area: ").append(ticket.getSeat().getRow().getArea().getName()).append("</p>");
@@ -208,7 +207,7 @@ public class OrderService {
                         refundOrder.setStatus(RefundOrder.RefundStatus.SUCCESS);
                         try {
                             orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.REFUNDED);
-                            ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.REFUNDED.toInteger());
+                            ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.RETURNED.toInteger());
                             seatRepo.updateSeats(ticketRepo.findByOrderId(order.getOrderId()).stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.AVAILABLE);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
