@@ -72,7 +72,8 @@ public class OrganizerController {
     }
 
     @PostMapping(value = ("/viewStatistics"))
-    public String statisticsPage(@RequestParam("eventId") int eventId, Model model) {
+    public String statisticsPage(@RequestParam("eventId") int eventId, Model model,HttpSession session) {
+        session.setAttribute("IdEventTolistAllUser", eventId);
         EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(eventId);
         Map<String, Double> dailyRevenueMap = eventRepo.getDailyRevenueByEventId(eventId);
         model.addAttribute("eventStatistics", eventStatistics);

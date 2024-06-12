@@ -75,7 +75,7 @@
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a th:href="@{/eventUsers(eventId=${session.IdEventTolistAllUser})}" class="small-box-footer">More infor <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <div class="col-lg-3 col-6 mb-4">
@@ -142,14 +142,20 @@
           const moreInfoLinks = document.querySelectorAll('.small-box-footer');
             moreInfoLinks.forEach(function (link) {
                 link.addEventListener('click', function (event) {
-                    event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
+                    // event.preventDefault(); // Bỏ dòng này để không ngăn chặn hành động mặc định của liên kết
+
                     const box = link.closest('.small-box');
                     const priceElement = box.querySelector('.price');
                     const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
                     if (!isNaN(originalPrice)) {
-                        const discountedPrice = originalPrice * 0.9; // Tính giá giảm 10%
+                        const discountedPrice = originalPrice * 0.1; // Tính giá giảm 10%
                         priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
                     }
+
+                    // Thêm một độ trễ nhỏ nếu cần thiết trước khi điều hướng
+                    setTimeout(function () {
+                        window.location.href = link.getAttribute('href');
+                    }, 100); // Độ trễ 100ms
                 });
             });
     </script>
