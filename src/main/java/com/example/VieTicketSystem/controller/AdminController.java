@@ -18,6 +18,7 @@ import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.TableAdminStatistics;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AdminRepo;
+import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
 import com.example.VieTicketSystem.model.service.EmailService;
 
@@ -29,6 +30,8 @@ public class AdminController {
     EmailService emailService;
     @Autowired
     UserRepo userRepo = new UserRepo();
+    @Autowired
+    EventRepo eventRepo = new EventRepo();
 
     @GetMapping(value = ("/ViewAllApproveOrganizer"))
     public String approveOrganizerPage(Model model) throws ClassNotFoundException, SQLException {
@@ -216,6 +219,12 @@ public class AdminController {
         model.addAttribute("users", banners);
 
         return "ViewUserList";
+    }
+    @GetMapping(value = ("/ViewAllEventOngoing"))
+    public String allEventOngoingPage(Model model) throws Exception {
+        List<Event> events = eventRepo.getAllOngoingEvents();
+        model.addAttribute("events", events);
+        return "viewAllEventOngoingList";
     }
 
 }

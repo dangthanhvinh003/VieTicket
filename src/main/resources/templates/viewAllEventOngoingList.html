@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ongoing Events</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Ongoing Events</h1>
+        <div th:if="${events.isEmpty()}">
+            <p>No ongoing events at the moment.</p>
+        </div>
+        <div th:if="${!events.isEmpty()}">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Poster</th>
+                        <th>Banner</th>
+                        <th>Approved</th>
+                        <th>Eye View</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="event : ${events}">
+                        <td th:text="${event.eventId}">1</td>
+                        <td th:text="${event.name}">Event Name</td>
+                        <td th:text="${event.description}">Event Description</td>
+                        <td th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')}">Start Date</td>
+                        <td th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd hh:mm a')}">End Date</td>
+                        <td th:text="${event.location}">Location</td>
+                        <td th:text="${event.type}">Type</td>
+                        <td><img th:src="@{${event.poster}}" alt="Poster" style="width: 100px; height: auto;"/></td>
+                        <td><img th:src="@{${event.banner}}" alt="Banner" style="width: 100px; height: auto;"/></td>
+                        <td th:text="${event.approved == 1 ? 'Yes' : 'No'}">Approved</td>
+                        <td th:text="${event.eyeView}">Eye View</td>
+                        <td>
+                            <form th:action="@{/eventEditPage}" method="post">
+                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
+                                <button type="submit" class="btn btn-primary">Edit</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
