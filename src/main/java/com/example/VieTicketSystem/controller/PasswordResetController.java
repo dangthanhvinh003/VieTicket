@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.example.VieTicketSystem.model.service.PasswordResetService;
@@ -13,6 +14,7 @@ import com.example.VieTicketSystem.model.service.VerifyEmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
+@RequestMapping("/api/v1/auth/")
 public class PasswordResetController {
 
     private final PasswordResetService passwordResetService;
@@ -27,7 +29,7 @@ public class PasswordResetController {
         this.verifyEmailService = verifyEmailService;
     }
 
-    @PostMapping("/auth/password-reset")
+    @PostMapping("/password-reset/request-reset")
     public ResponseEntity<?> passwordReset(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String returnedFromService;
@@ -62,7 +64,7 @@ public class PasswordResetController {
         return ResponseEntity.ok().body(successNode);
     }
 
-    @PostMapping("/auth/verify-otp")
+    @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOTP(@RequestBody Map<String, String> body) {
         String otp = body.get("otp");
         String email = body.get("email");
@@ -95,7 +97,7 @@ public class PasswordResetController {
         return ResponseEntity.ok().body(successNode);
     }
 
-    @PostMapping("/auth/reset-password")
+    @PostMapping("/password-reset/new-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
         String token = body.get("token");
         String newPassword = body.get("newPassword");

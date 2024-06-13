@@ -25,8 +25,6 @@ public class User {
     private char role;
     private String email;
 
-    
-
     public User(String fullName, String phone, Date dob, char gender, String email, String username, String password,
             char role) {
         this.fullName = fullName;
@@ -39,4 +37,41 @@ public class User {
         this.role = role;
     }
 
+    public User orElseThrow(Object userNotFound) {
+        return null;
+    }
+
+    public UserRole getUserRole() {
+        return UserRole.fromValue(role);
+    }
+
+    @Getter
+    public enum UserRole {
+
+        ADMIN('a'),
+
+        ORGANIZER('o'),
+        UNVERIFIED_ORGANIZER('O'),
+        BANNED_ORGANIZER('p'),
+
+        USER('u'),
+        UNVERIFIED_USER('U'),
+        BANNED_USER('b');
+
+
+        private final char value;
+
+        UserRole(char value) {
+            this.value = value;
+        }
+
+        public static UserRole fromValue(char value) {
+            for (UserRole role : UserRole.values()) {
+                if (role.getValue() == value) {
+                    return role;
+                }
+            }
+            return null;
+        }
+    }
 }

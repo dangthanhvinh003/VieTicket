@@ -19,7 +19,6 @@ public class PasswordResetService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private UserRepo userRepository;
     @Autowired
@@ -53,13 +52,13 @@ public class PasswordResetService {
             return "OTP already sent to " + censored_email + ". Please check your inbox.";
         }
 
-        // Check if the user has a secret key
+        // Generate a secret key for the user
         String secretKey = userSecretsRepo.getSecretKey(user.getUserId());
-        if (secretKey == null) {
-            // If the user doesn't have a secret key, generate a new one
-            secretKey = SecretGenerator.generateSecret();
-            userSecretsRepo.insertSecretKey(user.getUserId(), secretKey);
+        if (secretKey != null) {
+            userSecretsRepo.deleteSecretKey(user.getUserId());
         }
+        secretKey = SecretGenerator.generateSecret();
+        userSecretsRepo.insertSecretKey(user.getUserId(), secretKey);
 
         // Generate an OTP for the user
         String otp = otpService.generateOTP(secretKey);
@@ -100,10 +99,7 @@ public class PasswordResetService {
         if (!otpService.validateOTP(secretKey, otp)) {
             throw new Exception("Invalid OTP");
         }
-
-        // Rotate the secret key
-        secretKey = SecretGenerator.generateSecret();
-        userSecretsRepo.rotateSecretKey(user.getUserId(), secretKey);
+        userSecretsRepo.deleteSecretKey(user.getUserId());
 
         // Retrieve the reset token from the database
         String resetToken = tokenRepository.getTokenString(user.getUserId());
