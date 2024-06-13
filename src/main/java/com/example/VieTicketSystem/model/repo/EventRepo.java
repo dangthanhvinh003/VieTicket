@@ -623,7 +623,7 @@ public class EventRepo {
     }
 
     public List<Event> searchEvents(String keyword) {
-        List<Event> events = getAllEvents();
+        List<Event> events = getAllOngoingEvents();
         List<Event> findEvents = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             if (events.get(i).getName().toLowerCase().contains(keyword.toLowerCase())) {
