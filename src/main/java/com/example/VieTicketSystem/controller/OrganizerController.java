@@ -404,6 +404,6 @@ public class OrganizerController {
             emailService.sendEmail(email, subject, emailContent);
         }
 
-        return "/eventUsers";
+        return "redirect:/eventUsers";
     }
 }
