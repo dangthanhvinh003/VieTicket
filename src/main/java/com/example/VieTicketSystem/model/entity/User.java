@@ -41,6 +41,10 @@ public class User {
         return null;
     }
 
+    public boolean isVerified() {
+        return role != UserRole.UNVERIFIED_USER.getValue() && role != UserRole.UNVERIFIED_ORGANIZER.getValue();
+    }
+
     public UserRole getUserRole() {
         return UserRole.fromValue(role);
     }

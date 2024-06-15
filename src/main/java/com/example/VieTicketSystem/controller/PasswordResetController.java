@@ -2,12 +2,11 @@ package com.example.VieTicketSystem.controller;
 
 import java.util.Map;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.example.VieTicketSystem.model.service.PasswordResetService;
 import com.example.VieTicketSystem.model.service.VerifyEmailService;
@@ -20,13 +19,15 @@ public class PasswordResetController {
     private final PasswordResetService passwordResetService;
     private final ObjectMapper mapper;
     private final VerifyEmailService verifyEmailService;
+    private final HttpServletResponse httpServletResponse;
 
     // Inject the PasswordResetService and ObjectMapper here
     public PasswordResetController(PasswordResetService passwordResetService, ObjectMapper mapper,
-            VerifyEmailService verifyEmailService) {
+                                   VerifyEmailService verifyEmailService, HttpServletResponse httpServletResponse) {
         this.passwordResetService = passwordResetService;
         this.mapper = mapper;
         this.verifyEmailService = verifyEmailService;
+        this.httpServletResponse = httpServletResponse;
     }
 
     @PostMapping("/password-reset/request-reset")
@@ -74,16 +75,26 @@ public class PasswordResetController {
             errorNode.put("message", "OTP is required");
             return ResponseEntity.badRequest().body(errorNode);
         }
-        String resetToken = body.get("resetToken");
+        String resetToken = null;
         try {
             // Verify the OTP
             if (verifyEmailService.isUnverified(email)) {
-                verifyEmailService.validateNewUserOTP(email, otp);
+                verifyEmailService.verifyOTP(email, otp);
             } else {
                 resetToken = passwordResetService.verifyOTP(email, otp);
             }
+
+            // Create a cookie
+            Cookie cookie = new Cookie("token", resetToken);
+            cookie.setHttpOnly(true);
+//            cookie.setSecure(true); // ensures the cookie is only sent over HTTPS TODO: enable this in production
+            cookie.setPath("/"); // accessible to entire domain
+
+            // Add cookie to response
+            httpServletResponse.addCookie(cookie);
         } catch (Exception e) {
             // Handle the exception here
+            e.printStackTrace();
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
             errorNode.put("message", e.getMessage());
@@ -93,16 +104,15 @@ public class PasswordResetController {
         ObjectNode successNode = mapper.createObjectNode();
         successNode.put("success", true);
         successNode.put("message", "OTP verified successfully");
-        successNode.put("token", resetToken);
         return ResponseEntity.ok().body(successNode);
     }
 
     @PostMapping("/password-reset/new-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-        String token = body.get("token");
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body, @CookieValue(value = "token", defaultValue = "") String token) {
+
         String newPassword = body.get("newPassword");
 
-        if (token == null || newPassword == null) {
+        if ("".equals(token) || newPassword == null) {
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
             errorNode.put("message", "Token and new password are required");
@@ -117,7 +127,7 @@ public class PasswordResetController {
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
             errorNode.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
         }
 
         ObjectNode successNode = mapper.createObjectNode();

@@ -18,7 +18,6 @@ import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
-import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
 
 import com.example.VieTicketSystem.model.service.VerifyEmailService;
@@ -35,9 +34,6 @@ public class UserController {
 
     @Autowired
     private VerifyEmailService verifyEmailService;
-
-    @Autowired
-    private UnverifiedUserRepo unverifiedUserRepo;
 
     @Autowired
     private UserRepo userRepo;
@@ -105,7 +101,7 @@ public class UserController {
     @GetMapping("/auth/verify-email")
     public String showVerifyEmailPage(Model model, HttpSession session) throws Exception {
         User user = (User) session.getAttribute("activeUser");
-        if (user == null || !unverifiedUserRepo.isUnverified(user.getUserId())) {
+        if (user == null || user.isVerified()) {
             return "redirect:/"; // Redirect if not applicable
         }
         return "verify-email";
@@ -322,7 +318,7 @@ public class UserController {
             newUser.setEmail(email);
             newUser.setUsername(username);
             newUser.setPassword(hashedPassword); // Use hashed password
-            newUser.setRole('o');
+            newUser.setRole('O');
 
             newUser.setFoundedDate(sqlFoundedDate);
             newUser.setWebsite(website);
@@ -342,7 +338,7 @@ public class UserController {
             newUser.setEmail(email);
             newUser.setUsername(username);
             newUser.setPassword(hashedPassword); // Use hashed password
-            newUser.setRole('u');
+            newUser.setRole('U');
             userRepo.saveNew(newUser);
 
             httpSession.setAttribute("activeUser", newUser);

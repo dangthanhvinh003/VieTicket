@@ -34,17 +34,17 @@ CREATE TABLE Event
         PRIMARY KEY,
     `name`           VARCHAR(64),
     `description`    TEXT,
-    start_date       DATETIME,
+    start_date       TIMESTAMP,
     location         VARCHAR(256),
     `type`           VARCHAR(64),
-    ticket_sale_date DATETIME,
-    end_date         DATETIME,
+    ticket_sale_date TIMESTAMP,
+    end_date         TIMESTAMP,
     organizer_id     INT,
     FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
     poster           TEXT,
     banner           TEXT,
     is_approve       INT,
-    eyeview          INT
+    eyeview          INT DEFAULT 0
 );
 
 CREATE TABLE SeatMap
@@ -54,7 +54,7 @@ CREATE TABLE SeatMap
     event_id    INT UNIQUE,
     FOREIGN KEY (event_id) REFERENCES Event (event_id) ON DELETE CASCADE,
     `name`      VARCHAR(64),
-    map_file    json,
+    map_file    JSON,
     img         TEXT
 );
 
@@ -62,12 +62,12 @@ CREATE TABLE `Order`
 (
     order_id   INT AUTO_INCREMENT
         PRIMARY KEY,
-    date       DATETIME,
+    date       TIMESTAMP,
     total      INT,
     user_id    INT,
     status     TINYINT,
     FOREIGN KEY (user_id) REFERENCES User (user_id),
-    vnpay_data TEXT
+    vnpay_data JSON
 );
 
 CREATE TABLE Rating
@@ -107,8 +107,8 @@ CREATE TABLE RefundOrder
 (
     order_id   INT AUTO_INCREMENT
         PRIMARY KEY,
-        FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
-    created_on DATETIME,
+    FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
+    created_on TIMESTAMP,
     status     TINYINT
 );
 
@@ -129,23 +129,12 @@ CREATE TABLE Ticket
         PRIMARY KEY,
     qr_code       VARCHAR(64) UNIQUE,
     INDEX qr_code_index (qr_code),
-    purchase_date DATETIME,
+    purchase_date TIMESTAMP,
     order_id      INT,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
     seat_id       INT,
     status        TINYINT,
     FOREIGN KEY (seat_id) REFERENCES Seat (seat_id)
-);
-
-CREATE TABLE PasswordResetToken
-(
-    id          INT AUTO_INCREMENT
-        PRIMARY KEY,
-    user_id     INT,
-    FOREIGN KEY (user_id) REFERENCES `User` (user_id),
-    token       VARCHAR(256),
-    expiry_date TIMESTAMP,
-    created_at  TIMESTAMP
 );
 
 CREATE TABLE UserSecrets
@@ -154,27 +143,8 @@ CREATE TABLE UserSecrets
         PRIMARY KEY,
     user_id    INT,
     FOREIGN KEY (user_id) REFERENCES `User` (user_id),
-    secret_key VARCHAR(256)
-
-);
-
-CREATE TABLE UnverifiedUsers
-(
-    userid     INT NOT NULL
-        PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE OrganizerVerificationToken
-(
-    id            INT AUTO_INCREMENT
-        PRIMARY KEY,
-    organizer_id  INT,
-    FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
-    token         VARCHAR(256),
-    familiar_name VARCHAR(64) UNIQUE,
-    expiry_date   TIMESTAMP,
-    created_at    TIMESTAMP
+    secret_key VARCHAR(256),
+    created_at TIMESTAMP
 );
 
 CREATE TABLE googleOauth
