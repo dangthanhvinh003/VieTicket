@@ -176,13 +176,19 @@ public class OrganizerController {
             bannerUrl = fileUpload.uploadFile(multipartFile1);
         }
         model.addAttribute("banner", bannerUrl);
-
         User user = (User) httpSession.getAttribute("activeUser");
+        if (user.getRole() == 'o') {
+            eventRepo.updateEvent(eventId, name, description, startDate, location, type, ticketSaleDate, endDate,
+                    posterUrl, bannerUrl, false);
+            return "redirect:/editSuccess";
+        }
+        if (user.getRole() == 'a') {
+            eventRepo.updateEvent(eventId, name, description, startDate, location, type, ticketSaleDate, endDate,
+                    posterUrl, bannerUrl, true);
+            return "redirect:/ViewAllEventOngoing";
+        }
+        return "/";
 
-        eventRepo.updateEvent(eventId, name, description, startDate, location, type, ticketSaleDate, endDate,
-                user.getUserId(), posterUrl, bannerUrl);
-
-        return "redirect:/editSuccess";
     }
 
     @PostMapping(value = "/seatMapEditPage")
@@ -382,8 +388,8 @@ public class OrganizerController {
 
         // Tạo nội dung email với các mục cần sửa
         String emailContent = "<html><body style='font-family: sans-serif;'>" +
-                
-                  content 
+
+                content
                 +
 
                 "<p style='font-size: 16px;'>Thank you for using VinhTicket!</p>" +
@@ -398,7 +404,6 @@ public class OrganizerController {
             emailService.sendEmail(email, subject, emailContent);
         }
 
-       
-        return "/eventUsers";
+        return "redirect:/eventUsers";
     }
 }

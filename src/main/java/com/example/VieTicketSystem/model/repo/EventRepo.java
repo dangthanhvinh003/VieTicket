@@ -413,7 +413,7 @@ public class EventRepo {
 
     public int updateEvent(int eventId, String name, String description, LocalDateTime startDate, String location,
             String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
+            LocalDateTime ticketSaleDate, LocalDateTime endDate, String poster, String banner, boolean isApprove)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
@@ -422,7 +422,7 @@ public class EventRepo {
         // Câu lệnh SQL để cập nhật sự kiện
         PreparedStatement ps = connection.prepareStatement(
                 "UPDATE Event SET name = ?, description = ?, start_date = ?, location = ?, type = ?, " +
-                        "ticket_sale_date = ?, end_date = ?, organizer_id = ?, poster = ?, banner = ?, is_approve = ? "
+                        "ticket_sale_date = ?, end_date = ?, poster = ?, banner = ?, is_approve = ? "
                         +
                         "WHERE event_id = ?");
 
@@ -453,11 +453,11 @@ public class EventRepo {
             ps.setTimestamp(7, null);
         }
 
-        ps.setInt(8, organizerId);
-        ps.setString(9, poster);
-        ps.setString(10, banner);
-        ps.setBoolean(11, false);
-        ps.setInt(12, eventId);
+        
+        ps.setString(8, poster);
+        ps.setString(9, banner);
+        ps.setBoolean(10, isApprove);
+        ps.setInt(11, eventId);
 
         int rowsUpdated = ps.executeUpdate();
 
@@ -623,7 +623,7 @@ public class EventRepo {
     }
 
     public List<Event> searchEvents(String keyword) {
-        List<Event> events = getAllEvents();
+        List<Event> events = getAllOngoingEvents();
         List<Event> findEvents = new ArrayList<>();
         for (int i = 0; i < events.size(); i++) {
             if (events.get(i).getName().toLowerCase().contains(keyword.toLowerCase())) {
@@ -685,5 +685,57 @@ public class EventRepo {
         }
 
         return users;
+    }
+    public List<Event> getAllOngoingEvents() {
+        List<Event> events = new ArrayList<>();
+        String query = "SELECT * FROM Event WHERE is_approve = 1 AND (start_date <= NOW() AND (end_date IS NULL OR end_date >= NOW()))";
+    
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                Event event = new Event();
+                event.setEventId(resultSet.getInt("event_id"));
+                event.setName(resultSet.getString("name"));
+                event.setDescription(resultSet.getString("description"));
+    
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp startTimestamp = resultSet.getTimestamp("start_date");
+                if (startTimestamp != null) {
+                    event.setStartDate(startTimestamp.toLocalDateTime());
+                }
+    
+                event.setLocation(resultSet.getString("location"));
+                event.setType(resultSet.getString("type"));
+    
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
+                if (ticketSaleTimestamp != null) {
+                    event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                }
+    
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp endTimestamp = resultSet.getTimestamp("end_date");
+                if (endTimestamp != null) {
+                    event.setEndDate(endTimestamp.toLocalDateTime());
+                }
+    
+                event.setPoster(resultSet.getString("poster"));
+                event.setBanner(resultSet.getString("banner"));
+                event.setApproved(resultSet.getInt("is_approve"));
+                event.setEyeView(resultSet.getInt("eyeView"));
+    
+                // Lấy danh sách areas và gán vào event
+                List<Area> areas = getAreasForEvent(event.getEventId(), connection);
+                event.setAreas(areas);
+    
+                // Set the organizer if applicable
+                events.add(event);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return events;
     }
 }
