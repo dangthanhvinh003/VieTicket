@@ -33,8 +33,6 @@ public class CheckInController {
     @PostMapping("/checkin")
     public ResponseEntity<String> checkIn(@RequestBody Map<String, String> payload) throws Exception {
 
-        String qrCode = payload.get("qrCode");
-
         // Extract the user's details from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -53,7 +51,9 @@ public class CheckInController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
 
-        // Check if ticket exists and is not returned
+        String qrCode = payload.get("qrCode");
+
+        // Check if ticket exists and was purchased successfully and not returned
         Ticket ticket = ticketRepo.findByQrCode(qrCode);
         if (ticket == null || ticket.getStatus() != Ticket.TicketStatus.PURCHASED && ticket.getStatus() != Ticket.TicketStatus.CHECKED_IN) {
             String response = objectMapper.writeValueAsString(Map.of("message", "Ticket not found"));
@@ -66,12 +66,14 @@ public class CheckInController {
             return ResponseEntity.badRequest().body(response);
         }
 
+        // If passed all checks, include the ticket details in the response
         Map<String, String> response = new java.util.HashMap<>();
         response.put("lead_visitor", ticket.getOrder().getUser().getFullName());
         response.put("event", ticket.getSeat().getRow().getArea().getEvent().getName());
         response.put("seat", ticket.getSeat().getRow().getArea().getName() + " " + ticket.getSeat().getNumber());
         response.put("status", String.valueOf(ticket.getStatus()));
 
+        // Return 400 if ticket is already checked in
         if (ticket.getStatus() == Ticket.TicketStatus.CHECKED_IN) {
             response.put("message", "Ticket already checked in");
             return ResponseEntity.badRequest().body(objectMapper.writeValueAsString(response));
@@ -80,6 +82,8 @@ public class CheckInController {
         response.put("message", "Check in successful");
         ticket.setStatus(Ticket.TicketStatus.CHECKED_IN);
         ticketRepo.updateExisting(ticket);
+
+        // Return 200 if check in is successful
         return ResponseEntity.ok(objectMapper.writeValueAsString(response));
     }
 }

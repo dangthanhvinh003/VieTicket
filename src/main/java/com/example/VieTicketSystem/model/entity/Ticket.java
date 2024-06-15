@@ -24,7 +24,8 @@ public class Ticket {
         FAILED(1),
         PENDING(2),
         RETURNED(3),
-        CHECKED_IN(4);
+        CHECKED_IN(4),
+        PENDING_REFUND(5);
 
         private final int value;
 
