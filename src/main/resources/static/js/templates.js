@@ -1,5 +1,5 @@
 class FirstTemplate {
-  constructor(ctx, x, y, width, height) {
+  constructor(x, y, width, height) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -11,7 +11,7 @@ class FirstTemplate {
   stage;
   area;
   getStage() {
-    this.stage = new Stage({
+    this.stage = new RectangleStage({
       name: "Stage",
       x: this.x + this.width / 3.2,
       y: this.y,
@@ -19,19 +19,9 @@ class FirstTemplate {
       height: this.height / 6,
     });
   }
-  getArea() {
-    this.area = new Area({
-      name: "A1",
-      x: this.x,
-      y: this.y + this.height / 4,
-      width: this.width,
-      height: this.height / 2,
-    });
-  }
 
   getShapes() {
     this.getStage();
-    this.getArea();
-    this.shapes.push(this.area, this.stage);
+    this.shapes.push(this.stage);
   }
 }

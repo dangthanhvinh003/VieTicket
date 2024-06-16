@@ -305,6 +305,45 @@ public class EventRepo {
         return stats;
     }
 
+    public void deleteEvent(int eventId) throws SQLException {
+        PreparedStatement psDeleteSeats = null;
+        PreparedStatement psDeleteRows = null;
+        PreparedStatement psDeleteAreas = null;
+        PreparedStatement psDeleteSeatMap = null;
+
+        try (Connection connection = ConnectionPoolManager.getConnection();) {
+
+            // Delete seats
+            String sqlDeleteSeats = "DELETE FROM Seat WHERE row_id IN " +
+                    "(SELECT row_id FROM `Row` WHERE area_id IN " +
+                    "(SELECT area_id FROM Area WHERE event_id = ?))";
+            psDeleteSeats = connection.prepareStatement(sqlDeleteSeats);
+            psDeleteSeats.setInt(1, eventId);
+            psDeleteSeats.executeUpdate();
+
+            // Delete rows
+            String sqlDeleteRows = "DELETE FROM `Row` WHERE area_id IN " +
+                    "(SELECT area_id FROM Area WHERE event_id = ?)";
+            psDeleteRows = connection.prepareStatement(sqlDeleteRows);
+            psDeleteRows.setInt(1, eventId);
+            psDeleteRows.executeUpdate();
+
+            // Delete areas
+            String sqlDeleteAreas = "DELETE FROM Area WHERE event_id = ?";
+            psDeleteAreas = connection.prepareStatement(sqlDeleteAreas);
+            psDeleteAreas.setInt(1, eventId);
+            psDeleteAreas.executeUpdate();
+
+            // Delete seat map
+            String sqlDeleteSeatMap = "DELETE FROM SeatMap WHERE event_id = ?";
+            psDeleteSeatMap = connection.prepareStatement(sqlDeleteSeatMap);
+            psDeleteSeatMap.setInt(1, eventId);
+            psDeleteSeatMap.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public Map<String, Double> getDailyRevenueByEventId(int eventId) {
         Map<String, Double> dailyRevenueMap = new HashMap<>();
 

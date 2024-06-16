@@ -20,7 +20,6 @@ public class SeatMapRepo {
     }
 
     public SeatMap getSeatMapByEventId(int eventId) throws SQLException {
-
         Connection connection = ConnectionPoolManager.getConnection();
 
         String query = "SELECT * FROM SeatMap WHERE event_id = ?";
@@ -35,6 +34,7 @@ public class SeatMapRepo {
             seatMap.setEvent(eventRepo.getEventById(rs.getInt("event_id")));
             seatMap.setName(rs.getString("name"));
             seatMap.setImg(rs.getString("img"));
+            seatMap.setMapFile(rs.getString("map_file")); // Set the new mapFile field
         }
 
         rs.close();
