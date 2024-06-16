@@ -141,6 +141,7 @@ function saveAreaCanvasState() {
   if (currentAreaStateIndex < canvasAreaStates.length - 1) {
     canvasAreaStates.splice(currentAreaStateIndex + 1);
   }
+  console.log(state);
 
   canvasAreaStates.push(state);
   currentAreaStateIndex++;
