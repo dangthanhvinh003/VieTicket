@@ -16,7 +16,9 @@ public class SeatMap {
     private Event event;
     private String name;
     private String img;
-    public SeatMap (String name, String img){
+    private String mapFile;
+
+    public SeatMap(String name, String img) {
         this.name = name;
         this.img = img;
     }

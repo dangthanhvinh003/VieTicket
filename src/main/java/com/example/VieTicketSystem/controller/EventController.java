@@ -117,8 +117,17 @@ public class EventController {
     @PostMapping(value = "/seatMap/SeatMapEditor")
     public String SeatMapEditor(MultipartHttpServletRequest request, HttpSession session)
             throws SQLException, ClassNotFoundException, ParseException, IOException {
-        int eventId = (int) session.getAttribute("idNewEvent");
-        String name = "SeatMap Name";
+        int eventId = -1;
+        if (session.getAttribute("idNewEvent") != null) {
+            eventId = (int) session.getAttribute("idNewEvent");
+        } else if (session.getAttribute("eventIdEdit") != null) {
+            eventId = (int) session.getAttribute("eventIdEdit");
+            eventRepo.deleteEvent(eventId);
+        } else {
+            return "index";
+        }
+
+        String name = "DrawSeatMap";
 
         MultipartFile file = request.getFile("file");
         String imageURL = fileUpload.uploadFile(file);
@@ -128,7 +137,7 @@ public class EventController {
         List<Map<String, Object>> shapesData = objectMapper.readValue(shapesJson, List.class);
         seatMapRepo.addSeatMapWithEditor(eventId, name, imageURL, shapesJson);
 
-        int seatMapId = seatMapRepo.getSeatMapIdByEventRepo(eventId); // Implement this method to get the last inserted
+        int seatMapId = seatMapRepo.getSeatMapIdByEventRepo(eventId);
         for (Map<String, Object> shapeWrapper : shapesData) {
             Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
             if ("Area".equals(shape.get("type"))) {
@@ -144,15 +153,12 @@ public class EventController {
                 }
 
                 areaRepo.addArea(areaName, totalTickets, eventId, ticketPrice, seatMapId);
-                int areaId = areaRepo.getIdAreaEventIdAndName(eventId, areaName); // Implement this method to get the
-                                                                                  // last inserted area ID.
-
+                int areaId = areaRepo.getIdAreaEventIdAndName(eventId, areaName);
                 for (Map<String, Object> areaShape : areaShapes) {
                     if ("Row".equals(areaShape.get("type"))) {
                         String rowName = areaShape.get("name").toString();
                         rowRepo.addRow(rowName, areaId);
-                        int rowId = rowRepo.getIdRowByAreaIdAndRowName(areaId, rowName); // Implement this method to get
-                                                                                         // the last inserted row ID.
+                        int rowId = rowRepo.getIdRowByAreaIdAndRowName(areaId, rowName);
 
                         List<Map<String, Object>> seats = (List<Map<String, Object>>) areaShape.get("seats");
                         for (Map<String, Object> seat : seats) {
@@ -163,7 +169,10 @@ public class EventController {
                 }
             }
         }
-        return "redirect:/createEventSuccess";
+        if (session.getAttribute("idNewEvent") != null) {
+            return "redirect:/createEventSuccess";
+        }
+        return "redirect:/editSuccess";
     }
 
     @GetMapping(value = { "/createEventSuccess" })

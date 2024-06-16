@@ -1,6 +1,7 @@
 const insertArea = document.getElementById("insertArea");
-const insertStage = document.getElementById("insertStage");
-const insertAreaDropDown = document.getElementById("insertAreaDropDown");
+const insertRectangleStage = document.getElementById("insertRectangleStage");
+const insertEllipseStage = document.getElementById("insertEllipseStage");
+const insertStageDropDown = document.getElementById("insertStageDropDown");
 const insertSeats = document.getElementById("insertSeats");
 const insertGridSeats = document.getElementById("insertGridSeats");
 const insertSeatDropDown = document.getElementById("insertSeatDropDown");
@@ -11,6 +12,9 @@ const insertTableSeatDropDown = document.getElementById(
 const selectButton = document.getElementById("selectArea");
 const undoButton = document.getElementById("undoButton");
 const redoButton = document.getElementById("redoButton");
+const duplicateShape = document.getElementById("duplicateShape");
+const mirrorHorizontally = document.getElementById("mirrorHorizontally");
+const mirrorVertically = document.getElementById("mirrorVertically");
 const saveButton = document.getElementById("saveButton");
 const loadButton = document.getElementById("loadButton");
 const panningButton = document.getElementById("panningButton");
@@ -25,15 +29,15 @@ const seatUndoButton = document.getElementById("seatUndoButton");
 const seatRedoButton = document.getElementById("seatRedoButton");
 const seatRemoveButton = document.getElementById("seatRemoveButton");
 const insertTextButton = document.getElementById("insertText");
+const duplicateShapeInArea = document.getElementById("duplicateShapeInArea");
+
+const loadingOverlay = document.getElementById("loadingOverlay");
 
 const editorTitle = document.getElementById("editorTitle");
 const editorContent = document.getElementById("editorContent");
 
 function removeMainMapEventListeners() {
   canvas.removeEventListener("mousedown", startStageDrawing);
-  canvas.removeEventListener("mousedown", startAreaDrawing);
-  canvas.removeEventListener("mousemove", drawAreaPreview);
-  canvas.removeEventListener("mouseup", finishAreaDrawing);
   canvas.removeEventListener("mousedown", selectShape);
   canvas.removeEventListener("dblclick", zoomInArea);
   canvas.removeEventListener("mousemove", dragShape);
@@ -41,12 +45,18 @@ function removeMainMapEventListeners() {
   canvas.removeEventListener("mousedown", startPanning);
   canvas.removeEventListener("mousemove", panCanvas);
   canvas.removeEventListener("mouseup", stopPanning);
+  canvas.removeEventListener("mousedown", selectPoint);
+  canvas.removeEventListener("mousemove", movePoint);
+  canvas.removeEventListener("mouseup", stopEditingArea);
+
+  canvas.removeEventListener("click", addNewArea);
 }
 canvas.addEventListener("wheel", (event) => {
   handleWheel(event);
 });
 function mainMapReset() {
   selectedShape = null;
+  selectedType = "";
   removeMainMapEventListeners();
   drawAll();
 }
@@ -61,11 +71,11 @@ window.addEventListener("click", (event) => {
     }
   }
   if (
-    !event.target.matches("#insertArea") &&
-    !event.target.matches("#insertArea *")
+    !event.target.matches("#insertRectangleStage") &&
+    !event.target.matches("#insertRectangleStage *")
   ) {
-    if (insertAreaDropDown.classList.contains("show")) {
-      insertAreaDropDown.classList.remove("show");
+    if (insertStageDropDown.classList.contains("show")) {
+      insertStageDropDown.classList.remove("show");
     }
   }
   if (
@@ -89,14 +99,21 @@ dropdownMenuButton.addEventListener("click", (event) => {
   mapDropDown.classList.toggle("show");
 });
 
-insertStage.addEventListener("click", () => {
+insertRectangleStage.addEventListener("click", () => {
   mainMapReset();
+  selectedType = "Rectangle";
+  insertStageDropDown.classList.toggle("show");
+  canvas.addEventListener("mousedown", startStageDrawing);
+});
+insertEllipseStage.addEventListener("click", () => {
+  mainMapReset();
+  selectedType = "Ellipse";
   canvas.addEventListener("mousedown", startStageDrawing);
 });
 insertArea.addEventListener("click", () => {
   mainMapReset();
-  insertAreaDropDown.classList.toggle("show");
-  canvas.addEventListener("mousedown", startAreaDrawing);
+  canvas.addEventListener("mousemove", handleCanvasDraw);
+  canvas.addEventListener("click", addNewArea);
 });
 
 selectButton.addEventListener("click", () => {
@@ -121,10 +138,41 @@ redoButton.addEventListener("click", () => {
   }
 });
 
+duplicateShape.addEventListener("click", () => {
+  if (selectedShape == null && selectedShape.type !== "Area") return;
+  const newShape = new PolygonArea({ ...selectedShape, name: "New Name" });
+
+  // Update the new shape's coordinates
+  newShape.x += 10;
+  newShape.y += 10;
+  // Push the new shape into the shapes array
+  shapes.push(newShape);
+  newShape.updatePoints();
+  newShape.setOffsetPoints();
+  selectedShape = newShape;
+  saveCanvasState();
+  drawAll();
+  mainEditor();
+});
+mirrorHorizontally.addEventListener("click", () => {
+  if (selectedShape == null) return;
+  selectedShape.mirrorHorizontally();
+  saveCanvasState();
+  drawAll();
+  mainEditor();
+});
+mirrorVertically.addEventListener("click", () => {
+  if (selectedShape == null) return;
+  selectedShape.mirrorVertically();
+  saveCanvasState();
+  drawAll();
+  mainEditor();
+});
+
 saveButton.addEventListener("click", () => {
+  loadingOverlay.style.display = "flex";
   const canvasImage = canvas.toDataURL();
   const blob = dataURLToBlob(canvasImage);
-
   const formData = new FormData();
   formData.append("file", blob, "canvasImage.png");
 
@@ -132,20 +180,15 @@ saveButton.addEventListener("click", () => {
     data: shape.serialize(),
   }));
   formData.append("shapes", JSON.stringify(shapesData));
-
   fetch("/seatMap/SeatMapEditor", {
     method: "POST",
     body: formData,
   })
     .then((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error("Network response was not ok.");
-      }
+      console.log(response);
     })
-    .then((data) => {
-      console.log("Success:", data);
+    .then(() => {
+      window.location.href = "/createEventSuccess";
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -176,23 +219,21 @@ document.getElementById("fileInput").addEventListener("change", (event) => {
   reader.onload = function (e) {
     const json = e.target.result;
     const canvasData = JSON.parse(json);
-    console.log(canvasData.shapes);
 
     shapes = [];
 
     shapes = canvasData.shapes.map((shapeData) => {
       switch (shapeData.data.type) {
-        case "RoundedBorderRectangle":
-          return RoundedBorderRectangle.deserialize(shapeData);
-        case "Stage":
-          return Stage.deserialize(shapeData.data);
+        case "EllipseStage":
+          return EllipseStage.deserialize(shapeData.data);
+        case "RectangleStage":
+          return RectangleStage.deserialize(shapeData.data);
         case "Area":
-          return Area.deserialize(shapeData.data);
+          return PolygonArea.deserialize(shapeData.data);
         default:
           console.log(shapeData);
       }
     });
-    console.log(shapes);
 
     drawAll();
   };
@@ -264,11 +305,6 @@ insertGridSeats.addEventListener("click", () => {
   canvas.addEventListener("click", startSeatDrawing);
 });
 
-// insertCircleTable.addEventListener("click", () => {
-// insertTableSeatDropDown.classList.toggle("show");
-// canvas.addEventListener("mousedown", startAreaDrawing);
-// });
-
 selectSeatsMode.addEventListener("click", () => {
   areaReset();
   canvas.addEventListener("mousedown", selectAreaShape);
@@ -299,4 +335,32 @@ insertTextButton.addEventListener("click", () => {
   areaReset();
   insertTextMode = true;
   canvas.addEventListener("mousedown", insertText);
+});
+
+duplicateShapeInArea.addEventListener("click", () => {
+  if (selectedShape == null) return;
+  switch (selectedShape.type) {
+    case "Row": {
+      const newShape = new Row({ ...selectedShape, name: "New Name" });
+      selectedShape.seats.map((seat) => {
+        newShape.seats.push(new Seat(seat));
+      });
+      newShape.startX += 10;
+      newShape.startY += 10;
+      zoomedArea.shapes.push(newShape);
+      selectedShape = newShape;
+      break;
+    }
+    case "Text": {
+      const newShape = new Text({ ...selectedShape, name: "New Name" });
+      newShape.x += 10;
+      newShape.y += 10;
+      zoomedArea.shapes.push(newShape);
+      selectedShape = newShape;
+      break;
+    }
+  }
+  saveAreaCanvasState();
+  drawAll();
+  mainEditor();
 });
