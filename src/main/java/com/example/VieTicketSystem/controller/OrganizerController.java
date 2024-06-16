@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cloudinary.Cloudinary;
@@ -27,6 +28,7 @@ import com.example.VieTicketSystem.model.entity.AdditionalData;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.EventStatistics;
 import com.example.VieTicketSystem.model.entity.Row;
+import com.example.VieTicketSystem.model.entity.SeatMap;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AreaRepo;
 import com.example.VieTicketSystem.model.repo.EventRepo;
@@ -192,8 +194,16 @@ public class OrganizerController {
     }
 
     @PostMapping(value = "/seatMapEditPage")
-    public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession) {
+    public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession, Model model)
+            throws SQLException {
         httpSession.setAttribute("eventIdEdit", eventId);
+        SeatMap editMap = seatMapRepo.getSeatMapByEventId(eventId);
+        if (editMap != null) {
+            if (editMap.getName().equals("DrawSeatMap")) {
+                model.addAttribute("json", editMap.getMapFile());
+                return "seatMapEditor";
+            }
+        }
         return "seatMapEdit";
     }
 
@@ -229,6 +239,60 @@ public class OrganizerController {
                     rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         return "redirect:/editSuccess";
+    }
+
+    @GetMapping(value = ("/seatMap/SeatMapEditorEdit"))
+    public String SeatMapEditor() {
+        return "SeatMapEditorEdit";
+    }
+
+    @PostMapping(value = "/seatMap/SeatMapEditorEdit")
+    public String SeatMapEditor(MultipartHttpServletRequest request, HttpSession session)
+            throws SQLException, ClassNotFoundException, ParseException, IOException {
+        int eventId = (int) session.getAttribute("idNewEvent");
+        String name = "DrawSeatMap";
+
+        MultipartFile file = request.getFile("file");
+        String imageURL = fileUpload.uploadFile(file);
+        String shapesJson = request.getParameter("shapes");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, Object>> shapesData = objectMapper.readValue(shapesJson, List.class);
+        seatMapRepo.addSeatMapWithEditor(eventId, name, imageURL, shapesJson);
+
+        int seatMapId = seatMapRepo.getSeatMapIdByEventRepo(eventId);
+        for (Map<String, Object> shapeWrapper : shapesData) {
+            Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
+            if ("Area".equals(shape.get("type"))) {
+                String areaName = shape.get("name").toString();
+                String ticketPrice = shape.get("ticketPrice").toString();
+                List<Map<String, Object>> areaShapes = (List<Map<String, Object>>) shape.get("shapes");
+                int totalTickets = 0;
+
+                for (Map<String, Object> areaShape : areaShapes) {
+                    if ("Row".equals(areaShape.get("type"))) {
+                        totalTickets += ((List<Map<String, Object>>) areaShape.get("seats")).size();
+                    }
+                }
+
+                areaRepo.addArea(areaName, totalTickets, eventId, ticketPrice, seatMapId);
+                int areaId = areaRepo.getIdAreaEventIdAndName(eventId, areaName);
+                for (Map<String, Object> areaShape : areaShapes) {
+                    if ("Row".equals(areaShape.get("type"))) {
+                        String rowName = areaShape.get("name").toString();
+                        rowRepo.addRow(rowName, areaId);
+                        int rowId = rowRepo.getIdRowByAreaIdAndRowName(areaId, rowName);
+
+                        List<Map<String, Object>> seats = (List<Map<String, Object>>) areaShape.get("seats");
+                        for (Map<String, Object> seat : seats) {
+                            String seatNumber = seat.get("number").toString();
+                            seatRepo.addSeat(seatNumber, ticketPrice, rowId);
+                        }
+                    }
+                }
+            }
+        }
+        return "redirect:/createEventSuccess";
     }
 
     @GetMapping(value = ("/seatMap/SeatMapBetaEdit"))
