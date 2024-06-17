@@ -3,8 +3,6 @@ canvas.width = window.innerWidth * 2;
 canvas.height = window.innerHeight * 2;
 const ctx = canvas.getContext("2d");
 
-let isDrawing = false;
-let insertTextMode = false;
 let selectedType = "";
 let clickCount = 0;
 let startX, startY;
@@ -12,8 +10,8 @@ let secondX, secondY;
 let translateX = 0;
 let translateY = 0;
 const touchpadScalingFactor = 1.5;
-const seatRadius = 6;
-const seatSpacing = 6;
+const seatRadius = 10;
+const seatSpacing = 10;
 let currentPolygon = null;
 let selectedShape = null;
 let zoomedArea = null;
@@ -36,12 +34,18 @@ function drawAll() {
         ctx.fillStyle = "lightgrey";
         ctx.fillRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
         zoomedArea.draw(true);
+        zoomedArea.shapes
+          .filter((shape) => shape.type === "Row")
+          .forEach((row) => {
+            row.seats.forEach((seat) => {
+              if (selectedSeats.includes(seat)) {
+                console.log("good");
+                ctx.fillStyle = "green";
+              }
+            });
+          });
         if (selectedShape != null) {
-          if (selectedShape.type === "Row") {
-            selectedShape.drawBoundingRectangle();
-          } else if (selectedShape.type === "Text") {
-            selectedShape.drawBoundingRectangle();
-          } else if (selectedShape.type === "Seat") {
+          if (selectedShape.type === "Seat") {
             selectedShape.drawBoundingRectangle();
           }
         }
@@ -49,7 +53,6 @@ function drawAll() {
         if (shape.type === "Area") {
           ctx.strokeStyle = "red";
           shape.draw();
-          shape.drawPoints();
         } else {
           ctx.strokeStyle = "red";
           shape.draw();
