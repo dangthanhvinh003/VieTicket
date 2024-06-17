@@ -242,11 +242,10 @@
     <script type="text/javascript" th:src="@{/static/js/templates.js}"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
-            if (typeof seatMapData !== 'undefined') {
+            if (seatMapData !== null) {
                 const canvasData = JSON.parse(seatMapData);
 
                 shapes = [];
-                console.log(canvasData)
                 shapes = canvasData.map((shapeData) => {
                     switch (shapeData.data.type) {
                         case "EllipseStage":

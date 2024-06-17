@@ -287,6 +287,7 @@ backButton.addEventListener("click", () => {
   shapes.forEach((s) => (s.isHidden = false));
   currentStateIndex--;
   restoreCanvasState(currentStateIndex);
+  currentAreaStateIndex = 0;
   mainMenuBar.style.display = "flex";
   areaMenuBar.style.display = "none";
   mainEditor();

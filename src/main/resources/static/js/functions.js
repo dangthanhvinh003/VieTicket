@@ -28,8 +28,8 @@ function addNewArea(e) {
       startY = 0;
       secondX = 0;
       secondY = 0;
-      // Add the polygon to the shapes array
       shapes.push(currentPolygon);
+      saveCanvasState();
       currentPolygon = null;
       isDrawing = false;
       canvas.removeEventListener("click", addNewArea);
