@@ -3,6 +3,7 @@ package com.example.VieTicketSystem.controller;
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Row;
+import com.example.VieTicketSystem.model.entity.SeatMap;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AreaRepo;
 import com.example.VieTicketSystem.model.repo.EventRepo;

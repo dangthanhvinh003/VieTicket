@@ -587,7 +587,7 @@ class PolygonArea extends Polygon {
     polygonArea.shapes = data.shapes.map((shapeData) => {
       switch (shapeData.type) {
         case "Row":
-          return Row.deserialize(shapeData, polygonArea);
+          return Row.deserialize(shapeData);
         case "Text":
           return Text.deserialize(shapeData);
         default:
@@ -598,7 +598,6 @@ class PolygonArea extends Polygon {
   }
 
   addShape(shape) {
-    shape.area = this;
     this.shapes.push(shape);
   }
 
@@ -659,7 +658,15 @@ class PolygonArea extends Polygon {
       startY: startY - this.y,
       seatRadius,
       seatSpacing,
-      area: this,
+      area: {
+        points: this.points,
+        color: this.color,
+        selectedPointIndex: this.selectedPointIndex,
+        x: this.x,
+        y: this.y,
+        furthestX: this.furthestX,
+        furthestY: this.furthestY,
+      },
       rotation: rotation,
     });
     return row;
@@ -681,7 +688,6 @@ class PolygonArea extends Polygon {
       seatRadius,
       seatSpacing,
       rotation,
-      area: this,
     });
 
     for (let seatIndex = 0; seatIndex < numberOfSeats; seatIndex++) {
@@ -734,6 +740,7 @@ class Text {
       fontFamily: this.fontFamily,
       color: this.color,
       rotation: this.rotation,
+      area: this.area,
     };
   }
   static deserialize(data) {
@@ -742,7 +749,6 @@ class Text {
 
   draw() {
     ctx.save();
-
     ctx.translate(this.x + this.area.x, this.y + this.area.y);
     ctx.rotate((this.rotation * Math.PI) / 180);
     ctx.translate(-(this.x + this.area.x), -(this.y + this.area.y));
@@ -831,10 +837,11 @@ class Row {
       seatSpacing: this.seatSpacing,
       seats: this.seats.map((seat) => seat.serialize()),
       rotation: this.rotation,
+      area: this.area,
     };
   }
 
-  static deserialize(data, area = null) {
+  static deserialize(data) {
     const row = new Row({
       ...data,
     });
@@ -876,7 +883,13 @@ class Row {
     const x = this.seats.length * (this.seatRadius * 2 + this.seatSpacing);
     const y = 0;
     const seat = new Seat({
-      row: this,
+      row: {
+        startX: this.startX,
+        startY: this.startY,
+        area: this.area,
+        seatRadius: this.seatRadius,
+        rotation: this.rotation,
+      },
       number: number,
       x: x,
       y: y,
@@ -985,6 +998,7 @@ class Seat {
       y: this.y,
       radius: this.radius,
       isBuyed: this.isBuyed,
+      row: this.row,
     };
   }
 
@@ -1053,18 +1067,15 @@ class Seat {
 
     ctx.save();
 
-    // Translate to the row's position
     ctx.translate(
       this.row.startX + this.row.area.x,
       this.row.startY + this.row.area.y
     );
 
-    // Rotate the context to match the row's rotation
     const rotationRad = (this.row.rotation * Math.PI) / 180;
     ctx.rotate(rotationRad);
 
-    // Draw the rectangle at the transformed position
-    ctx.translate(this.x, this.y); // Translate to the seat position relative to the row
+    ctx.translate(this.x, this.y);
     ctx.strokeStyle = "black";
     ctx.setLineDash([5, 3]);
     ctx.strokeRect(-this.radius - 2, -this.radius - 2, rectWidth, rectHeight); // Draw the rectangle centered at the seat

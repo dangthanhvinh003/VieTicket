@@ -143,3 +143,7 @@ button:hover {
   -ms-overflow-style: none;  /* Hide scrollbars in Internet Explorer and Edge */
   scrollbar-width: none;  /* Hide scrollbars in Firefox */
 }
+
+.rotate-ninety{
+  transform: translateY(0.1rem) rotate(90deg);
+}
