@@ -2,6 +2,7 @@ package com.example.VieTicketSystem.controller;
 
 import com.example.VieTicketSystem.model.entity.Order;
 import com.example.VieTicketSystem.model.entity.Seat;
+import com.example.VieTicketSystem.model.entity.SeatMap;
 import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.OrderRepo;
@@ -42,7 +43,9 @@ public class PurchaseTicketController {
     private final TicketRepo ticketRepo;
     private final QRCodeService qrCodeService;
 
-    public PurchaseTicketController(SeatMapRepo seatMapRepo, HttpSession httpSession, PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo, OrderRepo orderRepo, TicketRepo ticketRepo, QRCodeService qrCodeService) {
+    public PurchaseTicketController(SeatMapRepo seatMapRepo, HttpSession httpSession,
+            PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo,
+            OrderRepo orderRepo, TicketRepo ticketRepo, QRCodeService qrCodeService) {
         this.seatMapRepo = seatMapRepo;
         this.httpSession = httpSession;
         this.purchaseTicketService = purchaseTicketService;
@@ -55,8 +58,8 @@ public class PurchaseTicketController {
 
     @GetMapping("/select-tickets")
     public String showForm(@RequestParam("eventId") int eventId,
-                           Model model,
-                           RedirectAttributes redirectAttributes) throws Exception {
+            Model model,
+            RedirectAttributes redirectAttributes) throws Exception {
 
         User activeUser = (User) httpSession.getAttribute("activeUser");
         if (activeUser == null) {
@@ -87,19 +90,23 @@ public class PurchaseTicketController {
         model.addAttribute("event", purchaseTicketService.getEventWithAreas(eventId));
         if (seatMapRepo.getSeatMapByEventId(eventId).getImg() == null) {
             model.addAttribute("chooseNumberOfSeats", true);
-            model.addAttribute("availableSeats", seatRepo.getAvailableSeatsCount(eventId, Seat.TakenStatus.AVAILABLE.toInteger()));
+            model.addAttribute("availableSeats",
+                    seatRepo.getAvailableSeatsCount(eventId, Seat.TakenStatus.AVAILABLE.toInteger()));
         } else {
+            SeatMap seatMap = seatMapRepo.getSeatMapByEventId(eventId);
             model.addAttribute("chooseNumberOfSeats", false);
-            model.addAttribute("seatMap", seatMapRepo.getSeatMapByEventId(eventId));
+            model.addAttribute("seatMap", seatMap);
+            if (seatMap.getMapFile() != null) {
+                return "purchase/selectEditor";
+            }
         }
-
 
         return "purchase/select";
     }
 
     @PostMapping("/select-tickets")
     public ResponseEntity<String> selectTickets(@RequestBody TicketSelection ticketSelection,
-                                                HttpServletRequest request) throws Exception {
+            HttpServletRequest request) throws Exception {
         User user = (User) httpSession.getAttribute("activeUser");
         if (user == null) {
             return new ResponseEntity<>("Please login to buy ticket", HttpStatus.UNAUTHORIZED);
@@ -124,16 +131,19 @@ public class PurchaseTicketController {
         if (seatMapRepo.getSeatMapByEventId(eventId).getImg() != null) {
             // Check if any of the selected seats are already taken
             if (purchaseTicketService.areSeatsTaken(selectedSeats)) {
-                return new ResponseEntity<>("One or more of the selected seats are already taken", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("One or more of the selected seats are already taken",
+                        HttpStatus.BAD_REQUEST);
             }
 
             // Set seats taken
             seatRepo.updateSeats(ticketSelection.getSeats(), Seat.TakenStatus.RESERVED);
         } else {
             // Handle the case where the event does not have a seat map
-            // Assign the selected number of seats to the user from the pool of available virtual seats
+            // Assign the selected number of seats to the user from the pool of available
+            // virtual seats
             // This is a placeholder and should be replaced with your actual implementation
-            List<Integer> assignedSeats = purchaseTicketService.assignVirtualSeatsToUser(eventId, selectedSeats, user.getUserId());
+            List<Integer> assignedSeats = purchaseTicketService.assignVirtualSeatsToUser(eventId, selectedSeats,
+                    user.getUserId());
             if (assignedSeats == null) {
                 return new ResponseEntity<>("Not enough available seats", HttpStatus.BAD_REQUEST);
             }
@@ -145,7 +155,8 @@ public class PurchaseTicketController {
         String clientIp = request.getRemoteAddr();
 
         // If all checks pass, generate the payment URL
-        String paymentUrl = orderService.createOrder(selectedSeats, "Ticket purchase for event " + eventId, baseUrl + "/purchase", clientIp, user);
+        String paymentUrl = orderService.createOrder(selectedSeats, "Ticket purchase for event " + eventId,
+                baseUrl + "/purchase", clientIp, user);
 
         // Return the payment URL in the response
         return new ResponseEntity<>(paymentUrl, HttpStatus.OK);
@@ -156,7 +167,7 @@ public class PurchaseTicketController {
 
         // Get all the fields from the request to a dictionary
         Map<String, String> fields = new HashMap<>();
-        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
             String fieldName;
             String fieldValue;
             fieldName = URLEncoder.encode(params.nextElement(), StandardCharsets.US_ASCII);
@@ -176,7 +187,8 @@ public class PurchaseTicketController {
     }
 
     @GetMapping("/purchase-failure")
-    public String showPurchaseFailure(@RequestParam("orderId") int orderId, Model model, RedirectAttributes redirectAttributes) throws Exception {
+    public String showPurchaseFailure(@RequestParam("orderId") int orderId, Model model,
+            RedirectAttributes redirectAttributes) throws Exception {
         User user = (User) httpSession.getAttribute("activeUser");
         if (user == null) {
             httpSession.setAttribute("redirect", "/purchase/purchase-failure?orderId=" + orderId);
@@ -205,7 +217,8 @@ public class PurchaseTicketController {
     }
 
     @GetMapping("/purchase-success")
-    public String showPurchaseSuccess(@RequestParam("orderId") int orderId, Model model, RedirectAttributes redirectAttributes) throws Exception {
+    public String showPurchaseSuccess(@RequestParam("orderId") int orderId, Model model,
+            RedirectAttributes redirectAttributes) throws Exception {
         User user = (User) httpSession.getAttribute("activeUser");
         if (user == null) {
             httpSession.setAttribute("redirect", "/purchase/purchase-success?orderId=" + orderId);
