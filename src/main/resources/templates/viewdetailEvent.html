@@ -292,6 +292,20 @@
             margin: 10px 0;
             /* Optional: add some margin to separate the image from text */
         }
+        .embed-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 ratio */
+            height: 0;
+        }
+        .embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
     </style>
 
 </head>
@@ -467,6 +481,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+        <script>
+           document.addEventListener("DOMContentLoaded", function() {
+            var oembeds = document.querySelectorAll('oembed[url]');
+            oembeds.forEach(function(embed) {
+                var url = embed.getAttribute('url');
+                var iframe = document.createElement('iframe');
+                iframe.setAttribute('src', url.replace('watch?v=', 'embed/'));
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                iframe.setAttribute('allowfullscreen', true);
+                
+                // Tạo div chứa với class 'embed-container' để quản lý tỷ lệ 16:9
+                var embedContainer = document.createElement('div');
+                embedContainer.classList.add('embed-container');
+                embedContainer.appendChild(iframe);
+                
+                embed.parentNode.replaceChild(embedContainer, embed);
+            });
+        });
+        </script>
 </body>
 
 </html>
