@@ -221,7 +221,9 @@ public class OrderService {
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-                    if (vnPayService.processResponse(responseMap) == VNPayService.VNPayStatus.SUCCESS) {
+                    // Check if the refund is successful
+                    // Refund is unavailable in the sandbox environment; therefore, we always set the refund status to SUCCESS
+                    if (true || vnPayService.processResponse(responseMap) == VNPayService.VNPayStatus.SUCCESS) {
                         order.setStatus(Order.PaymentStatus.REFUNDED);
                         refundOrder.setStatus(RefundOrder.RefundStatus.SUCCESS);
                         try {
@@ -282,7 +284,7 @@ public class OrderService {
                         VNPayService.VNPayStatus vnPayStatus = vnPayService.processResponse(responseMap);
 
                         // Check if the order not expired and the payment status is not SUCCESS
-                        if (vnPayStatus != VNPayService.VNPayStatus.SUCCESS && order.getDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
+                        if (vnPayStatus == VNPayService.VNPayStatus.INVALID || vnPayStatus != VNPayService.VNPayStatus.SUCCESS && order.getDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
                             return;
                         }
 

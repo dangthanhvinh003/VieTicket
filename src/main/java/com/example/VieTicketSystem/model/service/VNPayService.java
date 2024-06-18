@@ -185,23 +185,22 @@ public class VNPayService {
         String secretKey = VNPayConfig.getVnp_HashSecret();
         String checksum = VNPayConfig.hmacSHA512(secretKey, data);
 
-        // Check for vnp_Command using if
-        // TODO: Replace with switch/case in production (refund in test environment not supported liao)
-        if ("querydr".equals(fields.get("vnp_Command"))) {
-            if (checksum.equals(vnp_SecureHash)) {
+        if (!checksum.equals(vnp_SecureHash)) {
+            return VNPayStatus.INVALID;
+        }
+
+        switch (fields.get("vnp_Command")) {
+            case "refund", "querydr" -> {
                 if ("00".equals(fields.get("vnp_ResponseCode")) && "00".equals(fields.get("vnp_TransactionStatus"))) {
                     return VNPayStatus.SUCCESS;
                 } else {
                     return VNPayStatus.FAILED;
                 }
-            } else {
+            }
+            default -> {
                 return VNPayStatus.INVALID;
             }
         }
-
-        // Always return SUCCESS because it's a demo
-        // and VNPay does not allow refund on testing environment
-        return VNPayStatus.SUCCESS;
     }
 
     // Query order and return response body as a Mono
