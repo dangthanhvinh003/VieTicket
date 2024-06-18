@@ -159,44 +159,88 @@ public class VNPayService {
     }
 
     // Process refund response
-    public VNPayStatus refundResponse(Map<String, String> fields) {
+    public VNPayStatus processResponse(Map<String, String> fields) {
         String vnp_SecureHash = fields.get("vnp_SecureHash");
         fields.remove("vnp_SecureHashType");
         fields.remove("vnp_SecureHash");
 
         String data = String.join("|",
                 fields.get("vnp_ResponseId"),
-                fields.get("vnp_Command"),
+                fields.getOrDefault("vnp_Command", ""),
                 fields.get("vnp_ResponseCode"),
                 fields.get("vnp_Message"),
                 fields.get("vnp_TmnCode"),
                 fields.get("vnp_TxnRef"),
                 fields.get("vnp_Amount"),
                 fields.get("vnp_BankCode"),
-                fields.get("vnp_PayDate"),
+                fields.getOrDefault("vnp_PayDate", ""),
                 fields.get("vnp_TransactionNo"),
                 fields.get("vnp_TransactionType"),
                 fields.get("vnp_TransactionStatus"),
-                fields.get("vnp_OrderInfo")
+                fields.get("vnp_OrderInfo"),
+                fields.getOrDefault("vnp_PromotionCode", ""),
+                fields.getOrDefault("vnp_PromotionAmount", "")
         );
 
         String secretKey = VNPayConfig.getVnp_HashSecret();
         String checksum = VNPayConfig.hmacSHA512(secretKey, data);
 
+        // Check for vnp_Command using if
+        // TODO: Replace with switch/case in production (refund in test environment not supported liao)
+        if ("querydr".equals(fields.get("vnp_Command"))) {
+            if (checksum.equals(vnp_SecureHash)) {
+                if ("00".equals(fields.get("vnp_ResponseCode")) && "00".equals(fields.get("vnp_TransactionStatus"))) {
+                    return VNPayStatus.SUCCESS;
+                } else {
+                    return VNPayStatus.FAILED;
+                }
+            } else {
+                return VNPayStatus.INVALID;
+            }
+        }
+
         // Always return SUCCESS because it's a demo
         // and VNPay does not allow refund on testing environment
         return VNPayStatus.SUCCESS;
+    }
 
-        // Uncomment the following code when testing on production environment
-//        if (checksum.equals(vnp_SecureHash)) {
-//            if ("00".equals(fields.get("vnp_ResponseCode"))) {
-//                return VNPayStatus.SUCCESS;
-//            } else {
-//                return VNPayStatus.FAILED;
-//            }
-//        } else {
-//            return VNPayStatus.INVALID;
-//        }
+    // Query order and return response body as a Mono
+    public Mono<String> queryTransaction(Map<String, String> transactionData) throws IOException {
+        String vnp_RequestId = VNPayConfig.getRandomAlphanumericString(24);
+        String vnp_Version = VNPayConfig.vnp_Version;
+        String vnp_Command = "querydr";
+        String vnp_TmnCode = VNPayConfig.getVnp_TmnCode();
+        String vnp_TxnRef = transactionData.get("vnp_TxnRef");
+        String vnp_OrderInfo = "Query order ID: " + vnp_TxnRef;
+        String vnp_TransactionDate = transactionData.get("vnp_CreateDate");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate = formatter.format(new Date());
+        String vnp_IpAddr = getPublicIP();
+
+        String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TxnRef, vnp_TransactionDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
+        String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.getVnp_HashSecret(), hash_Data);
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("vnp_RequestId", vnp_RequestId);
+        requestBody.put("vnp_Version", vnp_Version);
+        requestBody.put("vnp_Command", vnp_Command);
+        requestBody.put("vnp_TmnCode", vnp_TmnCode);
+        requestBody.put("vnp_TxnRef", vnp_TxnRef);
+        requestBody.put("vnp_OrderInfo", vnp_OrderInfo);
+        requestBody.put("vnp_TransactionDate", vnp_TransactionDate);
+        requestBody.put("vnp_CreateDate", vnp_CreateDate);
+        requestBody.put("vnp_IpAddr", vnp_IpAddr);
+        requestBody.put("vnp_SecureHash", vnp_SecureHash);
+
+        String jsonRequestBody = jacksonObjectMapper.writeValueAsString(requestBody);
+
+        // Send POST request to API URL with jsonRequestBody as the request body
+        return webClient.post()
+                .uri("")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(jsonRequestBody)
+                .retrieve()
+                .bodyToMono(String.class);
     }
 
     // Get public IP address of the server

@@ -1,16 +1,9 @@
 package com.example.VieTicketSystem.controller;
 
-import com.example.VieTicketSystem.model.entity.Order;
-import com.example.VieTicketSystem.model.entity.Seat;
-import com.example.VieTicketSystem.model.entity.Ticket;
-import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.OrderRepo;
-import com.example.VieTicketSystem.model.repo.SeatMapRepo;
-import com.example.VieTicketSystem.model.repo.SeatRepo;
-import com.example.VieTicketSystem.model.repo.TicketRepo;
+import com.example.VieTicketSystem.model.entity.*;
+import com.example.VieTicketSystem.model.repo.*;
 import com.example.VieTicketSystem.model.service.OrderService;
 import com.example.VieTicketSystem.model.service.PurchaseTicketService;
-import com.example.VieTicketSystem.model.service.QRCodeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.*;
@@ -40,9 +33,9 @@ public class PurchaseTicketController {
     private final SeatRepo seatRepo;
     private final OrderRepo orderRepo;
     private final TicketRepo ticketRepo;
-    private final QRCodeService qrCodeService;
+    private final EventRepo eventRepo;
 
-    public PurchaseTicketController(SeatMapRepo seatMapRepo, HttpSession httpSession, PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo, OrderRepo orderRepo, TicketRepo ticketRepo, QRCodeService qrCodeService) {
+    public PurchaseTicketController(SeatMapRepo seatMapRepo, HttpSession httpSession, PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo, OrderRepo orderRepo, TicketRepo ticketRepo, EventRepo eventRepo) {
         this.seatMapRepo = seatMapRepo;
         this.httpSession = httpSession;
         this.purchaseTicketService = purchaseTicketService;
@@ -50,7 +43,7 @@ public class PurchaseTicketController {
         this.seatRepo = seatRepo;
         this.orderRepo = orderRepo;
         this.ticketRepo = ticketRepo;
-        this.qrCodeService = qrCodeService;
+        this.eventRepo = eventRepo;
     }
 
     @GetMapping("/select-tickets")
@@ -67,19 +60,21 @@ public class PurchaseTicketController {
             return "redirect:/";
         }
 
+        Event event = eventRepo.findById(eventId);
+
         // Check if event exists, if not, return not found exception
-        if (!purchaseTicketService.isEventExist(eventId)) {
+        if (event == null || event.getApproved() == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
         }
 
         // Check for event's ticket sale date
-        if (purchaseTicketService.isTicketSaleDateStarted(eventId)) {
+        if (event.getTicketSaleDate().isAfter(java.time.LocalDateTime.now())) {
             redirectAttributes.addFlashAttribute("error", "Ticket sale date not started");
             return "redirect:/viewdetailEvent/" + eventId;
         }
 
         // Check if event passed
-        if (purchaseTicketService.isEventPassed(eventId)) {
+        if (event.getEndDate().isBefore(java.time.LocalDateTime.now())) {
             redirectAttributes.addFlashAttribute("error", "Event has passed");
             return "redirect:/viewdetailEvent/" + eventId;
         }
@@ -108,15 +103,21 @@ public class PurchaseTicketController {
         }
 
         int eventId = ticketSelection.getEventId();
+        Event event = eventRepo.findById(eventId);
         List<Integer> selectedSeats = ticketSelection.getSeats();
 
         // Check if event exists
-        if (!purchaseTicketService.isEventExist(eventId)) {
+        if (event == null || event.getApproved() == 0) {
             return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
         }
 
+        // Check if ticket sales date has started
+        if (event.getTicketSaleDate().isAfter(java.time.LocalDateTime.now())) {
+            return new ResponseEntity<>("Ticket sales date has not started", HttpStatus.BAD_REQUEST);
+        }
+
         // Check if event has passed
-        if (purchaseTicketService.isEventPassed(eventId)) {
+        if (event.getEndDate().isBefore(java.time.LocalDateTime.now())) {
             return new ResponseEntity<>("Event has passed", HttpStatus.BAD_REQUEST);
         }
 

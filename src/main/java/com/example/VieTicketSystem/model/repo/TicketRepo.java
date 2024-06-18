@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.VieTicketSystem.model.entity.Order;
 import org.springframework.stereotype.Repository;
 
 import com.example.VieTicketSystem.model.entity.Ticket;
@@ -77,7 +78,7 @@ public class TicketRepo {
         try (Connection con = ConnectionPoolManager.getConnection()) {
             PreparedStatement ps = con.prepareStatement(UPDATE_SUCCESS_IN_BULK_SQL);
             for (Integer ticketId : ticketIds) {
-                ps.setTimestamp(1, Timestamp.valueOf(purchaseDate));
+                ps.setTimestamp(1, purchaseDate == null ? null : Timestamp.valueOf(purchaseDate));
                 ps.setInt(2, successStatus);
                 ps.setInt(3, ticketId);
                 ps.addBatch();
@@ -117,7 +118,7 @@ public class TicketRepo {
                 } else {
                     ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
                 }
-                ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
+                ticket.setOrder(new Order() {{ setOrderId(rs.getInt("order_id")); }});
                 ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
                 ticket.setStatus(Ticket.TicketStatus.fromInteger(rs.getInt("status")));
                 tickets.add(ticket);

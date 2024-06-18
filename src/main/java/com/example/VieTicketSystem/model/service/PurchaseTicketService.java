@@ -156,18 +156,6 @@ public class PurchaseTicketService {
         return seat;
     }
 
-    public boolean isTicketSaleDateStarted(int eventId) throws Exception {
-        return eventRepo.findById(eventId).getTicketSaleDate().isAfter(java.time.LocalDateTime.now());
-    }
-
-    public boolean isEventPassed(int eventId) throws Exception {
-        return eventRepo.findById(eventId).getEndDate().isBefore(java.time.LocalDateTime.now());
-    }
-
-    public boolean isEventExist(int eventId) throws Exception {
-        return eventRepo.findById(eventId) != null;
-    }
-
     public boolean areSeatsTaken(List<Integer> seats) throws Exception {
         for (int seatId : seats) {
             if (seatRepo.findById(seatId).getTaken() != Seat.TakenStatus.AVAILABLE) {
