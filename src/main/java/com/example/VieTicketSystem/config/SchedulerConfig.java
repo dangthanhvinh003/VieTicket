@@ -15,7 +15,7 @@ public class SchedulerConfig {
         this.orderService = orderService;
     }
 
-    @Scheduled(fixedDelay = 300_000)
+    @Scheduled(fixedRate = 300_000)
     public void invalidatePendingOrders() throws Exception {
         orderService.processPendingOrders();
     }
