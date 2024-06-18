@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.WriterException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,24 +26,35 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
-    private final VNPayService vnPayService;
+    private final EmailService emailService;
     private final ObjectMapper objectMapper;
+    private final long ORDER_EXPIRATION;
     private final OrderRepo orderRepo;
+    private final QRCodeService qrCodeService;
+    private final RefundOrderRepo refundOrderRepo;
     private final SeatRepo seatRepo;
     private final TicketRepo ticketRepo;
-    private final RefundOrderRepo refundOrderRepo;
-    private final EmailService emailService;
-    private final QRCodeService qrCodeService;
+    private final VNPayService vnPayService;
 
-    public OrderService(VNPayService vnPayService, ObjectMapper jacksonObjectMapper, OrderRepo orderRepo, SeatRepo seatRepo, TicketRepo ticketRepo, RefundOrderRepo refundOrderRepo, EmailService emailService, QRCodeService qrCodeService) {
-        this.vnPayService = vnPayService;
+    public OrderService(EmailService emailService,
+                        ObjectMapper jacksonObjectMapper,
+                        @Value("${ORDER_TIME_WINDOW_MINUTES}") long ORDER_EXPIRATION,
+                        OrderRepo orderRepo,
+                        QRCodeService qrCodeService,
+                        RefundOrderRepo refundOrderRepo,
+                        SeatRepo seatRepo,
+                        TicketRepo ticketRepo,
+                        VNPayService vnPayService) {
+
+        this.emailService = emailService;
         this.objectMapper = jacksonObjectMapper;
+        this.ORDER_EXPIRATION = ORDER_EXPIRATION;
         this.orderRepo = orderRepo;
+        this.qrCodeService = qrCodeService;
+        this.refundOrderRepo = refundOrderRepo;
         this.seatRepo = seatRepo;
         this.ticketRepo = ticketRepo;
-        this.refundOrderRepo = refundOrderRepo;
-        this.emailService = emailService;
-        this.qrCodeService = qrCodeService;
+        this.vnPayService = vnPayService;
     }
 
     // Create order and return payment URL
@@ -75,6 +87,7 @@ public class OrderService {
     }
 
     private void processOrder(Order order, Order.PaymentStatus orderStatus, String vnp_PayDate) throws Exception {
+
         // This calls from Ticket -> Seat -> Row -> Area -> Event -> Organizer w/o using JPA
         // TODO: Optimize this
         List<Ticket> tickets = ticketRepo.findByOrderId(order.getOrderId());
@@ -267,6 +280,12 @@ public class OrderService {
 
                         System.out.println(responseMap);
                         VNPayService.VNPayStatus vnPayStatus = vnPayService.processResponse(responseMap);
+
+                        // Check if the order not expired and the payment status is not SUCCESS
+                        if (vnPayStatus != VNPayService.VNPayStatus.SUCCESS && order.getDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
+                            return;
+                        }
+
                         try {
                             processOrder(order, vnPayStatus == VNPayService.VNPayStatus.SUCCESS ? Order.PaymentStatus.SUCCESS : Order.PaymentStatus.FAILED, responseMap.get("vnp_PayDate"));
                         } catch (Exception e) {
