@@ -67,8 +67,10 @@
         }
 
         .upload-container img {
-            width: 50px;
-            height: 50px;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            /* Hoặc cover, tùy theo nhu cầu */
             margin-bottom: 10px;
         }
 
@@ -85,6 +87,7 @@
             display: block;
             width: 100%;
             height: auto;
+            object-fit: cover;
         }
 
         .form-label {
@@ -119,11 +122,15 @@
 
 <body>
     <div class="container">
-        <h1>Create New Events</h1>
+        <h1>Edit Events</h1>
+        <div id="fileSizeAlert" class="alert alert-danger d-none" role="alert">
+            File quá lớn. Vui lòng chọn file nhỏ hơn 1MB.
+        </div>
+        
         <form method="post" th:action="@{/eventEditSubmit}" enctype="multipart/form-data" class="form">
             <!-- Banner Upload -->
             <div class="upload-container mb-3" style="height: 480px;">
-                <input type="file" name="banner" accept="image/*" onchange="previewImage(event, 'bannerPreview')">
+                <input type="file" name="banner" accept="image/*" onchange="checkFileSize(event, 'bannerPreview')">
                 <img id="bannerPreview" alt="Banner Preview" style="height:720px;" th:src="${eventEdit.banner}">
                 <input type="hidden" name="currentBanner" th:value="${eventEdit.banner}">
             </div>
@@ -131,7 +138,7 @@
                 <div class="col-lg-4 mb-3">
                     <div class="upload-container" style="height: 320px;">
                         <input type="file" name="poster" accept="image/*"
-                            onchange="previewImage(event, 'posterPreview')">
+                            onchange="checkFileSize(event, 'posterPreview')">
                         <img id="posterPreview" alt="Poster Preview" th:src="${eventEdit.poster}">
                         <input type="hidden" name="currentPoster" th:value="${eventEdit.poster}">
                     </div>
@@ -201,6 +208,25 @@
     <!-- Bootstrap JS -->
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
     <script>
+         function checkFileSize(event, previewElementId) {
+            const file = event.target.files[0];
+            const maxSizeGif = 500 * 1024; // 500KB
+            const maxSizeOther = 1 * 1024 * 1024; // 1MB
+            const alertElement = document.getElementById('fileSizeAlert');
+
+            if (file.type === 'image/gif' && file.size > maxSizeGif) {
+                alertElement.innerHTML = `GIF size too large. Got ${file.size} bytes. Maximum is ${maxSizeGif} bytes.`;
+                alertElement.classList.remove('d-none');
+                event.target.value = ''; // Clear the file input
+            } else if (file.type !== 'image/gif' && file.size > maxSizeOther) {
+                alertElement.innerHTML = `File size too large. Got ${file.size} bytes. Maximum is ${maxSizeOther} bytes.`;
+                alertElement.classList.remove('d-none');
+                event.target.value = ''; // Clear the file input
+            } else {
+                alertElement.classList.add('d-none');
+                previewImage(event, previewElementId);
+            }
+        }
         function previewImage(event, previewElementId) {
             const file = event.target.files[0];
             if (file) {
@@ -218,6 +244,7 @@
             }
         }
     </script>
+
 </body>
 
 </html>
