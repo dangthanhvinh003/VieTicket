@@ -34,21 +34,6 @@ function drawAll() {
         ctx.fillStyle = "lightgrey";
         ctx.fillRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
         zoomedArea.draw(true);
-        zoomedArea.shapes
-          .filter((shape) => shape.type === "Row")
-          .forEach((row) => {
-            row.seats.forEach((seat) => {
-              if (selectedSeats.includes(seat)) {
-                console.log("good");
-                ctx.fillStyle = "green";
-              }
-            });
-          });
-        if (selectedShape != null) {
-          if (selectedShape.type === "Seat") {
-            selectedShape.drawBoundingRectangle();
-          }
-        }
       } else if (shape === selectedShape) {
         if (shape.type === "Area") {
           ctx.strokeStyle = "red";
