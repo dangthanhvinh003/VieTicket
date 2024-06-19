@@ -421,7 +421,7 @@
             seats.forEach(seat => {
                 seat.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    seat.classList.toggle('selected');
+                    selectSeat.call(seat);
                 });
             });
 

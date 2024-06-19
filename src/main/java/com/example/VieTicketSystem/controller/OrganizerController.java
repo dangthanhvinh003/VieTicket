@@ -166,14 +166,15 @@ public class OrganizerController {
         int eventId = (int) httpSession.getAttribute("eventIdEdit");
         String posterUrl = currentPoster;
         String bannerUrl = currentBanner;
+       
 
         if (!multipartFile.isEmpty()) {
-            posterUrl = fileUpload.uploadFile(multipartFile);
+            posterUrl = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958);
         }
         model.addAttribute("poster", posterUrl);
 
         if (!multipartFile1.isEmpty()) {
-            bannerUrl = fileUpload.uploadFile(multipartFile1);
+            bannerUrl = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720); 
         }
         model.addAttribute("banner", bannerUrl);
         User user = (User) httpSession.getAttribute("activeUser");
