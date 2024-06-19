@@ -557,14 +557,32 @@ class PolygonArea extends Polygon {
               ) {
                 row.createSeat({
                   number: seatIndex + 1,
-                  isBuyed: false,
+                  status: "available",
                 });
               }
+              row.area = {
+                points: this.points,
+                color: this.color,
+                selectedPointIndex: this.selectedPointIndex,
+                x: this.x,
+                y: this.y,
+                furthestX: this.furthestX,
+                furthestY: this.furthestY,
+              };
 
               this.shapes.push(row);
             }
             case "Text": {
               const text = new Text({ ...shape });
+              text.area = {
+                points: this.points,
+                color: this.color,
+                selectedPointIndex: this.selectedPointIndex,
+                x: this.x,
+                y: this.y,
+                furthestX: this.furthestX,
+                furthestY: this.furthestY,
+              };
               this.shapes.push(text);
             }
           }
@@ -584,16 +602,6 @@ class PolygonArea extends Polygon {
 
   static deserialize(data) {
     const polygonArea = new PolygonArea(data);
-    polygonArea.shapes = data.shapes.map((shapeData) => {
-      switch (shapeData.type) {
-        case "Row":
-          return Row.deserialize(shapeData);
-        case "Text":
-          return Text.deserialize(shapeData);
-        default:
-          throw new Error(`Unknown shape type: ${shapeData.type}`);
-      }
-    });
     return polygonArea;
   }
 
@@ -693,7 +701,7 @@ class PolygonArea extends Polygon {
     for (let seatIndex = 0; seatIndex < numberOfSeats; seatIndex++) {
       row.createSeat({
         number: seatIndex + 1,
-        isBuyed: false,
+        status: "available",
       });
     }
     this.addShape(row);
@@ -879,7 +887,7 @@ class Row {
     this.seats.push(seat);
   }
 
-  createSeat({ number, isBuyed = false }) {
+  createSeat({ number, status = "available" }) {
     const x = this.seats.length * (this.seatRadius * 2 + this.seatSpacing);
     const y = 0;
     const seat = new Seat({
@@ -894,7 +902,7 @@ class Row {
       x: x,
       y: y,
       radius: this.seatRadius,
-      isBuyed,
+      status,
     });
     this.addSeat(seat);
   }
@@ -980,13 +988,13 @@ class Row {
 }
 
 class Seat {
-  constructor({ row, number, x, y, radius, isBuyed = false }) {
+  constructor({ row, number, x, y, radius, status = "available" }) {
     this.row = row;
     this.number = number;
     this.x = x;
     this.y = y;
     this.radius = radius;
-    this.isBuyed = isBuyed;
+    this.status = status;
     this.type = "Seat";
   }
 
@@ -997,7 +1005,7 @@ class Seat {
       x: this.x,
       y: this.y,
       radius: this.radius,
-      isBuyed: this.isBuyed,
+      status: this.status,
       row: this.row,
     };
   }
@@ -1016,8 +1024,11 @@ class Seat {
     ctx.strokeStyle = "black";
     ctx.stroke();
 
-    if (this.isBuyed) {
+    if (this.status == "taken") {
       ctx.fillStyle = "red";
+      ctx.fill();
+    } else if (this.status == "reserved") {
+      ctx.fillStyle = "green";
       ctx.fill();
     }
 
