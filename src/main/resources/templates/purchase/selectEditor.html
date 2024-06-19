@@ -36,6 +36,12 @@
             top: 10px;
             left: 10px;
         }
+        .suggest{
+            position: fixed;
+            top:10px;
+            transform: translateX(25vw);
+            color:#FFA3FD
+        }
     </style>
 </head>
 <body>
@@ -50,38 +56,41 @@
     <button class="btn btn-secondary custom-btn" id="backButton">
         <i class="bi bi-box-arrow-left" style="color: white;"></i>
     </button>
-    <div class="editor-panel" id="editorPanel">
-        <button id="zoomOutButton" class="btn btn-warning" style="display: none;">Zoom Out</button>
-        <div id="editorTitle">
+    <h2 class="suggest">
+        Please click on the area to choose ticket
+    </h2>
+    <div class="editor-panel d-flex flex-column justify-content-between" id="editorPanel">
+        <div>
+            <div id="editorTitle">
+            </div>
+            <div id="editorContent">
+            </div>
         </div>
-        <div id="editorContent">
+        <div id="editorSubmit" class="d-flex justify-content-between flex-column align-items-start">
+            <div id="editorSubmitContent"></div>
+            <button id="editorSubmitButton" class="btn">Buy</button>
         </div>
     </div>
     <script th:inline="javascript">
         let eventData = /*[[${event}]]*/ {};
         let seatMapData = /*[[${seatMap}]]*/ {};
         let selectedSeats =[];
-        console.log(eventData)
-        console.log(seatMapData)
     </script>
-    <!-- <script src="../static/js/canvas.js"></script>
-    <script src="../static/js/events.js"></script>
-    <script src="../static/js/functions.js"></script>
-    <script src="../static/js/editors.js"></script>
-    <script src="../static/js/shapes.js"></script>
-    <script src="../static/js/templates.js"></script> -->
+    <script src="../static/js/canvasusers.js"></script>
+    <script src="../static/js/functions-users.js"></script>
+    <script src="../static/js/editors-users.js"></script>
+    <script src="../static/js/shape.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" th:src="@{/static/js/canvasUsers.js}"></script>
-    <script type="text/javascript" th:src="@{/static/js/functionsUsers.js}"></script>
-    <script type="text/javascript" th:src="@{/static/js/editorsUsers.js}"></script>
-    <script type="text/javascript" th:src="@{/static/js/shapes.js}"></script>
     <script type="text/javascript">
+        
+        const editorSubmitContent = document.getElementById("editorSubmitContent");
+        const editorSubmitButton = document.getElementById("editorSubmitButton");
         const backButton = document.getElementById('backButton');
         document.addEventListener("DOMContentLoaded", () => {
             canvas.addEventListener("wheel",handleWheel);
-            canvas.addEventListener("dblclick", zoomInArea);
-            canvas.addEventListener("mousedown", selectShape);
+            canvas.addEventListener("click", zoomInArea);
+            editorSubmitButton.addEventListener("click", handleBuyTickets)
 
             backButton.innerHTML = '<i class="bi bi-box-arrow-left" style="color: white;"></i>';
             backButton.addEventListener("click",popHistory)
@@ -106,6 +115,7 @@
                 drawAll();
             }
             mainEditor();
+            submitEditor()
             saveCanvasState();
         });
     </script>

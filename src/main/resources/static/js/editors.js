@@ -411,9 +411,6 @@ function seatEditor(seat, mouseX, mouseY) {
         seat.radius || 10
       }">
       <br>
-      <label for="seatIsBuyed">Is Seat Bought:</label>
-      <input type="checkbox" id="seatIsBuyed" ${seat.isBuyed ? "checked" : ""}>
-      <br>
     `);
 
     document.getElementById("seatNumber").addEventListener("input", (e) => {
@@ -424,12 +421,6 @@ function seatEditor(seat, mouseX, mouseY) {
 
     document.getElementById("seatRadius").addEventListener("input", (e) => {
       seat.radius = parseInt(e.target.value, 10);
-      saveAreaCanvasState();
-      drawAll();
-    });
-
-    document.getElementById("seatIsBuyed").addEventListener("change", (e) => {
-      seat.isBuyed = e.target.checked;
       saveAreaCanvasState();
       drawAll();
     });
