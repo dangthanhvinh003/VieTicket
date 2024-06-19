@@ -2,11 +2,9 @@ package com.example.VieTicketSystem.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,19 +20,22 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class TicketController {
+
     private final TicketRepo ticketRepo;
+    private final QRCodeService qrCodeService;
+    private final HttpSession httpSession;
 
-    @Autowired
-    private QRCodeService qrCodeService;
-    @Autowired
-    private HttpSession httpSession;
-
-    public TicketController(TicketRepo ticketRepo) {
+    public TicketController(TicketRepo ticketRepo,
+                            QRCodeService qrCodeService,
+                            HttpSession httpSession) {
         this.ticketRepo = ticketRepo;
+        this.qrCodeService = qrCodeService;
+        this.httpSession = httpSession;
     }
 
     @GetMapping("/tickets")
-    public String listTickets(Model model, HttpSession httpSession, @RequestParam(defaultValue = "0") int page,
+    public String listTickets(Model model, HttpSession httpSession,
+                              @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
         int userId = activeUser.getUserId();
@@ -52,11 +53,12 @@ public class TicketController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("utils", new Utils());
 
-        return "/tickets/list-all-tickets";
+        return "tickets/list";
     }
 
     @GetMapping("/tickets/view-ticket")
-    public String viewTicket(Model model, @RequestParam int ticketId) throws Exception {
+    public String viewTicket(Model model,
+                             @RequestParam int ticketId) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
         if (activeUser == null) {
             throw new AccessDeniedException("Access denied");
@@ -70,7 +72,7 @@ public class TicketController {
         model.addAttribute("ticket", ticket);
         model.addAttribute("qrCode", qrCodeService.generateQRCodeImageBase64(ticket.getQrCode()));
         model.addAttribute("utils", new Utils());
-        return "/tickets/view-ticket";
+        return "tickets/view";
     }
 
     public static class Utils {

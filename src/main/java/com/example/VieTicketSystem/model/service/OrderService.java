@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.WriterException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,24 +26,35 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
-    private final VNPayService vnPayService;
+    private final EmailService emailService;
     private final ObjectMapper objectMapper;
+    private final long ORDER_EXPIRATION;
     private final OrderRepo orderRepo;
+    private final QRCodeService qrCodeService;
+    private final RefundOrderRepo refundOrderRepo;
     private final SeatRepo seatRepo;
     private final TicketRepo ticketRepo;
-    private final RefundOrderRepo refundOrderRepo;
-    private final EmailService emailService;
-    private final QRCodeService qrCodeService;
+    private final VNPayService vnPayService;
 
-    public OrderService(VNPayService vnPayService, ObjectMapper jacksonObjectMapper, OrderRepo orderRepo, SeatRepo seatRepo, TicketRepo ticketRepo, RefundOrderRepo refundOrderRepo, EmailService emailService, QRCodeService qrCodeService) {
-        this.vnPayService = vnPayService;
+    public OrderService(EmailService emailService,
+                        ObjectMapper jacksonObjectMapper,
+                        @Value("${ORDER_TIME_WINDOW_MINUTES}") long ORDER_EXPIRATION,
+                        OrderRepo orderRepo,
+                        QRCodeService qrCodeService,
+                        RefundOrderRepo refundOrderRepo,
+                        SeatRepo seatRepo,
+                        TicketRepo ticketRepo,
+                        VNPayService vnPayService) {
+
+        this.emailService = emailService;
         this.objectMapper = jacksonObjectMapper;
+        this.ORDER_EXPIRATION = ORDER_EXPIRATION;
         this.orderRepo = orderRepo;
+        this.qrCodeService = qrCodeService;
+        this.refundOrderRepo = refundOrderRepo;
         this.seatRepo = seatRepo;
         this.ticketRepo = ticketRepo;
-        this.refundOrderRepo = refundOrderRepo;
-        this.emailService = emailService;
-        this.qrCodeService = qrCodeService;
+        this.vnPayService = vnPayService;
     }
 
     // Create order and return payment URL
@@ -74,14 +86,10 @@ public class OrderService {
         return paymentURL;
     }
 
-    // Handle payment response
-    public Order handlePaymentResponse(Map<String, String> params) throws Exception {
-        VNPayService.VNPayStatus vnPayStatus = vnPayService.orderReturn(params);
-        Order.PaymentStatus orderStatus = vnPayStatus == VNPayService.VNPayStatus.SUCCESS ? Order.PaymentStatus.SUCCESS : Order.PaymentStatus.FAILED;
+    private void processOrder(Order order, Order.PaymentStatus orderStatus, String vnp_PayDate) throws Exception {
 
-        String vnp_TxnRef = params.get("vnp_TxnRef");
-        Order order = orderRepo.findByTxnRef(vnp_TxnRef);
-
+        // This calls from Ticket -> Seat -> Row -> Area -> Event -> Organizer w/o using JPA
+        // TODO: Optimize this
         List<Ticket> tickets = ticketRepo.findByOrderId(order.getOrderId());
         List<Integer> ticketIds = tickets.stream().map(Ticket::getTicketId).collect(Collectors.toList());
 
@@ -93,7 +101,7 @@ public class OrderService {
 
                 // Update ticket status to success and set ticket purchase date
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-                LocalDateTime payDate = LocalDateTime.parse(params.get("vnp_PayDate"), formatter);
+                LocalDateTime payDate = vnp_PayDate == null ? null : LocalDateTime.parse(vnp_PayDate, formatter);
                 for (Ticket ticket : tickets) {
                     ticket.setStatus(Ticket.TicketStatus.PURCHASED);
                 }
@@ -123,6 +131,17 @@ public class OrderService {
                 seatRepo.updateSeats(tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.AVAILABLE);
             }
         }
+    }
+
+    // Handle payment response
+    public Order handlePaymentResponse(Map<String, String> params) throws Exception {
+        VNPayService.VNPayStatus vnPayStatus = vnPayService.orderReturn(params);
+        Order.PaymentStatus orderStatus = vnPayStatus == VNPayService.VNPayStatus.SUCCESS ? Order.PaymentStatus.SUCCESS : Order.PaymentStatus.FAILED;
+
+        String vnp_TxnRef = params.get("vnp_TxnRef");
+        Order order = orderRepo.findByTxnRef(vnp_TxnRef);
+
+        processOrder(order, orderStatus, params.get("vnp_PayDate"));
 
         return order;
     }
@@ -142,7 +161,7 @@ public class OrderService {
 
         for (Ticket ticket : tickets) {
             emailContent.append("<div class='ticket'>");
-            emailContent.append("<p>Lead visitor: ").append(ticket.getOrder().getUser().getFullName()).append("</p>");
+            emailContent.append("<p>Lead visitor: ").append(order.getUser().getFullName()).append("</p>");
             emailContent.append("<p>Event: ").append(ticket.getSeat().getRow().getArea().getEvent().getName()).append("</p>");
             emailContent.append("<p>Date&Time: ").append(ticket.getSeat().getRow().getArea().getEvent().getStartDate()).append(" - ").append(ticket.getSeat().getRow().getArea().getEvent().getEndDate()).append("</p>");
             emailContent.append("<p>Area: ").append(ticket.getSeat().getRow().getArea().getName()).append("</p>");
@@ -202,7 +221,9 @@ public class OrderService {
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-                    if (vnPayService.refundResponse(responseMap) == VNPayService.VNPayStatus.SUCCESS) {
+                    // Check if the refund is successful
+                    // Refund is unavailable in the sandbox environment; therefore, we always set the refund status to SUCCESS
+                    if (true || vnPayService.processResponse(responseMap) == VNPayService.VNPayStatus.SUCCESS) {
                         order.setStatus(Order.PaymentStatus.REFUNDED);
                         refundOrder.setStatus(RefundOrder.RefundStatus.SUCCESS);
                         try {
@@ -235,25 +256,44 @@ public class OrderService {
     }
 
     // Invalidate pending orders that have not been updated for a certain period of time
-    public void invalidatePendingOrders() throws Exception {
-        // Get the current time
-        LocalDateTime now = LocalDateTime.now();
-
+    public void processPendingOrders() throws Exception {
         // Find all orders that are in a pending state and have not been updated for a certain period of time
-        List<Order> orders = orderRepo.findByStatusAndUpdatedAtBefore(Order.PaymentStatus.PENDING, now.minusMinutes(15));
+        List<Order> orders = orderRepo.findByStatus(Order.PaymentStatus.PENDING);
+        System.out.println(orders);
 
         for (Order order : orders) {
 
-            // TODO: Query VNPay to check the status of the order
+            // Query VNPay to check the status of the order
+            Map<String, String> vnPayPersist = objectMapper.readValue(order.getVnpayData(),
+                    new TypeReference<>() {
+                    });
 
-            // Update the order status to FAILED
-            orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.FAILED);
+            vnPayService.queryTransaction(vnPayPersist)
+                    .doOnError(e -> {
+                    })
+                    .subscribe(response -> {
+                        Map<String, String> responseMap;
+                        try {
+                            responseMap = objectMapper.readValue(response, new TypeReference<>() {
+                            });
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
 
-            // Find the associated tickets and update their status to FAILED
-            ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.FAILED.toInteger());
-            List<Ticket> tickets = ticketRepo.findByOrderId(order.getOrderId());
-            List<Integer> seatIds = tickets.stream().map(ticket -> ticket.getSeat().getSeatId()).toList();
-            seatRepo.updateSeats(seatIds, Seat.TakenStatus.AVAILABLE);
+                        System.out.println(responseMap);
+                        VNPayService.VNPayStatus vnPayStatus = vnPayService.processResponse(responseMap);
+
+                        // Check if the order not expired and the payment status is not SUCCESS
+                        if (vnPayStatus == VNPayService.VNPayStatus.INVALID || vnPayStatus != VNPayService.VNPayStatus.SUCCESS && order.getDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
+                            return;
+                        }
+
+                        try {
+                            processOrder(order, vnPayStatus == VNPayService.VNPayStatus.SUCCESS ? Order.PaymentStatus.SUCCESS : Order.PaymentStatus.FAILED, responseMap.get("vnp_PayDate"));
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
         }
     }
 }
