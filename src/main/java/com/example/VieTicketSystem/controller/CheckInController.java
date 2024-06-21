@@ -68,7 +68,7 @@ public class CheckInController {
 
         // If passed all checks, include the ticket details in the response
         Map<String, String> response = new java.util.HashMap<>();
-        response.put("lead_visitor", ticket.getOrder().getUser().getFullName());
+        response.put("leadVisitor", ticket.getOrder().getUser().getFullName());
         response.put("event", ticket.getSeat().getRow().getArea().getEvent().getName());
         response.put("seat", ticket.getSeat().getRow().getArea().getName() + " " + ticket.getSeat().getNumber());
         response.put("status", String.valueOf(ticket.getStatus()));
