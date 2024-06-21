@@ -12,6 +12,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 // Original author: https://github.com/pad1092/VNPAY-Springboot-Demo
@@ -57,13 +60,13 @@ public class VNPayService {
         vnp_Params.put("vnp_ReturnUrl", urlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        String vnp_CreateDate = formatter.format(now);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
+        LocalDateTime expireTime = now.plusMinutes(15);
+        String vnp_ExpireDate = formatter.format(expireTime);
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
@@ -124,8 +127,11 @@ public class VNPayService {
         String vnp_OrderInfo = "Refund order ID: " + vnp_TxnRef;
         String vnp_TransactionDate = transactionData.get("vnp_CreateDate");
         String vnp_CreateBy = "VieTicket";
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(new Date());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        String vnp_CreateDate = formatter.format(now);
+
         String vnp_IpAddr = getPublicIP();
 
         String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TransactionType, vnp_TxnRef, vnp_Amount, vnp_TransactionDate, vnp_CreateBy, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
@@ -212,8 +218,11 @@ public class VNPayService {
         String vnp_TxnRef = transactionData.get("vnp_TxnRef");
         String vnp_OrderInfo = "Query order ID: " + vnp_TxnRef;
         String vnp_TransactionDate = transactionData.get("vnp_CreateDate");
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(new Date());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        String vnp_CreateDate = formatter.format(now);
+
         String vnp_IpAddr = getPublicIP();
 
         String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TxnRef, vnp_TransactionDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
