@@ -64,11 +64,14 @@
             box-sizing: border-box;
             margin-bottom: 20px;
             padding: 15px;
+
         }
 
         .upload-container img {
-            width: 50px;
-            height: 50px;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            /* Hoặc cover, tùy theo nhu cầu */
             margin-bottom: 10px;
         }
 
@@ -85,6 +88,8 @@
             display: none;
             width: 100%;
             height: auto;
+            object-fit: cover;
+            /* Hoặc cover, tùy thuộc vào việc bạn muốn ảnh được cắt hay giữ nguyên tỷ lệ */
         }
 
         .form-label {
@@ -120,22 +125,24 @@
 <body>
     <div class="container">
         <h1>Create New Events</h1>
+        <div id="fileSizeAlert" class="alert alert-danger d-none" role="alert">
+            File quá lớn. Vui lòng chọn file nhỏ hơn 1MB.
+        </div>
         <form method="post" th:action="@{/add-event}" enctype="multipart/form-data" class="form">
             <!-- Banner Upload -->
             <div class="upload-container mb-3" style="height: 480px;">
                 <img id="uploadIcon" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
                 <p id="uploadText">Input banner (1280×720)</p>
-                <input type="file" name="banner" accept="image/*" onchange="previewImage(event, 'bannerPreview')">
-                <img id="bannerPreview" alt="Banner Preview" style="height:720px; ">
+                <input type="file" name="banner" accept="image/*" onchange="checkFileSize(event, 'bannerPreview')">
+                <img id="bannerPreview" alt="Banner Preview" style="height:720px;">
             </div>
             <div class="row">
                 <!-- Poster Upload -->
                 <div class="col-lg-4 mb-3">
-                    <div class="upload-container" style="height: 320px;">
+                     <div class="upload-container" style="height: 320px;">
                         <img id="uploadIcon1" src="https://img.icons8.com/ios/50/000000/upload.png" alt="Upload Icon">
                         <p id="uploadText1">Input poster (720×958)</p>
-                        <input type="file" name="poster" accept="image/*"
-                            onchange="previewImage(event, 'posterPreview')">
+                        <input type="file" name="poster" accept="image/*" onchange="checkFileSize(event, 'posterPreview')">
                         <img id="posterPreview" alt="Poster Preview">
                     </div>
                 </div>
@@ -167,13 +174,22 @@
                 </div>
                 <!--Type -->
                 <div class="mb-3">
-                    <label for="end_date" class="form-label">Type :</label>
-                    <input type="text" class="form-control" id="type" name="type" required>
+                    <label for="type" class="form-label">Type :</label>
+                    <select class="form-control" id="type" name="type" required>
+                        <option value="" disabled selected>Select a type</option>
+                        <option value="music">Music</option>
+                        <option value="sport">Sport</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="comedy">Comedy</option>
+                        <option value="art">Art</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
                 <!-- TicketSaleDate-->
                 <div class="mb-3">
                     <label for="end_date" class="form-label">Ticket Sale Date :</label>
-                    <input type="datetime-local" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required>
+                    <input type="datetime-local" class="form-control" id="ticket_sale_date" name="ticket_sale_date"
+                        required>
                 </div>
                 <!-- Description -->
                 <div class="mb-3">
@@ -192,6 +208,25 @@
     <!-- Bootstrap JS -->
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
     <script>
+     function checkFileSize(event, previewElementId) {
+            const file = event.target.files[0];
+            const maxSizeGif = 500 * 1024; // 500KB
+            const maxSizeOther = 1 * 1024 * 1024; // 1MB
+            const alertElement = document.getElementById('fileSizeAlert');
+
+            if (file.type === 'image/gif' && file.size > maxSizeGif) {
+                alertElement.innerHTML = `GIF size too large. Got ${file.size} bytes. Maximum is ${maxSizeGif} bytes.`;
+                alertElement.classList.remove('d-none');
+                event.target.value = ''; // Clear the file input
+            } else if (file.type !== 'image/gif' && file.size > maxSizeOther) {
+                alertElement.innerHTML = `File size too large. Got ${file.size} bytes. Maximum is ${maxSizeOther} bytes.`;
+                alertElement.classList.remove('d-none');
+                event.target.value = ''; // Clear the file input
+            } else {
+                alertElement.classList.add('d-none');
+                previewImage(event, previewElementId);
+            }
+        }
         function previewImage(event, previewElementId) {
             const file = event.target.files[0];
             if (file) {

@@ -1,59 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Purchase Ticket</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .seat-map {
+            width: 100vw;
+            height: auto;
+            /* Chiều cao bằng chiều cao của viewport */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .seat-map img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Đảm bảo hình ảnh bao phủ đầy đủ vùng chứa */
+            border: 2px solid #007bff;
+            border-radius: 10px;
+        }
+
         .taken {
-            color: gray;
+            color: red;
+        }
+
+        .total-amount {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .small-text {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .seat-container {
+            max-height: 400px;
+            /* Adjust as needed */
+            overflow-y: auto;
+        }
+
+        .seat-row {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .seat-row h4 {
+            flex-shrink: 0;
+            margin-right: 5px;
+            min-width: 50px;
+        }
+
+        .seat {
+            display: flex;
+            align-items: center;
+            margin-right: 5px;
+        }
+
+        .seat input[type="checkbox"] {
+            display: none;
+        }
+
+        .seat label {
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+            color: #eff1f5;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .seat input[type="checkbox"]:checked + label {
+            background-color: #04a5e5;
+            border-color: #4c4f69;
+            color: #eff1f5;
+        }
+
+        .seat input[type="checkbox"]:disabled + label {
+            color: #eff1f5;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+        }
+
+        .seat label.taken,
+        .legend-color.taken {
+            cursor: not-allowed;
+            background-color: #d20f39;
+        }
+
+        .seat label.selected,
+        .legend-color.selected {
+            background-color: #04a5e5;
+        }
+
+        .seat label.available,
+        .legend-color.available {
+            background-color: #eff1f5;
+            color: #4c4f69;
+            border-color: #40a02b;
+        }
+
+        .seat label.reserved,
+        .legend-color.reserved {
+            cursor: not-allowed;
+            background-color: #df8e1d;
         }
     </style>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
 </head>
+
 <body>
 <div class="container">
     <div class="row">
-        <div class="col-md-6" th:if="${seatMap != null and seatMap.img != null and seatMap.img != ''}">
-            <!-- Seat map image -->
-            <div>
-                <img th:src="${seatMap.img}" alt="Seat Map" class="img-fluid">
-            </div>
-        </div>
-        <div class="col-md-6">
+
+        <div class="col-12 seat-selection">
             <!-- Seat selection -->
             <form id="seatSelectionForm">
                 <input type="hidden" id="eventId" th:value="${event.event.eventId}"/>
                 <input type="hidden" id="ticketPrice" th:value="${event.areas.get(0).area.ticketPrice}"/>
+
                 <div th:if="${chooseNumberOfSeats}">
                     <h3>Choose number of seats</h3>
                     <p>Available seats: <span th:text="${availableSeats}"></span></p>
-                    <input type="number" id="numberOfSeats" min="1" max="${availableSeats}" required>
+                    <input type="number" id="numberOfSeats" min="1" max="${availableSeats}" class="form-control"
+                           required>
                 </div>
-                <div th:if="${!chooseNumberOfSeats}" th:each="area : ${event.areas}">
-                    <h3 th:text="${area.area.name}"></h3>
-                    <div th:each="row : ${area.rows}">
-                        <h4 th:text="${row.row.rowName}"></h4>
-                        <div th:each="seat : ${row.seats}" class="form-check">
-                            <input class="form-check-input" type="checkbox" th:value="${seat.seatId}"
-                                   th:id="${'seat' + seat.seatId}" th:name="seats" th:disabled="${seat.taken}"
-                                   th:classappend="${seat.taken} ? 'taken' : ''" th:data-price="${seat.ticketPrice}">
-                            <label class="form-check-label" th:for="${'seat' + seat.seatId}">
-                                Seat: <span th:text="${seat.number}"></span>, Price: <span
-                                    th:text="${seat.ticketPrice}"></span>
-                            </label>
+
+                <div class="row" th:if="${!chooseNumberOfSeats}">
+                    <div class="col-12 seat-map">
+                        <!-- Seat map image -->
+                        <img th:src="${seatMap.img}" alt="Seat Map" class="img-fluid">
+                    </div>
+                    <div class="legend col-12">
+                        <div class="legend-item">
+                            <div class="legend-color taken"></div>
+                            <span>Taken</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color selected"></div>
+                            <span>You selected</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color reserved"></div>
+                            <span>Reserved</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color available"></div>
+                            <span>Available</span>
+                        </div>
+                    </div>
+                    <div th:each="area : ${event.areas}" class="col-12 col-md-6"
+                         th:classappend="${event.areas.size() == 1} ? 'col-12' : 'col-6'">
+                        <h3 th:text="${area.area.name}"></h3>
+                        <h3 class="price" th:data-price="${area.area.ticketPrice}"
+                            th:text="${area.area.ticketPrice}"></h3>
+                        <div th:each="row : ${area.rows}" class="seat-row">
+                            <h4 th:text="${row.row.rowName}"></h4>
+                            <div th:each="seat : ${row.seats}" class="seat">
+                                <input class="form-check-input" type="checkbox" th:value="${seat.seatId}"
+                                       th:id="${'seat' + seat.seatId}" th:name="seats"
+                                       th:disabled="${!seat.isAvailable()}"
+                                       th:data-price="${seat.ticketPrice}">
+                                <label class="form-check-label" th:classappend="${seat.taken.toString().toLowerCase()}"
+                                       th:for="${'seat' + seat.seatId}">
+                                    <span th:if="${!seat.isAvailable()}">X</span>
+                                    <span th:if="${seat.isAvailable()}" th:text="${seat.number}"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 <hr>
-                <p><strong>Total amount: </strong><span id="totalAmount">0.00</span></p>
+                <p class="total-amount price">Total amount: <span id="totalAmount">0.00</span></p>
                 <hr>
-                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-                <p class="small">After clicking <strong>Proceed to Payment</strong>, you will be redirected to the
-                    payment platform.</p>
+                <button type="submit" class="btn btn-primary btn-block">Proceed to Payment</button>
+                <p class="small-text">By clicking <strong>Proceed to Payment</strong>, you consent that your phone number
+                    and email address will be provided to the event organizer, and you will be redirected to
+                    the payment platform.</p>
             </form>
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const priceElements = document.querySelectorAll('.price');
+        priceElements.forEach(function (priceElement) {
+            const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+            if (!isNaN(priceValue)) {
+                // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+            }
+        });
+    });
+</script>
 <script>
     document.getElementById('seatSelectionForm').addEventListener('change', function (event) {
         let totalAmount = 0;
@@ -62,8 +252,12 @@
             totalAmount += price;
         });
 
-        // Display the total amount
-        document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+
+        // Định dạng giá trị với dấu phân cách hàng nghìn và ký hiệu "đ"
+        const formattedAmount = totalAmount.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
+
+        // Hiển thị giá trị đã định dạng trong phần tử có id 'totalAmount'
+        document.getElementById('totalAmount').textContent = formattedAmount;
     });
 
     document.getElementById('seatSelectionForm').addEventListener('submit', function (event) {
@@ -141,9 +335,15 @@
 
             // Calculate and display the total order amount
             let totalAmount = numberOfSeats * seatPrice;
-            document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+
+            // Định dạng giá trị với dấu phân cách hàng nghìn và ký hiệu "đ"
+            const formattedAmount = totalAmount.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
+
+            // Hiển thị giá trị đã định dạng trong phần tử có id 'totalAmount'
+            document.getElementById('totalAmount').textContent = formattedAmount;
         });
     }
 </script>
 </body>
+
 </html>

@@ -94,7 +94,7 @@ public class PurchaseTicketService {
         List<Integer> seatsToBeAssigned = availableSeats.subList(0, numberOfSeats);
 
         // Update the seats in batch and get the list of seat IDs
-        seatRepo.updateSeats(seatsToBeAssigned, true);
+        seatRepo.updateSeats(seatsToBeAssigned, Seat.TakenStatus.RESERVED);
 
         return seatsToBeAssigned;
     }
@@ -151,26 +151,14 @@ public class PurchaseTicketService {
         Seat seat = new Seat();
         seat.setSeatId(resultSet.getInt("s.seat_id"));
         seat.setNumber(resultSet.getString("s.number"));
-        seat.setTaken(resultSet.getBoolean("s.is_taken"));
+        seat.setTaken(Seat.TakenStatus.fromInteger(resultSet.getInt("s.is_taken")));
         seat.setTicketPrice(resultSet.getFloat("s.ticket_price"));
         return seat;
     }
 
-    public boolean isTicketSaleDateStarted(int eventId) throws Exception {
-        return eventRepo.findById(eventId).getTicketSaleDate().isAfter(java.time.LocalDateTime.now());
-    }
-
-    public boolean isEventPassed(int eventId) throws Exception {
-        return eventRepo.findById(eventId).getEndDate().isBefore(java.time.LocalDateTime.now());
-    }
-
-    public boolean isEventExist(int eventId) throws Exception {
-        return eventRepo.findById(eventId) != null;
-    }
-
     public boolean areSeatsTaken(List<Integer> seats) throws Exception {
         for (int seatId : seats) {
-            if (seatRepo.findById(seatId).isTaken()) {
+            if (seatRepo.findById(seatId).getTaken() != Seat.TakenStatus.AVAILABLE) {
                 return true;
             }
         }

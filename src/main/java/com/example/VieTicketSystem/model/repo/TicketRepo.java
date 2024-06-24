@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.VieTicketSystem.model.entity.Order;
 import org.springframework.stereotype.Repository;
 
 import com.example.VieTicketSystem.model.entity.Ticket;
@@ -17,13 +18,15 @@ public class TicketRepo {
 
     private static final String INSERT_STATEMENT = "INSERT INTO Ticket (qr_code, purchase_date, order_id, seat_id, status) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_STATEMENT = "UPDATE Ticket SET qr_code = ?, purchase_date = ?, order_id = ?, seat_id = ?, status = ? WHERE ticket_id = ?";
-    private static final String SELECT_BY_USER_ID_STATEMENT = "SELECT * FROM Ticket JOIN VieTicket1.`Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
-    private static final String SELECT_BY_USER_ID_WITH_LIMIT = "SELECT * FROM Ticket JOIN VieTicket1.`Order` O ON O.order_id = Ticket.order_id WHERE user_id = ? ORDER BY ticket_id DESC LIMIT ? OFFSET ?";
-    private static final String COUNT_BY_USER_ID_STATEMENT = "SELECT COUNT(*) FROM Ticket JOIN VieTicket1.`Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
+    private static final String SELECT_BY_USER_ID_STATEMENT = "SELECT * FROM Ticket JOIN `Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
+    private static final String SELECT_BY_USER_ID_WITH_LIMIT = "SELECT * FROM Ticket JOIN `Order` O ON O.order_id = Ticket.order_id WHERE user_id = ? ORDER BY ticket_id DESC LIMIT ? OFFSET ?";
+    private static final String COUNT_BY_USER_ID_STATEMENT = "SELECT COUNT(*) FROM Ticket JOIN `Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
     private static final String SELECT_BY_QR_CODE_STATEMENT = "SELECT * FROM Ticket WHERE qr_code = ?";
     private static final String SELECT_BY_ORDER_ID_STATEMENT = "SELECT * FROM Ticket WHERE order_id = ?";
     private static final String UPDATE_SUCCESS_IN_BULK_SQL = "UPDATE Ticket SET purchase_date = ?, status = ? WHERE ticket_id = ?";
     private static final String UPDATE_FAILURE_IN_BULK_SQL = "UPDATE Ticket SET status = ? WHERE ticket_id = ?";
+    private static final String UPDATE_STATUS_BY_ORDER_ID_SQL = "UPDATE Ticket SET status = ? WHERE order_id = ?";
+    private static final String FIND_BY_ID_SQL = "SELECT * FROM Ticket WHERE ticket_id = ?";
 
     private final OrderRepo orderRepo;
     private final SeatRepo seatRepo;
@@ -33,11 +36,49 @@ public class TicketRepo {
         this.seatRepo = seatRepo;
     }
 
+    public Ticket findById(int ticketId) throws Exception {
+        Ticket ticket = null;
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(FIND_BY_ID_SQL);
+            ps.setInt(1, ticketId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                ticket = new Ticket();
+                ticket.setTicketId(rs.getInt("ticket_id"));
+                ticket.setQrCode(rs.getString("qr_code"));
+                // Lấy giá trị từ ResultSet và chuyển đổi thành LocalDateTime
+                Timestamp timestamp = rs.getTimestamp("purchase_date");
+                if (timestamp != null) {
+                    ticket.setPurchaseDate(timestamp.toLocalDateTime());
+                } else {
+                    ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
+                }
+                ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
+                ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
+                ticket.setStatus(Ticket.TicketStatus.fromInteger(rs.getInt("status")));
+            }
+            rs.close();
+            ps.close();
+        }
+        return ticket;
+    }
+
+    public void updateStatusByOrderId(int orderId, int status) throws Exception {
+
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(UPDATE_STATUS_BY_ORDER_ID_SQL);
+            ps.setInt(1, status);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+            ps.close();
+        }
+    }
+
     public void setSuccessInBulk(List<Integer> ticketIds, LocalDateTime purchaseDate, int successStatus) throws Exception {
         try (Connection con = ConnectionPoolManager.getConnection()) {
             PreparedStatement ps = con.prepareStatement(UPDATE_SUCCESS_IN_BULK_SQL);
             for (Integer ticketId : ticketIds) {
-                ps.setTimestamp(1, Timestamp.valueOf(purchaseDate));
+                ps.setTimestamp(1, purchaseDate == null ? null : Timestamp.valueOf(purchaseDate));
                 ps.setInt(2, successStatus);
                 ps.setInt(3, ticketId);
                 ps.addBatch();
@@ -47,7 +88,7 @@ public class TicketRepo {
         }
     }
 
-    public void setFailureInBulk(List<Integer> ticketIds, int failureStatus) throws Exception {
+    public void setStatusInBulk(List<Integer> ticketIds, int failureStatus) throws Exception {
         try (Connection con = ConnectionPoolManager.getConnection()) {
             PreparedStatement ps = con.prepareStatement(UPDATE_FAILURE_IN_BULK_SQL);
             for (Integer ticketId : ticketIds) {
@@ -77,7 +118,7 @@ public class TicketRepo {
                 } else {
                     ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
                 }
-                ticket.setOrder(orderRepo.findById(rs.getInt("order_id")));
+                ticket.setOrder(new Order() {{ setOrderId(rs.getInt("order_id")); }});
                 ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
                 ticket.setStatus(Ticket.TicketStatus.fromInteger(rs.getInt("status")));
                 tickets.add(ticket);

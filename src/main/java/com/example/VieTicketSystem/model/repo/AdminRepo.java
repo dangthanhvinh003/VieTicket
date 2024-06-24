@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -291,33 +293,34 @@ public class AdminRepo {
         AdminStatistics stats = new AdminStatistics();
 
         String sql = "SELECT "
-                + "(SELECT SUM(s.ticket_price) "
-                + " FROM Ticket t "
-                + " JOIN Seat s ON t.seat_id = s.seat_id "
-                + " JOIN Area a ON s.row_id = a.area_id "
-                + " JOIN Event e ON a.event_id = e.event_id "
-                + " WHERE t.status = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
-                + "(SELECT COUNT(*) "
-                + " FROM Event "
-                + " WHERE end_date > NOW()) AS total_ongoing_events, "
-                + "(SELECT COUNT(*) "
-                + " FROM Event "
-                + " WHERE is_approve = 0) AS total_approved_events, "
-                + "(SELECT COUNT(*) "
-                + " FROM Event "
-                + " WHERE is_approve = 3) AS total_rejected_events, "
-                + "(SELECT COUNT(*) "
-                + " FROM Organizer "
-                + " WHERE is_active = 0) AS total_inactive_organizers, "
-                + "(SELECT COUNT(*) "
-                + " FROM Organizer "
-                + " WHERE is_active = 1) AS total_active_organizers, "
-                + "(SELECT COUNT(*) "
-                + " FROM User u "
-                + " WHERE u.role NOT IN ('a', 'b','p')) AS total_users_excluding_organizers, "
-                + "(SELECT COUNT(*) "
-                + " FROM User "
-                + " WHERE role = 'b' OR role ='p') AS total_banned_users";
+             + "(SELECT SUM(s.ticket_price) "
+             + " FROM Ticket t "
+             + " JOIN Seat s ON t.seat_id = s.seat_id "
+             + " JOIN `Row` r ON s.row_id = r.row_id "
+             + " JOIN Area a ON r.area_id = a.area_id "
+             + " JOIN Event e ON a.event_id = e.event_id "
+             + " WHERE t.status = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
+             + "(SELECT COUNT(*) "
+             + " FROM Event "
+             + " WHERE is_approve = 1 AND end_date > NOW()) AS total_ongoing_events, "
+             + "(SELECT COUNT(*) "
+             + " FROM Event "
+             + " WHERE is_approve = 0) AS total_approved_events, "
+             + "(SELECT COUNT(*) "
+             + " FROM Event "
+             + " WHERE is_approve = 3) AS total_rejected_events, "
+             + "(SELECT COUNT(*) "
+             + " FROM Organizer "
+             + " WHERE is_active = 0) AS total_inactive_organizers, "
+             + "(SELECT COUNT(*) "
+             + " FROM Organizer "
+             + " WHERE is_active = 1) AS total_active_organizers, "
+             + "(SELECT COUNT(*) "
+             + " FROM User u "
+             + " WHERE u.role NOT IN ('a', 'b', 'p')) AS total_users_excluding_organizers, "
+             + "(SELECT COUNT(*) "
+             + " FROM User "
+             + " WHERE role = 'b' OR role = 'p') AS total_banned_users";
 
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
@@ -346,7 +349,7 @@ public class AdminRepo {
             String sql = "SELECT DATE(t.purchase_date) AS `day`, SUM(s.ticket_price) AS daily_revenue " +
                     "FROM Ticket t " +
                     "JOIN Seat s ON t.seat_id = s.seat_id " +
-                    "WHERE t.status = 0 " +
+                    "WHERE t.status = 0 AND t.purchase_date >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK) " +
                     "GROUP BY DATE(t.purchase_date) " +
                     "ORDER BY DATE(t.purchase_date);";
             try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
@@ -361,20 +364,33 @@ public class AdminRepo {
         return dailyRevenue;
     }
 
-    public List<Integer> getMonthlyRevenue() throws Exception {
-        List<Integer> monthlyRevenue = new ArrayList<>();
+     public List<Integer> getMonthlyRevenue() throws Exception {
+        // Khởi tạo danh sách với 12 phần tử bằng 0
+        List<Integer> monthlyRevenue = new ArrayList<>(Collections.nCopies(12, 0));
+
+        // Lấy năm hiện tại
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
         try (Connection con = ConnectionPoolManager.getConnection()) {
             String sql = "SELECT DATE_FORMAT(t.purchase_date, '%Y-%m') AS `month`, SUM(s.ticket_price) AS monthly_revenue "
-                    +
-                    "FROM Ticket t " +
-                    "JOIN Seat s ON t.seat_id = s.seat_id " +
-                    "WHERE t.status = 0 " +
-                    "GROUP BY DATE_FORMAT(t.purchase_date, '%Y-%m') " +
-                    "ORDER BY DATE_FORMAT(t.purchase_date, '%Y-%m');";
-            try (PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    monthlyRevenue.add(rs.getInt("monthly_revenue"));
+                    + "FROM Ticket t "
+                    + "JOIN Seat s ON t.seat_id = s.seat_id "
+                    + "WHERE t.status = 0 AND YEAR(t.purchase_date) = ? "
+                    + "GROUP BY DATE_FORMAT(t.purchase_date, '%Y-%m') "
+                    + "ORDER BY DATE_FORMAT(t.purchase_date, '%Y-%m');";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, currentYear);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        String month = rs.getString("month");
+                        int revenue = rs.getInt("monthly_revenue");
+
+                        // Lấy tháng từ chuỗi định dạng 'yyyy-MM' và chuyển đổi thành số nguyên
+                        int monthIndex = Integer.parseInt(month.split("-")[1]) - 1;
+
+                        // Đặt doanh thu vào đúng vị trí trong danh sách
+                        monthlyRevenue.set(monthIndex, revenue);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -384,19 +400,21 @@ public class AdminRepo {
         return monthlyRevenue;
     }
 
-        public List<TableAdminStatistics> getEventRevenues() throws Exception {
-                List<TableAdminStatistics> eventRevenues = new ArrayList<>();
-                String sql = "SELECT e.name AS eventName, u.full_name AS organizerName, SUM(a.ticket_price) AS revenue "
-                                +
-                                "FROM Event e " +
-                                "JOIN Organizer o ON e.organizer_id = o.organizer_id " +
-                                "JOIN User u ON o.organizer_id = u.user_id " +
-                                "JOIN Area a ON e.event_id = a.event_id " +
-                                "JOIN Seat s ON a.area_id = s.row_id " +
-                                "JOIN Ticket t ON s.seat_id = t.seat_id " +
-                                "JOIN `Order` r ON t.order_id = r.order_id " +
-                                "WHERE t.status = 0 " +
-                                "GROUP BY e.event_id, u.full_name";
+    public List<TableAdminStatistics> getEventRevenues() throws Exception {
+        List<TableAdminStatistics> eventRevenues = new ArrayList<>();
+        String sql = "SELECT e.name AS eventName, "
+                + "u.full_name AS organizerName, "
+                + "SUM(s.ticket_price) AS revenue "
+                + "FROM Event e "
+                + "JOIN Organizer o ON e.organizer_id = o.organizer_id "
+                + "JOIN User u ON o.organizer_id = u.user_id "
+                + "JOIN Area a ON e.event_id = a.event_id "
+                + "JOIN `Row` r ON a.area_id = r.area_id "
+                + "JOIN Seat s ON r.row_id = s.row_id "
+                + "JOIN Ticket t ON s.seat_id = t.seat_id "
+                + "JOIN `Order` ord ON t.order_id = ord.order_id "
+                + "WHERE s.is_taken = 1 "
+                + "GROUP BY e.event_id, u.full_name;";
 
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);

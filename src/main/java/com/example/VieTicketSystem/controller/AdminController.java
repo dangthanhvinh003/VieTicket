@@ -2,7 +2,9 @@ package com.example.VieTicketSystem.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.TableAdminStatistics;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AdminRepo;
+import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
 import com.example.VieTicketSystem.model.service.EmailService;
 
@@ -26,9 +29,11 @@ public class AdminController {
     @Autowired
     AdminRepo adminRepo = new AdminRepo();
     @Autowired
-    EmailService emailService = new EmailService();
+    EmailService emailService;
     @Autowired
     UserRepo userRepo = new UserRepo();
+    @Autowired
+    EventRepo eventRepo = new EventRepo();
 
     @GetMapping(value = ("/ViewAllApproveOrganizer"))
     public String approveOrganizerPage(Model model) throws ClassNotFoundException, SQLException {
@@ -58,10 +63,16 @@ public class AdminController {
         return "redirect:/ViewAllApproveEvent";
     }
 
-    @GetMapping(value = ("/ViewAllApproveEvent"))
+   @GetMapping(value = "/ViewAllApproveEvent")
     public String approveEventPage(Model model) throws Exception {
         ArrayList<Event> events = adminRepo.viewAllListApproveEvent();
-        model.addAttribute("events", events);
+        
+        // Sort events by ID in descending order
+        List<Event> sortedEvents = events.stream()
+                                         .sorted(Comparator.comparingLong(Event::getEventId).reversed())
+                                         .collect(Collectors.toList());
+
+        model.addAttribute("events", sortedEvents);
         model.addAttribute("status", "approve");
         return "viewApproveEvent";
     }
@@ -124,14 +135,16 @@ public class AdminController {
         List<Integer> dailyRevenue = adminRepo.getDailyRevenue();
         List<Integer> monthlyRevenue = adminRepo.getMonthlyRevenue();
         List<TableAdminStatistics> eventRevenues = adminRepo.getEventRevenues(); // Thêm dòng này
-
-        System.out.println("dailyRevenue : " + dailyRevenue);
-        System.out.println("monthlyRevenue : " + monthlyRevenue);
+        List<TableAdminStatistics> sortedEventRevenues = eventRevenues.stream()
+        .sorted(Comparator.comparingDouble(TableAdminStatistics::getRevenue).reversed())
+        .collect(Collectors.toList());
+        // System.out.println("dailyRevenue : " + dailyRevenue);
+        // System.out.println("monthlyRevenue : " + monthlyRevenue);
 
         model.addAttribute("statisticsOfAdmin", statistics);
         model.addAttribute("dailyRevenue", dailyRevenue);
         model.addAttribute("monthlyRevenue", monthlyRevenue);
-        model.addAttribute("eventRevenues", eventRevenues); // Thêm dòng này
+        model.addAttribute("eventRevenues", sortedEventRevenues); // Thêm dòng này
 
         return "dashboardAdmin";
     }
@@ -216,6 +229,18 @@ public class AdminController {
         model.addAttribute("users", banners);
 
         return "ViewUserList";
+    }
+    @GetMapping(value = ("/ViewAllEventOngoing"))
+    public String allEventOngoingPage(Model model) throws Exception {
+        List<Event> events = eventRepo.getAllOngoingEvents();
+        model.addAttribute("events", events);
+        return "viewAllEventOngoingList";
+    }
+    @GetMapping(value = "/searchEvents")
+    public String searchEvents(@RequestParam("query") String query, Model model) throws Exception {
+        List<Event> events = eventRepo.searchEvents(query);
+        model.addAttribute("events", events);
+        return "viewAllEventOngoingList";
     }
 
 }

@@ -98,10 +98,10 @@ public class UserRepo {
         return user;
     }
 
-    public User findByUsername(String email) throws Exception {
+    public User findByUsername(String username) throws Exception {
         Connection con = ConnectionPoolManager.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT * FROM User WHERE username = ?");
-        ps.setString(1, email);
+        ps.setString(1, username);
         ResultSet rs = ps.executeQuery();
 
         User user = null;

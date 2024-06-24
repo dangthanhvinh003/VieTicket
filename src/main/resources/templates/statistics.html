@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <title>Event Statistics</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
         .small-box {
             border-radius: 10px;
@@ -51,13 +53,15 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container mt-5">
         <div class="row mb-4">
             <div class="col-lg-3 col-6 mb-4">
                 <div class="small-box bg-primary">
                     <div class="inner">
-                        <h4 class="price" th:data-price="${eventStatistics.totalRevenue}" th:text="${eventStatistics.totalRevenue}">0.0</h4>
+                        <h4 class="price" th:data-price="${eventStatistics.totalRevenue}"
+                            th:text="${eventStatistics.totalRevenue}">0.0</h4>
                         <p>Total Revenue</p>
                     </div>
                     <div class="icon">
@@ -75,7 +79,12 @@
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+
+                    <!-- <input type="hidden" th:value="${session.IdEventTolistAllUser}" name="eventId"/> -->
+                    <a th:href="@{/eventUsers}" class="small-box-footer">More info <i
+                            class="fas fa-arrow-circle-right"></i></a>
+
+
                 </div>
             </div>
             <div class="col-lg-3 col-6 mb-4">
@@ -110,7 +119,8 @@
                         <h3 class="card-title">Doughnut Chart</h3>
                     </div>
                     <div class="card-body">
-                        <canvas id="doughnutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        <canvas id="doughnutChart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                     </div>
                 </div>
             </div>
@@ -120,13 +130,16 @@
                         <h3 class="card-title">Bar Chart</h3>
                     </div>
                     <div class="card-body">
-                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        <canvas id="barChart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const priceElements = document.querySelectorAll('.price');
@@ -138,29 +151,36 @@
                 }
             });
         });
-          // Thêm sự kiện click cho các liên kết "More info"
-          const moreInfoLinks = document.querySelectorAll('.small-box-footer');
-            moreInfoLinks.forEach(function (link) {
-                link.addEventListener('click', function (event) {
-                    event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
-                    const box = link.closest('.small-box');
-                    const priceElement = box.querySelector('.price');
-                    const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
-                    if (!isNaN(originalPrice)) {
-                        const discountedPrice = originalPrice * 0.9; // Tính giá giảm 10%
-                        priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
-                    }
-                });
+        // Thêm sự kiện click cho các liên kết "More info"
+        const moreInfoLinks = document.querySelectorAll('.small-box-footer');
+        moreInfoLinks.forEach(function (link) {
+            link.addEventListener('click', function (event) {
+                // event.preventDefault(); // Bỏ dòng này để không ngăn chặn hành động mặc định của liên kết
+
+                const box = link.closest('.small-box');
+                const priceElement = box.querySelector('.price');
+                const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(originalPrice)) {
+                    const discountedPrice = originalPrice * 0.1; // Tính giá giảm 10%
+                    priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
+                }
+
+                // Thêm một độ trễ nhỏ nếu cần thiết trước khi điều hướng
+                setTimeout(function () {
+                    window.location.href = link.getAttribute('href');
+                }, 100); // Độ trễ 100ms
             });
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script th:inline="javascript">
         /*<![CDATA[*/
         document.addEventListener('DOMContentLoaded', function () {
-            var eventStatistics = {ticketsSold: [[${eventStatistics.ticketsSold}]],
-                ticketsReturned: [[${eventStatistics.ticketsReturned}]],
-                ticketsRemaining: [[${eventStatistics.ticketsRemaining}]]
+            var eventStatistics = {
+                ticketsSold: [[${ eventStatistics.ticketsSold }]],
+                ticketsReturned: [[${ eventStatistics.ticketsReturned }]],
+                ticketsRemaining: [[${ eventStatistics.ticketsRemaining }]]
             };
 
             var dailyStatistics = /*[[${dailyStatistics}]]*/ {};
@@ -241,6 +261,7 @@
         });
         /*]]>*/
     </script>
- 
+
 </body>
+
 </html>

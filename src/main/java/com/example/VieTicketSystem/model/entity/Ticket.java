@@ -1,5 +1,4 @@
 package com.example.VieTicketSystem.model.entity;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -24,8 +23,9 @@ public class Ticket {
         PURCHASED(0),
         FAILED(1),
         PENDING(2),
-        CANCELLED(3),
-        CHECKED_IN(4);
+        RETURNED(3),
+        CHECKED_IN(4),
+        PENDING_REFUND(5);
 
         private final int value;
 

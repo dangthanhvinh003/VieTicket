@@ -172,14 +172,14 @@
                 <button class="closebtn" onclick="closeNav()">x</button>
                 <input type="file" id="imageUpload" accept="image/*">
                 <label for="seatSize">Size of seat:</label>
-                <input type="number" id="seatSize" value="60" min="10">
+                <input type="number" id="seatSize" value="30" min="10">
                 <label for="seatSpacing">Gap:</label>
-                <input type="number" id="seatSpacing" value="7" min="0.1">
+                <input type="number" id="seatSpacing" value="5" min="0.1">
                 <button id="applySettingsButton">Apply</button>
                 <label for="seatRow">Row:</label>
-                <input type="number" id="Row" value="40" min="10">
+                <input type="number" id="Row" value="20" min="10">
                 <label for="seatCol">Col:</label>
-                <input type="number" id="Col" value="80" min="0.1">
+                <input type="number" id="Col" value="50" min="0.1">
                 <button id="updateBtn">Apply</button>
                 <label for="normalTicketPrice">Normal ticket Price:</label>
                 <input type="text" class="form-control" id="normalTicketPrice" name="normalTicketPrice" required
@@ -188,7 +188,10 @@
                 <input type="text" class="form-control" id="vipTicketPrice" name="vipTicketPrice" required
                     pattern="[0-9,]+" title="Vui lòng nhập số tiền hợp lệ. Ví dụ : 5,000,000">
                 <button id="vipButton" style="width: 100%; margin: 10px 0px;">Choose Vip Stage</button>
-                <button id="saveImageButton" style=" display: none;">Save Image</button>
+                <button id="saveImageButton" style=" display: none;" onclick="showSubmitButton()">Save Image</button>
+                <form th:action="@{/createEventSuccess}" method="get">
+                    <button type="submit" id="submitButton" style="display: none;">Submit</button>
+                </form>
             </div>
 
         </div>
@@ -203,6 +206,13 @@
                 <div class="selection-box" id="selectionBox"></div>
             </div>
         </div>
+        <script>
+            // Hàm để hiển thị nút Submit
+            function showSubmitButton() {
+                var submitButton = document.getElementById('submitButton');
+                submitButton.style.display = 'block';
+            }
+        </script>
         <script>
             const normalTicketPriceInput = document.getElementById('normalTicketPrice');
             const vipTicketPriceInput = document.getElementById('vipTicketPrice');
@@ -411,7 +421,7 @@
             seats.forEach(seat => {
                 seat.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    seat.classList.toggle('selected');
+                    selectSeat.call(seat);
                 });
             });
 

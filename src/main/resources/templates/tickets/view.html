@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>View Ticket</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .purchased {
+            color: green;
+        }
+
+        .failed,
+        .returned {
+            color: red;
+        }
+
+        .pending,
+        .checked-in {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Ticket Details</h2>
+            <p><strong>Lead visitor:</strong> <span th:text="${ticket.order.user.fullName}"></span></p>
+            <p><strong>Event Name:</strong> <span th:text="${ticket.seat.row.area.event.name}"></span></p>
+            <p><strong>Area:</strong> <span th:text="${ticket.seat.row.area.name}"></span></p>
+            <p><strong>Seat:</strong> <span th:text="${ticket.seat.row.rowName} + ' ' + ${ticket.seat.number}"></span></p>
+            <p><strong>Purchase Date:</strong> <span th:text="${utils.formatDate(ticket.purchaseDate)}"></span></p>
+            <!-- Add more details as needed -->
+            <img th:src="'data:image/png;base64,'+${qrCode}">
+            <p th:text="${ticket.qrCode}"></p>
+            <p>Purchase status: <span th:text="${ticket.status}" th:classappend="${ticket.status.toString().toLowerCase().replace('_', '-')}"></span></p>
+        </div>
+        <div class="col-md-6">
+            <!-- You can add more content here if needed -->
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

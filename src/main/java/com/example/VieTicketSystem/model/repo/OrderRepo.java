@@ -4,6 +4,8 @@ import com.example.VieTicketSystem.model.entity.Order;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class OrderRepo {
@@ -12,10 +14,38 @@ public class OrderRepo {
     private static final String SELECT_ORDER_SQL = "SELECT * FROM `Order` WHERE order_id = ?";
     private static final String SELECT_ORDER_BY_TXN_REF_SQL = "SELECT * FROM `Order` WHERE JSON_EXTRACT(vnpay_data, '$.vnp_TxnRef') = ?";
     private static final String UPDATE_ORDER_STATUS_SQL = "UPDATE `Order` SET status = ? WHERE order_id = ?";
+    private static final String SELECT_ORDERS_BY_STATUS_SQL = "SELECT * FROM `Order` WHERE status = ?";
     private final UserRepo userRepo;
 
     public OrderRepo(UserRepo userRepo) {
         this.userRepo = userRepo;
+    }
+
+    public List<Order> findByStatus(Order.PaymentStatus status) throws Exception {
+        List<Order> orders = new ArrayList<>();
+
+
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(SELECT_ORDERS_BY_STATUS_SQL);
+            ps.setInt(1, status.toInteger());
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("order_id"));
+                order.setDate(rs.getTimestamp("date").toLocalDateTime());
+                order.setTotal(rs.getLong("total"));
+                order.setUser(userRepo.findById(rs.getInt("user_id")));
+                order.setVnpayData(rs.getString("vnpay_data"));
+                order.setStatus(Order.PaymentStatus.fromInteger(rs.getInt("status")));
+                orders.add(order);
+            }
+
+            rs.close();
+            ps.close();
+        }
+
+        return orders;
     }
 
     public void updateStatus(int orderId, Order.PaymentStatus status) throws Exception {
@@ -25,7 +55,6 @@ public class OrderRepo {
             ps.setInt(1, status.toInteger());
             ps.setInt(2, orderId);
             ps.executeUpdate();
-            ps.close();
         }
     }
 
@@ -79,7 +108,7 @@ public class OrderRepo {
     }
 
     public Order findById(int id) throws Exception {
-        Order order =  null;
+        Order order = null;
         try (Connection con = ConnectionPoolManager.getConnection();
              PreparedStatement ps = con.prepareStatement(SELECT_ORDER_SQL)) {
 
@@ -98,5 +127,10 @@ public class OrderRepo {
         }
 
         return order;
+    }
+
+    public List<Order> findAllByUserId(int userId, int page, int size) {
+        // TODO: Implement findAll by user id (with pagination)
+        return null;
     }
 }

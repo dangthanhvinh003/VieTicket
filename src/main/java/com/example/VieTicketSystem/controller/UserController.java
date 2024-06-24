@@ -18,7 +18,6 @@ import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
-import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
 
 import com.example.VieTicketSystem.model.service.VerifyEmailService;
@@ -37,9 +36,6 @@ public class UserController {
     private VerifyEmailService verifyEmailService;
 
     @Autowired
-    private UnverifiedUserRepo unverifiedUserRepo;
-
-    @Autowired
     private UserRepo userRepo;
 
     @Autowired
@@ -50,7 +46,7 @@ public class UserController {
     @Autowired
     private HttpSession httpSession;
 
-    @PostMapping(value = "/editUser")  // Them thuoc tinh cho organizer
+    @PostMapping(value = "/editUser") // Them thuoc tinh cho organizer
     public String editUser(@RequestParam("fullName") String nameInput,
                            @RequestParam("phone") String phoneInput,
                            @RequestParam("email") String emailInput,
@@ -90,7 +86,8 @@ public class UserController {
                 activeOrganizer.setOrganizerType(organizerTypeInput);
             }
 
-            // Call repository method to update organizer-specific attributes in the database
+            // Call repository method to update organizer-specific attributes in the
+            // database
             organizerRepo.save(activeOrganizer);
             httpSession.setAttribute("activeOrganizer", activeOrganizer);
         }
@@ -101,11 +98,10 @@ public class UserController {
         return "redirect:/change";
     }
 
-
     @GetMapping("/auth/verify-email")
     public String showVerifyEmailPage(Model model, HttpSession session) throws Exception {
         User user = (User) session.getAttribute("activeUser");
-        if (user == null || !unverifiedUserRepo.isUnverified(user.getUserId())) {
+        if (user == null || user.isVerified()) {
             return "redirect:/"; // Redirect if not applicable
         }
         return "verify-email";
@@ -128,7 +124,6 @@ public class UserController {
 
         httpSession.setAttribute("activeUser", user);
 
-
         if (user.getRole() == 'o') {
             Organizer organizer = organizerRepo.findById(user.getUserId());
             httpSession.setAttribute("activeOrganizer", organizer);
@@ -140,10 +135,10 @@ public class UserController {
             httpSession.removeAttribute("redirect");
             return "redirect:" + redirect;
         }
-        if(user.getRole() == 'a'){
+        if (user.getRole() == 'a') {
             return "redirect:/dashboardAdmin";
         }
-        if(user.getRole() == 'p' || user.getRole()=='b'){
+        if (user.getRole() == 'p' || user.getRole() == 'b') {
             return "banned";
         }
 
@@ -166,13 +161,12 @@ public class UserController {
     public String showLogin(HttpSession session) throws Exception {
         List<Event> events = eventRepo.getAllEvents();
         List<Event> hotEvents = eventRepo.getTopHotEvents();
-        System.out.println(hotEvents);
+        // System.out.println(hotEvents);
         session.setAttribute("hotevents", hotEvents);
         session.setAttribute("events", events);
         session.setAttribute("eventCreated", false);
         return "index";
     }
-   
 
     @GetMapping("/auth/login")
     public String loginPage() {
@@ -184,7 +178,7 @@ public class UserController {
     public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
                                     HttpSession httpSession)
             throws Exception {
-        System.out.println("hello");
+        // System.out.println("hello");
         Oauth2Service oauth2 = new Oauth2Service();
         // Exchange the authorization code for an access token
         String accessToken = oauth2.getAccessToken(authorizationCode);
@@ -237,7 +231,8 @@ public class UserController {
             return "change-password";
         }
         if (!userRepo.isValidPassword(newPassword)) {
-            model.addAttribute("error", "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
+            model.addAttribute("error",
+                    "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
             return "change-password";
         }
 
@@ -262,7 +257,6 @@ public class UserController {
         return "redirect:/change";
     }
 
-    
     @GetMapping("/signup")
     public String signupPage() {
         return "signup"; // Trả về trang signup.html
@@ -300,13 +294,14 @@ public class UserController {
             return "signup";
         }
         if (!userRepo.isValidPassword(password)) {
-            model.addAttribute("error", "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
+            model.addAttribute("error",
+                    "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
             return "signup";
         }
 
         // Hash the password
         String hashedPassword = passwordEncoder.encode(password);
-        System.out.println(hashedPassword);
+        // System.out.println(hashedPassword);
 
         // Create new user and save to database
         // Convert LocalDate to java.sql.Date
@@ -323,7 +318,7 @@ public class UserController {
             newUser.setEmail(email);
             newUser.setUsername(username);
             newUser.setPassword(hashedPassword); // Use hashed password
-            newUser.setRole('o');
+            newUser.setRole('O');
 
             newUser.setFoundedDate(sqlFoundedDate);
             newUser.setWebsite(website);
@@ -343,17 +338,13 @@ public class UserController {
             newUser.setEmail(email);
             newUser.setUsername(username);
             newUser.setPassword(hashedPassword); // Use hashed password
-            newUser.setRole('u');
+            newUser.setRole('U');
             userRepo.saveNew(newUser);
 
             httpSession.setAttribute("activeUser", newUser);
         }
 
-        try {
-            verifyEmailService.sendOTP(email);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        verifyEmailService.sendOTP(email);
 
         return "redirect:/auth/verify-email";
     }

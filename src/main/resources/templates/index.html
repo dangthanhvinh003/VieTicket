@@ -178,7 +178,75 @@
         .social-icons a:hover {
             color: #007bff;
         }
+
+        .navbar-custom {
+            transition: background-color 0.3s ease-in-out;
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            /* Màu nền mặc định */
+        }
+
+        .navbar-custom.navbar-transparent {
+            background-color: rgba(255, 255, 255, 0);
+            /* Màu nền trong suốt khi đi qua carousel */
+        }
+
+        .carousel {
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-input {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+            background-color: rgba(255, 255, 255, 0) !important;
+            /* Màu nền mặc định cho ô tìm kiếm */
+            color: #000 !important;
+            /* Màu chữ mặc định */
+        }
+
+        .search-input-transparent {
+            background-color: rgba(255, 255, 255, 0) !important;
+            /* Màu nền trong suốt cho ô tìm kiếm */
+            color: #000 !important;
+            /* Màu chữ mặc định */
+        }
+
+        .search-input-dark {
+            background-color: #191825 !important;
+            /* Màu nền khi đi qua carousel */
+        }
+
+        .carousel,
+        .carousel-inner,
+        .carousel-item,
+        .carousel-item video {
+            height: 100vh;
+            /* Chiều cao 100% của màn hình */
+        }
+
+        .carousel-item video {
+            object-fit: cover;
+            /* Đảm bảo video bao phủ toàn bộ khung mà không bị méo */
+        }
+
+        .carousel-item {
+            transition: transform 0s ease-in-out !important; /* Thời gian chuyển đổi dài hơn để mượt mà hơn */
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+        }
+        .navbar-brand {
+            font-family: 'Arial Black', sans-serif;
+            font-style: italic;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
     </style>
+
     <script>
         function redirectToAllEvents() {
             window.location.href = "/viewAllEvent";
@@ -194,9 +262,9 @@
                 aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarTogglerDemo02">
+            <div class="collapse navbar-collapse d-flex justify-content-between " id="navbarTogglerDemo02">
                 <form class="d-flex search-form" role="search">
-                    <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
+                    <input id="searchInput" class="form-control me-2 dark-mode light-mode search-input" type="search"
                         placeholder="Search" aria-label="Search" onclick="redirectToAllEvents()">
 
                     <button class="btn btn-outline-success" type="submit">Search</button>
@@ -253,20 +321,29 @@
         </div>
     </nav>
 
-    <div id="carouselExampleDark" class="carousel carousel-dark slide">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active"
-                aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1"
-                aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2"
-                aria-label="Slide 3"></button>
-        </div>
+    <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active"></li>
+            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="1"></li>
+            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="2"></li>
+            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="3"></li>
+        </ol>
+    
         <div class="carousel-inner">
-            <div class="carousel-item active" data-bs-interval="10000">
+            <div class="carousel-item active" data-bs-interval="1000">
                 <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715235805/tepkus15wsobic6jx3d4.mp4"
-                        type="video/mp4">
+                    <source src="https://res.cloudinary.com/djcowpoua/video/upload/v1717804738/videoplayback_ebmycx.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some representative placeholder content for the third slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="1000">
+                <video class="d-block w-100" autoplay muted loop>
+                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715235805/tepkus15wsobic6jx3d4.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <div class="carousel-caption d-none d-md-block">
@@ -274,10 +351,9 @@
                     <p>Some representative placeholder content for the first slide.</p>
                 </div>
             </div>
-            <div class="carousel-item" data-bs-interval="2000">
+            <div class="carousel-item" data-bs-interval="1000">
                 <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057233/d8gg9cestunm6ny9rsxy.mp4"
-                        type="video/mp4">
+                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057233/d8gg9cestunm6ny9rsxy.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <div class="carousel-caption d-none d-md-block">
@@ -285,15 +361,14 @@
                     <p>Some representative placeholder content for the second slide.</p>
                 </div>
             </div>
-            <div class="carousel-item">
+            <div class="carousel-item" data-bs-interval="1000">
                 <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057205/ooeyodiujb7dtf8u1etl.mp4"
-                        type="video/mp4">
+                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057205/ooeyodiujb7dtf8u1etl.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <div class="carousel-caption d-none d-md-block">
-                    <h5>Third slide label</h5>
-                    <p>Some representative placeholder content for the third slide.</p>
+                    <h5>Fourth slide label</h5>
+                    <p>Some representative placeholder content for the fourth slide.</p>
                 </div>
             </div>
         </div>
@@ -355,13 +430,18 @@
                                 style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
                                 <i class="fas fa-list"></i> View Detail
                             </a>
+<<<<<<< HEAD
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
                                 class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+=======
+                            <a href="#" class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+>>>>>>> 31692292f339ec673e65c6a9d4da06a36355e4a8
                                 style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
                                 <i class="fas fa-dollar-sign"></i>
                                 <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
                                     th:utext="${event.areas.get(0).ticketPrice}"></span>
                             </a>
+<<<<<<< HEAD
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
                                 class="btn btn-sm btn-outline-success"
                                 style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
@@ -407,6 +487,9 @@
                             </a>
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
                                 class="btn btn-sm btn-outline-success"
+=======
+                            <a href="#" class="btn btn-sm btn-outline-success"
+>>>>>>> 31692292f339ec673e65c6a9d4da06a36355e4a8
                                 style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
                                 <i class="fas fa-eye"></i>
                                 <span th:utext="${event.eyeView}"></span>
@@ -457,6 +540,41 @@
         </div>
     </footer>
     <script>
+        // JavaScript để thay đổi màu nền của ô tìm kiếm khi đi qua carousel
+        window.addEventListener('scroll', function () {
+            var navbar = document.querySelector('.navbar-custom');
+            var searchInput = document.getElementById('searchInput');
+            var carousel = document.getElementById('carouselExampleDark');
+            var carouselBottom = carousel.offsetTop + carousel.offsetHeight;
+
+            if (window.scrollY >= carouselBottom) {
+                searchInput.classList.add('search-input-dark');
+            } else {
+                searchInput.classList.remove('search-input-dark');
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let lastScrollTop = 0;
+            const navbar = document.querySelector('.navbar-custom');
+
+            window.addEventListener('scroll', function () {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (scrollTop > lastScrollTop) {
+                    // Scroll down
+                    navbar.classList.add('scrolled-down');
+                } else {
+                    // Scroll up
+                    navbar.classList.remove('scrolled-down');
+                }
+
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+            });
+        });
+    </script>
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const priceElements = document.querySelectorAll('.price');
             priceElements.forEach(function (priceElement) {
@@ -466,6 +584,28 @@
                     priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
                 }
             })
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const carousel = document.getElementById('carouselExampleDark');
+            const navbar = document.querySelector('.navbar-custom');
+            const searchInput = document.getElementById('searchInput');
+            const viewportHeight = window.innerHeight;
+
+            function checkScroll() {
+                const carouselRect = carousel.getBoundingClientRect();
+                if (carouselRect.bottom > 0 && carouselRect.top < viewportHeight) {
+                    navbar.classList.add('navbar-transparent');
+                    searchInput.classList.add('search-input-transparent');
+                } else {
+                    navbar.classList.remove('navbar-transparent');
+                    searchInput.classList.remove('search-input-transparent');
+                }
+            }
+
+            window.addEventListener('scroll', checkScroll);
+            checkScroll(); // Kiểm tra ngay khi tải trang
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

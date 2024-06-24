@@ -3,7 +3,6 @@ package com.example.VieTicketSystem.fileSever.config;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.example.VieTicketSystem.model.repo.UnverifiedUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +24,6 @@ public class AuthFilter implements Filter {
     @Autowired
     OrganizerRepo organizerRepo = new OrganizerRepo();
 
-    @Autowired
-    UnverifiedUserRepo unverifiedUserRepo;
-
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -35,8 +31,8 @@ public class AuthFilter implements Filter {
         HttpSession session = httpRequest.getSession();
         String requestURI = httpRequest.getRequestURI();
 
-        // Bỏ qua filter cho các yêu cầu đến các tệp tĩnh (ví dụ: CSS, JavaScript)
-        if (requestURI.startsWith("/static/")) {
+        // Bypass filter for static resources and authentication API
+        if (requestURI.startsWith("/static/") || requestURI.startsWith("/api/v1/auth")) {
             chain.doFilter(request, response);
             return;
         }
@@ -45,12 +41,7 @@ public class AuthFilter implements Filter {
         user = user == null ? (User) session.getAttribute("activeUser") : user;
 
         // Check if the user is unverified
-        boolean isUnverified = false;
-        try {
-            isUnverified = user != null && unverifiedUserRepo.isUnverified(user.getUserId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean isUnverified = user != null && !user.isVerified();
 
         // If the user is unverified and the request URI is not /auth/verify-email,
         // /change, or /editUser, then redirect them to /auth/verify-email
@@ -107,19 +98,19 @@ public class AuthFilter implements Filter {
                                 || requestURI.startsWith("/upload/banner") || requestURI.startsWith("/add-event")
                                 || requestURI.startsWith("createEvent")
                                 || (requestURI.startsWith("/seatMap") && eventCreated)
+                                || (requestURI.startsWith("/seatMap/SeatMapEditor") && eventCreated)
                                 || (requestURI.startsWith("/seatMap/NoSeatMap") && eventCreated)
                                 || (requestURI.startsWith("/seatMap/SeatMapBeta") && eventCreated)
                                 || requestURI.startsWith("/viewMyListEvent") || requestURI.startsWith("/allEvents")
                                 || requestURI.startsWith("/pendingEvents") || requestURI.startsWith("/approvedEvents")
                                 || requestURI.startsWith("/passedEvents") || requestURI.startsWith("/seatMapEdit")
                                 || requestURI.startsWith("/seatMapDelete") || requestURI.startsWith("/noModelEditPage")
+                                || (requestURI.startsWith("/seatMap/SeatMapEditor"))
                                 || (requestURI.startsWith("/seatMap/NoSeatMapEdit"))
                                 || (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
                                 || requestURI.startsWith("/editSuccess"))
                         || requestURI.startsWith("/eventEditPage") || requestURI.startsWith("/eventEditSubmit")
-                        || requestURI.startsWith("/viewStatistics"))
-                        // ) || requestURI.startsWith("/admin/messages")
-                        {
+                        || requestURI.startsWith("/viewStatistics")|| requestURI.startsWith("/eventUsers") || requestURI.startsWith("/sendMailToAllUser")) {
                     if (requestURI.startsWith("/createEvent")) {
                         session.setAttribute("eventCreated", true);
                     }

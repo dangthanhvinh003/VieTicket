@@ -2,32 +2,43 @@ package com.example.VieTicketSystem.controller;
 
 import java.util.Map;
 
+import com.example.VieTicketSystem.model.entity.User;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.example.VieTicketSystem.model.service.PasswordResetService;
 import com.example.VieTicketSystem.model.service.VerifyEmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
+@RequestMapping("/api/v1/auth/")
 public class PasswordResetController {
 
     private final PasswordResetService passwordResetService;
     private final ObjectMapper mapper;
     private final VerifyEmailService verifyEmailService;
+    private final HttpServletResponse httpServletResponse;
+    private final ServletRequest httpServletRequest;
+    private final HttpSession httpSession;
 
     // Inject the PasswordResetService and ObjectMapper here
     public PasswordResetController(PasswordResetService passwordResetService, ObjectMapper mapper,
-            VerifyEmailService verifyEmailService) {
+                                   VerifyEmailService verifyEmailService, HttpServletResponse httpServletResponse, @Qualifier("httpServletRequest") ServletRequest httpServletRequest, HttpSession httpSession) {
         this.passwordResetService = passwordResetService;
         this.mapper = mapper;
         this.verifyEmailService = verifyEmailService;
+        this.httpServletResponse = httpServletResponse;
+        this.httpServletRequest = httpServletRequest;
+        this.httpSession = httpSession;
     }
 
-    @PostMapping("/auth/password-reset")
+    @PostMapping("/password-reset/request-reset")
     public ResponseEntity<?> passwordReset(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String returnedFromService;
@@ -62,8 +73,9 @@ public class PasswordResetController {
         return ResponseEntity.ok().body(successNode);
     }
 
-    @PostMapping("/auth/verify-otp")
+    @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOTP(@RequestBody Map<String, String> body) {
+
         String otp = body.get("otp");
         String email = body.get("email");
         if (otp == null || email == null) {
@@ -72,16 +84,28 @@ public class PasswordResetController {
             errorNode.put("message", "OTP is required");
             return ResponseEntity.badRequest().body(errorNode);
         }
-        String resetToken = body.get("resetToken");
+        String resetToken = null;
         try {
             // Verify the OTP
             if (verifyEmailService.isUnverified(email)) {
-                verifyEmailService.validateNewUserOTP(email, otp);
+                verifyEmailService.verifyOTP(email, otp);
+                User user = (User) httpSession.getAttribute("activeUser");
+                user.setRole(Character.toLowerCase(user.getRole()));
             } else {
                 resetToken = passwordResetService.verifyOTP(email, otp);
             }
+
+            // Create a cookie
+            Cookie cookie = new Cookie("token", resetToken);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true); // ensures the cookie is only sent over HTTPS TODO: enable this in production
+            cookie.setPath("/"); // accessible to entire domain
+
+            // Add cookie to response
+            httpServletResponse.addCookie(cookie);
         } catch (Exception e) {
             // Handle the exception here
+            e.printStackTrace();
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
             errorNode.put("message", e.getMessage());
@@ -91,16 +115,15 @@ public class PasswordResetController {
         ObjectNode successNode = mapper.createObjectNode();
         successNode.put("success", true);
         successNode.put("message", "OTP verified successfully");
-        successNode.put("token", resetToken);
         return ResponseEntity.ok().body(successNode);
     }
 
-    @PostMapping("/auth/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-        String token = body.get("token");
+    @PostMapping("/password-reset/new-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body, @CookieValue(value = "token", defaultValue = "") String token) {
+
         String newPassword = body.get("newPassword");
 
-        if (token == null || newPassword == null) {
+        if ("".equals(token) || newPassword == null) {
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
             errorNode.put("message", "Token and new password are required");
@@ -115,7 +138,7 @@ public class PasswordResetController {
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
             errorNode.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
         }
 
         ObjectNode successNode = mapper.createObjectNode();

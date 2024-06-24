@@ -23,8 +23,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -69,18 +72,19 @@ public class EventController {
             @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
             @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
             throws Exception {
-        String imageURL = fileUpload.uploadFile(multipartFile);
-        model.addAttribute("poster", imageURL);
-        String imageURL1 = fileUpload.uploadFile(multipartFile1);
-        model.addAttribute("banner", imageURL1);
+        String posterURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958); // Kích thước cho poster
+        model.addAttribute("poster", posterURL);
+
+        String bannerURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720); // Kích thước cho banner
+        model.addAttribute("banner", bannerURL);
         User user = (User) httpSession.getAttribute("activeUser");
-        System.out.println(user);
+        // System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
-                organizerRepo.findById(user.getUserId()), imageURL, imageURL1, 0, 0);
+                organizerRepo.findById(user.getUserId()), posterURL, bannerURL, 0, 0);
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
                 user.getUserId(),
-                imageURL, imageURL1);
+                posterURL, bannerURL);
         httpSession.setAttribute("idNewEvent", idNewEvent);
         httpSession.setAttribute("eventCreated", true); // Đặt thuộc tính eventCreated
         return "redirect:/seatMap";
@@ -105,6 +109,68 @@ public class EventController {
         return "createEventSuccess";
     }
 
+    @GetMapping(value = ("/seatMap/SeatMapEditor"))
+    public String SeatMapEditor() {
+        return "SeatMapEditor";
+    }
+
+    @PostMapping(value = "/seatMap/SeatMapEditor")
+    public String SeatMapEditor(MultipartHttpServletRequest request, HttpSession session)
+            throws SQLException, ClassNotFoundException, ParseException, IOException {
+        int eventId = (int) session.getAttribute("idNewEvent");
+        String name = "SeatMap Name";
+
+        MultipartFile file = request.getFile("file");
+        String imageURL = fileUpload.uploadFile(file);
+        String shapesJson = request.getParameter("shapes");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, Object>> shapesData = objectMapper.readValue(shapesJson, List.class);
+        seatMapRepo.addSeatMapWithEditor(eventId, name, imageURL, shapesJson);
+
+        int seatMapId = seatMapRepo.getSeatMapIdByEventRepo(eventId); // Implement this method to get the last inserted
+        for (Map<String, Object> shapeWrapper : shapesData) {
+            Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
+            if ("Area".equals(shape.get("type"))) {
+                String areaName = shape.get("name").toString();
+                String ticketPrice = shape.get("ticketPrice").toString();
+                List<Map<String, Object>> areaShapes = (List<Map<String, Object>>) shape.get("shapes");
+                int totalTickets = 0;
+
+                for (Map<String, Object> areaShape : areaShapes) {
+                    if ("Row".equals(areaShape.get("type"))) {
+                        totalTickets += ((List<Map<String, Object>>) areaShape.get("seats")).size();
+                    }
+                }
+
+                areaRepo.addArea(areaName, totalTickets, eventId, ticketPrice, seatMapId);
+                int areaId = areaRepo.getIdAreaEventIdAndName(eventId, areaName); // Implement this method to get the
+                                                                                  // last inserted area ID.
+
+                for (Map<String, Object> areaShape : areaShapes) {
+                    if ("Row".equals(areaShape.get("type"))) {
+                        String rowName = areaShape.get("name").toString();
+                        rowRepo.addRow(rowName, areaId);
+                        int rowId = rowRepo.getIdRowByAreaIdAndRowName(areaId, rowName); // Implement this method to get
+                                                                                         // the last inserted row ID.
+
+                        List<Map<String, Object>> seats = (List<Map<String, Object>>) areaShape.get("seats");
+                        for (Map<String, Object> seat : seats) {
+                            String seatNumber = seat.get("number").toString();
+                            seatRepo.addSeat(seatNumber, ticketPrice, rowId);
+                        }
+                    }
+                }
+            }
+        }
+        return "redirect:/createEventSuccess";
+    }
+
+    @GetMapping(value = { "/createEventSuccess" })
+    public String createEventSuccessPage() {
+        return "createEventSuccess";
+    }
+
     @GetMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage() {
         return "SeatMapBeta";
@@ -119,17 +185,18 @@ public class EventController {
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);
 
         // Sử dụng dữ liệu JSON (ví dụ: in ra để kiểm tra)
-        System.out.println("Total Selected Seats: " + additionalData.getTotalSelectedSeats());
-        System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
-        System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
-        System.out.println("VIP Seats: " + additionalData.getVipSeats());
-        System.out.println("Normal Price: " + additionalData.getNormalPrice());
-        System.out.println("VIP Price: " + additionalData.getVipPrice());
+        // System.out.println("Total Selected Seats: " +
+        // additionalData.getTotalSelectedSeats());
+        // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
+        // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
+        // System.out.println("VIP Seats: " + additionalData.getVipSeats());
+        // System.out.println("Normal Price: " + additionalData.getNormalPrice());
+        // System.out.println("VIP Price: " + additionalData.getVipPrice());
         // add 1 event
         // Event event = (Event) httpSession.getAttribute("newEvent");
         // Event event2 = eventRepo.get(event.getName());
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
-        String imageURL1 = fileUpload.uploadFile(multipartFile1);
+        String imageURL1 = fileUpload.uploadFileSeatMap(multipartFile1);
         seatMapRepo.addSeatMap(idNewEvent, "SeatMapBeta", imageURL1);
         // add area normal
         if (additionalData.getTotalSelectedSeats() != 0) {
@@ -137,7 +204,6 @@ public class EventController {
                     additionalData.getNormalPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
 
             ArrayList<String> allSeatNormal = additionalData.getSelectedSeats();
-            System.out.println("allSeatNormal : " + allSeatNormal);
             Set<Character> uniqueFirstLetters = new HashSet<>();
 
             if (additionalData.getSelectedSeats() != null) {
@@ -146,9 +212,9 @@ public class EventController {
                         uniqueFirstLetters.add(seat.charAt(0));
                     }
                 }
-                System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
+                // System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
                 ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
-                System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
+                // System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
@@ -196,7 +262,7 @@ public class EventController {
             areaRepo.addArea("Vip", additionalData.getTotalVIPSeats(), idNewEvent,
                     additionalData.getVipPrice(), seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
             ArrayList<String> allSeatVip = additionalData.getVipSeats();
-            System.out.println("allSeatNormal : " + allSeatVip);
+            // System.out.println("allSeatNormal : " + allSeatVip);
             Set<Character> uniqueFirstLetters = new HashSet<>();
 
             if (additionalData.getSelectedSeats() != null) {
@@ -205,9 +271,9 @@ public class EventController {
                         uniqueFirstLetters.add(seat.charAt(0));
                     }
                 }
-                System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
+                // System.out.println("uniqueFirstLetters : " + uniqueFirstLetters);
                 ArrayList<Character> uniqueFirstLettersList = new ArrayList<>(uniqueFirstLetters);
-                System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
+                // System.out.println("uniqueFirstLettersList : " + uniqueFirstLettersList);
                 if (areaRepo.getIdAreaEventId(idNewEvent) != -1) {
                     for (int i = 0; i < uniqueFirstLettersList.size(); i++) {
                         rowRepo.addRow(Character.toString(uniqueFirstLettersList.get(i)),
@@ -254,9 +320,15 @@ public String viewEventDetail(@PathVariable("id") int eventId, Model model) thro
     
     Event event = eventRepo.findById(eventId);
 
-    // If event is null, return 404 page
-    if (event == null) {
-        return "404"; // Assumes you have a 404.html template
+        // Tìm giá vé thấp nhất
+        Float minPrice = null;
+        if (!ticketPrices.isEmpty()) {
+            minPrice = Collections.min(ticketPrices);
+        }
+        model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
+
+        // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
+        return "viewdetailEvent";
     }
 
     eventRepo.incrementClickCount(event.getEventId());
@@ -284,4 +356,13 @@ public String viewEventDetail(@PathVariable("id") int eventId, Model model) thro
         return "searchResults"; // Tên của template hiển thị danh sách sự kiện
     }
 
+    @GetMapping("/eventUsers")
+    public String getUsersByEventId( Model model,HttpSession httpSession) {
+        int eventId = (int) httpSession.getAttribute("IdEventTolistAllUser");
+        List<User> users = eventRepo.getUsersWithTicketsByEventId(eventId);
+        model.addAttribute("users", users);
+
+       
+        return "eventUsers"; // Tên của template hiển thị danh sách người dùng
+    }
 }

@@ -34,9 +34,6 @@ public class Oauth2Service {
                 map.add("redirect_uri", this.oauthDetails.get("redirectUri"));
                 map.add("grant_type", grantType);
                 // Log the parameters
-                System.out.println("Request parameters:");
-                map.forEach((key, value) -> System.out.println(key + ": " + value));
-
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
                 try {
