@@ -23,6 +23,7 @@ const mainMenuBar = document.getElementById("mainMenuBar");
 const areaMenuBar = document.getElementById("areaMenuBar");
 const backButton = document.getElementById("backButton");
 const dropdownMenuButton = document.getElementById("dropdownMenuButton");
+const templatesPanel = document.getElementById("templatesPanel");
 const mapDropDown = document.getElementById("mapDropDown");
 const selectSeatsMode = document.getElementById("selectSeatsMode");
 const seatUndoButton = document.getElementById("seatUndoButton");
@@ -92,6 +93,17 @@ window.addEventListener("click", (event) => {
   ) {
     if (insertTableSeatDropDown.classList.contains("show")) {
       insertTableSeatDropDown.classList.remove("show");
+    }
+  }
+  if (
+    !event.target.matches("#loadButton") &&
+    !event.target.matches("#loadButton *") &&
+    !event.target.matches("#templatesPanel") &&
+    !event.target.matches("#templatesPanel *")
+  ) {
+    const templatesPanel = document.getElementById("templatesPanel");
+    if (templatesPanel.style.display === "flex") {
+      templatesPanel.style.display = "none";
     }
   }
 });
@@ -208,37 +220,14 @@ function dataURLToBlob(dataURL) {
 }
 
 loadButton.addEventListener("click", () => {
-  document.getElementById("fileInput").click();
-});
-document.getElementById("fileInput").addEventListener("change", (event) => {
-  const fileInput = event.target;
-  const file = fileInput.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const json = e.target.result;
-    const canvasData = JSON.parse(json);
-
-    shapes = [];
-
-    shapes = canvasData.shapes.map((shapeData) => {
-      switch (shapeData.data.type) {
-        case "EllipseStage":
-          return EllipseStage.deserialize(shapeData.data);
-        case "RectangleStage":
-          return RectangleStage.deserialize(shapeData.data);
-        case "Area":
-          return PolygonArea.deserialize(shapeData.data);
-        default:
-          console.log(shapeData);
-      }
-    });
-
-    drawAll();
-  };
-
-  reader.readAsText(file);
+  if (
+    templatesPanel.style.display === "none" ||
+    templatesPanel.style.display === ""
+  ) {
+    templatesPanel.style.display = "flex";
+  } else {
+    templatesPanel.style.display = "none";
+  }
 });
 
 panningButton.addEventListener("click", () => {
@@ -342,12 +331,13 @@ duplicateShapeInArea.addEventListener("click", () => {
   if (selectedShape == null) return;
   switch (selectedShape.type) {
     case "Row": {
-      const newShape = new Row({ ...selectedShape, name: "New Name" });
+      const newShape = new Row({ ...selectedShape, name: "R" });
       selectedShape.seats.map((seat) => {
         newShape.seats.push(new Seat(seat));
       });
       newShape.startX += 10;
       newShape.startY += 10;
+      newShape.updateChildren();
       zoomedArea.shapes.push(newShape);
       selectedShape = newShape;
       break;

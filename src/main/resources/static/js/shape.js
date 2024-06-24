@@ -557,10 +557,11 @@ class PolygonArea extends Polygon {
               ) {
                 row.createSeat({
                   number: seatIndex + 1,
-                  status: "available",
+                  status: shape.seats[seatIndex].status,
                 });
               }
               row.area = {
+                name: this.name,
                 points: this.points,
                 color: this.color,
                 selectedPointIndex: this.selectedPointIndex,
@@ -569,12 +570,13 @@ class PolygonArea extends Polygon {
                 furthestX: this.furthestX,
                 furthestY: this.furthestY,
               };
-
-              this.shapes.push(row);
+              this.addShape(row);
+              break;
             }
             case "Text": {
               const text = new Text({ ...shape });
               text.area = {
+                name: this.name,
                 points: this.points,
                 color: this.color,
                 selectedPointIndex: this.selectedPointIndex,
@@ -583,7 +585,7 @@ class PolygonArea extends Polygon {
                 furthestX: this.furthestX,
                 furthestY: this.furthestY,
               };
-              this.shapes.push(text);
+              this.addShape(text);
             }
           }
         })
@@ -667,6 +669,7 @@ class PolygonArea extends Polygon {
       seatRadius,
       seatSpacing,
       area: {
+        name: this.name,
         points: this.points,
         color: this.color,
         selectedPointIndex: this.selectedPointIndex,
@@ -709,7 +712,16 @@ class PolygonArea extends Polygon {
 
   updateChildren() {
     this.shapes.forEach((shape) => {
-      shape.area = this;
+      shape.area = {
+        name: this.name,
+        points: this.points,
+        color: this.color,
+        selectedPointIndex: this.selectedPointIndex,
+        x: this.x,
+        y: this.y,
+        furthestX: this.furthestX,
+        furthestY: this.furthestY,
+      };
       if (shape.type === "Row") {
         shape.updateChildren();
       }
@@ -892,6 +904,7 @@ class Row {
     const y = 0;
     const seat = new Seat({
       row: {
+        name: this.name,
         startX: this.startX,
         startY: this.startY,
         area: this.area,
@@ -980,7 +993,14 @@ class Row {
   }
   updateChildren() {
     this.seats.forEach((seat, index) => {
-      seat.row = this;
+      seat.row = {
+        name: this.name,
+        startX: this.startX,
+        startY: this.startY,
+        area: this.area,
+        seatRadius: this.seatRadius,
+        rotation: this.rotation,
+      };
       seat.radius = this.seatRadius;
       seat.x = index * (this.seatRadius * 2 + this.seatSpacing);
     });

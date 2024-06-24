@@ -16,14 +16,8 @@ let currentPolygon = null;
 let selectedShape = null;
 let zoomedArea = null;
 let offsetX, offsetY;
-
-//MapState
 let canvasStates = [];
 let currentStateIndex = -1;
-
-//AreaState
-let canvasAreaStates = [];
-let currentAreaStateIndex = -1;
 
 let shapes = [];
 function drawAll() {
@@ -87,11 +81,11 @@ function updateCurrentCanvasState() {
       break;
     }
   }
-
   const updatedState = {
     ...currentState,
     shapes: updatedShapes,
   };
+
   canvasStates[currentStateIndex - 1] = updatedState;
 }
 
@@ -106,43 +100,6 @@ function restoreCanvasState(index) {
         return EllipseStage.deserialize(shapeData);
       case "Area":
         return PolygonArea.deserialize(shapeData);
-      default:
-        throw new Error("Unknown shape type: " + shapeData.type);
-    }
-  });
-
-  const image = new Image();
-  image.onload = function () {
-    ctx.clearRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
-    ctx.drawImage(image, 0, 0);
-    drawAll();
-  };
-  image.src = state.canvasImage;
-}
-
-function saveAreaCanvasState() {
-  const state = {
-    canvasImage: canvas.toDataURL(),
-    shapes: zoomedArea.shapes.map((shape) => shape.serialize()),
-  };
-
-  if (currentAreaStateIndex < canvasAreaStates.length - 1) {
-    canvasAreaStates.splice(currentAreaStateIndex + 1);
-  }
-
-  canvasAreaStates.push(state);
-  currentAreaStateIndex++;
-}
-
-function restoreAreaCanvasState(index) {
-  const state = canvasAreaStates[index];
-
-  zoomedArea.shapes = state.shapes.map((shapeData) => {
-    switch (shapeData.type) {
-      case "Row":
-        return Row.deserialize(shapeData);
-      case "Text":
-        return Text.deserialize(shapeData);
       default:
         throw new Error("Unknown shape type: " + shapeData.type);
     }

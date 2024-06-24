@@ -119,11 +119,11 @@ public class EventController {
     public String SeatMapEditor(MultipartHttpServletRequest request, HttpSession session)
             throws SQLException, ClassNotFoundException, ParseException, IOException {
         int eventId = -1;
-        if (session.getAttribute("idNewEvent") != null) {
-            eventId = (int) session.getAttribute("idNewEvent");
-        } else if (session.getAttribute("eventIdEdit") != null) {
+        if (session.getAttribute("eventIdEdit") != null) {
             eventId = (int) session.getAttribute("eventIdEdit");
-            eventRepo.deleteEvent(eventId);
+            seatMapRepo.deleteSeatMapByEventId(eventId);
+        } else if (session.getAttribute("idNewEvent") != null) {
+            eventId = (int) session.getAttribute("idNewEvent");
         } else {
             return "index";
         }
@@ -354,12 +354,11 @@ public class EventController {
     }
 
     @GetMapping("/eventUsers")
-    public String getUsersByEventId( Model model,HttpSession httpSession) {
+    public String getUsersByEventId(Model model, HttpSession httpSession) {
         int eventId = (int) httpSession.getAttribute("IdEventTolistAllUser");
         List<User> users = eventRepo.getUsersWithTicketsByEventId(eventId);
         model.addAttribute("users", users);
 
-       
         return "eventUsers"; // Tên của template hiển thị danh sách người dùng
     }
 }

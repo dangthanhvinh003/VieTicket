@@ -35,10 +35,10 @@ function handleBack() {
   currentStateIndex--;
   restoreCanvasState(currentStateIndex);
   currentAreaStateIndex = 0;
-  backButton.innerHTML =
+  goBackButton.innerHTML =
     '<i class="bi bi-box-arrow-left" style="color: white;"></i>';
-  backButton.removeEventListener("click", handleBack);
-  backButton.addEventListener("click", popHistory);
+  goBackButton.removeEventListener("click", handleBack);
+  goBackButton.addEventListener("click", popHistory);
   canvas.removeEventListener("mousedown", selectAreaShape);
   canvas.addEventListener("click", zoomInArea);
   mainEditor();
@@ -69,11 +69,11 @@ function zoomInArea(event) {
   drawAll();
 }
 function zoomInOnShape(polygon) {
-  backButton.removeEventListener("click", popHistory);
+  goBackButton.removeEventListener("click", popHistory);
   saveCanvasState();
-  backButton.innerHTML =
+  goBackButton.innerHTML =
     '<i class="bi bi-chevron-left" style="color: white;"></i>';
-  backButton.addEventListener("click", handleBack);
+  goBackButton.addEventListener("click", handleBack);
 
   shapes.forEach((s) => (s.isHidden = s !== polygon));
 
@@ -81,30 +81,22 @@ function zoomInOnShape(polygon) {
 
   canvas.addEventListener("mousedown", selectAreaShape);
 
-  let zoomedRatio;
-
-  const furthestX = polygon.furthestX;
-  const furthestY = polygon.furthestY;
-
-  if (furthestY > furthestX) {
-    zoomedRatio = window.innerHeight / (polygon.furthestY * 2);
-  } else {
-    zoomedRatio = window.innerWidth / (polygon.furthestX * 2);
-  }
+  const fixedZoomRatio = 2.4; // Adjust this value as needed
 
   polygon.x = window.innerWidth / 3 - translateX;
   polygon.y = window.innerHeight / 2 - translateY;
-  polygon.zoomShape(zoomedRatio * 0.7);
+
+  updateAreaShapes(polygon);
+  polygon.zoomShape(fixedZoomRatio);
   polygon.calculateFurthestCoordinates();
   polygon.color = "#fff";
+  polygon.updateChildren();
 
   drawAll();
-  saveAreaCanvasState();
 }
 function selectAreaShape(event) {
   const mouseX = event.clientX - translateX;
   const mouseY = event.clientY - translateY;
-
   selectedShape = null;
   for (let i = zoomedArea.shapes.length - 1; i >= 0; i--) {
     if (zoomedArea.shapes[i] instanceof Row) {
@@ -126,6 +118,7 @@ function selectSeat(row, x, y) {
   for (let i = selectedRow.seats.length - 1; i >= 0; i--) {
     if (selectedRow.seats[i].isPointInside(x, y)) {
       selectedShape = selectedRow.seats[i];
+      if (selectedShape.status === "taken") return;
       if (isInSelectedSeats(selectedShape)) {
         selectedShape.status = "available";
         selectedSeats = selectedSeats.filter((seat) => {
@@ -160,8 +153,57 @@ function isInSelectedSeats(theSeat) {
   return true;
 }
 
+function getTakenOrReservedSeats() {
+  eventData.areas.forEach((area) => {
+    const areaName = area.area.name;
+
+    area.rows.forEach((row) => {
+      const rowName = row.row.rowName;
+
+      row.seats.forEach((seat) => {
+        if (
+          seat.taken &&
+          (seat.taken === "TAKEN" || seat.taken === "RESERVED")
+        ) {
+          takenOrReservedSeats.push({
+            areaName: areaName,
+            rowName: rowName,
+            seatNumber: seat.number,
+          });
+        }
+      });
+    });
+  });
+}
+function updateAreaShapes(area) {
+  if (!takenOrReservedSeats.some((seat) => seat.areaName === area.name)) {
+    return;
+  }
+  const relaventSeats = takenOrReservedSeats.filter(
+    (seat) => seat.areaName === area.name
+  );
+  area.shapes
+    .filter((shape) => {
+      if (shape.type !== "Row") return false;
+      if (!relaventSeats.some((seat) => seat.rowName === shape.name))
+        return false;
+      return true;
+    })
+    .forEach((row) => {
+      row.seats.forEach((seat) => {
+        relaventSeats.forEach((relSeat) => {
+          if (
+            parseInt(relSeat.seatNumber) === seat.number &&
+            relSeat.rowName === seat.row.name
+          ) {
+            seat.status = "taken";
+          }
+        });
+      });
+    });
+}
+
 function getSelectedAreasWithSeats() {
-  // Create a Map for quick lookup and grouping of selectedSeats by area name
   const selectedSeatsMap = new Map();
   for (const seat of selectedSeats) {
     const areaName = seat.row.area.name;
@@ -171,10 +213,8 @@ function getSelectedAreasWithSeats() {
     selectedSeatsMap.get(areaName).push(seat);
   }
 
-  // Initialize the result array
   const result = [];
 
-  // Iterate through eventData areas and build the result structure
   for (const area of eventData.areas) {
     const areaName = area.area.name;
     if (selectedSeatsMap.has(areaName)) {
@@ -186,7 +226,6 @@ function getSelectedAreasWithSeats() {
         })),
       });
     }
-    // Break if all areas in selectedSeats are found
     if (result.length === selectedSeatsMap.size) {
       break;
     }
@@ -253,5 +292,4 @@ function handleBuyTickets() {
       document.getElementById("seatSelectionForm").reset();
       location.reload();
     });
-  console.log();
 }

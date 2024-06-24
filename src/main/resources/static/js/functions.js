@@ -302,30 +302,24 @@ function zoomInArea(event) {
     }
   }
 }
-
 function zoomInOnShape(polygon) {
   saveCanvasState();
   shapes.forEach((s) => (s.isHidden = s !== polygon));
 
-  // Calculate the zoomed dimensions based on the furthest x and y
-  let zoomedRatio;
+  // Set a fixed zoom ratio
+  const fixedZoomRatio = 2.4; // Adjust this value as needed
 
-  const furthestX = polygon.furthestX;
-  const furthestY = polygon.furthestY;
+  console.log(window.innerWidth, window.innerHeight);
 
-  if (furthestY > furthestX) {
-    zoomedRatio = window.innerHeight / (polygon.furthestY * 2);
-  } else {
-    zoomedRatio = window.innerWidth / (polygon.furthestX * 2);
-  }
-
+  // Center the polygon in the viewport
   polygon.x = window.innerWidth / 3 - translateX;
   polygon.y = window.innerHeight / 2 - translateY;
-  polygon.zoomShape(zoomedRatio * 0.7);
+
+  // Apply the fixed zoom ratio
+  polygon.zoomShape(fixedZoomRatio);
   polygon.calculateFurthestCoordinates();
   polygon.color = "#fff";
-
-  // Scale the offset values
+  polygon.updateChildren();
 
   areaEditor();
   drawAll();
