@@ -141,14 +141,14 @@ public class EventRepo {
     public List<Event> getTopHotEvents() throws Exception {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 10");
                 ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
                 event.setEventId(resultSet.getInt("event_id"));
                 event.setName(resultSet.getString("name"));
-                event.setBanner(resultSet.getString("banner"));
+                event.setPoster(resultSet.getString("poster"));
                 event.setEyeView(resultSet.getInt("eyeView"));
                 event.setApproved(resultSet.getInt("is_approve"));
                 events.add(event);

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Admin Chat</title>
+    <style>
+        #chat {
+            border: 1px solid #ccc;
+            width: 300px;
+            padding: 10px;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #message {
+            width: calc(100% - 60px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #response {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-bottom: 10px;
+            background: #fff;
+        }
+
+        #response p {
+            margin: 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        button {
+            padding: 8px 15px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script>
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/messages', function (message) {
+                    showMessage(JSON.parse(message.body));
+                });
+            });
+        }
+
+        function sendMessage() {
+            var messageContent = document.getElementById("message").value;
+            if (messageContent && stompClient) {
+                stompClient.send("/app/chat", {}, JSON.stringify({
+                    'sender': 'Admin',
+                    'content': messageContent,
+                    'timestamp': new Date().toISOString()
+                }));
+                document.getElementById("message").value = "";
+            }
+        }
+
+        function showMessage(message) {
+            var response = document.getElementById("response");
+            var p = document.createElement("p");
+            var timestamp = new Date(message.timestamp).toLocaleTimeString();
+            p.appendChild(document.createTextNode(
+                message.sender + ": " + message.content + " (" + timestamp + ")"
+            ));
+            response.appendChild(p);
+        }
+
+        function loadAllMessages() {
+            fetch('/chat/allMessages')
+                .then(response => response.json())
+                .then(messages => {
+                    var responseDiv = document.getElementById("response");
+                    responseDiv.innerHTML = ""; // Clear existing messages
+                    messages.forEach(message => {
+                        showMessage(message);
+                    });
+                });
+        }
+
+        // Connect to WebSocket and load all messages as soon as the page is loaded
+        window.onload = function() {
+            connect();
+            loadAllMessages();
+        };
+    </script>
+</head>
+
+<body>
+    <div id="chat">
+        <input type="text" id="message" placeholder="Enter your message..." />
+        <button onclick="sendMessage()">Send</button>
+        <div id="response"></div>
+    </div>
+</body>
+
+</html>

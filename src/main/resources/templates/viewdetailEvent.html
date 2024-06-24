@@ -378,17 +378,17 @@
                         </h6>
                         <p th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')} + ' - ' + ${#temporals.format(event.endDate, 'yyyy-MM-dd hh:mm a')}"
                             style="margin-bottom: 20px;">
-                            2024-06-03 12:00 AM - 2024-06-06 12:00 AM
+                            
                         </p>
                         <h6 style="margin-top: 5px;">
                             <i class="fas fa-map-marker-alt"></i> Location:
                         </h6>
-                        <p th:text="${event.location}" style="margin-bottom: 20px;">Hà Nội</p>
+                        <p th:text="${event.location}" style="margin-bottom: 20px;"></p>
                         <h6 style="margin-top: 5px;">
                             <i class="fas fa-calendar-alt"></i> Date Sale Ticket:
                         </h6>
                         <p th:text="${#temporals.format(event.ticketSaleDate, 'yyyy-MM-dd hh:mm a')}"
-                            style="margin-bottom: 20px;">Hà Nội</p>
+                            style="margin-bottom: 20px;"></p>
                         <h6 style="margin-top: 5px; display: inline;">
                             <i class="fas fa-dollar-sign"></i> Price: ~
                         </h6>

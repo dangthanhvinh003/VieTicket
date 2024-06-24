@@ -250,23 +250,30 @@ public class EventController {
     }
 
     @GetMapping("/viewdetailEvent/{id}")
-    public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
-        Event event = eventRepo.findById(eventId);
-        eventRepo.incrementClickCount(event.getEventId());
-        model.addAttribute("event", event);
-        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
-        List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
+public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
+    
+    Event event = eventRepo.findById(eventId);
 
-        // Tìm giá vé thấp nhất
-        Float minPrice = null;
-        if (!ticketPrices.isEmpty()) {
-            minPrice = Collections.min(ticketPrices);
-        }
-        model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
-
-        System.out.println(organizerRepo.getOrganizerByEventId(eventId));
-        return "viewdetailEvent";
+    // If event is null, return 404 page
+    if (event == null) {
+        return "404"; // Assumes you have a 404.html template
     }
+
+    eventRepo.incrementClickCount(event.getEventId());
+    model.addAttribute("event", event);
+    model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+    List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
+
+    // Tìm giá vé thấp nhất
+    Float minPrice = null;
+    if (!ticketPrices.isEmpty()) {
+        minPrice = Collections.min(ticketPrices);
+    }
+    model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
+
+    System.out.println(organizerRepo.getOrganizerByEventId(eventId));
+    return "viewdetailEvent";
+}
 
     @GetMapping("/viewAllEvent")
     public String getAllEvents(Model model) {

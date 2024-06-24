@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
+
     <link th:href="@{/static/css/index.css}" rel="stylesheet">
-    
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -82,6 +82,52 @@
 
         .event-name {
             margin-top: 10px;
+        }
+
+
+        .event-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .event-card img {
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover img {
+            transform: scale(0.9);
+        }
+
+        .event-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .event-link:hover {
+            text-decoration: none;
+        }
+
+        .event-link:hover .card-title {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .event-link:hover .card-text {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .btn-outline-success {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            color: white;
         }
 
         footer {
@@ -267,8 +313,8 @@
             <div class="col mb-4" th:each="event : ${session.hotevents}" th:if="${event.approved == 1}">
                 <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-link">
                     <div class="card card-hotevent">
-                        <img th:src="${event.banner}" alt="Event Image" class="card-img-top"
-                            style="height: 300px; object-fit: cover;">
+                        <img th:src="${event.poster}" alt="Event Image" class="card-img-top"
+                            style="height: 370px; object-fit: cover;">
                         <div class="overlay">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                             <span class="ms-2" th:text="${event.eyeView} + '+'"></span>
@@ -282,34 +328,86 @@
         </div>
     </div>
 
+
     <div class="container mt-5">
         <h2 id="eventsTitle">Events</h2>
+        <h4 id="eventsTitle">Music</h4>
+
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-            <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
-                <div class="card border-0 shadow">
-                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
-                        style="width: 100%; max-width: 800px; height: 200px;object-fit: cover;">
+            <div class="col mb-4" th:each="event : ${session.events}"
+                th:if="${event.approved == 1 and event.type == 'Music'}">
+
+                <div class="card border-0 shadow event-card">
+                    <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}">
+                        <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                            style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
+                    </a>
                     <div class="card-body p-0">
-                        <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
-                        <p class="card-text m-0 p-2">
-                            Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
-                        </p>
+                        <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-body p-0 event-link">
+                            <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                            <p class="card-text m-0 p-2">
+                                Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                            </p>
+                        </a>
                         <div style="display: flex; width: 100%;">
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
-                               class="btn btn-sm btn-outline-success"
-                               style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
-                               <i class="fas fa-list"></i> View Detail
+                                class="btn btn-sm btn-outline-success"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-list"></i> View Detail
                             </a>
-                            <a href="#"
-                               class="btn btn-sm btn-outline-success"
-                               th:if="${event.areas.size() > 0}"
-                               style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
-                               <i class="fas fa-dollar-sign"></i>
-                                <span class="price" th:data-price="${event.areas.get(0).ticketPrice}" th:utext="${event.areas.get(0).ticketPrice}"></span>
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
+                                    th:utext="${event.areas.get(0).ticketPrice}"></span>
                             </a>
-                            <a href="#"
-                               class="btn btn-sm btn-outline-success"
-                               style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                class="btn btn-sm btn-outline-success"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-eye"></i>
+                                <span th:utext="${event.eyeView}"></span>
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 id="eventsTitle">Dance</h4>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+            <div class="col mb-4" th:each="event : ${session.events}"
+                th:if="${event.approved == 1 and event.type == 'Dance'}">
+
+                <div class="card border-0 shadow event-card">
+                    <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}">
+                        <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                            style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
+                    </a>
+                    <div class="card-body p-0">
+                        <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-body p-0 event-link">
+                            <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                            <p class="card-text m-0 p-2">
+                                Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                            </p>
+                        </a>
+                        <div style="display: flex; width: 100%;">
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                class="btn btn-sm btn-outline-success"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-list"></i> View Detail
+                            </a>
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
+                                    th:utext="${event.areas.get(0).ticketPrice}"></span>
+                            </a>
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                class="btn btn-sm btn-outline-success"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
                                 <i class="fas fa-eye"></i>
                                 <span th:utext="${event.eyeView}"></span>
                             </a>
