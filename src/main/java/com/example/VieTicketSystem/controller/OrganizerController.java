@@ -34,7 +34,6 @@ import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.RowRepo;
 import com.example.VieTicketSystem.model.repo.SeatMapRepo;
 import com.example.VieTicketSystem.model.repo.SeatRepo;
-import com.example.VieTicketSystem.model.repo.UserRepo;
 import com.example.VieTicketSystem.model.service.EmailService;
 import com.example.VieTicketSystem.model.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;

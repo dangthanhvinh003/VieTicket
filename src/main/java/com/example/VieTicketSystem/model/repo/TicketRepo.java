@@ -18,9 +18,9 @@ public class TicketRepo {
 
     private static final String INSERT_STATEMENT = "INSERT INTO Ticket (qr_code, purchase_date, order_id, seat_id, status) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_STATEMENT = "UPDATE Ticket SET qr_code = ?, purchase_date = ?, order_id = ?, seat_id = ?, status = ? WHERE ticket_id = ?";
-    private static final String SELECT_BY_USER_ID_STATEMENT = "SELECT * FROM Ticket JOIN VieTicket1.`Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
-    private static final String SELECT_BY_USER_ID_WITH_LIMIT = "SELECT * FROM Ticket JOIN VieTicket1.`Order` O ON O.order_id = Ticket.order_id WHERE user_id = ? ORDER BY ticket_id DESC LIMIT ? OFFSET ?";
-    private static final String COUNT_BY_USER_ID_STATEMENT = "SELECT COUNT(*) FROM Ticket JOIN VieTicket1.`Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
+    private static final String SELECT_BY_USER_ID_STATEMENT = "SELECT * FROM Ticket JOIN `Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
+    private static final String SELECT_BY_USER_ID_WITH_LIMIT = "SELECT * FROM Ticket JOIN `Order` O ON O.order_id = Ticket.order_id WHERE user_id = ? ORDER BY ticket_id DESC LIMIT ? OFFSET ?";
+    private static final String COUNT_BY_USER_ID_STATEMENT = "SELECT COUNT(*) FROM Ticket JOIN `Order` O ON O.order_id = Ticket.order_id WHERE user_id = ?";
     private static final String SELECT_BY_QR_CODE_STATEMENT = "SELECT * FROM Ticket WHERE qr_code = ?";
     private static final String SELECT_BY_ORDER_ID_STATEMENT = "SELECT * FROM Ticket WHERE order_id = ?";
     private static final String UPDATE_SUCCESS_IN_BULK_SQL = "UPDATE Ticket SET purchase_date = ?, status = ? WHERE ticket_id = ?";

@@ -60,6 +60,12 @@ public class CheckInController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
+        // Check if event has passed
+        if (ticket.getSeat().getRow().getArea().getEvent().getEndDate().isBefore(java.time.LocalDateTime.now())) {
+            String response = objectMapper.writeValueAsString(Map.of("message", "Event has passed"));
+            return ResponseEntity.badRequest().body(response);
+        }
+
         // Check if ticket is owned by the organizer
         if (ticket.getSeat().getRow().getArea().getEvent().getOrganizer().getUserId() != user.getUserId()) {
             String response = objectMapper.writeValueAsString(Map.of("message", "Ticket not owned by organizer"));
@@ -68,7 +74,7 @@ public class CheckInController {
 
         // If passed all checks, include the ticket details in the response
         Map<String, String> response = new java.util.HashMap<>();
-        response.put("lead_visitor", ticket.getOrder().getUser().getFullName());
+        response.put("leadVisitor", ticket.getOrder().getUser().getFullName());
         response.put("event", ticket.getSeat().getRow().getArea().getEvent().getName());
         response.put("seat", ticket.getSeat().getRow().getArea().getName() + " " + ticket.getSeat().getNumber());
         response.put("status", String.valueOf(ticket.getStatus()));
