@@ -78,7 +78,6 @@ function mainEditor() {
 }
 
 function submitEditor() {
-  console.log(selectedSeats);
   const seats = selectedSeats
     .map((seat) => `${seat.row.name}${seat.number}`)
     .join(", ");

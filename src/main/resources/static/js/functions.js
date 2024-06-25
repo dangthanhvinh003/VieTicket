@@ -309,8 +309,6 @@ function zoomInOnShape(polygon) {
   // Set a fixed zoom ratio
   const fixedZoomRatio = 2.4; // Adjust this value as needed
 
-  console.log(window.innerWidth, window.innerHeight);
-
   // Center the polygon in the viewport
   polygon.x = window.innerWidth / 3 - translateX;
   polygon.y = window.innerHeight / 2 - translateY;
