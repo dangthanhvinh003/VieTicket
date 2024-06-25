@@ -153,6 +153,7 @@ public class EventRepo {
                 event.setBanner(resultSet.getString("banner"));
                 event.setEyeView(resultSet.getInt("eyeView"));
                 event.setApproved(resultSet.getInt("is_approve"));
+                event.setPoster(resultSet.getString("poster"));
                 events.add(event);
             }
         }

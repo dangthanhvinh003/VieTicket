@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
-    <link th:href="@{/static/css/index.css}" rel="stylesheet">
+    
 
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <link href="../static/css/index.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
     <style>
@@ -58,6 +59,25 @@
             width: 100%;
         }
 
+        .overlayi {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            /* border-radius: 0 0 10px 10px; */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 24.5%;
+            left: 0;
+            width: 100%;
+
+        }
+
+        .card:hover .overlayi {
+            display: flex;
+        }
+
         .card:hover .overlay {
             display: flex;
         }
@@ -70,15 +90,30 @@
         .card-img-top {
             border-bottom: 0;
             border-radius: 10px 10px 0 0;
+
         }
 
         .card-hotevent {
-            border: none;
-            border-radius: 10px;
+            position: relative;
             overflow: hidden;
-            background-color: transparent;
-            border: 2px solid #007bff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            /* Đảm bảo thẻ sự kiện hiển thị phía trước */
         }
+
+        .card-hotevent::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Điều chỉnh chiều cao tùy theo độ cao của hình ảnh lửa */
+            background: url('https://res.cloudinary.com/djcowpoua/image/upload/v1718787707/t4cddxgiwe1o0dmlrmqq.gif') center bottom/cover no-repeat;
+            /* Đường dẫn và kiểu hiển thị */
+        }
+
 
         .event-name {
             margin-top: 10px;
@@ -186,18 +221,46 @@
             /* Đảm bảo video bao phủ toàn bộ khung mà không bị méo */
         }
 
-        .carousel-item {
+        /* .carousel-item {
             transition: transform 0s ease-in-out !important; /* Thời gian chuyển đổi dài hơn để mượt mà hơn */
-        }
+        /* } */
 
-        .carousel-control-prev, .carousel-control-next {
+
+        .carousel-control-prev,
+        .carousel-control-next {
             width: 5%;
         }
+
         .navbar-brand {
             font-family: 'Arial Black', sans-serif;
             font-style: italic;
             font-weight: bold;
             text-transform: uppercase;
+        }
+
+        .carousel-caption {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+        .carousel-caption h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .carousel-caption p {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
         }
     </style>
 
@@ -277,17 +340,13 @@
 
     <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
         <!-- Indicators -->
-        <ol class="carousel-indicators">
-            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active"></li>
-            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="1"></li>
-            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="2"></li>
-            <li data-bs-target="#carouselExampleDark" data-bs-slide-to="3"></li>
-        </ol>
-    
+
+
         <div class="carousel-inner">
-            <div class="carousel-item active" data-bs-interval="1000">
+            <div class="carousel-item active">
                 <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/djcowpoua/video/upload/v1717804738/videoplayback_ebmycx.mp4" type="video/mp4">
+                    <source src="https://res.cloudinary.com/djcowpoua/video/upload/v1717804738/videoplayback_ebmycx.mp4"
+                        type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <div class="carousel-caption d-none d-md-block">
@@ -295,9 +354,11 @@
                     <p>Some representative placeholder content for the third slide.</p>
                 </div>
             </div>
-            <div class="carousel-item" data-bs-interval="1000">
+            <div class="carousel-item">
                 <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715235805/tepkus15wsobic6jx3d4.mp4" type="video/mp4">
+                    <source
+                        src="https://res.cloudinary.com/djcowpoua/video/upload/v1719232070/ODYSSEY_nightclub_promo_video_f26pnk.mp4"
+                        type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <div class="carousel-caption d-none d-md-block">
@@ -305,24 +366,16 @@
                     <p>Some representative placeholder content for the first slide.</p>
                 </div>
             </div>
-            <div class="carousel-item" data-bs-interval="1000">
+            <div class="carousel-item">
                 <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057233/d8gg9cestunm6ny9rsxy.mp4" type="video/mp4">
+                    <source
+                        src="https://res.cloudinary.com/djcowpoua/video/upload/v1719232073/DJI_AVATA_Night_Footage_EDM_Event_vnas5g.mp4"
+                        type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Second slide label</h5>
                     <p>Some representative placeholder content for the second slide.</p>
-                </div>
-            </div>
-            <div class="carousel-item" data-bs-interval="1000">
-                <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/dbabym6rr/video/upload/v1715057205/ooeyodiujb7dtf8u1etl.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Fourth slide label</h5>
-                    <p>Some representative placeholder content for the fourth slide.</p>
                 </div>
             </div>
         </div>
@@ -339,11 +392,11 @@
     <div class="container mt-5">
         <h2>Hot Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
-            <div class="col mb-4" th:each="event : ${session.hotevents}" th:if="${event.approved == 1}">
+            <div class="col mb-4" th:each="event : ${session.hotevents}" th:if="${event.approved == 1}"
+                style="height: 300px; object-fit: cover;">
                 <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-link">
-                    <div class="card card-hotevent">
-                        <img th:src="${event.banner}" alt="Event Image" class="card-img-top"
-                            style="height: 300px; object-fit: cover;">
+                    <div class="card card-hotevent  ">
+                        <img th:src="${event.poster}" alt="Event Image" class="card-img-top">
                         <div class="overlay">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                             <span class="ms-2" th:text="${event.eyeView} + '+'"></span>
@@ -358,17 +411,20 @@
     </div>
 
     <div class="container mt-5">
-        <h2 id="eventsTitle">Events</h2>
+        <h2 id="eventsTitle" style="margin-top: 10%;">Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
             <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
                 <div class="card border-0 shadow">
                     <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
                         style="width: 100%; max-width: 800px; height: 200px;object-fit: cover;">
+
+                    <p class="card-text m-0 p-2 overlayi">
+                        Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                    </p>
+
                     <div class="card-body p-0">
                         <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
-                        <p class="card-text m-0 p-2">
-                            Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
-                        </p>
+
                         <div style="display: flex; width: 100%;">
                             <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
                                 class="btn btn-sm btn-outline-success"
@@ -431,6 +487,7 @@
             </div>
         </div>
     </footer>
+
     <script>
         // JavaScript để thay đổi màu nền của ô tìm kiếm khi đi qua carousel
         window.addEventListener('scroll', function () {
@@ -504,7 +561,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" th:src="@{/static/js/index.js}"></script>
+    <script type="text/javascript" src="../static/js/index.js"></script>
 
 </body>
 

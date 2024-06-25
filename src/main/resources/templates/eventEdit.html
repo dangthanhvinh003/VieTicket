@@ -211,7 +211,7 @@
          function checkFileSize(event, previewElementId) {
             const file = event.target.files[0];
             const maxSizeGif = 500 * 1024; // 500KB
-            const maxSizeOther = 1 * 1024 * 1024; // 1MB
+            const maxSizeOther = 1.5 * 1024 * 1024; // 1MB
             const alertElement = document.getElementById('fileSizeAlert');
 
             if (file.type === 'image/gif' && file.size > maxSizeGif) {
