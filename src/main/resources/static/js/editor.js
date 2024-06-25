@@ -32,10 +32,25 @@ function mainEditor() {
 
   setEditorTitle("<h4>Areas</h4>");
   setEditorContent(`
+    <label for="seatRadius">Seat radius:</label>
+    <br>
+    <input type="number" id="seatRadius" value="${seatRadius}">
+    <label for="seatSpacing">Seat spacing:</label>
+    <br>
+    <input type="number" id="seatSpacing" value="${seatSpacing}">
+    <br>
+    <br>
     <div class="area-list">
       ${areaListHtml}
     </div>
   `);
+
+  document.getElementById("seatRadius").addEventListener("input", (e) => {
+    seatRadius = e.target.value === 0 ? 6 : e.target.value;
+  });
+  document.getElementById("seatSpacing").addEventListener("input", (e) => {
+    seatSpacing = e.target.value === 0 ? 6 : e.target.value;
+  });
 }
 
 function polygonAreaEditor(shape, mouseX, mouseY) {
