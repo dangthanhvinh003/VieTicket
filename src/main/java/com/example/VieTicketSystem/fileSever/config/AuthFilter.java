@@ -62,7 +62,7 @@ public class AuthFilter implements Filter {
         if ((requestURI.equals("/auth/login") || requestURI.equals("/auth/login/oauth2/google") || requestURI.isEmpty()
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
-                || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event")
+                || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event") || requestURI.equals("/eventsByCategory")
                 || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent")
                 || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent")
                 || requestURI.startsWith("/api")) && !isUnverified) {

@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.print.attribute.standard.Chromaticity;
 
@@ -352,4 +353,15 @@ public class EventController {
        
         return "eventUsers"; // Tên của template hiển thị danh sách người dùng
     }
+
+    @GetMapping(value = "/eventsByCategory")
+    public String eventsByCategory(@RequestParam("category") String category, Model model, HttpSession httpSession) {
+    List<Event> eventList = eventRepo.getAllEvents();
+    List<Event> filteredEvents = eventList.stream()
+            .filter(event -> event.getType().equalsIgnoreCase(category))
+            .collect(Collectors.toList());
+    model.addAttribute("eventList", filteredEvents);
+    model.addAttribute("pageType", "category");
+    return "searchResults";
+}
 }
