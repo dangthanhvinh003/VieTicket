@@ -363,5 +363,14 @@ public class EventController {
     model.addAttribute("eventList", filteredEvents);
     model.addAttribute("pageType", "category");
     return "searchResults";
-}
+    }
+
+    @GetMapping(value = "/showAllEvents")
+    public String allEvents(Model model, HttpSession httpSession) {
+    List<Event> eventList = eventRepo.getAllEvents();
+    model.addAttribute("eventList", eventList);
+    model.addAttribute("pageType", "all");
+    return "searchResults";
+    }
+
 }

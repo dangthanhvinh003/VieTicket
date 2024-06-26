@@ -63,7 +63,7 @@ public class AuthFilter implements Filter {
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
                 || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event") || requestURI.equals("/eventsByCategory")
-                || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent")
+                || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent") || requestURI.equals("/showAllEvents")
                 || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent")
                 || requestURI.startsWith("/api")) && !isUnverified) {
             chain.doFilter(request, response);

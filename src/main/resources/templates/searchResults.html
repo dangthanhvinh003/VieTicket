@@ -13,8 +13,9 @@
             <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search" placeholder="Search events...">
         </form>
         <div class="container">
-            <div class="d-flex align-items-center mb-3" style="margin-top: 30px;">         
+            <div class="d-flex align-items-center mb-3" style="margin-top: 30px;">
                 <div class="btn-group ms-2" role="group">
+                    <a href="/showAllEvents" class="btn btn-custom" id="allEvents">All Events</a>
                     <a href="/eventsByCategory?category=Music" class="btn btn-custom" id="musicCategory">Music</a>
                     <a href="/eventsByCategory?category=Sport" class="btn btn-custom" id="sportCategory">Sport</a>
                     <a href="/eventsByCategory?category=Workshop" class="btn btn-custom" id="workshopCategory">Workshop</a>
@@ -22,7 +23,8 @@
                     <a href="/eventsByCategory?category=Art" class="btn btn-custom" id="artCategory">Art</a>
                 </div>
             </div>
-            <h1 th:if="${pageType == 'category'}">Events by Category</h1>
+            <h2 th:if="${pageType == 'category'}">Events by Category</h2>
+            <h2 th:if="${pageType == 'all'}">All Events</h2>
             <div id="eventList" th:if="${eventList != null}">
                 <div th:each="event : ${eventList}">
                     <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}">
@@ -48,7 +50,6 @@
             </div>
         </div>
     </div>
-    <h2 id="eventsTitle">Search Result</h2>
     <div id="eventCards" class="row row-cols-1 row-cols-sm-2 row-cols-md-3"></div>
     
     <script>
