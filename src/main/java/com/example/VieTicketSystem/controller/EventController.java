@@ -3,6 +3,7 @@ package com.example.VieTicketSystem.controller;
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Row;
+import com.example.VieTicketSystem.model.entity.Seat;
 import com.example.VieTicketSystem.model.entity.SeatMap;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AreaRepo;
@@ -98,15 +99,22 @@ public class EventController {
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
     public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
-            HttpSession httpSession) throws ClassNotFoundException, SQLException, ParseException {
+            HttpSession httpSession) throws Exception {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
         seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
         rowRepo.addRow("NoSeatMap", areaRepo.getIdAreaEventId(idNewEvent));
+        List<Seat> seatsForRow = new ArrayList<>();
+        int getIdAreaEvent = areaRepo.getIdAreaEventId(idNewEvent);
+        int getIdRow = rowRepo.getIdRowByAreaId(getIdAreaEvent);
+        Row row = rowRepo.getRowById(getIdRow);
+        
         for (int i = 0; i < total; i++) {
-            seatRepo.addSeat(Integer.toString(i), price,
-                    rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
+            seatsForRow.add(new Seat(Integer.toString(i),Float.parseFloat(price),row));
+            // seatRepo.addSeat(Integer.toString(i), price,
+            //         rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
+        seatRepo.addSeats(seatsForRow);
         return "createEventSuccess";
     }
 
@@ -253,11 +261,16 @@ public class EventController {
                             int index = rowIndexMap.get(row); // Get the index of the row
                             seatsByRow.get(index).add(seat); // Add seat to the corresponding row list
                         }
+                        List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
+                            
                             for (String seat : seatsByRow.get(i)) {
-                                seatRepo.addSeat(seat, additionalData.getNormalPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getNormalPrice()),allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
                             }
+                            /// adddseat(<Seat>)
                         }
+                        seatRepo.addSeats(seatsForRow);
 
                     }
                 }
@@ -311,11 +324,16 @@ public class EventController {
                             int index = rowIndexMap.get(row); // Get the index of the row
                             seatsByRow.get(index).add(seat); // Add seat to the corresponding row list
                         }
+                        List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
+                            
                             for (String seat : seatsByRow.get(i)) {
-                                seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getVipPrice()),allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
                             }
+                            /// adddseat(<Seat>)
                         }
+                        seatRepo.addSeats(seatsForRow);
 
                     }
                 }

@@ -29,7 +29,8 @@ public class SeatRepo {
 
     public List<Integer> findAvailableSeatsByEventId(int eventId) throws Exception {
         Connection connection = ConnectionPoolManager.getConnection();
-        PreparedStatement ps = connection.prepareStatement("SELECT seat_id FROM Seat S JOIN `Row` R ON S.row_id = R.row_id JOIN Area A ON R.area_id = A.area_id WHERE A.event_id = ? AND is_taken = FALSE");
+        PreparedStatement ps = connection.prepareStatement(
+                "SELECT seat_id FROM Seat S JOIN `Row` R ON S.row_id = R.row_id JOIN Area A ON R.area_id = A.area_id WHERE A.event_id = ? AND is_taken = FALSE");
         ps.setInt(1, eventId);
         ResultSet rs = ps.executeQuery();
         List<Integer> seats = new ArrayList<>();
@@ -104,7 +105,8 @@ public class SeatRepo {
 
     public void addSeat(String seatNumber, String ticketPrice, int rowId) throws SQLException {
         Connection connection = ConnectionPoolManager.getConnection();
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES (?, ?, ?, ?)");
+        PreparedStatement ps = connection
+                .prepareStatement("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES (?, ?, ?, ?)");
 
         ps.setString(1, seatNumber);
         ps.setFloat(2, Float.parseFloat(ticketPrice));
@@ -114,22 +116,35 @@ public class SeatRepo {
         ps.close();
         connection.close();
     }
+
     public void addSeats(List<Seat> seats) throws SQLException {
         Connection connection = ConnectionPoolManager.getConnection();
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES (?, ?, ?, ?)");
-    
-        for (Seat seat : seats) {
-            ps.setString(1, seat.getNumber());
-            ps.setFloat(2, seat.getTicketPrice());
-            ps.setInt(3, Seat.TakenStatus.AVAILABLE.toInteger());
-            ps.setInt(4, seat.getRow().getRowId());
-            ps.addBatch();
+        Statement statement = connection.createStatement();
+      
+        StringBuilder sql = new StringBuilder("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES ");
+        for (int i = 0; i < seats.size(); i++) {
+          Seat seat = seats.get(i);
+      
+          // Escape single quotes in seat number
+          String escapedNumber = seat.getNumber().replace("'", "''");
+      
+          sql.append(String.format("('%s', %.2f, %d, %d)",
+            escapedNumber,
+            seat.getTicketPrice(),
+            Seat.TakenStatus.AVAILABLE.toInteger(),
+            seat.getRow().getRowId()));
+          if (i < seats.size() - 1) {
+            sql.append(", ");
+          }
         }
-    
-        ps.executeBatch();
-        ps.close();
+      
+        // Execute the statement with careful handling of SQL string
+        statement.execute(sql.toString());
+      
+        statement.close();
         connection.close();
-    }
+      }
+      
 
     public List<Seat> findByEventId(int eventId) throws Exception {
         Connection connection = ConnectionPoolManager.getConnection();
