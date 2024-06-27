@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.VieTicketSystem.model.entity.AdminStatistics;
 import com.example.VieTicketSystem.model.entity.Event;
-import com.example.VieTicketSystem.model.entity.EventStatistics;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.TableAdminStatistics;
 import com.example.VieTicketSystem.model.entity.User;
@@ -157,6 +156,14 @@ public class AdminController {
         return "viewUserList";
     }
 
+    @GetMapping(value = ("/ViewActiveOrganizer"))
+    public String allActiveOrganizer(Model model) throws Exception {
+        ArrayList<Organizer> organizers = adminRepo.getAllActiveOrganizer();
+        model.addAttribute("organizers", organizers);
+
+        return "viewActiveOrganizer";
+    }
+
     @PostMapping(value = "/lockUser")
     public String lockUsers(@RequestParam("userid") int id, @RequestParam("role") char role, Model model)
             throws Exception {
@@ -220,6 +227,37 @@ public class AdminController {
         model.addAttribute("status", "reject");
         model.addAttribute("users", banners);
         return "viewUserList";
+    }
+
+    @PostMapping(value = "/sendMailToActiveOrganizer")
+    public String SendMailToAllActiveOrganizer(
+            @RequestParam("Title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("organizerEmails") List<String> organizerEmails,
+            Model model) throws Exception {
+
+        // Tạo tiêu đề email
+        String subject = title;
+
+        // Tạo nội dung email với các mục cần sửa
+        String emailContent = "<html><body style='font-family: sans-serif;'>" +
+
+                content
+                +
+
+                "<p style='font-size: 16px;'>Thank you for using VinhTicket!</p>" +
+                "<p style='font-size: 14px; color: #777;'>This is an automated email, please do not reply to this email.</p>"
+                +
+                "<br>" +
+                "<p style='font-size: 12px; color: #555;'>(c) 2024 VinhTicket. All rights reserved</p>" +
+                "</body></html>";
+
+        // Gửi email thông báo tới từng người dùng
+        for (String email : organizerEmails) {
+            emailService.sendEmail(email, subject, emailContent);
+        }
+
+        return "redirect:/ViewActiveOrganizer";
     }
 
     @GetMapping(value = ("/ViewAllBanner"))
