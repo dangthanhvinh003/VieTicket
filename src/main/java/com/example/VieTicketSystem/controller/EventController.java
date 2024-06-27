@@ -108,11 +108,11 @@ public class EventController {
         int getIdAreaEvent = areaRepo.getIdAreaEventId(idNewEvent);
         int getIdRow = rowRepo.getIdRowByAreaId(getIdAreaEvent);
         Row row = rowRepo.getRowById(getIdRow);
-        
+
         for (int i = 0; i < total; i++) {
-            seatsForRow.add(new Seat(Integer.toString(i),Float.parseFloat(price),row));
+            seatsForRow.add(new Seat(Integer.toString(i), Float.parseFloat(price), row));
             // seatRepo.addSeat(Integer.toString(i), price,
-            //         rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
+            // rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         seatRepo.addSeats(seatsForRow);
         return "createEventSuccess";
@@ -263,10 +263,12 @@ public class EventController {
                         }
                         List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
-                            
+
                             for (String seat : seatsByRow.get(i)) {
-                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getNormalPrice()),allRow.get(i)));
-                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(new Seat(seat, Float.parseFloat(additionalData.getNormalPrice()),
+                                        allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(),
+                                // allRow.get(i).getRowId());
                             }
                             /// adddseat(<Seat>)
                         }
@@ -326,10 +328,12 @@ public class EventController {
                         }
                         List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
-                            
+
                             for (String seat : seatsByRow.get(i)) {
-                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getVipPrice()),allRow.get(i)));
-                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(
+                                        new Seat(seat, Float.parseFloat(additionalData.getVipPrice()), allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(),
+                                // allRow.get(i).getRowId());
                             }
                             /// adddseat(<Seat>)
                         }
