@@ -31,7 +31,6 @@
         }
 
 
-
         .event-info .event-date {
             display: flex;
             align-items: center;
@@ -41,7 +40,6 @@
             display: flex;
             align-items: center;
         }
-
 
 
         .event-info .ticket-price {
@@ -85,7 +83,6 @@
 
 
 
-
         .event-circles {
             position: absolute;
             top: 0;
@@ -105,7 +102,6 @@
             background-color: #f0f0f0;
             position: absolute;
         }
-
 
         .event-wrapper {
             border: 2px solid #000;
@@ -292,12 +288,15 @@
             margin: 10px 0;
             /* Optional: add some margin to separate the image from text */
         }
+
         .embed-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 ratio */
+            padding-bottom: 56.25%;
+            /* 16:9 ratio */
             height: 0;
         }
+
         .embed-container iframe {
             position: absolute;
             top: 0;
@@ -305,7 +304,69 @@
             width: 100%;
             height: 100%;
         }
-        
+
+        .circle.top-right {
+            top: 0px;
+            right: 0px;
+            background-color: rgba(0, 0, 0, 0);
+
+        }
+
+        .event-info {
+
+            border-right: 2px dashed #fff;
+        }
+
+        @media only screen and (max-width: 1200px) {
+            .event-section {
+                flex-direction: column;
+                /* Chuyển đổi layout thành dạng cột */
+            }
+
+            .event-info {
+                padding: 15px;
+                /* Giảm padding để các phần tử không bị chồng lên nhau quá nhiều */
+                border-radius: 0;
+                /* Xóa bo tròn ở cạnh trái */
+            }
+
+            .event-banner img {
+                border-radius: 0;
+                /* Xóa bo tròn ở cạnh phải */
+                width: 100%;
+                /* Đảm bảo hình ảnh chiếm toàn bộ không gian có sẵn */
+                height: auto;
+                /* Đảm bảo tỷ lệ khung hình tự động */
+            }
+
+            .circle.top-left {
+                top: -25px;
+                left: -25px;
+                background-color: #1C1C1E;
+                z-index: 100;
+            }
+
+            .circle.top-right {
+                top: -25px;
+                right: -25px;
+                background-color: #1C1C1E;
+                z-index: 100;
+            }
+
+            .circle.bottom-left {
+                bottom: 0px;
+                /* Vị trí góc dưới trái */
+                left: 0px;
+                /* Vị trí góc dưới trái */
+                background-color: rgba(0, 0, 0, 0);
+
+            }
+
+            .event-info {
+                border-right: none;
+                border-bottom: 2px dashed #fff;
+            }
+        }
     </style>
 
 </head>
@@ -383,7 +444,7 @@
         <div class="event-wrapper">
             <div class="event-section">
                 <div class="event-info"
-                    style="background-color: #38383D; max-height: 100%; border-right: 2px dashed #fff; display: flex; flex-direction: column; justify-content: space-between;">
+                    style="background-color: #38383D; max-height: 100%;  display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <h4 th:text="${event.name}" style="margin-bottom: 10px;">
                             <i class="fas fa-calendar-alt"></i> Event Name
@@ -393,12 +454,12 @@
                         </h6>
                         <p th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')} + ' - ' + ${#temporals.format(event.endDate, 'yyyy-MM-dd hh:mm a')}"
                             style="margin-bottom: 20px;">
-                            2024-06-03 12:00 AM - 2024-06-06 12:00 AM
+
                         </p>
                         <h6 style="margin-top: 5px;">
                             <i class="fas fa-map-marker-alt"></i> Location:
                         </h6>
-                        <p th:text="${event.location}" style="margin-bottom: 20px;">Hà Nội</p>
+                        <p th:text="${event.location}" style="margin-bottom: 20px;"></p>
                         <h6 style="margin-top: 5px;">
                             <i class="fas fa-calendar-alt"></i> Date Sale Ticket:
                         </h6>
@@ -415,7 +476,8 @@
                             <!-- Thay đổi từ Area.ticketPrice thành area.ticketPrice -->
 
                             <div style="margin-bottom: 5%; margin-top: 2%;">
-                                <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}" class="btn custom-btn"
+                                <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}"
+                                    class="btn custom-btn"
                                     style="width: 100%; height: 27px; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;">Buy
                                     Ticket</a>
                             </div>
@@ -427,6 +489,7 @@
                     <div class="event-circles">
                         <div class="circle top-left"></div>
                         <div class="circle bottom-left"></div>
+                        <div class="circle top-right"></div>
                     </div>
                 </div>
             </div>
@@ -481,26 +544,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-        <script>
-           document.addEventListener("DOMContentLoaded", function() {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
             var oembeds = document.querySelectorAll('oembed[url]');
-            oembeds.forEach(function(embed) {
+            oembeds.forEach(function (embed) {
                 var url = embed.getAttribute('url');
                 var iframe = document.createElement('iframe');
                 iframe.setAttribute('src', url.replace('watch?v=', 'embed/'));
                 iframe.setAttribute('frameborder', '0');
                 iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
                 iframe.setAttribute('allowfullscreen', true);
-                
+
                 // Tạo div chứa với class 'embed-container' để quản lý tỷ lệ 16:9
                 var embedContainer = document.createElement('div');
                 embedContainer.classList.add('embed-container');
                 embedContainer.appendChild(iframe);
-                
+
                 embed.parentNode.replaceChild(embedContainer, embed);
             });
         });
-        </script>
+    </script>
 </body>
 
 </html>
