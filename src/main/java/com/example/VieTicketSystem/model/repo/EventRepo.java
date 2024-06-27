@@ -306,6 +306,45 @@ public class EventRepo {
         return stats;
     }
 
+    public void deleteEvent(int eventId) throws SQLException {
+        PreparedStatement psDeleteSeats = null;
+        PreparedStatement psDeleteRows = null;
+        PreparedStatement psDeleteAreas = null;
+        PreparedStatement psDeleteSeatMap = null;
+
+        try (Connection connection = ConnectionPoolManager.getConnection();) {
+
+            // Delete seats
+            String sqlDeleteSeats = "DELETE FROM Seat WHERE row_id IN " +
+                    "(SELECT row_id FROM `Row` WHERE area_id IN " +
+                    "(SELECT area_id FROM Area WHERE event_id = ?))";
+            psDeleteSeats = connection.prepareStatement(sqlDeleteSeats);
+            psDeleteSeats.setInt(1, eventId);
+            psDeleteSeats.executeUpdate();
+
+            // Delete rows
+            String sqlDeleteRows = "DELETE FROM `Row` WHERE area_id IN " +
+                    "(SELECT area_id FROM Area WHERE event_id = ?)";
+            psDeleteRows = connection.prepareStatement(sqlDeleteRows);
+            psDeleteRows.setInt(1, eventId);
+            psDeleteRows.executeUpdate();
+
+            // Delete areas
+            String sqlDeleteAreas = "DELETE FROM Area WHERE event_id = ?";
+            psDeleteAreas = connection.prepareStatement(sqlDeleteAreas);
+            psDeleteAreas.setInt(1, eventId);
+            psDeleteAreas.executeUpdate();
+
+            // Delete seat map
+            String sqlDeleteSeatMap = "DELETE FROM SeatMap WHERE event_id = ?";
+            psDeleteSeatMap = connection.prepareStatement(sqlDeleteSeatMap);
+            psDeleteSeatMap.setInt(1, eventId);
+            psDeleteSeatMap.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public Map<String, Double> getDailyRevenueByEventId(int eventId) {
         Map<String, Double> dailyRevenueMap = new HashMap<>();
 
@@ -454,7 +493,6 @@ public class EventRepo {
             ps.setTimestamp(7, null);
         }
 
-        
         ps.setString(8, poster);
         ps.setString(9, banner);
         ps.setBoolean(10, isApprove);
@@ -687,50 +725,51 @@ public class EventRepo {
 
         return users;
     }
+
     public List<Event> getAllOngoingEvents() {
         List<Event> events = new ArrayList<>();
         String query = "SELECT * FROM Event WHERE is_approve = 1 AND (start_date <= NOW() AND (end_date IS NULL OR end_date >= NOW()))";
-    
+
         try (Connection connection = ConnectionPoolManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
-    
+                PreparedStatement statement = connection.prepareStatement(query);
+                ResultSet resultSet = statement.executeQuery()) {
+
             while (resultSet.next()) {
                 Event event = new Event();
                 event.setEventId(resultSet.getInt("event_id"));
                 event.setName(resultSet.getString("name"));
                 event.setDescription(resultSet.getString("description"));
-    
+
                 // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
                 Timestamp startTimestamp = resultSet.getTimestamp("start_date");
                 if (startTimestamp != null) {
                     event.setStartDate(startTimestamp.toLocalDateTime());
                 }
-    
+
                 event.setLocation(resultSet.getString("location"));
                 event.setType(resultSet.getString("type"));
-    
+
                 // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
                 Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
                 if (ticketSaleTimestamp != null) {
                     event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
                 }
-    
+
                 // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
                 Timestamp endTimestamp = resultSet.getTimestamp("end_date");
                 if (endTimestamp != null) {
                     event.setEndDate(endTimestamp.toLocalDateTime());
                 }
-    
+
                 event.setPoster(resultSet.getString("poster"));
                 event.setBanner(resultSet.getString("banner"));
                 event.setApproved(resultSet.getInt("is_approve"));
                 event.setEyeView(resultSet.getInt("eyeView"));
-    
+
                 // Lấy danh sách areas và gán vào event
                 List<Area> areas = getAreasForEvent(event.getEventId(), connection);
                 event.setAreas(areas);
-    
+
                 // Set the organizer if applicable
                 events.add(event);
             }

@@ -12,8 +12,9 @@ let secondX, secondY;
 let translateX = 0;
 let translateY = 0;
 const touchpadScalingFactor = 1.5;
-const seatRadius = 10;
-const seatSpacing = 10;
+let seatRadius = 6;
+let seatSpacing = 6;
+let currentPolygon = null;
 let selectedShape = null;
 let zoomedArea = null;
 let offsetX, offsetY;
@@ -28,12 +29,12 @@ let currentAreaStateIndex = -1;
 
 let shapes = [];
 function drawAll() {
-  ctx.clearRect(-300, -300, canvas.width * 1.5, canvas.height * 1.5);
+  ctx.clearRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
   shapes.forEach((shape) => {
     if (!shape.isHidden) {
       if (zoomedArea != null) {
         ctx.fillStyle = "lightgrey";
-        ctx.fillRect(-300, -300, canvas.width * 1.5, canvas.height * 1.5);
+        ctx.fillRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
         zoomedArea.draw(true);
         if (selectedShape != null) {
           if (selectedShape.type === "Row") {
@@ -45,8 +46,14 @@ function drawAll() {
           }
         }
       } else if (shape === selectedShape) {
-        ctx.strokeStyle = "red";
-        shape.draw();
+        if (shape.type === "Area") {
+          ctx.strokeStyle = "red";
+          shape.draw();
+          shape.drawPoints();
+        } else {
+          ctx.strokeStyle = "red";
+          shape.draw();
+        }
       } else {
         ctx.strokeStyle = "black";
         shape.draw();
@@ -105,12 +112,12 @@ function restoreCanvasState(index) {
 
   shapes = state.shapes.map((shapeData) => {
     switch (shapeData.type) {
-      case "RoundedBorderRectangle":
-        return RoundedBorderRectangle.deserialize(shapeData);
-      case "Stage":
-        return Stage.deserialize(shapeData);
+      case "RectangleStage":
+        return RectangleStage.deserialize(shapeData);
+      case "EllipseStage":
+        return EllipseStage.deserialize(shapeData);
       case "Area":
-        return Area.deserialize(shapeData);
+        return PolygonArea.deserialize(shapeData);
       default:
         throw new Error("Unknown shape type: " + shapeData.type);
     }
@@ -118,7 +125,7 @@ function restoreCanvasState(index) {
 
   const image = new Image();
   image.onload = function () {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
     ctx.drawImage(image, 0, 0);
     drawAll();
   };
@@ -155,17 +162,9 @@ function restoreAreaCanvasState(index) {
 
   const image = new Image();
   image.onload = function () {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
     ctx.drawImage(image, 0, 0);
     drawAll();
   };
   image.src = state.canvasImage;
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  var map = new FirstTemplate(ctx, 100, 300, 700, 800);
-  shapes = [...shapes, ...map.shapes];
-  drawAll();
-  mainEditor();
-  saveCanvasState();
-});

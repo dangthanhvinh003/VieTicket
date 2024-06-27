@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cloudinary.Cloudinary;
@@ -27,6 +28,7 @@ import com.example.VieTicketSystem.model.entity.AdditionalData;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.EventStatistics;
 import com.example.VieTicketSystem.model.entity.Row;
+import com.example.VieTicketSystem.model.entity.SeatMap;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.AreaRepo;
 import com.example.VieTicketSystem.model.repo.EventRepo;
@@ -192,8 +194,16 @@ public class OrganizerController {
     }
 
     @PostMapping(value = "/seatMapEditPage")
-    public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession) {
+    public String seatMapEditPage(@RequestParam("eventId") int eventId, HttpSession httpSession, Model model)
+            throws SQLException {
         httpSession.setAttribute("eventIdEdit", eventId);
+        SeatMap editMap = seatMapRepo.getSeatMapByEventId(eventId);
+        if (editMap != null) {
+            if (editMap.getName().equals("DrawSeatMap")) {
+                model.addAttribute("json", editMap.getMapFile());
+                return "seatMapEditor";
+            }
+        }
         return "seatMapEdit";
     }
 
