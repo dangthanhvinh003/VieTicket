@@ -114,6 +114,22 @@ public class SeatRepo {
         ps.close();
         connection.close();
     }
+    public void addSeats(List<Seat> seats) throws SQLException {
+        Connection connection = ConnectionPoolManager.getConnection();
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES (?, ?, ?, ?)");
+    
+        for (Seat seat : seats) {
+            ps.setString(1, seat.getNumber());
+            ps.setFloat(2, seat.getTicketPrice());
+            ps.setInt(3, Seat.TakenStatus.AVAILABLE.toInteger());
+            ps.setInt(4, seat.getRow().getRowId());
+            ps.addBatch();
+        }
+    
+        ps.executeBatch();
+        ps.close();
+        connection.close();
+    }
 
     public List<Seat> findByEventId(int eventId) throws Exception {
         Connection connection = ConnectionPoolManager.getConnection();
