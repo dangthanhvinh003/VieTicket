@@ -197,10 +197,7 @@ saveButton.addEventListener("click", () => {
     body: formData,
   })
     .then((response) => {
-      console.log(response);
-    })
-    .then(() => {
-      window.location.href = "/createEventSuccess";
+      window.location.href = response.url;
     })
     .catch((error) => {
       console.error("Error:", error);

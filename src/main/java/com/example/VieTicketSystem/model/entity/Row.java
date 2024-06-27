@@ -1,4 +1,5 @@
 package com.example.VieTicketSystem.model.entity;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,9 @@ public class Row {
     private String rowName;
     private int rowId;
     private Area area;
+
+    public Row(String rowName, Area area) {
+        this.rowName = rowName;
+        this.area = area;
+    }
 }

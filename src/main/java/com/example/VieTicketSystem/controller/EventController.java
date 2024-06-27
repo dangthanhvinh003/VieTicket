@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
 import com.example.VieTicketSystem.model.entity.AdditionalData;
+import com.example.VieTicketSystem.model.entity.Area;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -108,11 +109,11 @@ public class EventController {
         int getIdAreaEvent = areaRepo.getIdAreaEventId(idNewEvent);
         int getIdRow = rowRepo.getIdRowByAreaId(getIdAreaEvent);
         Row row = rowRepo.getRowById(getIdRow);
-        
+
         for (int i = 0; i < total; i++) {
-            seatsForRow.add(new Seat(Integer.toString(i),Float.parseFloat(price),row));
+            seatsForRow.add(new Seat(Integer.toString(i), Float.parseFloat(price), row));
             // seatRepo.addSeat(Integer.toString(i), price,
-            //         rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
+            // rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         seatRepo.addSeats(seatsForRow);
         return "createEventSuccess";
@@ -147,6 +148,9 @@ public class EventController {
         seatMapRepo.addSeatMapWithEditor(eventId, name, imageURL, shapesJson);
 
         int seatMapId = seatMapRepo.getSeatMapIdByEventRepo(eventId);
+
+        // Part 1: Adding Areas
+        List<Area> areas = new ArrayList<>();
         for (Map<String, Object> shapeWrapper : shapesData) {
             Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
             if ("Area".equals(shape.get("type"))) {
@@ -161,26 +165,69 @@ public class EventController {
                     }
                 }
 
-                areaRepo.addArea(areaName, totalTickets, eventId, ticketPrice, seatMapId);
-                int areaId = areaRepo.getIdAreaEventIdAndName(eventId, areaName);
+                Area area = new Area(areaName, totalTickets, Float.parseFloat(ticketPrice), eventId, seatMapId);
+                areas.add(area);
+            }
+        }
+
+        areas = areaRepo.addAreas(areas); // Batch insert areas and get their IDs
+
+        // Part 2: Adding Rows
+        List<Row> rows = new ArrayList<>();
+        for (Map<String, Object> shapeWrapper : shapesData) {
+            Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
+            if ("Area".equals(shape.get("type"))) {
+                String areaName = shape.get("name").toString();
+                Area area = areas.stream().filter(a -> a.getName().equals(areaName)).findFirst().orElse(null);
+                if (area == null)
+                    continue;
+
+                List<Map<String, Object>> areaShapes = (List<Map<String, Object>>) shape.get("shapes");
+
                 for (Map<String, Object> areaShape : areaShapes) {
                     if ("Row".equals(areaShape.get("type"))) {
                         String rowName = areaShape.get("name").toString();
-                        rowRepo.addRow(rowName, areaId);
-                        int rowId = rowRepo.getIdRowByAreaIdAndRowName(areaId, rowName);
+                        Row row = new Row(rowName, area);
+                        rows.add(row);
+                    }
+                }
+            }
+        }
 
-                        List<Map<String, Object>> seats = (List<Map<String, Object>>) areaShape.get("seats");
-                        for (Map<String, Object> seat : seats) {
+        rows = rowRepo.addRows(rows); // Batch insert rows and get their IDs
+
+        // Part 3: Adding Seats
+        List<Seat> seats = new ArrayList<>();
+        for (Map<String, Object> shapeWrapper : shapesData) {
+            Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
+            if ("Area".equals(shape.get("type"))) {
+                List<Map<String, Object>> areaShapes = (List<Map<String, Object>>) shape.get("shapes");
+
+                for (Map<String, Object> areaShape : areaShapes) {
+                    if ("Row".equals(areaShape.get("type"))) {
+                        String rowName = areaShape.get("name").toString();
+                        Row row = rows.stream().filter(r -> r.getRowName().equals(rowName)).findFirst().orElse(null);
+                        if (row == null)
+                            continue;
+
+                        List<Map<String, Object>> seatsList = (List<Map<String, Object>>) areaShape.get("seats");
+                        for (Map<String, Object> seat : seatsList) {
                             String seatNumber = seat.get("number").toString();
-                            seatRepo.addSeat(seatNumber, ticketPrice, rowId);
+                            Seat seatObj = new Seat(seatNumber, row.getArea().getTicketPrice(), row);
+                            seats.add(seatObj);
                         }
                     }
                 }
             }
         }
+
+        seatRepo.addSeats(seats); // Batch insert seats and get their IDs
+        System.out.println(session.getAttribute("idNewEvent"));
         if (session.getAttribute("idNewEvent") != null) {
+            session.removeAttribute("idNewEvent");
             return "redirect:/createEventSuccess";
         }
+        session.removeAttribute("eventIdEdit");
         return "redirect:/editSuccess";
     }
 
@@ -263,10 +310,12 @@ public class EventController {
                         }
                         List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
-                            
+
                             for (String seat : seatsByRow.get(i)) {
-                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getNormalPrice()),allRow.get(i)));
-                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(new Seat(seat, Float.parseFloat(additionalData.getNormalPrice()),
+                                        allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(),
+                                // allRow.get(i).getRowId());
                             }
                             /// adddseat(<Seat>)
                         }
@@ -326,10 +375,12 @@ public class EventController {
                         }
                         List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
-                            
+
                             for (String seat : seatsByRow.get(i)) {
-                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getVipPrice()),allRow.get(i)));
-                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(
+                                        new Seat(seat, Float.parseFloat(additionalData.getVipPrice()), allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(),
+                                // allRow.get(i).getRowId());
                             }
                             /// adddseat(<Seat>)
                         }
