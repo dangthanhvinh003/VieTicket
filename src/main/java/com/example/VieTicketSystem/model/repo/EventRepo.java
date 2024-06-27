@@ -1,8 +1,13 @@
 package com.example.VieTicketSystem.model.repo;
 
+import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,12 +15,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
@@ -142,7 +141,7 @@ public class EventRepo {
     public List<Event> getTopHotEvents() throws Exception {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 10");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
                 ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
