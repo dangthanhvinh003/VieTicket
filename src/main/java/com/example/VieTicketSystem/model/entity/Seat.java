@@ -17,6 +17,12 @@ public class Seat {
     private TakenStatus taken;
     private Row row;
 
+    public Seat(String number, float ticketPrice, Row row) {
+        this.number = number;
+        this.ticketPrice = ticketPrice;
+        this.row = row;
+    }
+
     public boolean isAvailable() {
         return taken == TakenStatus.AVAILABLE;
     }

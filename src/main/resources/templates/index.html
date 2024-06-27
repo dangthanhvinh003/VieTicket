@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home VieTicket</title>
-    
+
 
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <link href="../static/css/index.css" rel="stylesheet">
@@ -93,12 +93,15 @@
 
         }
 
+       
+
         .card-hotevent {
             position: relative;
             overflow: hidden;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             z-index: 1;
+            height: 300px;
             /* Đảm bảo thẻ sự kiện hiển thị phía trước */
         }
 
@@ -113,7 +116,14 @@
             background: url('https://res.cloudinary.com/djcowpoua/image/upload/v1718787707/t4cddxgiwe1o0dmlrmqq.gif') center bottom/cover no-repeat;
             /* Đường dẫn và kiểu hiển thị */
         }
-
+        .card {
+                height: auto;
+            }
+        @media (max-width: 576px) {
+            .card {
+                height: 100%;
+            }
+        }
 
         .event-name {
             margin-top: 10px;
@@ -397,6 +407,7 @@
                 <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-link">
                     <div class="card card-hotevent  ">
                         <img th:src="${event.poster}" alt="Event Image" class="card-img-top">
+
                         <div class="overlay">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                             <span class="ms-2" th:text="${event.eyeView} + '+'"></span>
@@ -411,7 +422,7 @@
     </div>
 
     <div class="container mt-5">
-        <h2 id="eventsTitle" style="margin-top: 10%;">Events</h2>
+        <h2 id="eventsTitle" style="margin-top: 13%;">Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
             <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
                 <div class="card border-0 shadow">
