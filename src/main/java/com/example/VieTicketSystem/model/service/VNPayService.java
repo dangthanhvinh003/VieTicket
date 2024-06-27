@@ -7,11 +7,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -253,13 +255,13 @@ public class VNPayService {
 
     // Get public IP address of the server
     public String getPublicIP() throws IOException {
-        // Send GET request to an API that returns the public IP address of the server
+        URL url = new URL("http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-config/external-ip");
+        URLConnection connection = url.openConnection();
+        connection.setRequestProperty("Metadata-Flavor", "Google");
 
-        String publicIP = "";
-        URL url = new URL("http://checkip.amazonaws.com");
-        Scanner scanner = new Scanner(url.openStream());
-        publicIP = scanner.nextLine();
-        scanner.close();
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String publicIP = in.readLine();
+        in.close();
 
         return publicIP;
     }

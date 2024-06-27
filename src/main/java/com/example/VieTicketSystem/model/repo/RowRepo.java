@@ -161,4 +161,27 @@ public class RowRepo {
 
         return rows;
     }
+    public Row getRowById(int rowId) throws Exception {
+        Row row = null;
+    
+        Connection connection = ConnectionPoolManager.getConnection();
+    
+        String sql = "SELECT row_id, row_name, area_id FROM `Row` WHERE row_id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, rowId);
+    
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            String rowName = rs.getString("row_name");
+            int areaId = rs.getInt("area_id");
+            row = new Row(rowName, rowId, areaRepo.findById(areaId));
+        }
+    
+        rs.close();
+        ps.close();
+        connection.close();
+    
+        return row;
+    }
+    
 }
