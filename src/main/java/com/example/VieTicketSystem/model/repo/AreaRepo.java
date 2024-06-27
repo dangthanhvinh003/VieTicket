@@ -1,10 +1,6 @@
 package com.example.VieTicketSystem.model.repo;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import com.example.VieTicketSystem.model.entity.Area;
 import java.text.NumberFormat;
@@ -107,6 +103,47 @@ public class AreaRepo {
         ps.executeUpdate();
         ps.close();
         connection.close();
+    }
+
+    public List<Area> addAreas(List<Area> areas) throws SQLException {
+        Connection connection = ConnectionPoolManager.getConnection();
+        Statement statement = connection.createStatement();
+
+        StringBuilder sql = new StringBuilder(
+                "INSERT INTO `Area` (name, total_tickets, event_id, ticket_price, seat_map_id) VALUES ");
+        for (int i = 0; i < areas.size(); i++) {
+            Area area = areas.get(i);
+
+            // Escape single quotes in area name
+            String escapedAreaName = area.getName().replace("'", "''");
+
+            sql.append(String.format("('%s', %d, %d, '%s', %d)",
+                    escapedAreaName,
+                    area.getTotalTickets(),
+                    area.getEvent().getEventId(),
+                    area.getTicketPrice(),
+                    area.getSeatMapId()));
+            if (i < areas.size() - 1) {
+                sql.append(", ");
+            }
+        }
+
+        // Execute the statement with careful handling of SQL string
+        statement.execute(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+        ResultSet rs = statement.getGeneratedKeys();
+
+        int index = 0;
+        while (rs.next()) {
+            int id = rs.getInt(1);
+            areas.get(index).setAreaId(id);
+            index++;
+        }
+
+        rs.close();
+        statement.close();
+        connection.close();
+
+        return areas;
     }
 
     public int getIdAreaEventId(int eventId) throws ClassNotFoundException, SQLException {
