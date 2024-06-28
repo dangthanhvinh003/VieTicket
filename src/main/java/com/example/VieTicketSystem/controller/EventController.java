@@ -75,11 +75,16 @@ public class EventController {
             @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
             @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
             throws Exception {
+        long start = System.currentTimeMillis();
         String posterURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958); // Kích thước cho poster
         model.addAttribute("poster", posterURL);
-
+        long end = System.currentTimeMillis();
+        System.out.println("check time 1 :" + (end - start));
+        long start1 = System.currentTimeMillis();
         String bannerURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720); // Kích thước cho banner
         model.addAttribute("banner", bannerURL);
+        long end1 = System.currentTimeMillis();
+        System.out.println("check time 2 :" + (end1 - start1));
         User user = (User) httpSession.getAttribute("activeUser");
         // System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
