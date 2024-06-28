@@ -4,7 +4,22 @@
     <meta charset="UTF-8">
     <title>Search Results</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link th:href="@{/static/css/searchResults.css}" rel="stylesheet"></head>
+    <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
 <body>
     <div class="container mt-5">
         <form class="d-flex search-form mb-4" role="search">
@@ -48,6 +63,11 @@
                     card.style.display = 'none';
                 }
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.body.classList.add('fade-in');
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

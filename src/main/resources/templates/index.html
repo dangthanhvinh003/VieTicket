@@ -93,7 +93,7 @@
 
         }
 
-       
+
 
         .card-hotevent {
             position: relative;
@@ -116,9 +116,11 @@
             background: url('https://res.cloudinary.com/djcowpoua/image/upload/v1718623694/rxs5sjwmtriia6de9byz.gif') center bottom/cover no-repeat;
             /* Đường dẫn và kiểu hiển thị */
         }
+
         .card {
-                height: auto;
-            }
+            height: auto;
+        }
+
         @media (max-width: 576px) {
             .card {
                 height: 100%;
@@ -272,13 +274,42 @@
             font-weight: bold;
             color: white;
         }
+
+        .card {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .fade-out {
+    animation: fadeOut 0.5s;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
     </style>
 
     <script>
         function redirectToAllEvents() {
-            window.location.href = "/viewAllEvent";
-        }
-    </script>
+    // Prevent the default form action if necessary
+    // event.preventDefault();
+
+    document.body.classList.add('fade-out'); // Apply the fade-out effect
+
+    setTimeout(() => {
+        // Redirect to the target page after the fade-out animation
+        window.location.href = '/viewAllEvent'; // Adjust the URL as needed
+    }, 400); // This duration should match the CSS animation duration
+}
+</script>
 </head>
 
 <body class="dark-mode">
@@ -348,6 +379,7 @@
         </div>
     </nav>
 
+
     <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
         <!-- Indicators -->
 
@@ -360,7 +392,7 @@
                     Your browser does not support the video tag.
                 </video>
                 <div class="carousel-caption d-none d-md-block">
-                    <h5>Welcome to Our Website</h5>
+                    <h5>Welcome to VieTicket</h5>
                     <p>Explore our website and discover a world of possibilities waiting for you.</p>
                 </div>
             </div>
@@ -386,7 +418,7 @@
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Versatile Music Venues</h5>
                     <p>Experience a variety of music genres and events in our versatile venues.</p>
-                    
+
                 </div>
             </div>
         </div>
@@ -499,7 +531,7 @@
             </div>
         </div>
     </footer>
-
+    
     <script>
         // JavaScript để thay đổi màu nền của ô tìm kiếm khi đi qua carousel
         window.addEventListener('scroll', function () {
@@ -513,6 +545,7 @@
             } else {
                 searchInput.classList.remove('search-input-dark');
             }
+            
         });
     </script>
     <script>
