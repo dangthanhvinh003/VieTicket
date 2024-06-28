@@ -1,7 +1,6 @@
 package com.example.VieTicketSystem.model.repo;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -461,6 +460,33 @@ public class AdminRepo {
         con.close();
 
         return users;
+    }
+
+    public ArrayList<Organizer> getAllActiveOrganizer() throws Exception {
+        ArrayList<Organizer> organizers = new ArrayList<>();
+        Connection con = ConnectionPoolManager.getConnection();
+        String query = "SELECT o.*, u.* FROM Organizer o JOIN User u ON o.organizer_id = u.user_id WHERE o.is_active = 1";
+        PreparedStatement ps = con.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Organizer organizer = new Organizer();
+            organizer.setUserId(rs.getInt("user_id"));
+            organizer.setFullName(rs.getString("full_name"));
+            organizer.setUsername(rs.getString("username"));
+            organizer.setPassword(rs.getString("password"));
+            organizer.setPhone(rs.getString("phone"));
+            organizer.setDob(rs.getDate("dob"));
+            organizer.setActive(rs.getBoolean("is_active"));
+            organizer.setEmail(rs.getString("email"));
+            organizers.add(organizer);
+        }
+
+        rs.close();
+        ps.close();
+        con.close();
+
+        return organizers;
     }
 
     public ArrayList<User> getAllBanner() throws Exception {
