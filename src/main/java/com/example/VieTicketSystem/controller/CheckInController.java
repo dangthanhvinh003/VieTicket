@@ -82,7 +82,7 @@ public class CheckInController {
         // Return 400 if ticket is already checked in
         if (ticket.getStatus() == Ticket.TicketStatus.CHECKED_IN) {
             response.put("message", "Ticket already checked in");
-            return ResponseEntity.badRequest().body(objectMapper.writeValueAsString(response));
+            return ResponseEntity.ok().body(objectMapper.writeValueAsString(response));
         }
 
         response.put("message", "Check in successful");
