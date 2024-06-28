@@ -212,16 +212,19 @@
         } else if (mediumPassword.test(password)) {
             passwordStrength.textContent = "Password strength: Medium";
             passwordStrength.style.color = "orange";
+            alert("Please input a strong password.");
             return false;
         } else {
             passwordStrength.textContent = "Password strength: Weak";
             passwordStrength.style.color = "red";
+            alert("Please input a strong password.");
             return false; // Block form submission if password is weak
         }
 
         // Check if passwords match
         if (password !== confirmPassword) {
-            errorMessage.textContent = "Passwords do not match.";
+            // errorMessage.textContent = "Passwords do not match.";
+            alert("Passwords do not match.");
             return false;
         } else {
             errorMessage.textContent = ""; // Clear error message if passwords match

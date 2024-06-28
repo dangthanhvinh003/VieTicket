@@ -13,16 +13,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
+import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.EventRepo;
 import com.example.VieTicketSystem.model.repo.OrganizerRepo;
 import com.example.VieTicketSystem.model.repo.UserRepo;
-
-import com.example.VieTicketSystem.model.service.VerifyEmailService;
-
 import com.example.VieTicketSystem.model.service.Oauth2Service;
+import com.example.VieTicketSystem.model.service.VerifyEmailService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -291,6 +289,12 @@ public class UserController {
         // Check if email already exists
         if (userRepo.existsByEmail(email)) {
             model.addAttribute("error", "Email already exists.");
+            return "signup";
+        }
+
+        if (!userRepo.isValidPhone(phone)) {
+            model.addAttribute("error",
+                    "Phone invalid");
             return "signup";
         }
         if (!userRepo.isValidPassword(password)) {
