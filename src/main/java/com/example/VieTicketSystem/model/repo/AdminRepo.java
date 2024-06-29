@@ -404,7 +404,7 @@ public class AdminRepo {
         List<TableAdminStatistics> eventRevenues = new ArrayList<>();
         String sql = "SELECT e.name AS eventName, "
                 + "u.full_name AS organizerName, "
-                + "SUM(s.ticket_price) AS revenue "
+                + "SUM(CASE WHEN t.status = 0 THEN s.ticket_price ELSE 0 END) AS revenue "
                 + "FROM Event e "
                 + "JOIN Organizer o ON e.organizer_id = o.organizer_id "
                 + "JOIN User u ON o.organizer_id = u.user_id "
