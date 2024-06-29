@@ -295,6 +295,15 @@
         opacity: 0;
     }
 }
+@media (max-width: 576px) {
+    .row-cols-1 .col.mb-4 {
+        margin-bottom: 15px !important; /* Ensure margin applies on mobile */
+    }
+    .card-hotevent {
+        height: auto; /* Allow the card to adjust its height dynamically */
+        object-fit: cover; /* Keep this for images, but it's more relevant to <img> or <video> */
+    }
+}
     </style>
 
     <script>
@@ -435,12 +444,10 @@
     <div class="container mt-5">
         <h2>Hot Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
-            <div class="col mb-4" th:each="event : ${session.hotevents}" th:if="${event.approved == 1}"
-                style="height: 300px; object-fit: cover;">
+            <div class="col mb-4" th:each="event : ${session.hotevents}" th:if="${event.approved == 1}">
                 <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-link">
-                    <div class="card card-hotevent  ">
+                    <div class="card card-hotevent">
                         <img th:src="${event.poster}" alt="Event Image" class="card-img-top">
-
                         <div class="overlay">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                             <span class="ms-2" th:text="${event.eyeView} + '+'"></span>
@@ -455,7 +462,7 @@
     </div>
 
     <div class="container mt-5">
-        <h2 id="eventsTitle" style="margin-top: 13%;">Events</h2>
+        <h2 id="eventsTitle" style="margin-top: 5%;">Events</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
             <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
                 <div class="card border-0 shadow">
