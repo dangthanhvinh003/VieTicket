@@ -46,11 +46,13 @@ function mainEditor() {
   `);
 
   document.getElementById("seatRadius").addEventListener("input", (e) => {
-    seatRadius = e.target.value === 0 ? 6 : e.target.value;
+    seatRadius = e.target.value ? e.target.value : 6;
   });
   document.getElementById("seatSpacing").addEventListener("input", (e) => {
-    seatSpacing = e.target.value === 0 ? 6 : e.target.value;
+    seatSpacing = e.target.value ? e.target.value : 6;
   });
+
+  validateAreas();
 }
 
 function polygonAreaEditor(shape, mouseX, mouseY) {
@@ -69,7 +71,7 @@ function polygonAreaEditor(shape, mouseX, mouseY) {
       }">
       <br>
       <label for="ticketPrice">Ticket Price:</label>
-      <input type="text" id="ticketPrice" value="${shape.ticketPrice || 0}">
+      <input type="number" id="ticketPrice" value="${shape.ticketPrice || 0}">
       <br>
     `);
 
@@ -90,6 +92,8 @@ function polygonAreaEditor(shape, mouseX, mouseY) {
       saveCanvasState();
       drawAll();
     });
+
+    validateAreas();
 
     if (selectedShape.isPointInsidePoints(mouseX, mouseY)) {
       canvas.addEventListener("mousedown", selectPoint);

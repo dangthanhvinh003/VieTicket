@@ -162,6 +162,7 @@ duplicateShape.addEventListener("click", () => {
   newShape.updatePoints();
   newShape.setOffsetPoints();
   selectedShape = newShape;
+  validateAreas();
   saveCanvasState();
   drawAll();
   mainEditor();

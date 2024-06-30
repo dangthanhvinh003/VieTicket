@@ -37,6 +37,7 @@ function addNewArea(e) {
     }
   }
   drawAll();
+  validateAreas();
   if (isDrawing) {
     currentPolygon.drawPreview(secondX, secondY);
   }
@@ -518,6 +519,9 @@ function selectAreaShape(event) {
       if (selectedShape == null) {
         continue;
       } else {
+        if (zoomedArea.shapes[i].content.length === 0) {
+          zoomedArea.shapes.splice(i, 1);
+        }
         break;
       }
     }
@@ -533,6 +537,7 @@ function selectSeat(event) {
   const mouseX = event.clientX - translateX;
   const mouseY = event.clientY - translateY;
   const selectedRow = selectedShape;
+  console.log(selectedRow);
   for (let i = selectedRow.seats.length - 1; i >= 0; i--) {
     seatEditor(selectedRow.seats[i], mouseX, mouseY);
     if (selectedRow != selectedShape) {
@@ -565,9 +570,27 @@ function insertText(event) {
 }
 
 function removeAreaShape() {
-  zoomedArea.shapes = zoomedArea.shapes.filter((shape) => {
-    return shape !== selectedShape;
-  });
+  if (selectedShape.type === "Seat") {
+    let decreaseNumber = 0;
+    zoomedArea.shapes
+      .filter(
+        (shape) => shape.type === "Row" && shape.name === selectedShape.row.name
+      )
+      .forEach((row) => {
+        row.seats = row.seats.filter((seat) => {
+          if (seat === selectedShape) {
+            decreaseNumber += 1;
+            return false;
+          }
+          seat.number -= decreaseNumber;
+          return true;
+        });
+      });
+  } else {
+    zoomedArea.shapes = zoomedArea.shapes.filter((shape) => {
+      return shape !== selectedShape;
+    });
+  }
   saveAreaCanvasState();
   drawAll();
 }

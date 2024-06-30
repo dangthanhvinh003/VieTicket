@@ -242,6 +242,20 @@
         <div id="editorContent">
         </div>
     </div>
+    <div id="alertContainer" style="position:fixed; bottom: 1rem; right: 1.5rem;">
+        <div class="alert alert-danger" role="alert" id="duplicateAreaAlert" style="display: none; margin-bottom: 1rem;">
+            There are at least two areas with the same name
+        </div>
+        <div class="alert alert-danger" role="alert" id="unnamedAreaAlert" style="display: none;">
+            All areas should be named
+        </div>
+        <div class="alert alert-danger" role="alert" id="duplicateRowAlert" style="display: none; margin-bottom: 1rem;">
+            There are at least two rows with the same name
+        </div>
+        <div class="alert alert-warning" role="alert" id="unnamedRowAlert" style="display: none;">
+            All rows should be named
+        </div>
+    </div>
     <!-- <script src="../static/js/canvas.js"></script>
     <script src="../static/js/events.js"></script>
     <script src="../static/js/functions.js"></script>
@@ -251,9 +265,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" th:src="@{/static/js/canva.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/validations.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/events.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/functions.js}"></script>
-    <script type="text/javascript" th:src="@{/static/js/editor.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/editors.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/shape.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/templates.js}"></script>
     <script type="text/javascript">
