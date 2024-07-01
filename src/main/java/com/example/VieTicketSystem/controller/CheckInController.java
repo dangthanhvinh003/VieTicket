@@ -4,6 +4,8 @@ import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,15 +25,17 @@ public class CheckInController {
     private final TicketRepo ticketRepo;
     private final UserRepo userRepo;
     private final ObjectMapper objectMapper;
+    private final AuthenticationController authenticationController;
 
-    public CheckInController(TicketRepo ticketRepo, UserRepo userRepo, ObjectMapper objectMapper) {
+    public CheckInController(TicketRepo ticketRepo, UserRepo userRepo, ObjectMapper objectMapper, AuthenticationController authenticationController) {
         this.ticketRepo = ticketRepo;
         this.userRepo = userRepo;
         this.objectMapper = objectMapper;
+        this.authenticationController = authenticationController;
     }
 
     @PostMapping("/checkin")
-    public ResponseEntity<String> checkIn(@RequestBody Map<String, String> payload) throws Exception {
+    public ResponseEntity<String> checkIn(@RequestBody Map<String, String> payload, HttpServletRequest request) throws Exception {
 
         // Extract the user's details from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -57,7 +61,7 @@ public class CheckInController {
         Ticket ticket = ticketRepo.findByQrCode(qrCode);
         if (ticket == null || ticket.getStatus() != Ticket.TicketStatus.PURCHASED && ticket.getStatus() != Ticket.TicketStatus.CHECKED_IN) {
             String response = objectMapper.writeValueAsString(Map.of("message", "Ticket not found"));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.badRequest().body(response);
         }
 
         // Check if event has passed
@@ -76,7 +80,7 @@ public class CheckInController {
         Map<String, String> response = new java.util.HashMap<>();
         response.put("leadVisitor", ticket.getOrder().getUser().getFullName());
         response.put("event", ticket.getSeat().getRow().getArea().getEvent().getName());
-        response.put("seat", ticket.getSeat().getRow().getArea().getName() + " " + ticket.getSeat().getNumber());
+        response.put("seat", ticket.getSeat().getRow().getArea().getName() + " / " + ticket.getSeat().getRow().getRowName() + " / " + ticket.getSeat().getNumber());
         response.put("status", String.valueOf(ticket.getStatus()));
 
         // Return 400 if ticket is already checked in
