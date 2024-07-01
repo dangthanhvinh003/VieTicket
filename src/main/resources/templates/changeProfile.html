@@ -197,7 +197,7 @@
                         <img class="avatar img-fluid" th:src="@{${session.activeUser.avatar}}" alt="Avatar">
                     </div>
                     <div class="mb-3">
-                        <input type="file" class="form-control" name="image" placeholder="Upload file">
+                        <input type="file" class="form-control" name="image" accept="image/gif, image/jpeg, image/png" placeholder="Upload file">
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
