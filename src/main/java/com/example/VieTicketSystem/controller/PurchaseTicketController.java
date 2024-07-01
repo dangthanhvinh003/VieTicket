@@ -112,6 +112,10 @@ public class PurchaseTicketController {
         Event event = eventRepo.findById(eventId);
         List<Integer> selectedSeats = ticketSelection.getSeats();
 
+        if (selectedSeats == null || selectedSeats.isEmpty()) {
+            return new ResponseEntity<>("No seats selected", HttpStatus.BAD_REQUEST);
+        }
+
         // Check if event exists
         if (event == null || event.getApproved() == 0) {
             return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
