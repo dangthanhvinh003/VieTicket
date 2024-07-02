@@ -250,6 +250,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <h3>Important!!</h3>
+                        <p>
+                            You'll need to save the seat map after you're
+                            done or you can't continue. You can continue 
+                            drawing your seat map after submitting it by going
+                            to pending events and clicking on the edit 
+                            seat map button
+                        </p>
+                    </div>
+                    <h3 class="text-center">Components</h3>
                     <div class="d-flex justify-content-start gap-4">
                         <i class="bi bi-list"></i>
                         <p>
@@ -280,20 +291,20 @@
                         </p>
                     </div>
                     <div class="d-flex justify-content-start gap-4">
+                        <i class="bi bi-cursor"></i>
+                        <p>
+                            Select: Select one of the shapes you can perform this
+                            operations: Modify shape's properties, Move the shape, Change area's
+                            shape, Double click on shape will go inside the shape.
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-start gap-4">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12.922 6.52771C12.7689 6.20894 12.4032 6 12 6C11.5968 6 11.2311 6.20894 11.078 6.52771L7.32749 14.2424L6.07732 16.814C5.86479 17.2507 6.10545 17.7516 6.61489 17.9337C7.12434 18.1159 7.70879 17.9096 7.92132 17.473L8.9152 15.4291H15.0848L16.0787 17.473C16.2912 17.9096 16.8757 18.1159 17.3851 17.9337C17.8946 17.7516 18.1352 17.2507 17.9227 16.814L16.6725 14.2424L12.922 6.52771ZM14.2503 13.7147H9.74969L12 9.08589L14.2503 13.7147Z" fill="black"/>
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C0.895431 0 0 0.89543 0 2V22C0 23.1046 0.89543 24 2 24H22C23.1046 24 24 23.1046 24 22V2C24 0.895431 23.1046 0 22 0H2ZM3.40039 2.4C2.84811 2.4 2.40039 2.84772 2.40039 3.4V20.6C2.40039 21.1523 2.84811 21.6 3.40039 21.6H20.6004C21.1527 21.6 21.6004 21.1523 21.6004 20.6V3.4C21.6004 2.84772 21.1527 2.4 20.6004 2.4H3.40039Z" fill="black"/>
                         </svg>
                         <p>
                             Insert area: Start area drawing process
-                        </p>
-                    </div>
-                    <div class="d-flex justify-content-start gap-4">
-                        <i class="bi bi-cursor"></i>
-                        <p>
-                            Select: Select one of the shapes you can perform this
-                            operations: Modify shape's properties, Move the shape, Change area's
-                            shape, Double click on shape will go inside the shape.
                         </p>
                     </div>
                     <div class="d-flex justify-content-start gap-4">
@@ -417,8 +428,11 @@
         <div class="alert alert-danger" role="alert" id="duplicateRowAlert" style="display: none; margin-bottom: 1rem;">
             There are at least two rows with the same name
         </div>
-        <div class="alert alert-warning" role="alert" id="unnamedRowAlert" style="display: none;">
+        <div class="alert alert-danger" role="alert" id="unnamedRowAlert" style="display: none;">
             All rows should be named
+        </div>
+        <div class="alert alert-danger" role="alert" id="outsideAreaAlert" style="display: none;">
+            All the seats should be inside the area
         </div>
     </div>
     <!-- <script src="../static/js/canvas.js"></script>
@@ -476,7 +490,10 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            if (seatMapData !== null) {
+            const state =sessionStorage.getItem('lastCanvasState')
+            if (state){
+                restoreCanvasStateFromSession(state)
+            }else if (seatMapData !== null) {
                 const canvasData = JSON.parse(seatMapData);
 
                 shapes = [];

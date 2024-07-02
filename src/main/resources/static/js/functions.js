@@ -313,7 +313,7 @@ function zoomInOnShape(polygon) {
   // Center the polygon in the viewport
   polygon.x = window.innerWidth / 3 - translateX;
   polygon.y = window.innerHeight / 2 - translateY;
-
+  console.log(polygon);
   // Apply the fixed zoom ratio
   polygon.zoomShape(fixedZoomRatio);
   polygon.calculateFurthestCoordinates();
@@ -495,6 +495,7 @@ function finishSeatDrawing(event) {
       });
     }
   }
+  validateRows();
   saveAreaCanvasState();
   canvas.addEventListener("click", startSeatDrawing);
   areaEditor();
@@ -537,7 +538,6 @@ function selectSeat(event) {
   const mouseX = event.clientX - translateX;
   const mouseY = event.clientY - translateY;
   const selectedRow = selectedShape;
-  console.log(selectedRow);
   for (let i = selectedRow.seats.length - 1; i >= 0; i--) {
     seatEditor(selectedRow.seats[i], mouseX, mouseY);
     if (selectedRow != selectedShape) {

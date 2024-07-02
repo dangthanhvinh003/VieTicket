@@ -555,10 +555,22 @@ class PolygonArea extends Polygon {
                 seatIndex < shape.seats.length;
                 seatIndex++
               ) {
-                row.createSeat({
-                  number: seatIndex + 1,
+                const seat = new Seat({
+                  row: {
+                    name: row.name,
+                    startX: row.startX,
+                    startY: row.startY,
+                    area: row.area,
+                    seatRadius: row.seatRadius,
+                    rotation: row.rotation,
+                  },
+                  number: shape.seats[seatIndex].number,
+                  x: shape.seats[seatIndex].x,
+                  y: shape.seats[seatIndex].y,
+                  radius: row.seatRadius,
                   status: shape.seats[seatIndex].status,
                 });
+                row.addSeat(seat);
               }
               row.area = {
                 name: this.name,
