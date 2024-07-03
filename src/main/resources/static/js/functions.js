@@ -37,6 +37,7 @@ function addNewArea(e) {
     }
   }
   drawAll();
+  validateAreas();
   if (isDrawing) {
     currentPolygon.drawPreview(secondX, secondY);
   }
@@ -312,7 +313,7 @@ function zoomInOnShape(polygon) {
   // Center the polygon in the viewport
   polygon.x = window.innerWidth / 3 - translateX;
   polygon.y = window.innerHeight / 2 - translateY;
-
+  console.log(polygon);
   // Apply the fixed zoom ratio
   polygon.zoomShape(fixedZoomRatio);
   polygon.calculateFurthestCoordinates();
@@ -494,6 +495,7 @@ function finishSeatDrawing(event) {
       });
     }
   }
+  validateRows();
   saveAreaCanvasState();
   canvas.addEventListener("click", startSeatDrawing);
   areaEditor();
@@ -518,6 +520,9 @@ function selectAreaShape(event) {
       if (selectedShape == null) {
         continue;
       } else {
+        if (zoomedArea.shapes[i].content.length === 0) {
+          zoomedArea.shapes.splice(i, 1);
+        }
         break;
       }
     }
@@ -565,9 +570,27 @@ function insertText(event) {
 }
 
 function removeAreaShape() {
-  zoomedArea.shapes = zoomedArea.shapes.filter((shape) => {
-    return shape !== selectedShape;
-  });
+  if (selectedShape.type === "Seat") {
+    let decreaseNumber = 0;
+    zoomedArea.shapes
+      .filter(
+        (shape) => shape.type === "Row" && shape.name === selectedShape.row.name
+      )
+      .forEach((row) => {
+        row.seats = row.seats.filter((seat) => {
+          if (seat === selectedShape) {
+            decreaseNumber += 1;
+            return false;
+          }
+          seat.number -= decreaseNumber;
+          return true;
+        });
+      });
+  } else {
+    zoomedArea.shapes = zoomedArea.shapes.filter((shape) => {
+      return shape !== selectedShape;
+    });
+  }
   saveAreaCanvasState();
   drawAll();
 }

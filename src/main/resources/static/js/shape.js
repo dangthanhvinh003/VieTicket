@@ -555,10 +555,22 @@ class PolygonArea extends Polygon {
                 seatIndex < shape.seats.length;
                 seatIndex++
               ) {
-                row.createSeat({
-                  number: seatIndex + 1,
+                const seat = new Seat({
+                  row: {
+                    name: row.name,
+                    startX: row.startX,
+                    startY: row.startY,
+                    area: row.area,
+                    seatRadius: row.seatRadius,
+                    rotation: row.rotation,
+                  },
+                  number: shape.seats[seatIndex].number,
+                  x: shape.seats[seatIndex].x,
+                  y: shape.seats[seatIndex].y,
+                  radius: row.seatRadius,
                   status: shape.seats[seatIndex].status,
                 });
+                row.addSeat(seat);
               }
               row.area = {
                 name: this.name,
@@ -954,8 +966,7 @@ class Row {
     ctx.rotate((this.rotation * Math.PI) / 180);
     ctx.translate(-(this.startX + this.area.x), -(this.startY + this.area.y));
 
-    const totalWidth =
-      (this.seats.length - 1) * (this.seatRadius * 2 + this.seatSpacing);
+    const totalWidth = this.seats[this.seats.length - 1].x;
     const rectWidth = totalWidth + this.seatRadius * 2;
     const rectHeight = this.seatRadius * 2;
 
@@ -992,7 +1003,7 @@ class Row {
     this.updateChildren();
   }
   updateChildren() {
-    this.seats.forEach((seat, index) => {
+    this.seats.forEach((seat) => {
       seat.row = {
         name: this.name,
         startX: this.startX,
@@ -1002,7 +1013,6 @@ class Row {
         rotation: this.rotation,
       };
       seat.radius = this.seatRadius;
-      seat.x = index * (this.seatRadius * 2 + this.seatSpacing);
     });
   }
 }

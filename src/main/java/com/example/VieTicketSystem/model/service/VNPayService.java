@@ -27,11 +27,17 @@ public class VNPayService {
     private final ObjectMapper jacksonObjectMapper;
     private final WebClient webClient;
     private final WebClient.Builder webClientBuilder;
+    private final String publicIP;
 
     public VNPayService(ObjectMapper jacksonObjectMapper, WebClient.Builder webClientBuilder) {
         this.jacksonObjectMapper = jacksonObjectMapper;
         this.webClientBuilder = webClientBuilder;
         this.webClient = webClientBuilder.baseUrl(VNPayConfig.vnp_APIURL).build();
+        try {
+            this.publicIP = getPublicIP();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Create order and return payment URL
@@ -134,7 +140,7 @@ public class VNPayService {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         String vnp_CreateDate = formatter.format(now);
 
-        String vnp_IpAddr = getPublicIP();
+        String vnp_IpAddr = this.publicIP;
 
         String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TransactionType, vnp_TxnRef, vnp_Amount, vnp_TransactionDate, vnp_CreateBy, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.getVnp_HashSecret(), hash_Data);
@@ -225,7 +231,7 @@ public class VNPayService {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         String vnp_CreateDate = formatter.format(now);
 
-        String vnp_IpAddr = getPublicIP();
+        String vnp_IpAddr = this.publicIP;
 
         String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TxnRef, vnp_TransactionDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.getVnp_HashSecret(), hash_Data);
@@ -255,9 +261,8 @@ public class VNPayService {
 
     // Get public IP address of the server
     public String getPublicIP() throws IOException {
-        URL url = new URL("http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-config/external-ip");
+        URL url = new URL("https://api.ipify.org/");
         URLConnection connection = url.openConnection();
-        connection.setRequestProperty("Metadata-Flavor", "Google");
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String publicIP = in.readLine();
