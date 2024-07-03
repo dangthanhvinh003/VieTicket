@@ -1,0 +1,45 @@
+<!-- src/main/resources/templates/eventsFragment.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+ 
+            <div class="col mb-4" id="eventsList" th:each="event : ${session.events}" th:if="${event.approved == 1}" th:fragment="eventsList">
+                <div class="card border-0 shadow">
+                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                        style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
+
+                    <p class="card-text m-0 p-2 overlayi">
+                        Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                    </p>
+
+                    <div class="card-body p-0">
+                        <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+
+                        <div style="display: flex; width: 100%;">
+                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                class="btn btn-sm btn-outline-success"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-list"></i> View Detail
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
+                                    th:utext="${event.areas.get(0).ticketPrice}"></span>
+                            </a>
+                           
+                            <a href="#" class="btn btn-sm btn-outline-success"
+                                style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                <i class="fas fa-eye"></i>
+                                <span th:utext="${event.eyeView}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+
+</body>
+
+</html>
