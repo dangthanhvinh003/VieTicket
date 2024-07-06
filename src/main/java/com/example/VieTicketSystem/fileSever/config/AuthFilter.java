@@ -64,7 +64,7 @@ public class AuthFilter implements Filter {
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
                 || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event")
                 || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent")
-                || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent")
+                || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent") || requestURI.startsWith("/eventsListFragment")
                 || requestURI.startsWith("/api")) && !isUnverified) {
             chain.doFilter(request, response);
             return;

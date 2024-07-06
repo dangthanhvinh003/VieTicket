@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <link href="../static/css/index.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
     <link rel="icon" type="image/png"
@@ -283,42 +284,89 @@
             transform: translateY(-5px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .fade-out {
-    animation: fadeOut 0.5s;
-}
 
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
-}
-@media (max-width: 576px) {
-    .row-cols-1 .col.mb-4 {
-        margin-bottom: 15px !important; /* Ensure margin applies on mobile */
-    }
-    .card-hotevent {
-        height: auto; /* Allow the card to adjust its height dynamically */
-        object-fit: cover; /* Keep this for images, but it's more relevant to <img> or <video> */
-    }
-}
+        .fade-out {
+            animation: fadeOut 0.5s;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .row-cols-1 .col.mb-4 {
+                margin-bottom: 15px !important;
+                /* Ensure margin applies on mobile */
+            }
+
+            .card-hotevent {
+                height: auto;
+                /* Allow the card to adjust its height dynamically */
+                object-fit: cover;
+                /* Keep this for images, but it's more relevant to <img> or <video> */
+            }
+        }
+
+        .pagination-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pagination {
+            display: inline-block;
+            list-style: none;
+            padding: 0;
+        }
+
+        .page-item {
+            display: inline;
+        }
+
+        .page-item a {
+            color: #007bff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .page-item.active a {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .page-item.disabled a {
+            color: #ddd;
+            pointer-events: none;
+        }
+
+        .page-item a:hover {
+            background-color: #f2f2f2;
+        }
     </style>
 
     <script>
         function redirectToAllEvents() {
-    // Prevent the default form action if necessary
-    // event.preventDefault();
+            // Prevent the default form action if necessary
+            // event.preventDefault();
 
-    document.body.classList.add('fade-out'); // Apply the fade-out effect
+            document.body.classList.add('fade-out'); // Apply the fade-out effect
 
-    setTimeout(() => {
-        // Redirect to the target page after the fade-out animation
-        window.location.href = '/viewAllEvent'; // Adjust the URL as needed
-    }, 400); // This duration should match the CSS animation duration
-}
-</script>
+            setTimeout(() => {
+                // Redirect to the target page after the fade-out animation
+                window.location.href = '/viewAllEvent'; // Adjust the URL as needed
+            }, 400); // This duration should match the CSS animation duration
+        }
+    </script>
 </head>
 
 <body class="dark-mode">
@@ -461,13 +509,15 @@
         </div>
     </div>
 
-    <div class="container mt-5">
+    <div class="container mt-5" th:fragment="eventsFragment">
         <h2 id="eventsTitle" style="margin-top: 5%;">Events</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3" id="eventsList">
+            <!-- Danh sách sự kiện sẽ được cập nhật bằng JavaScript -->
+
             <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
                 <div class="card border-0 shadow">
                     <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
-                        style="width: 100%; max-width: 800px; height: 200px;object-fit: cover;">
+                        style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
 
                     <p class="card-text m-0 p-2 overlayi">
                         Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
@@ -498,7 +548,92 @@
                 </div>
             </div>
         </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <ul class="pagination">
+                <li class="page-item prev">
+                    <a class="page-link load-page" href="#" data-page="prev">«</a>
+                </li>
+                <li class="page-item next">
+                    <a class="page-link load-page" href="#" data-page="next">»</a>
+                </li>
+            </ul>
+        </div>
+        <input type="hidden" id="totalPages" th:value="${session.totalPages}" />
+
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                $(document).on('click', 'a.load-page', function (event) {
+                    event.preventDefault();
+                    var direction = $(this).attr('data-page');
+                    var currentPage = parseInt(localStorage.getItem('currentPage')) || 0;
+                    var totalPages = parseInt($('#totalPages').val()) || 1;
+
+                    if (direction === 'prev' && currentPage > 0) {
+                        currentPage--;
+                    } else if (direction === 'next' && currentPage < totalPages - 1) {
+                        currentPage++;
+                    } else if (!isNaN(parseInt(direction))) {
+                        currentPage = parseInt(direction);
+                    }
+                    console.log('Received totalPages from server:', totalPages);
+                    loadPage(currentPage);
+                });
+            });
+
+            function loadPage(page) {
+                var size = 3; // Số lượng sự kiện trên mỗi trang
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/eventsListFragment?page=' + page + '&size=' + size, // Gửi yêu cầu Ajax đến URL
+                    headers: {
+                        'Accept': 'text/html' // Đảm bảo yêu cầu sẽ trả về dữ liệu HTML
+                    },
+                    success: function (response) {
+
+                        $('#eventsList').html(response); // Cập nhật danh sách sự kiện với fragment HTML trả về
+                        localStorage.setItem('currentPage', page); // Cập nhật thuộc tính trong session nếu cần
+                       
+                    
+
+
+                        
+                    
+                        history.pushState(null, '', '/page=' + page + '&size=' + size); // Cập nhật URL mà không tải lại trang
+
+                        // Sau khi cập nhật nội dung, bạn có thể muốn khởi động lại JavaScript và CSS
+                        // Ví dụ:
+                        document.querySelectorAll('.price').forEach(function (priceElement) {
+                            const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                            if (!isNaN(priceValue)) {
+                                // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                                priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                            }
+                        });
+
+                        // Nếu bạn có các sự kiện JavaScript khác cần thực thi, hãy đảm bảo gọi chúng ở đây
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading events:', error);
+                        console.log('XHR:', xhr);
+                        console.log('Status:', status);
+                        alert('An error occurred while loading events. Please try again.');
+                    }
+                });
+            }
+        </script>
+
     </div>
+
+    </div>
+
+
+
+
+    </div>
+
     <footer>
         <div class="container">
             <div class="row">
@@ -538,7 +673,10 @@
             </div>
         </div>
     </footer>
-    
+
+
+
+
     <script>
         // JavaScript để thay đổi màu nền của ô tìm kiếm khi đi qua carousel
         window.addEventListener('scroll', function () {
@@ -552,7 +690,7 @@
             } else {
                 searchInput.classList.remove('search-input-dark');
             }
-            
+
         });
     </script>
     <script>
@@ -609,7 +747,7 @@
             checkScroll(); // Kiểm tra ngay khi tải trang
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>

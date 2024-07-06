@@ -162,6 +162,65 @@
             font-size: 18px;
             margin-top: 10px;
         }
+
+        /* Style cho modal */
+        .modal {
+            display: none;
+            /* Ẩn modal */
+            position: fixed;
+            /* Ở vị trí cố định */
+            z-index: 1;
+            /* Đảm bảo modal nằm trên cùng */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Chiều rộng toàn màn hình */
+            height: 100%;
+            /* Chiều cao toàn màn hình */
+            overflow: auto;
+            /* Kích hoạt thanh cuộn nếu cần */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Màu nền với độ mờ */
+        }
+
+        /* Style cho nội dung modal */
+        .modal-content {
+            background-color: #000000;
+            margin: 5% auto;
+            /* Giảm margin từ trên xuống */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            /* Giảm chiều rộng của modal */
+            border-radius: 25px;
+            /* Thêm border radius dạng dọc */
+            overflow-y: auto;
+            /* Thêm thanh cuộn dọc nếu cần */
+        }
+
+        /* Style cho nút đóng */
+        .close {
+            color: #e100ff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Đảm bảo hình ảnh và video vừa vặn với modal */
+        .modal-content img,
+        .modal-content video {
+            max-width: 100%;
+            /* Giới hạn chiều rộng tối đa */
+            height: auto;
+            /* Chiều cao tự động điều chỉnh */
+        }
     </style>
 </head>
 
@@ -196,7 +255,84 @@
 
         </div>
         <div id="main">
-            <button class="openbtn" onclick="openNav()">☰ Open Sidebar</button>
+            <button class="openbtn" onclick="openNav()">☰ Open Sidebar</button> <!-- Nút để mở modal -->
+            <button id="myBtn">Open Instructions</button>
+        </div>
+        <div id="instructionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h2>Instructions</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Here are some basic instructions...</p>
+                    <div class="modal-image">
+                        <p>Step 1: Users click on Open Sidebar to open the tool bar</p>
+                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/448711238_1619721822203517_2108154777085591680_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=pLKlklzrFroQ7kNvgGzWQ12&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEqDzZPwLr8wMJf5_Dw4J_7MnsgbKbWnXON4JvCYstL4A&oe=66A9B9AA"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <p>Step 2: When the tool bar is opened, add an image to ChooseFile</p>
+                        <img src="https://scontent-sin6-1.xx.fbcdn.net/v/t1.15752-9/448721771_3164120117053712_3238911446119888959_n.png?_nc_cat=105&ccb=1-7&_nc_sid=9f807c&_nc_ohc=hbUIrg8XzVQQ7kNvgE8_n3D&_nc_ht=scontent-sin6-1.xx&oh=03_Q7cD1QGSl0ekG6kWfZSzteWByCBEH2Z3K0Au85bnlykPWs8Yxw&oe=66A9B319"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <p>Step 3: After successfully adding the image, the interface will appear</p>
+                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449160935_460310490044874_5664092625570513007_n.png?_nc_cat=100&ccb=1-7&_nc_sid=9f807c&_nc_ohc=Oy6DupX5SjkQ7kNvgHLK9iN&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEGLMcobyq48tPveRi2dXcHicc83VUbfRlJGd06hm7ttg&oe=66A9A50E"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <p>Step 4: Note that you should first choose the size of the seat and the gap to have specific
+                            seat size and spacing</p>
+                        <img src="https://scontent-sin6-3.xx.fbcdn.net/v/t1.15752-9/448769551_1016815913214375_7512857209086666439_n.png?_nc_cat=110&ccb=1-7&_nc_sid=9f807c&_nc_ohc=NX_u3Z5s2gYQ7kNvgHt42VB&_nc_ht=scontent-sin6-3.xx&oh=03_Q7cD1QEL6x0njwWVmzmqjPQNZft1xWce_TL3D-VAV1PfMRVLnw&oe=66A9BECD"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <p>Step 5: After choosing the size, select the corresponding number of rows and columns to help
+                            with accurate seat numbering</p>
+                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449403453_1120024452428028_8864018800410856005_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=aMwBitnWcn8Q7kNvgHXf87Z&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QHhnp0YSnhVKBCwJoWVaG-BbQTVSCnrvtCIxxwKAkdGiw&oe=66A9BC15"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <p>Step 6: After completing the above steps, drag and select the regular seat areas</p>
+                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449403453_1120024452428028_8864018800410856005_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=aMwBitnWcn8Q7kNvgHXf87Z&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QHhnp0YSnhVKBCwJoWVaG-BbQTVSCnrvtCIxxwKAkdGiw&oe=66A9BC15"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <img src="https://scontent-sin6-3.xx.fbcdn.net/v/t1.15752-9/449214464_385831720678288_6368561299070544460_n.png?_nc_cat=104&ccb=1-7&_nc_sid=9f807c&_nc_ohc=isQxBgMgSNgQ7kNvgGc3QS2&_nc_ht=scontent-sin6-3.xx&oh=03_Q7cD1QF6bf4nW0CLa9FuldxQl2AJbKpZHb-IRkzvD9FAlqBgYw&oe=66A9BFEE"
+                            alt="Instruction image">
+                    </div>
+
+                    <div class="modal-image">
+                        <p>Step 7: Click on Select VIP Area to choose VIP seats</p>
+                        <img src="https://scontent-sin6-2.xx.fbcdn.net/v/t1.15752-9/448791963_440556828891102_878985263003056307_n.png?_nc_cat=109&ccb=1-7&_nc_sid=9f807c&_nc_ohc=t_piL-hWeAkQ7kNvgF-wvbc&_nc_ht=scontent-sin6-2.xx&oh=03_Q7cD1QHrMPFnOnhz2GXwVAb7l1QxlNUHXJVemzEdxBiyo7YsOA&oe=66A9A8ED"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <p>Step 8: Use the same drag and select method as above, but the color of the area will change
+                        </p>
+                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/448875307_2924520814361900_2112901554785562907_n.png?_nc_cat=100&ccb=1-7&_nc_sid=9f807c&_nc_ohc=gc89u1vcjFIQ7kNvgGlDFyA&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEOdBM1eFhVMNZ1nN6P6mnokgxpysolqiIYLesNggZbNg&oe=66A999AD"
+                            alt="Instruction image">
+                    </div>
+                    <div class="modal-image">
+                        <p>Step 9: Enter the ticket price for the seat areas. If you don't have VIP or regular seat
+                            areas, leave it as 0 and you can Save Image</p>
+                        <img src="https://scontent-sin6-1.xx.fbcdn.net/v/t1.15752-9/449317923_1221551869280931_1590935591696111147_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=bxhhB3XpM1oQ7kNvgEXuYUG&_nc_ht=scontent-sin6-1.xx&oh=03_Q7cD1QHTsM-92GRBg2DI52MCS2oohpaJghyH4KbeOuqtuRxt4w&oe=66A9B986"
+                            alt="Hình ảnh hướng dẫn">
+                    </div>
+
+                    <div class="modal-video">
+                        <p>This is video</p>
+                        <video width="320" height="240" controls>
+
+                            <source
+                                src="https://res.cloudinary.com/djcowpoua/video/upload/v1719813993/2024-07-01_13-04-18_w5ywsy.mkv"
+                                type="video/mp4">
+                            Trình duyệt của bạn không hỗ trợ thẻ video.
+                        </video>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="seatCounts"></div>
 
@@ -206,6 +342,31 @@
                 <div class="selection-box" id="selectionBox"></div>
             </div>
         </div>
+        <script>// Lấy modal
+            var modal = document.getElementById("instructionModal");
+
+            // Lấy nút mở modal
+            var btn = document.getElementById("myBtn");
+
+            // Lấy phần tử span để đóng modal
+            var span = document.getElementsByClassName("close")[0];
+
+            // Khi nút được click, mở modal
+            btn.onclick = function () {
+                modal.style.display = "block";
+            }
+
+            // Khi nút đóng (x) được click, đóng modal
+            span.onclick = function () {
+                modal.style.display = "none";
+            }
+
+            // Khi người dùng click bên ngoài modal, đóng nó lại
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }</script>
         <script>
             // Hàm để hiển thị nút Submit
             function showSubmitButton() {
