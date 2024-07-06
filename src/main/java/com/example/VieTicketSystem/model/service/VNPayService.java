@@ -26,12 +26,10 @@ public class VNPayService {
 
     private final ObjectMapper jacksonObjectMapper;
     private final WebClient webClient;
-    private final WebClient.Builder webClientBuilder;
     private final String publicIP;
 
     public VNPayService(ObjectMapper jacksonObjectMapper, WebClient.Builder webClientBuilder) {
         this.jacksonObjectMapper = jacksonObjectMapper;
-        this.webClientBuilder = webClientBuilder;
         this.webClient = webClientBuilder.baseUrl(VNPayConfig.vnp_APIURL).build();
         try {
             this.publicIP = getPublicIP();

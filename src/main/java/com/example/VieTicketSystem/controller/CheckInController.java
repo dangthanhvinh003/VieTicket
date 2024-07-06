@@ -4,7 +4,6 @@ import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.model.repo.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +24,11 @@ public class CheckInController {
     private final TicketRepo ticketRepo;
     private final UserRepo userRepo;
     private final ObjectMapper objectMapper;
-    private final AuthenticationController authenticationController;
 
-    public CheckInController(TicketRepo ticketRepo, UserRepo userRepo, ObjectMapper objectMapper, AuthenticationController authenticationController) {
+    public CheckInController(TicketRepo ticketRepo, UserRepo userRepo, ObjectMapper objectMapper) {
         this.ticketRepo = ticketRepo;
         this.userRepo = userRepo;
         this.objectMapper = objectMapper;
-        this.authenticationController = authenticationController;
     }
 
     @PostMapping("/checkin")
