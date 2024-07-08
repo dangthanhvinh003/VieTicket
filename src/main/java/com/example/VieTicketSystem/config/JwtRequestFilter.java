@@ -1,6 +1,6 @@
 package com.example.VieTicketSystem.config;
 
-import com.example.VieTicketSystem.model.service.UserDetailsServiceImpl;
+import com.example.VieTicketSystem.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

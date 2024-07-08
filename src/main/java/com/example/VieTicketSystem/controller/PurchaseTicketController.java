@@ -1,9 +1,9 @@
 package com.example.VieTicketSystem.controller;
 
 import com.example.VieTicketSystem.model.entity.*;
-import com.example.VieTicketSystem.model.repo.*;
-import com.example.VieTicketSystem.model.service.OrderService;
-import com.example.VieTicketSystem.model.service.PurchaseTicketService;
+import com.example.VieTicketSystem.repo.*;
+import com.example.VieTicketSystem.service.OrderService;
+import com.example.VieTicketSystem.service.PurchaseTicketService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.*;
@@ -207,7 +207,7 @@ public class PurchaseTicketController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
         }
         if (order.getUser().getUserId() != user.getUserId()) {
-            return "redirect:/";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your Order");
         }
         if (order.getStatus().equals(Order.PaymentStatus.SUCCESS)) {
             return "redirect:/purchase/purchase-success?orderId=" + orderId;
@@ -216,6 +216,9 @@ public class PurchaseTicketController {
         }
 
         model.addAttribute("order", order);
+
+        List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
+        model.addAttribute("tickets", tickets);
 
         return "purchase/failure";
     }

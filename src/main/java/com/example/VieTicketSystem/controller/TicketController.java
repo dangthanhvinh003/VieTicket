@@ -2,23 +2,24 @@ package com.example.VieTicketSystem.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.TicketRepo;
-import com.example.VieTicketSystem.model.service.QRCodeService;
+import com.example.VieTicketSystem.repo.TicketRepo;
+import com.example.VieTicketSystem.service.QRCodeService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
+@RequestMapping("/tickets")
 public class TicketController {
 
     private final TicketRepo ticketRepo;
@@ -33,18 +34,19 @@ public class TicketController {
         this.httpSession = httpSession;
     }
 
-    @GetMapping("/tickets")
+    @GetMapping({"", "/"})
     public String listTickets(Model model, HttpSession httpSession,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size) throws Exception {
+        // Reduce the page size to not blow up the server
+        size = Integer.min(size, 100);
+
         User activeUser = (User) httpSession.getAttribute("activeUser");
-        int userId = activeUser.getUserId();
         int offset = page * size;
 
-        List<Ticket> tickets = ticketRepo.findByUserId(userId, size, offset);
-        tickets.sort(Comparator.comparing(Ticket::getTicketId).reversed());
+        List<Ticket> tickets = ticketRepo.findByUserId(activeUser.getUserId(), size, offset);
 
-        int totalTickets = ticketRepo.countByUserId(userId);
+        int totalTickets = ticketRepo.countByUserId(activeUser.getUserId());
         int totalPages = (totalTickets + size - 1) / size;
 
         model.addAttribute("tickets", tickets);
@@ -56,7 +58,7 @@ public class TicketController {
         return "tickets/list";
     }
 
-    @GetMapping("/tickets/view-ticket")
+    @GetMapping("/view-ticket")
     public String viewTicket(Model model,
                              @RequestParam int ticketId) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");

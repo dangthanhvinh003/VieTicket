@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.OrganizerRepo;
-import com.example.VieTicketSystem.model.repo.UserRepo;
-import com.example.VieTicketSystem.model.service.Oauth2Service;
-import com.example.VieTicketSystem.model.service.VerifyEmailService;
+import com.example.VieTicketSystem.repo.EventRepo;
+import com.example.VieTicketSystem.repo.OrganizerRepo;
+import com.example.VieTicketSystem.repo.UserRepo;
+import com.example.VieTicketSystem.service.Oauth2Service;
+import com.example.VieTicketSystem.service.VerifyEmailService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller

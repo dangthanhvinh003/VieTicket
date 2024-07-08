@@ -1,7 +1,7 @@
 package com.example.VieTicketSystem.controller;
 
 import com.example.VieTicketSystem.config.JwtUtil;
-import com.example.VieTicketSystem.model.service.UserDetailsServiceImpl;
+import com.example.VieTicketSystem.service.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;

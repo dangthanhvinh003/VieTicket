@@ -2,10 +2,10 @@ package com.example.VieTicketSystem.controller;
 
 import com.example.VieTicketSystem.model.entity.Ticket;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.*;
+import com.example.VieTicketSystem.repo.TicketRepo;
+import com.example.VieTicketSystem.repo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,16 +41,6 @@ public class CheckInController {
 
         // Load the User entity from the database
         User user = userRepo.findByUsername(username);
-        if (user == null) {
-            String response = objectMapper.writeValueAsString(Map.of("message", "User not found"));
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-
-        // Check if the user is an organizer
-        if (user.getUserRole() != User.UserRole.ORGANIZER) {
-            String response = objectMapper.writeValueAsString(Map.of("message", "User is not an organizer"));
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
 
         String qrCode = payload.get("qrCode");
 

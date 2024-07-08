@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.example.VieTicketSystem.model.service.PasswordResetService;
-import com.example.VieTicketSystem.model.service.VerifyEmailService;
+import com.example.VieTicketSystem.service.PasswordResetService;
+import com.example.VieTicketSystem.service.VerifyEmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
