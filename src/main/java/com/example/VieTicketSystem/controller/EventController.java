@@ -2,6 +2,7 @@ package com.example.VieTicketSystem.controller;
 
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.entity.Event;
+import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.Seat;
 import com.example.VieTicketSystem.model.entity.User;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -399,8 +401,15 @@ public class EventController {
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
         eventRepo.incrementClickCount(event.getEventId());
+        Organizer currentOrganizer = organizerRepo.getOrganizerByEventId(eventId);
+
+        double averageRating = organizerRepo.getAverageRatingForOrganizer(currentOrganizer.getUserId());
+        DecimalFormat df = new DecimalFormat("#.#");
+        String formattedRating = df.format(averageRating);
+
         model.addAttribute("event", event);
-        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+        model.addAttribute("organizer", currentOrganizer);
+        model.addAttribute("stars", formattedRating);
         List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
 
         // Tìm giá vé thấp nhất

@@ -511,8 +511,16 @@
 
                     <div class="organizer-details">
                         <img th:src="${organizer.avatar}" alt="Organizer Image" class="organizer-img img-fluid rounded">
-                        <p th:text="${organizer.fullName}">Organizer Info</p>
+                        <div>
+                            <p th:text="${organizer.fullName}">Organizer Info</p>
+                            <p>
+                                <span th:text="${stars}"></span>
+                                <i class="fas fa-star"></i>
+                            </p>
+                        </div>
+                        
                     </div>
+                    
                 </div>
                 <br>
                 <div class="poster">

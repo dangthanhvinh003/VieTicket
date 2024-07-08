@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.VieTicketSystem.model.entity.Order;
+import com.example.VieTicketSystem.model.entity.Organizer;
+
 import org.springframework.stereotype.Repository;
 
 import com.example.VieTicketSystem.model.entity.Ticket;
@@ -286,4 +288,51 @@ public class TicketRepo {
         }
         return ticket;
     }
+
+    public int findOrganizerIdByTicketId(int ticketId) {
+        String sql = "SELECT e.organizer_id " +
+                     "FROM Ticket t " +
+                     "INNER JOIN Seat s ON t.seat_id = s.seat_id " +
+                     "INNER JOIN `Row` r ON s.row_id = r.row_id " +
+                     "INNER JOIN Area a ON r.area_id = a.area_id " +
+                     "INNER JOIN Event e ON a.event_id = e.event_id " +
+                     "WHERE t.ticket_id = ?";
+    
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    
+            preparedStatement.setInt(1, ticketId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                return resultSet.getInt("organizer_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving organizer_id by ticket ID", e);
+        }
+        return -1; // Return -1 or throw an exception if organizer_id not found
+    }
+    
+
+    public int findOrderIdByTicketId(int ticketId) {
+        String sql = "SELECT o.order_id " +
+                     "FROM Ticket t " +
+                     "INNER JOIN `Order` o ON t.order_id = o.order_id " +
+                     "WHERE t.ticket_id = ?";
+    
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    
+            preparedStatement.setInt(1, ticketId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            if (resultSet.next()) {
+                return resultSet.getInt("order_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving order_id by ticket ID", e);
+        }
+        return -1; // Return -1 or throw an exception if order_id not found
+    }
+    
 }

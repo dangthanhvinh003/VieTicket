@@ -9,9 +9,13 @@ import com.example.VieTicketSystem.repo.OrderRepo;
 import com.example.VieTicketSystem.repo.TicketRepo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
@@ -113,5 +117,21 @@ public class OrderController {
                 return dateTime.format(formatter);
             }
         }
+    }
+
+    @PostMapping("/rating")
+    public String ratingOrganizer (@RequestParam("ticket_id") int ticketId, @RequestParam("rating") int rating) {
+        // Call the service to process the rating
+        
+
+        int orderId = ticketRepo.findOrderIdByTicketId(ticketId);
+        int organizerId = ticketRepo.findOrganizerIdByTicketId(ticketId);
+        orderRepo.submitRating(rating, organizerId, orderId);
+        // Return a success response        
+        return "redirect:/";
+    }
+    @GetMapping("/rating")
+    public String ratingOrganizer() {      
+        return "redirect:/";
     }
 }

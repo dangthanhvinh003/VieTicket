@@ -76,8 +76,8 @@ public class AuthFilter implements Filter {
             chain.doFilter(request, response);
         } else if (isUser(user)
                 && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                        || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets") || requestURI.startsWith("/orders"))
-                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase")) {
+                        || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))
+                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase") || requestURI.equals("/orders/rating")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else if (isOrganizer(user)) {
