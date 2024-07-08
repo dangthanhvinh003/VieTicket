@@ -401,7 +401,7 @@
                                 <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
                                 <li><a class="dropdown-item" th:href="@{/change-password}">Change Password</a></li>
                                 <th:block th:if="${session.activeUser.role.toString() == 'u'}">
-                                    <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/orders}">View My Orders</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'o'}">
                                     <li><a class="dropdown-item" th:href="@{/viewMyListEvent}">View List Event</a></li>
