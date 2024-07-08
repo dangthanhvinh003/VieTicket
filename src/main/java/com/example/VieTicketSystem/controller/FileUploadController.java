@@ -17,8 +17,8 @@ import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.VieTicketSystem.model.entity.User;
 
-import com.example.VieTicketSystem.model.repo.UserRepo;
-import com.example.VieTicketSystem.model.service.FileUpload;
+import com.example.VieTicketSystem.repo.UserRepo;
+import com.example.VieTicketSystem.service.FileUpload;
 
 import jakarta.servlet.http.HttpSession;
 

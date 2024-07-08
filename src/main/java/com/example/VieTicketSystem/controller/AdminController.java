@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.VieTicketSystem.model.entity.AdminStatistics;
+import com.example.VieTicketSystem.model.dto.AdminStatistics;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
-import com.example.VieTicketSystem.model.entity.TableAdminStatistics;
+import com.example.VieTicketSystem.model.dto.TableAdminStatistics;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.AdminRepo;
-import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.UserRepo;
-import com.example.VieTicketSystem.model.service.EmailService;
+import com.example.VieTicketSystem.repo.AdminRepo;
+import com.example.VieTicketSystem.repo.EventRepo;
+import com.example.VieTicketSystem.repo.UserRepo;
+import com.example.VieTicketSystem.service.EmailService;
 
 @Controller
 public class AdminController {

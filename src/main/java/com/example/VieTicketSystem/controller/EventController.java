@@ -4,20 +4,19 @@ import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.Seat;
-import com.example.VieTicketSystem.model.entity.SeatMap;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.AreaRepo;
-import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.OrganizerRepo;
-import com.example.VieTicketSystem.model.repo.RowRepo;
-import com.example.VieTicketSystem.model.repo.SeatMapRepo;
-import com.example.VieTicketSystem.model.repo.SeatRepo;
-import com.example.VieTicketSystem.model.service.EventService;
-import com.example.VieTicketSystem.model.service.FileUpload;
+import com.example.VieTicketSystem.repo.AreaRepo;
+import com.example.VieTicketSystem.repo.EventRepo;
+import com.example.VieTicketSystem.repo.OrganizerRepo;
+import com.example.VieTicketSystem.repo.RowRepo;
+import com.example.VieTicketSystem.repo.SeatMapRepo;
+import com.example.VieTicketSystem.repo.SeatRepo;
+import com.example.VieTicketSystem.service.EventService;
+import com.example.VieTicketSystem.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
-import com.example.VieTicketSystem.model.entity.AdditionalData;
+import com.example.VieTicketSystem.model.dto.AdditionalData;
 import com.example.VieTicketSystem.model.entity.Area;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +25,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -43,8 +40,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.print.attribute.standard.Chromaticity;
 
 @Controller
 public class EventController {
