@@ -91,7 +91,7 @@ public class PurchaseTicketController {
             model.addAttribute("chooseNumberOfSeats", false);
             model.addAttribute("seatMap", seatMap);
             if (seatMap.getMapFile() != null) {
-                return "purchase/selectEditor";
+                return "purchase/select-editor";
             }
         }
 

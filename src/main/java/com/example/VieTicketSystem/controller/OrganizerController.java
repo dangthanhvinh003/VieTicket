@@ -61,12 +61,12 @@ public class OrganizerController {
     @GetMapping(value = ("/createEvent"))
     public String createEventPage(HttpSession httpSession) {
         httpSession.setAttribute("eventCreated", false);
-        return "createEvent";
+        return "event/create/general";
     }
 
     @GetMapping(value = ("/inactive-account"))
     public String inactiveAccountPage() {
-        return "inactive-account";
+        return "auth/inactive-account";
     }
 
     @PostMapping(value = ("/viewStatistics"))
@@ -77,7 +77,7 @@ public class OrganizerController {
         model.addAttribute("eventId", eventId);
         model.addAttribute("eventStatistics", eventStatistics);
         model.addAttribute("dailyStatistics", dailyRevenueMap);
-        return "statistics";
+        return "event/view/statistics";
     }
 
     @GetMapping(value = "/viewMyListEvent")
@@ -91,7 +91,7 @@ public class OrganizerController {
             eventList = eventRepo.searchEventByNameAndOrganizerId(search, user.getUserId());
         }
         model.addAttribute("eventList", eventList);
-        return "viewMyListEvent";
+        return "event/view/mine";
     }
 
     @GetMapping(value = "/allEvents")
@@ -109,7 +109,7 @@ public class OrganizerController {
                 .collect(Collectors.toList());
         model.addAttribute("eventList", pendingEvents);
         model.addAttribute("pageType", "pending");
-        return "viewMyListEvent";
+        return "event/view/mine";
     }
 
     @GetMapping(value = "/approvedEvents")
@@ -124,7 +124,7 @@ public class OrganizerController {
 
         model.addAttribute("eventList", approvedEvents);
         model.addAttribute("pageType", "approved");
-        return "viewMyListEvent";
+        return "event/view/mine";
     }
 
     @GetMapping(value = "/passedEvents")
@@ -139,7 +139,7 @@ public class OrganizerController {
 
         model.addAttribute("eventList", passedEvents);
         model.addAttribute("pageType", "passed");
-        return "viewMyListEvent";
+        return "event/view/mine";
     }
 
     @PostMapping(value = "/eventEditPage")
@@ -147,7 +147,7 @@ public class OrganizerController {
         httpSession.setAttribute("eventIdEdit", eventId);
         Event event = eventRepo.getEventById(eventId);
         model.addAttribute("eventEdit", event);
-        return "eventEdit";
+        return "event/update/general";
     }
 
     @PostMapping(value = ("/eventEditSubmit"))
@@ -195,10 +195,10 @@ public class OrganizerController {
         if (editMap != null) {
             if (editMap.getName().equals("DrawSeatMap")) {
                 model.addAttribute("json", editMap.getMapFile());
-                return "seatMapEditor";
+                return "seatmap/editor";
             }
         }
-        return "seatMapEdit";
+        return "event/update/seatmap";
     }
 
     @GetMapping(value = "/seatMapDelete")
@@ -213,12 +213,12 @@ public class OrganizerController {
 
     @GetMapping(value = "/noModelEditPage")
     public String noModal() {
-        return "seatMapEdit";
+        return "event/update/seatmap";
     }
 
     @GetMapping(value = "/editSuccess")
     public String editSuccess() {
-        return "editSuccess";
+        return "event/update/success";
     }
 
     @PostMapping(value = ("/seatMap/NoSeatMapEdit"))
@@ -228,15 +228,15 @@ public class OrganizerController {
         seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
         rowRepo.addRow("NoSeatMap", areaRepo.getIdAreaEventId(idNewEvent));
-      List<Seat> seatsForRow = new ArrayList<>();
+        List<Seat> seatsForRow = new ArrayList<>();
         int getIdAreaEvent = areaRepo.getIdAreaEventId(idNewEvent);
         int getIdRow = rowRepo.getIdRowByAreaId(getIdAreaEvent);
         Row row = rowRepo.getRowById(getIdRow);
-        
+
         for (int i = 0; i < total; i++) {
-            seatsForRow.add(new Seat(Integer.toString(i),Float.parseFloat(price),row));
+            seatsForRow.add(new Seat(Integer.toString(i), Float.parseFloat(price), row));
             // seatRepo.addSeat(Integer.toString(i), price,
-            //         rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
+            // rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         seatRepo.addSeats(seatsForRow);
         return "redirect:/editSuccess";
@@ -244,7 +244,7 @@ public class OrganizerController {
 
     @GetMapping(value = ("/seatMap/SeatMapBetaEdit"))
     public String SeatMapBetaPage() {
-        return "SeatMapBetaEdit";
+        return "seatmap/beta-edit";
     }
 
     @PostMapping(value = ("/seatMap/SeatMapBetaEdit"))
@@ -317,10 +317,12 @@ public class OrganizerController {
                         }
                         List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
-                            
+
                             for (String seat : seatsByRow.get(i)) {
-                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getNormalPrice()),allRow.get(i)));
-                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(new Seat(seat, Float.parseFloat(additionalData.getNormalPrice()),
+                                        allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(),
+                                // allRow.get(i).getRowId());
                             }
                             /// adddseat(<Seat>)
                         }
@@ -380,10 +382,12 @@ public class OrganizerController {
                         }
                         List<Seat> seatsForRow = new ArrayList<>();
                         for (int i = 0; i < seatsByRow.size(); i++) {
-                            
+
                             for (String seat : seatsByRow.get(i)) {
-                                seatsForRow.add(new Seat(seat,Float.parseFloat(additionalData.getVipPrice()),allRow.get(i)));
-                                // seatRepo.addSeat(seat, additionalData.getVipPrice(), allRow.get(i).getRowId());
+                                seatsForRow.add(
+                                        new Seat(seat, Float.parseFloat(additionalData.getVipPrice()), allRow.get(i)));
+                                // seatRepo.addSeat(seat, additionalData.getVipPrice(),
+                                // allRow.get(i).getRowId());
                             }
                             /// adddseat(<Seat>)
                         }
