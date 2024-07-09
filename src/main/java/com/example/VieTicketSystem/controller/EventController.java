@@ -2,6 +2,7 @@ package com.example.VieTicketSystem.controller;
 
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.entity.Event;
+import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.Seat;
 import com.example.VieTicketSystem.model.entity.User;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 public class EventController {
@@ -398,8 +401,15 @@ public class EventController {
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
         eventRepo.incrementClickCount(event.getEventId());
+        Organizer currentOrganizer = organizerRepo.getOrganizerByEventId(eventId);
+
+        double averageRating = organizerRepo.getAverageRatingForOrganizer(currentOrganizer.getUserId());
+        DecimalFormat df = new DecimalFormat("#.#");
+        String formattedRating = df.format(averageRating);
+
         model.addAttribute("event", event);
-        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+        model.addAttribute("organizer", currentOrganizer);
+        model.addAttribute("stars", formattedRating);
         List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
 
         // Tìm giá vé thấp nhất
@@ -430,4 +440,24 @@ public class EventController {
 
         return "event/view/tickets-bought"; // Tên của template hiển thị danh sách người dùng
     }
+
+    @GetMapping(value = "/eventsByCategory")
+    public String eventsByCategory(@RequestParam("category") String category, Model model, HttpSession httpSession) {
+    List<Event> eventList = eventRepo.getAllEvents();
+    List<Event> filteredEvents = eventList.stream()
+            .filter(event -> event.getType().equalsIgnoreCase(category))
+            .collect(Collectors.toList());
+    model.addAttribute("eventList", filteredEvents);
+    model.addAttribute("pageType", "category");
+    return "searchResults";
+    }
+
+    @GetMapping(value = "/showAllEvents")
+    public String allEvents(Model model, HttpSession httpSession) {
+    List<Event> eventList = eventRepo.getAllEvents();
+    model.addAttribute("eventList", eventList);
+    model.addAttribute("pageType", "all");
+    return "searchResults";
+    }
+
 }

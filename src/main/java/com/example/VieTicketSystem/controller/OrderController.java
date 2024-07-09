@@ -20,7 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/orders")
@@ -200,6 +202,27 @@ public class OrderController {
                 return dateTime.format(formatter);
             }
         }
+    }
+
+    @PostMapping("/rating-exists")
+    @ResponseBody
+    public Map<String, Boolean> ratingExists(@RequestParam("order_id") int orderId) {
+        int ratingId = ticketRepo.findRatingIdByOrderId(orderId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", ratingId != -1);
+        return response;
+    }
+
+    @PostMapping("/rating")
+    public String ratingOrganizer (@RequestParam("order_id") int orderId, @RequestParam("rating") int rating) {
+        int organizerId = ticketRepo.findOrganizerIdByOrderId(orderId);
+        orderRepo.submitRating(rating, organizerId, orderId);
+        return "redirect:/";
+    }
+    
+    @GetMapping("/rating")
+    public String ratingOrganizer() {      
+        return "redirect:/";
     }
 
     @Data

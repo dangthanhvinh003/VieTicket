@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Search Results</title>
@@ -38,66 +37,70 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container mt-5">
         <form class="d-flex search-form mb-4" role="search">
-            <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
-                placeholder="Search events...">
+            <a href="/" class="btn btn-custom" id="backHome" style="margin-top: 10px; color:white">Back to Home</a>
+            <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search" placeholder="Search events...">
         </form>
-        <h2 id="eventsTitle">Search Result</h2>
-        <div id="eventCards" class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-            <!-- Kiểm tra nếu không có sự kiện nào -->
-            <div class="col mb-4" th:if="${events == null || events.size() == 0}">
-                <p>No events found.</p>
+        <div class="container">
+            <div class="d-flex align-items-center mb-3" style="margin-top: 30px;">
+                <div class="btn-group ms-2" role="group">
+                    <a href="/showAllEvents" style="color:white" class="btn btn-custom" id="allEvents" th:classappend="${pageType == 'all'} ? 'active'">All Events</a>
+                    <a href="/eventsByCategory?category=Music" style="color:white" class="btn btn-custom" id="musicCategory" th:classappend="${pageType == 'category' && category == 'Music'} ? 'active'">Music</a>
+                    <a href="/eventsByCategory?category=Sport" style="color:white" class="btn btn-custom" id="sportCategory" th:classappend="${pageType == 'category' && category == 'Sport'} ? 'active'">Sport</a>
+                    <a href="/eventsByCategory?category=Workshop" style="color:white" class="btn btn-custom" id="workshopCategory" th:classappend="${pageType == 'category' && category == 'Workshop'} ? 'active'">Workshop</a>
+                    <a href="/eventsByCategory?category=Comedy" style="color:white" class="btn btn-custom" id="comedyCategory" th:classappend="${pageType == 'category' && category == 'Comedy'} ? 'active'">Comedy</a>
+                    <a href="/eventsByCategory?category=Art" style="color:white" class="btn btn-custom" id="artCategory" th:classappend="${pageType == 'category' && category == 'Art'} ? 'active'">Art</a>
+                </div>
             </div>
-            <!-- Lặp qua các sự kiện và hiển thị nếu đã được phê duyệt -->
-            <div class="col mb-4" th:each="event : ${events}" th:if="${event.approved == 1}"
-                th:data-user="${event.name.toLowerCase()}">
-                <div class="card border-0 shadow">
-                    <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
-                        style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
-                    <div class="card-body p-0">
-                        <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
-                        <p class="card-text m-0 p-2">
-                            Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
-                        </p>
-                        <div class="d-flex">
-                            <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
-                                class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
-                            <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
+            <h2 th:if="${pageType == 'category'}">Events by Category</h2>
+            <h2 th:if="${pageType == 'all'}">All Events</h2>
+            <div id="eventList" th:if="${eventList != null}">
+                <div id="eventCards" class="row row-cols-1 row-cols-sm-2 row-cols-md-3"></div>
+                    <div th:each="event : ${eventList}" th:if="${event.approved == 1}">
+                        <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}">
+                            <div class="card border-0 shadow">
+                                <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                                    style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
+                                <div class="card-body p-0">
+                                    <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                                    <p class="card-text m-0 p-2">
+                                        Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                                    </p>
+                                    <div class="d-flex">
+                                        <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
+                                        <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div th:if="${eventList == null || eventList.size() == 0}">
+                <p>No events found.</p>
+            </div>
         </div>
-    </div>
+    </div>    
     <script>
-     document.getElementById('searchInput').addEventListener('input', function() {
-        let filter = this.value.toLowerCase();
-        let cards = document.querySelectorAll('#eventCards .col.mb-4');
-    
-        cards.forEach(card => {
-            let event = card.getAttribute('data-user');
-            if (event.includes(filter)) {
-                card.style.display = ''; // Make sure the card is displayed
-                card.classList.add('fade-in'); // Apply the fade-in animation
-            } else {
-                card.style.display = 'none'; // Hide the card
-                card.classList.remove('fade-in'); // Remove the animation class to reset the state
-            }
-        });
-    });
-    </script>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.body.classList.add('fade-in');
-        });
-    </script>
+        document.getElementById('searchInput').addEventListener('input', function() {
+           let filter = this.value.toLowerCase();
+           let cards = document.querySelectorAll('#eventCards .col.mb-4');
+       
+           cards.forEach(card => {
+               let event = card.getAttribute('data-user');
+               if (event.includes(filter)) {
+                   card.style.display = ''; // Make sure the card is displayed
+                   card.classList.add('fade-in'); // Apply the fade-in animation
+               } else {
+                   card.style.display = 'none'; // Hide the card
+                   card.classList.remove('fade-in'); // Remove the animation class to reset the state
+               }
+           });
+       });
+       </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    
 </body>
-
 </html>
