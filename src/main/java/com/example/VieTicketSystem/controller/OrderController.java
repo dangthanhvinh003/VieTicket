@@ -137,6 +137,7 @@ public class OrderController {
         orderRepo.submitRating(rating, organizerId, orderId);
         return "redirect:/";
     }
+    
     @GetMapping("/rating")
     public String ratingOrganizer() {      
         return "redirect:/";

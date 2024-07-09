@@ -298,7 +298,7 @@ INNER JOIN `Order` o ON t.order_id = o.order_id
 WHERE t.ticket_id = 4;
 
 --@block
-SELECT rating_id FROM Rating WHERE order_id = 2
+SELECT * FROM Rating 
 
 --@block
 SELECT e.organizer_id 
@@ -309,4 +309,7 @@ INNER JOIN `Row` r ON s.row_id = r.row_id
 INNER JOIN Area a ON r.area_id = a.area_id 
 INNER JOIN `Event` e ON a.event_id = e.event_id 
 WHERE o.order_id = 2
+
+--@blocks
+delete from Rating
 
