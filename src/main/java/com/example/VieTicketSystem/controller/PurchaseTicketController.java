@@ -254,11 +254,7 @@ public class PurchaseTicketController {
         return "purchase/success";
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
+    @Data
     public static class TicketSelection {
         private List<Integer> seats;
         private int eventId;

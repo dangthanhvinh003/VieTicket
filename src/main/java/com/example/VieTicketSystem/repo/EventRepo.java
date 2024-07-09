@@ -29,7 +29,8 @@ public class EventRepo {
     OrganizerRepo organizerRepo = new OrganizerRepo();
 
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM Event WHERE event_id = ?";
-    private static final String SELECT_EVENT_BY_ORDER_ID = "SELECT E.event_id, E.name " +
+    // KEEP WHITESPACE AFTER EACH CHUNK
+    private static final String SELECT_EVENT_BY_ORDER_ID = "SELECT E.event_id, E.name, E.start_date " +
             "FROM Event E " +
             "JOIN Area A ON E.event_id = A.event_id " +
             "JOIN `Row` R ON A.area_id = R.area_id " +
@@ -51,6 +52,9 @@ public class EventRepo {
                 event = new Event();
                 event.setEventId(rs.getInt("event_id"));
                 event.setName(rs.getString("name"));
+
+                Timestamp timestamp = rs.getTimestamp("start_date");
+                event.setStartDate(timestamp == null ? null : timestamp.toLocalDateTime());
             }
             rs.close();
         }

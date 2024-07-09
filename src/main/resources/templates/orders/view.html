@@ -32,32 +32,102 @@
             <td>Status:</td>
             <td style="color: #40a02b" th:text="${order.status}"></td>
         </tr>
+        <tr>
+            <td>Event:</td>
+            <td><a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" th:text="${event.name}"
+                   th:target="_blank"></a></td>
+        </tr>
     </table>
 
-    <h3>Purchased Tickets</h3>
-    <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th>Event name</th>
-            <th>Seat</th>
-            <th>Area</th>
-            <th>Price</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="ticket : ${tickets}">
-            <td th:text="${ticket.seat.row.area.event.name}"></td>
-            <td th:text="${ticket.seat.number}"></td>
-            <td th:text="${ticket.seat.row.area.name}"></td>
-            <td class="price" th:attr="data-price=${ticket.seat.ticketPrice}"></td>
-            <td>
-                <a th:href="@{/tickets/view-ticket?ticketId={id}(id=${ticket.ticketId})}" class="btn btn-primary">
-                    <span class="bi bi-eye"></span>
-                </a>
-        </tr>
-        </tbody>
-    </table>
+    <div th:if="${refundOrder != null}">
+        <h3>Refund Request Information</h3>
+
+        <table class="table table-striped">
+            <tr>
+                <td>Total:</td>
+                <td class="price" th:attr="data-price=${refundOrder.total}"></td>
+            </tr>
+            <tr>
+                <td>Total <span th:if="${refundOrder.status.toString() == 'SUCCESS'}">will be </span>refunded to you:
+                </td>
+                <td class="price" th:attr="data-price=${refundOrder.getActualRefundAmount()}"></td>
+            </tr>
+            <tr>
+                <td>Created on:</td>
+                <td th:text="${#temporals.format(refundOrder.createdOn, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td class="fw-bolder" th:text="${refundOrder.status}"></td>
+            </tr>
+            <tr th:if="${refundOrder.status.toString() == 'APPROVED' || refundOrder.status.toString() == 'REJECTED'}">
+                <td>
+                    <span th:if="refundOrder.status.toString() == 'APPROVED'">Approved </span>
+                    <span th:if="refundOrder.status.toString() == 'REJECTED'">Rejected </span>
+                    on:
+                </td>
+                <td th:text="${refundOrder.approvedOn}"></td>
+            </tr>
+            <tr th:if="${refundOrder.status.toString() == 'REFUNDED'}">
+                <td>Refunded on:</td>
+                <td th:text="${refundOrder.refundedOn}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <p th:if="${!isReturnable}">Unfortunately, this order cannot be returned<span th:if="${refundOrder != null}"> more than one time</span>.
+    </p>
+
+    <form action="/orders/request-refund" method="post">
+        <input type="hidden" name="orderId" th:value="${order.orderId}"/>
+        <div th:if="${isReturnable}" th:class="form-group">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="totalRefund" name="isTotalRefund" value="true"
+                       onchange="toggleTicketSelection()">
+                <label class="form-check-label" for="totalRefund">
+                    Request Total Refund
+                </label>
+            </div>
+        </div>
+
+        <h3>Purchased Tickets</h3>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th th:if="${isReturnable}">Select</th>
+                <th>Event name</th>
+                <th>Seat</th>
+                <th>Area</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ticket : ${tickets}">
+                <td th:if="${isReturnable}"><input type="checkbox" name="tickets" th:value="${ticket.ticketId}"
+                                                   class="ticketCheckbox"></td>
+                <td th:text="${ticket.seat.row.area.event.name}"></td>
+                <td th:text="${ticket.seat.number}"></td>
+                <td th:text="${ticket.seat.row.area.name}"></td>
+                <td class="price" th:attr="data-price=${ticket.seat.ticketPrice}"></td>
+                <td>
+                    <span class="fw-bolder"
+                            th:style="'color:' + (${ticket.status.toString()} == 'PURCHASED' ? '#40a02b' : (${ticket.status.toString()} == 'PENDING' ? '#df8e1d' : '#d20f39'))"
+                            th:text="${ticket.status}">
+                    </span>
+                </td>
+                <td>
+                    <a th:href="@{/tickets/view-ticket?ticketId={id}(id=${ticket.ticketId})}" class="btn btn-primary">
+                        <span class="bi bi-eye"></span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button th:if="${isReturnable}" type="submit" class="btn btn-danger">Request Refund</button>
+    </form>
 </div>
 
 <!-- jQuery and Bootstrap Bundle (includes Popper) -->
@@ -65,11 +135,62 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const orderId = document.querySelector('input[name="orderId"]').value;
+            const isTotalRefund = document.querySelector('input[name="isTotalRefund"]').checked;
+            const ticketCheckboxes = document.querySelectorAll('input[name="tickets"]:checked');
+            const tickets = Array.from(ticketCheckboxes).map(checkbox => parseInt(checkbox.value));
+
+            const data = {
+                tickets: tickets,
+                orderId: parseInt(orderId),
+                isTotalRefund: isTotalRefund,
+            };
+
+            fetch('/orders/request-refund', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    }
+                    throw new Error('Something went wrong');
+                })
+                .then(data => {
+                    console.log(data);
+                    // Handle success, e.g., show a success message
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    // Handle error, e.g., show an error message
+                });
+        });
+    });
+
     let priceElements = document.querySelectorAll('.price');
     priceElements.forEach(priceElement => {
         let price = priceElement.dataset.price;
         priceElement.textContent = Number(price).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
     });
+
+    function toggleTicketSelection() {
+        const isTotalRefundChecked = document.getElementById('totalRefund').checked;
+        document.querySelectorAll('.ticketCheckbox').forEach(checkbox => {
+            checkbox.disabled = isTotalRefundChecked;
+            if (isTotalRefundChecked) {
+                checkbox.checked = false;
+            }
+        });
+    }
+
     /*]]>*/
 </script>
 </body>
