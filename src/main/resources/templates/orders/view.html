@@ -19,6 +19,7 @@
     </h2>
 
     <h3>Order Information</h3>
+    <p>If there are any problems about your order, kindly contact support at <a href="mailto:support@vieticket.io.vn">support@vieticket.io.vn</a>.</p>
     <table class="table table-striped">
         <tr>
             <td>Total:</td>
@@ -41,7 +42,6 @@
 
     <div th:if="${refundOrder != null}">
         <h3>Refund Request Information</h3>
-
         <table class="table table-striped">
             <tr>
                 <td>Total:</td>
@@ -62,8 +62,8 @@
             </tr>
             <tr th:if="${refundOrder.status.toString() == 'APPROVED' || refundOrder.status.toString() == 'REJECTED'}">
                 <td>
-                    <span th:if="refundOrder.status.toString() == 'APPROVED'">Approved </span>
-                    <span th:if="refundOrder.status.toString() == 'REJECTED'">Rejected </span>
+                    <span th:if="${refundOrder.status.toString() == 'APPROVED'}">Approved </span>
+                    <span th:if="${refundOrder.status.toString() == 'REJECTED'}">Rejected </span>
                     on:
                 </td>
                 <td th:text="${refundOrder.approvedOn}"></td>
@@ -75,7 +75,8 @@
         </table>
     </div>
 
-    <p th:if="${!isReturnable}">Unfortunately, this order cannot be returned<span th:if="${refundOrder != null}"> more than one time</span>.
+    <p th:if="${!isReturnable}">
+        Unfortunately, this order cannot be returned.
     </p>
 
     <form action="/orders/request-refund" method="post">
@@ -167,10 +168,16 @@
                 .then(data => {
                     console.log(data);
                     // Handle success, e.g., show a success message
+                    alert('Refund request has been submitted');
                 })
                 .catch((error) => {
                     console.error('Error:', error);
-                    // Handle error, e.g., show an error message
+                    // Alert the error message from the response
+                    alert('Error: ' + error.message);
+                })
+                .finally(() => {
+                    // Reload the page after the request is completed
+                    location.reload();
                 });
         });
     });

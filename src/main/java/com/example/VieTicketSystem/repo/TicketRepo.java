@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.VieTicketSystem.model.entity.Order;
-import com.example.VieTicketSystem.model.entity.Seat;
 import org.springframework.stereotype.Repository;
 
 import com.example.VieTicketSystem.model.entity.Ticket;
@@ -97,6 +96,38 @@ public class TicketRepo {
             ps.executeBatch();
             ps.close();
         }
+    }
+
+    public void updateStatusByOrderIdAndStatus(int orderId, int status, int newStatus) throws Exception {
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+            PreparedStatement ps = con.prepareStatement("UPDATE Ticket SET status = ? WHERE order_id = ? AND status = ?");
+            ps.setInt(1, newStatus);
+            ps.setInt(2, orderId);
+            ps.setInt(3, status);
+            ps.executeUpdate();
+            ps.close();
+        }
+    }
+
+    public List<Integer> findSeatIdsByOrderIdAndStatus(int orderid, int status) throws SQLException {
+        List<Integer> seatIds = new ArrayList<>();
+
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+
+            PreparedStatement ps = con.prepareStatement("SELECT DISTINCT seat_id FROM Ticket WHERE order_id = ? AND status = ?");
+            ps.setInt(1, orderid);
+            ps.setInt(2, status);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                seatIds.add(rs.getInt("seat_id"));
+            }
+            rs.close();
+            ps.close();
+        }
+
+        return seatIds;
     }
 
     public List<Ticket> findByOrderId(int orderId) throws Exception {

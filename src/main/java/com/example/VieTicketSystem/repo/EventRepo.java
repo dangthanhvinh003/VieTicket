@@ -13,14 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.VieTicketSystem.model.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.example.VieTicketSystem.model.entity.Area;
-import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.dto.EventStatistics;
-import com.example.VieTicketSystem.model.entity.SeatMap;
-import com.example.VieTicketSystem.model.entity.User;
 
 @Repository
 public class EventRepo {
@@ -30,7 +27,7 @@ public class EventRepo {
 
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM Event WHERE event_id = ?";
     // KEEP WHITESPACE AFTER EACH CHUNK
-    private static final String SELECT_EVENT_BY_ORDER_ID = "SELECT E.event_id, E.name, E.start_date " +
+    private static final String SELECT_EVENT_BY_ORDER_ID = "SELECT E.event_id, E.name, E.start_date, E.organizer_id " +
             "FROM Event E " +
             "JOIN Area A ON E.event_id = A.event_id " +
             "JOIN `Row` R ON A.area_id = R.area_id " +
@@ -52,6 +49,7 @@ public class EventRepo {
                 event = new Event();
                 event.setEventId(rs.getInt("event_id"));
                 event.setName(rs.getString("name"));
+                event.setOrganizer(new Organizer() {{setUserId(rs.getInt("organizer_id"));}});
 
                 Timestamp timestamp = rs.getTimestamp("start_date");
                 event.setStartDate(timestamp == null ? null : timestamp.toLocalDateTime());

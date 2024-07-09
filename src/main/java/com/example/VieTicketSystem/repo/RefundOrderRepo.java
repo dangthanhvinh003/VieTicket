@@ -1,6 +1,5 @@
 package com.example.VieTicketSystem.repo;
 
-import com.example.VieTicketSystem.model.entity.Order;
 import com.example.VieTicketSystem.model.entity.RefundOrder;
 import org.springframework.stereotype.Repository;
 
@@ -50,10 +49,11 @@ public class RefundOrderRepo {
                     if (resultSet.next()) {
                         RefundOrder refundOrder = new RefundOrder();
 
-                        refundOrder.setOrder(new Order() {{setOrderId(orderId);}});
+                        refundOrder.setOrder(orderRepo.findById(resultSet.getInt("order_id")));
 
                         refundOrder.setStatus(RefundOrder.RefundStatus.fromInteger(resultSet.getInt("status")));
                         refundOrder.setTotal(resultSet.getInt("total"));
+                        refundOrder.setActualRefund(resultSet.getInt("actual_refund"));
 
                         Timestamp timestamp = resultSet.getTimestamp("created_on");
                         refundOrder.setCreatedOn(timestamp == null ? null : timestamp.toLocalDateTime());
@@ -70,6 +70,20 @@ public class RefundOrderRepo {
             }
         }
         return null;
+    }
+
+    public void saveApprovalStatus(RefundOrder refundOrder) throws SQLException {
+        String sql = "UPDATE RefundOrder SET status = ?, approved_on = ?, actual_refund = ? WHERE order_id = ?";
+
+        try (Connection connection = ConnectionPoolManager.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, refundOrder.getStatus().toInteger());
+                statement.setTimestamp(2, Timestamp.valueOf(refundOrder.getApprovedOn()));
+                statement.setInt(3, refundOrder.getActualRefund());
+                statement.setInt(4, refundOrder.getOrder().getOrderId());
+                statement.executeUpdate();
+            }
+        }
     }
 
     public List<RefundOrder> findUniqueRefundOrders(int status, int eventId) throws Exception {

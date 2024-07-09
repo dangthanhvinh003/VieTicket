@@ -6,6 +6,7 @@ import com.example.VieTicketSystem.repo.EventRepo;
 import com.example.VieTicketSystem.repo.OrderRepo;
 import com.example.VieTicketSystem.repo.RefundOrderRepo;
 import com.example.VieTicketSystem.repo.TicketRepo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -75,8 +76,8 @@ public class OrderController {
     public ResponseEntity<String> requestRefund(@RequestBody RefundRequestEntity refundRequestEntity) throws Exception {
 
         /*
-        *   This project should use some kind of database handler with transaction support in the future
-        */
+         *   This project should use some kind of database handler with transaction support in the future
+         */
 
         User user = (User) httpSession.getAttribute("activeUser");
         if (user == null) {
@@ -88,6 +89,11 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid request: Not your order");
         }
 
+        RefundOrder existingRefundOrder = refundOrderRepo.findByOrderId(refundRequestEntity.orderId);
+        if (existingRefundOrder != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid request: Refund request already exists.");
+        }
+
         // Check business rule: Refund requests must be made at least 3 day before event start date
         Event event = eventRepo.findEventByOrderId(refundRequestEntity.orderId);
         if (LocalDateTime.now().isAfter(event.getStartDate().minusDays(3))) {
@@ -95,9 +101,17 @@ public class OrderController {
         }
 
         if (refundRequestEntity.isTotalRefund()) {
+            RefundOrder refundOrder = new RefundOrder();
+            refundOrder.setCreatedOn(LocalDateTime.now());
+            refundOrder.setOrder(order);
+            refundOrder.setStatus(RefundOrder.RefundStatus.CREATED);
+            refundOrder.setTotal((int) order.getTotal());
+
             // Nah I won't do rollback transaction on error and stuffs. Let some kind of library do it.
             ticketRepo.updateStatusByOrderId(refundRequestEntity.getOrderId(), Ticket.TicketStatus.PENDING_REFUND.toInteger());
             orderRepo.updateStatus(refundRequestEntity.getOrderId(), Order.PaymentStatus.PENDING_TOTAL_REFUND);
+            refundOrderRepo.save(refundOrder);
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
@@ -167,16 +181,14 @@ public class OrderController {
         }
 
         // At this point, the payment status should be success.
-        model.addAttribute("refundOrder", null);
-        if (order.isPendingRefund() || order.isRefunded()) {
-            model.addAttribute("refundOrder", refundOrderRepo.findByOrderId(orderId));
-        }
+        RefundOrder refundOrder = refundOrderRepo.findByOrderId(orderId);
+        model.addAttribute("refundOrder", refundOrder);
 
-        boolean isReturnable = !LocalDateTime.now().isAfter(event.getStartDate().minusDays(3)) && order.getStatus() == Order.PaymentStatus.SUCCESS;
+        boolean isReturnable = !LocalDateTime.now().isAfter(event.getStartDate().minusDays(3)) && refundOrder == null;
         model.addAttribute("isReturnable", isReturnable);
 
         model.addAttribute("utils", new Utils());
-        return "orders/view"; // return the view name
+        return "orders/view";
     }
 
     public static class Utils {
@@ -193,7 +205,11 @@ public class OrderController {
     @Data
     public static class RefundRequestEntity {
         private List<Integer> tickets;
+
+        @JsonProperty("orderId")
         private int orderId;
+
+        @JsonProperty("isTotalRefund")
         private boolean isTotalRefund;
     }
 }
