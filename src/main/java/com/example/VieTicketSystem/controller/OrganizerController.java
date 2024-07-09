@@ -10,29 +10,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.example.VieTicketSystem.model.entity.*;
+import com.example.VieTicketSystem.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.dto.AdditionalData;
-import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.dto.EventStatistics;
-import com.example.VieTicketSystem.model.entity.Row;
-import com.example.VieTicketSystem.model.entity.Seat;
-import com.example.VieTicketSystem.model.entity.SeatMap;
-import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.repo.AreaRepo;
-import com.example.VieTicketSystem.repo.EventRepo;
-import com.example.VieTicketSystem.repo.OrganizerRepo;
-import com.example.VieTicketSystem.repo.RowRepo;
-import com.example.VieTicketSystem.repo.SeatMapRepo;
-import com.example.VieTicketSystem.repo.SeatRepo;
 import com.example.VieTicketSystem.service.EmailService;
 import com.example.VieTicketSystem.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +53,10 @@ public class OrganizerController {
     Cloudinary cloudinary;
     @Autowired
     EmailService emailService;
+    @Autowired
+    private HttpSession httpSession;
+    @Autowired
+    private RefundOrderRepo refundOrderRepo;
 
     @GetMapping(value = ("/createEvent"))
     public String createEventPage(HttpSession httpSession) {
@@ -77,6 +74,7 @@ public class OrganizerController {
         session.setAttribute("IdEventTolistAllUser", eventId);
         EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(eventId);
         Map<String, Double> dailyRevenueMap = eventRepo.getDailyRevenueByEventId(eventId);
+        model.addAttribute("eventId", eventId);
         model.addAttribute("eventStatistics", eventStatistics);
         model.addAttribute("dailyStatistics", dailyRevenueMap);
         return "statistics";
@@ -428,5 +426,105 @@ public class OrganizerController {
         }
 
         return "redirect:/eventUsers";
+    }
+
+    /*
+     *  This method is used to view the list of users who have purchased tickets for an event
+     */
+
+    @GetMapping({"/organizer/refund-list", "organizer/refund-list/"})
+    public String viewListRefundOrders(@RequestParam int eventId) {
+        return "redirect:/organizer/refund-list/to-approve?eventId=" + eventId;
+    }
+
+    @GetMapping({"/organizer/refund-list/to-approve", "organizer/refund-list/to-approve/"})
+    public String viewListRefundOrdersToApprove(@RequestParam int eventId, Model model) throws Exception {
+
+        // Check if user exists and is an organizer
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ORGANIZER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the authority to access this functionality.");
+        }
+
+        // Check if event exists and is owned by organizer
+        Event event = eventRepo.findById(eventId);
+        if (event == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid request: Event not found.");
+        }
+        if (event.getOrganizer().getUserId() != user.getUserId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid request: Not your event");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.CREATED.toInteger(), eventId);
+        model.addAttribute("refundOrders", refundOrders);
+        model.addAttribute("title", "Refund Orders to Approve");
+        model.addAttribute("eventId", eventId);
+
+        return "organizer/refund";
+    }
+
+    @GetMapping({"/organizer/refund-list/approved", "organizer/refund-list/approved/"})
+    public String viewListApprovedRefundOrders(@RequestParam int eventId, Model model) throws Exception {
+
+        // Check if user exists and is an organizer
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ORGANIZER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the authority to access this functionality.");
+        }
+
+        // Check if event exists and is owned by organizer
+        Event event = eventRepo.findById(eventId);
+        if (event == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid request: Event not found.");
+        }
+        if (event.getOrganizer().getUserId() != user.getUserId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid request: Not your event");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.APPROVED.toInteger(), eventId);
+        refundOrders.addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.SUCCESS.toInteger(), eventId));
+        refundOrders.addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.PENDING.toInteger(), eventId));
+        refundOrders.addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.FAILED.toInteger(), eventId));
+
+        model.addAttribute("refundOrders", refundOrders);
+        model.addAttribute("title", "Approved Refund Orders");
+        model.addAttribute("eventId", eventId);
+
+        return "organizer/refund";
+    }
+
+    @GetMapping({"/organizer/refund-list/rejected", "organizer/refund-list/rejected/"})
+    public String viewListRejectedRefundOrders(@RequestParam int eventId, Model model) throws Exception {
+
+        // Check if user exists and is an organizer
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ORGANIZER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the authority to access this functionality.");
+        }
+
+        // Check if event exists and is owned by organizer
+        Event event = eventRepo.findById(eventId);
+        if (event == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid request: Event not found.");
+        }
+        if (event.getOrganizer().getUserId() != user.getUserId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid request: Not your event");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.REJECTED.toInteger(), eventId);
+        model.addAttribute("refundOrders", refundOrders);
+        model.addAttribute("title", "Rejected Refund Orders");
+        model.addAttribute("eventId", eventId);
+
+        return "organizer/refund";
     }
 }

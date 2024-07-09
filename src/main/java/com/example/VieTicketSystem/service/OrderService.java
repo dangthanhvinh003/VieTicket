@@ -179,10 +179,16 @@ public class OrderService {
         return emailContent.toString();
     }
 
-    // Create refund order and request refund from VNPay
-    public RefundOrder createRefundOrder(Order order, long amount) throws Exception {
+    // Create refund order and request refund from VNPay. This method is no longer relevant.
+    // Scheduled to remove in later commits
+    @Deprecated
+    private RefundOrder initiateRefund(Order order, long amount) throws Exception {
+        if (!order.isPendingRefund()) {
+            throw new RuntimeException("Order is not in pending refund state.");
+        }
+
         if (amount > order.getTotal()) {
-            throw new IllegalArgumentException("Refund amount cannot exceed the total amount of the order");
+            throw new RuntimeException("Refund amount cannot exceed the total amount of the order");
         }
 
         // Get VNPay data
@@ -195,10 +201,6 @@ public class OrderService {
         refundOrder.setCreatedOn(LocalDateTime.now());
         refundOrder.setOrder(order);
         refundOrder.setStatus(RefundOrder.RefundStatus.PENDING);
-
-        // Set order status to PENDING_REFUND
-        order.setStatus(Order.PaymentStatus.PENDING_REFUND);
-        orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.PENDING_REFUND);
 
         // Save refund order
         refundOrderRepo.save(refundOrder);
@@ -224,10 +226,11 @@ public class OrderService {
                     // Check if the refund is successful
                     // Refund is unavailable in the sandbox environment; therefore, we always set the refund status to SUCCESS
                     if (true || vnPayService.processResponse(responseMap) == VNPayService.VNPayStatus.SUCCESS) {
-                        order.setStatus(Order.PaymentStatus.REFUNDED);
+                        // TODO: Update the logic here
+                        order.setStatus(Order.PaymentStatus.TOTALLY_REFUNDED);
                         refundOrder.setStatus(RefundOrder.RefundStatus.SUCCESS);
                         try {
-                            orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.REFUNDED);
+                            orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.TOTALLY_REFUNDED);
                             ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.RETURNED.toInteger());
                             seatRepo.updateSeats(ticketRepo.findByOrderId(order.getOrderId()).stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.AVAILABLE);
                         } catch (Exception e) {

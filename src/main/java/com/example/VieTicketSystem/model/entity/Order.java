@@ -21,12 +21,22 @@ public class Order {
     private String vnpayData;
     private PaymentStatus status;
 
+    public boolean isPendingRefund() {
+        return status == PaymentStatus.PENDING_PARTIAL_REFUND || status == PaymentStatus.PENDING_TOTAL_REFUND;
+    }
+
+    public boolean isRefunded() {
+        return status == PaymentStatus.TOTALLY_REFUNDED || status == PaymentStatus.PARTIALLY_REFUNDED;
+    }
+
     public enum PaymentStatus {
         SUCCESS(0),
         FAILED(1),
         PENDING(2),
-        REFUNDED(3),
-        PENDING_REFUND(4);
+        TOTALLY_REFUNDED(3),
+        PARTIALLY_REFUNDED(4),
+        PENDING_TOTAL_REFUND(5),
+        PENDING_PARTIAL_REFUND(6);
 
         private final int value;
 

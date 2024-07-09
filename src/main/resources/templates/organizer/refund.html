@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" data-bs-theme="dark" lang="en">
+<head>
+    <title>Danh sách người dùng</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            ClassicEditor
+                .create(document.querySelector('#editor'))
+                .then(editor => {
+                    // Update the hidden textarea with the editor content
+                    document.querySelector('form').addEventListener('submit', function () {
+                        document.querySelector('#hiddenDescription').value = editor.getData();
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    </script>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="text-start">
+            <a th:href="@{/viewMyListEvent}" class="btn btn-outline-primary">Go back</a>
+        </div>
+
+        <div class="btn-group text-end" role="group" aria-label="Basic example">
+            <a th:href="@{/organizer/refund-list(to-approve=true,eventId=${eventId})}" class="btn btn-outline-primary">To
+                approve</a>
+            <a th:href="@{/organizer/refund-list/approved(eventId=${eventId})}" class="btn btn-outline-primary">Approved</a>
+            <a th:href="@{/organizer/refund-list/rejected(eventId=${eventId})}" class="btn btn-outline-primary">Rejected</a>
+        </div>
+    </div>
+
+    <h2 class="text-center mt-4 mb-4" th:text="${title}"></h2>
+
+    <p class="text-center fw-bold" th:if="${refundOrders == null || refundOrders.isEmpty()}">There's nothing here.</p>
+
+    <table th:if="${refundOrders != null && !refundOrders.isEmpty()}" class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>
+                Order ID
+            </th>
+            <th>
+                User
+            </th>
+            <th>
+                Total
+            </th>
+            <th>
+                Timestamps
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="refundOrder : ${refundOrders}">
+            <td th:text="${refundOrder.order.orderId}"></td>
+            <td>
+                <p><span class="fw-bold">Full Name:</span> <span th:text="${refundOrder.order.user.fullName}"></span>
+                </p>
+                <p><span class="fw-bold">Email:</span> <span th:text="${refundOrder.order.user.email}"></span></p>
+                <p><span class="fw-bold">Phone:</span> <span th:text="${refundOrder.order.user.phone}"></span></p>
+            </td>
+            <td>
+                <p><span class="fw-bold">Order:</span> <span class="price" th:attr="data-price=${refundOrder.order.total}"></span></p>
+                <p><span class="fw-bold">Refund:</span> <span class="price" th:attr="data-price=${refundOrder.total}"></span></p>
+            </td>
+            <td>
+                <p><span class="fw-bold">Purchased:</span> <span th:text="${refundOrder.order.date}"></span></p>
+                <p><span class="fw-bold">Requested:</span> <span th:text="${refundOrder.createdOn}"></span></p>
+                <p th:if="${refundOrder.approvedOn != null}">
+                    <span class="fw-bold" th:if="${refundOrder.status == 'APPROVED'}">Approved:</span>
+                    <span class="fw-bold" th:if="${refundOrder.status == 'REJECTED'}">Rejected:</span>
+                    <span th:text="${refundOrder.approvedOn}"></span>
+                </p>
+                <p th:if="${refundOrder.refundedOn != null}"><span class="fw-bold">Refunded:</span> <span th:text="${refundOrder.refundedOn}"></span></p>
+            </td>
+            <td th:text="${refundOrder.status}"></td>
+            <td>
+                <button title="Approve" aria-label="Approve" class="btn btn-outline-success"><i class="bi bi-check-lg"></i>
+                </button>
+                <button title="Reject" aria-label="Reject" class="btn btn-outline-danger"><i class="bi bi-x-lg"></i>
+                </button>
+                <button title="View Detail" aria-label="View Detail" class="btn btn-outline-primary"><i
+                        class="bi bi-eye-fill"></i></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Custom Script to collect emails and set hidden input value -->
+<script>
+    let priceElements = document.querySelectorAll('.price');
+    priceElements.forEach(priceElement => {
+        let price = priceElement.dataset.price;
+        priceElement.textContent = Number(price).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
+    });
+</script>
+</body>
+</html>

@@ -76,7 +76,7 @@ public class AuthFilter implements Filter {
             chain.doFilter(request, response);
         } else if (isUser(user)
                 && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                        || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets") || requestURI.startsWith("/orders"))
+                || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets") || requestURI.startsWith("/orders"))
                 || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
@@ -94,23 +94,24 @@ public class AuthFilter implements Filter {
                 if (organizer.isActive() && requestURI.startsWith("/createEvent")
                         || requestURI.startsWith("/inactive-account")
                         || (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                                || requestURI.startsWith("/upload") || requestURI.startsWith("/upload/poster")
-                                || requestURI.startsWith("/upload/banner") || requestURI.startsWith("/add-event")
-                                || requestURI.startsWith("createEvent")
-                                || (requestURI.startsWith("/seatMap") && eventCreated)
-                                || (requestURI.startsWith("/seatMap/SeatMapEditor") && eventCreated)
-                                || (requestURI.startsWith("/seatMap/NoSeatMap") && eventCreated)
-                                || (requestURI.startsWith("/seatMap/SeatMapBeta") && eventCreated)
-                                || requestURI.startsWith("/viewMyListEvent") || requestURI.startsWith("/allEvents")
-                                || requestURI.startsWith("/pendingEvents") || requestURI.startsWith("/approvedEvents")
-                                || requestURI.startsWith("/passedEvents") || requestURI.startsWith("/seatMapEdit")
-                                || requestURI.startsWith("/seatMapDelete") || requestURI.startsWith("/noModelEditPage")
-                                || (requestURI.startsWith("/seatMap/SeatMapEditor"))
-                                || (requestURI.startsWith("/seatMap/NoSeatMapEdit"))
-                                || (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
-                                || requestURI.startsWith("/editSuccess"))
+                        || requestURI.startsWith("/upload") || requestURI.startsWith("/upload/poster")
+                        || requestURI.startsWith("/upload/banner") || requestURI.startsWith("/add-event")
+                        || requestURI.startsWith("createEvent")
+                        || (requestURI.startsWith("/seatMap") && eventCreated)
+                        || (requestURI.startsWith("/seatMap/SeatMapEditor") && eventCreated)
+                        || (requestURI.startsWith("/seatMap/NoSeatMap") && eventCreated)
+                        || (requestURI.startsWith("/seatMap/SeatMapBeta") && eventCreated)
+                        || requestURI.startsWith("/viewMyListEvent") || requestURI.startsWith("/allEvents")
+                        || requestURI.startsWith("/pendingEvents") || requestURI.startsWith("/approvedEvents")
+                        || requestURI.startsWith("/passedEvents") || requestURI.startsWith("/seatMapEdit")
+                        || requestURI.startsWith("/seatMapDelete") || requestURI.startsWith("/noModelEditPage")
+                        || (requestURI.startsWith("/seatMap/SeatMapEditor"))
+                        || (requestURI.startsWith("/seatMap/NoSeatMapEdit"))
+                        || (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
+                        || requestURI.startsWith("/editSuccess"))
                         || requestURI.startsWith("/eventEditPage") || requestURI.startsWith("/eventEditSubmit")
-                        || requestURI.startsWith("/viewStatistics")|| requestURI.startsWith("/eventUsers") || requestURI.startsWith("/sendMailToAllUser")) {
+                        || requestURI.startsWith("/viewStatistics") || requestURI.startsWith("/eventUsers")
+                        || requestURI.startsWith("/sendMailToAllUser") || requestURI.startsWith("/organizer")) {
                     if (requestURI.startsWith("/createEvent")) {
                         session.setAttribute("eventCreated", true);
                     }

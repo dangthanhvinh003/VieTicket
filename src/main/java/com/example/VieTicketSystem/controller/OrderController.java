@@ -1,19 +1,18 @@
 package com.example.VieTicketSystem.controller;
 
 import com.example.VieTicketSystem.model.dto.OrderWithEvent;
-import com.example.VieTicketSystem.model.entity.Order;
-import com.example.VieTicketSystem.model.entity.Ticket;
-import com.example.VieTicketSystem.model.entity.User;
+import com.example.VieTicketSystem.model.entity.*;
 import com.example.VieTicketSystem.repo.EventRepo;
 import com.example.VieTicketSystem.repo.OrderRepo;
+import com.example.VieTicketSystem.repo.RefundOrderRepo;
 import com.example.VieTicketSystem.repo.TicketRepo;
 import jakarta.servlet.http.HttpSession;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -30,12 +29,14 @@ public class OrderController {
     private final OrderRepo orderRepo;
     private final EventRepo eventRepo;
     private final TicketRepo ticketRepo;
+    private final RefundOrderRepo refundOrderRepo;
 
-    public OrderController(HttpSession httpSession, OrderRepo orderRepo, EventRepo eventRepo, TicketRepo ticketRepo) {
+    public OrderController(HttpSession httpSession, OrderRepo orderRepo, EventRepo eventRepo, TicketRepo ticketRepo, RefundOrderRepo refundOrderRepo) {
         this.httpSession = httpSession;
         this.orderRepo = orderRepo;
         this.eventRepo = eventRepo;
         this.ticketRepo = ticketRepo;
+        this.refundOrderRepo = refundOrderRepo;
     }
 
     @GetMapping({"/", ""})
@@ -70,6 +71,69 @@ public class OrderController {
         return "orders/list"; // return the view name
     }
 
+    @PostMapping("/request-refund")
+    public ResponseEntity<String> requestRefund(@RequestBody RefundRequestEntity refundRequestEntity) throws Exception {
+
+        /*
+        *   This project should use some kind of database handler with transaction support in the future
+        */
+
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        Order order = orderRepo.findById(refundRequestEntity.orderId);
+        if (order.getUser().getUserId() != user.getUserId()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid request: Not your order");
+        }
+
+        // Check business rule: Refund requests must be made at least 3 day before event start date
+        Event event = eventRepo.findEventByOrderId(refundRequestEntity.orderId);
+        if (LocalDateTime.now().isAfter(event.getStartDate().minusDays(3))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid request: Refund request must be made at least 3 days before event start date.");
+        }
+
+        if (refundRequestEntity.isTotalRefund()) {
+            // Nah I won't do rollback transaction on error and stuffs. Let some kind of library do it.
+            ticketRepo.updateStatusByOrderId(refundRequestEntity.getOrderId(), Ticket.TicketStatus.PENDING_REFUND.toInteger());
+            orderRepo.updateStatus(refundRequestEntity.getOrderId(), Order.PaymentStatus.PENDING_TOTAL_REFUND);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        List<Ticket> tickets = new ArrayList<>(refundRequestEntity.tickets.size());
+        int total = 0;
+
+        for (Integer ticketId : refundRequestEntity.tickets) {
+            Ticket ticket = ticketRepo.findById(ticketId);
+            if (ticket == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request: ticketId not found.");
+            }
+            if (ticket.getOrder().getOrderId() != order.getOrderId()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request: ticket and order mismatch.");
+            }
+            if (ticket.getStatus() != Ticket.TicketStatus.PURCHASED) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request: invalid ticket status (is not PURCHASED).");
+            }
+
+            tickets.add(ticket);
+            total += Math.round(ticket.getSeat().getTicketPrice());
+        }
+
+        RefundOrder refundOrder = new RefundOrder();
+        refundOrder.setCreatedOn(LocalDateTime.now());
+        refundOrder.setOrder(order);
+        refundOrder.setStatus(RefundOrder.RefundStatus.CREATED);
+        refundOrder.setTotal(total);
+
+        List<Integer> ticketIds = tickets.stream().map(Ticket::getTicketId).toList();
+        ticketRepo.setStatusInBulk(ticketIds, Ticket.TicketStatus.PENDING_REFUND.toInteger());
+        orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.PENDING_PARTIAL_REFUND);
+        refundOrderRepo.save(refundOrder);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/view")
     public String viewOrder(Model model,
                             @RequestParam int orderId,
@@ -86,6 +150,9 @@ public class OrderController {
         Order order = orderRepo.findById(orderId);
         model.addAttribute("order", order);
 
+        Event event = eventRepo.findEventByOrderId(orderId);
+        model.addAttribute("event", event);
+
         List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
         model.addAttribute("tickets", tickets);
 
@@ -95,11 +162,19 @@ public class OrderController {
         if (order.getUser().getUserId() != user.getUserId()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not your Order");
         }
-        if (!order.getStatus().equals(Order.PaymentStatus.SUCCESS)) {
+        if (order.getStatus() == Order.PaymentStatus.FAILED || order.getStatus() == Order.PaymentStatus.PENDING) {
             return "purchase/failure";
         }
 
-        model.addAttribute("order", order);
+        // At this point, the payment status should be success.
+        model.addAttribute("refundOrder", null);
+        if (order.isPendingRefund() || order.isRefunded()) {
+            model.addAttribute("refundOrder", refundOrderRepo.findByOrderId(orderId));
+        }
+
+        boolean isReturnable = !LocalDateTime.now().isAfter(event.getStartDate().minusDays(3)) && order.getStatus() == Order.PaymentStatus.SUCCESS;
+        model.addAttribute("isReturnable", isReturnable);
+
         model.addAttribute("utils", new Utils());
         return "orders/view"; // return the view name
     }
@@ -113,5 +188,12 @@ public class OrderController {
                 return dateTime.format(formatter);
             }
         }
+    }
+
+    @Data
+    public static class RefundRequestEntity {
+        private List<Integer> tickets;
+        private int orderId;
+        private boolean isTotalRefund;
     }
 }
