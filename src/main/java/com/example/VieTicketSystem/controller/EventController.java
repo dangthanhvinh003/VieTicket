@@ -449,7 +449,7 @@ public class EventController {
             .collect(Collectors.toList());
     model.addAttribute("eventList", filteredEvents);
     model.addAttribute("pageType", "category");
-    return "searchResults";
+    return "public/search-results";
     }
 
     @GetMapping(value = "/showAllEvents")
@@ -457,7 +457,7 @@ public class EventController {
     List<Event> eventList = eventRepo.getAllEvents();
     model.addAttribute("eventList", eventList);
     model.addAttribute("pageType", "all");
-    return "searchResults";
+    return "public/search-results";
     }
 
 }
