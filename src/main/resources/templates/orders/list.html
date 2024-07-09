@@ -67,7 +67,7 @@
         </thead>
         <tbody>
         <tr th:each="order, stat : ${orders}">
-            <td th:text="${order.event.name}"></td>
+            <td th:text="${order.event == null ? 'No name' : order.event.name}"></td>
             <td th:text="${utils.formatDate(order.order.date)}"></td>
             <td class="text-end"
                 th:text="${#numbers.formatDecimal(order.order.total, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>

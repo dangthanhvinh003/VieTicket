@@ -91,7 +91,7 @@ public class PurchaseTicketController {
             model.addAttribute("chooseNumberOfSeats", false);
             model.addAttribute("seatMap", seatMap);
             if (seatMap.getMapFile() != null) {
-                return "purchase/selectEditor";
+                return "purchase/select-editor";
             }
         }
 
@@ -254,11 +254,7 @@ public class PurchaseTicketController {
         return "purchase/success";
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
+    @Data
     public static class TicketSelection {
         private List<Integer> seats;
         private int eventId;

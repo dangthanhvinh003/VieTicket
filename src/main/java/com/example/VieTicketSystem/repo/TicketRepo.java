@@ -87,17 +87,49 @@ public class TicketRepo {
         }
     }
 
-    public void setStatusInBulk(List<Integer> ticketIds, int failureStatus) throws Exception {
+    public void setStatusInBulk(List<Integer> ticketIds, int status) throws Exception {
         try (Connection con = ConnectionPoolManager.getConnection()) {
             PreparedStatement ps = con.prepareStatement(UPDATE_FAILURE_IN_BULK_SQL);
             for (Integer ticketId : ticketIds) {
-                ps.setInt(1, failureStatus);
+                ps.setInt(1, status);
                 ps.setInt(2, ticketId);
                 ps.addBatch();
             }
             ps.executeBatch();
             ps.close();
         }
+    }
+
+    public void updateStatusByOrderIdAndStatus(int orderId, int status, int newStatus) throws Exception {
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+            PreparedStatement ps = con.prepareStatement("UPDATE Ticket SET status = ? WHERE order_id = ? AND status = ?");
+            ps.setInt(1, newStatus);
+            ps.setInt(2, orderId);
+            ps.setInt(3, status);
+            ps.executeUpdate();
+            ps.close();
+        }
+    }
+
+    public List<Integer> findSeatIdsByOrderIdAndStatus(int orderid, int status) throws SQLException {
+        List<Integer> seatIds = new ArrayList<>();
+
+        try (Connection con = ConnectionPoolManager.getConnection()) {
+
+            PreparedStatement ps = con.prepareStatement("SELECT DISTINCT seat_id FROM Ticket WHERE order_id = ? AND status = ?");
+            ps.setInt(1, orderid);
+            ps.setInt(2, status);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                seatIds.add(rs.getInt("seat_id"));
+            }
+            rs.close();
+            ps.close();
+        }
+
+        return seatIds;
     }
 
     public List<Ticket> findByOrderId(int orderId) throws Exception {

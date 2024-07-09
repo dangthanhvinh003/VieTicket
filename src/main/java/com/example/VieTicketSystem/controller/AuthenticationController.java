@@ -3,10 +3,11 @@ package com.example.VieTicketSystem.controller;
 import com.example.VieTicketSystem.config.JwtUtil;
 import com.example.VieTicketSystem.service.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,11 +32,18 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody Map<String, String> payload, HttpServletResponse response) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody Map<String, String> payload) {
         String username = payload.get("username");
         String password = payload.get("password");
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (BadCredentialsException e) {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("success", false);
+            responseBody.put("message", "Invalid login. Please try again.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
+        }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         final String jwt = jwtUtil.generateToken(userDetails);

@@ -62,9 +62,12 @@ public class AuthFilter implements Filter {
         if ((requestURI.equals("/auth/login") || requestURI.equals("/auth/login/oauth2/google") || requestURI.isEmpty()
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
-                || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event") || requestURI.equals("/eventsByCategory")
-                || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent") || requestURI.equals("/showAllEvents")
-                || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent") || requestURI.startsWith("/eventsListFragment")
+                || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event")
+                || requestURI.equals("/eventsByCategory")
+                || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent")
+                || requestURI.equals("/showAllEvents")
+                || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent")
+                || requestURI.startsWith("/eventsListFragment")
                 || requestURI.startsWith("/api")) && !isUnverified) {
             chain.doFilter(request, response);
             return;
@@ -77,7 +80,7 @@ public class AuthFilter implements Filter {
         } else if (isUser(user)
                 && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
                         || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))
-                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase") 
+                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase")
                 || requestURI.startsWith("/orders") || requestURI.startsWith("/orders/rating")
                 || requestURI.startsWith("/orders/rating-exists")) {
             // Người dùng có role USER chỉ được truy cập trang search
@@ -110,9 +113,12 @@ public class AuthFilter implements Filter {
                                 || (requestURI.startsWith("/seatMap/SeatMapEditor"))
                                 || (requestURI.startsWith("/seatMap/NoSeatMapEdit"))
                                 || (requestURI.startsWith("/seatMap/SeatMapBetaEdit"))
-                                || requestURI.startsWith("/editSuccess"))
+                                || requestURI.startsWith("/editSuccess")
+                                || requestURI.startsWith("/createEventSuccess"))
                         || requestURI.startsWith("/eventEditPage") || requestURI.startsWith("/eventEditSubmit")
-                        || requestURI.startsWith("/viewStatistics")|| requestURI.startsWith("/eventUsers") || requestURI.startsWith("/sendMailToAllUser")) {
+                        || requestURI.startsWith("/viewStatistics") || requestURI.startsWith("/eventUsers")
+                        || requestURI.startsWith("/organizer")
+                        || requestURI.startsWith("/sendMailToAllUser")) {
                     if (requestURI.startsWith("/createEvent")) {
                         session.setAttribute("eventCreated", true);
                     }

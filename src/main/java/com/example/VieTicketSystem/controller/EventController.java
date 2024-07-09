@@ -98,7 +98,7 @@ public class EventController {
 
     @GetMapping(value = ("/seatMap"))
     public String SeatMapPage() {
-        return "seatMap";
+        return "event/create/seatmap";
     }
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
@@ -119,12 +119,12 @@ public class EventController {
             // rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         seatRepo.addSeats(seatsForRow);
-        return "createEventSuccess";
+        return "event/create/success";
     }
 
     @GetMapping(value = ("/seatMap/SeatMapEditor"))
     public String SeatMapEditor() {
-        return "SeatMapEditor";
+        return "seatmap/editor";
     }
 
     @PostMapping(value = "/seatMap/SeatMapEditor")
@@ -236,12 +236,12 @@ public class EventController {
 
     @GetMapping(value = { "/createEventSuccess" })
     public String createEventSuccessPage() {
-        return "createEventSuccess";
+        return "event/create/success";
     }
 
     @GetMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage() {
-        return "SeatMapBeta";
+        return "seatmap/beta";
     }
 
     @PostMapping(value = ("/seatMap/SeatMapBeta"))
@@ -420,7 +420,7 @@ public class EventController {
         model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
 
         // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
-        return "viewdetailEvent";
+        return "public/event-detail";
     }
 
     @GetMapping("/viewAllEvent")
@@ -429,7 +429,7 @@ public class EventController {
         model.addAttribute("events", events);
 
         // Chuyển hướng tới trang hiển thị danh sách sự kiện
-        return "searchResults"; // Tên của template hiển thị danh sách sự kiện
+        return "public/search-results"; // Tên của template hiển thị danh sách sự kiện
     }
 
     @GetMapping("/eventUsers")
@@ -438,7 +438,7 @@ public class EventController {
         List<User> users = eventRepo.getUsersWithTicketsByEventId(eventId);
         model.addAttribute("users", users);
 
-        return "eventUsers"; // Tên của template hiển thị danh sách người dùng
+        return "event/view/tickets-bought"; // Tên của template hiển thị danh sách người dùng
     }
 
     @GetMapping(value = "/eventsByCategory")

@@ -106,11 +106,15 @@ CREATE TABLE `Row`
 
 CREATE TABLE RefundOrder
 (
-    order_id   INT AUTO_INCREMENT
+    order_id      INT AUTO_INCREMENT
         PRIMARY KEY,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
-    created_on TIMESTAMP,
-    status     TINYINT
+    total         INT,
+    created_on    TIMESTAMP,
+    status        TINYINT,
+    approved_on   TIMESTAMP,
+    refunded_on   TIMESTAMP,
+    actual_refund INT
 );
 
 CREATE TABLE Seat
