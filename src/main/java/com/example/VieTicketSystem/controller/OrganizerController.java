@@ -1,7 +1,5 @@
 package com.example.VieTicketSystem.controller;
 
-import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cloudinary.Cloudinary;
@@ -260,17 +257,6 @@ public class OrganizerController {
         ObjectMapper objectMapper = new ObjectMapper();
         AdditionalData additionalData = objectMapper.readValue(additionalDataJson, AdditionalData.class);
 
-        // Sử dụng dữ liệu JSON (ví dụ: in ra để kiểm tra)
-        // System.out.println("Total Selected Seats: " +
-        // additionalData.getTotalSelectedSeats());
-        // System.out.println("Total VIP Seats: " + additionalData.getTotalVIPSeats());
-        // System.out.println("Selected Seats: " + additionalData.getSelectedSeats());
-        // System.out.println("VIP Seats: " + additionalData.getVipSeats());
-        // System.out.println("Normal Price: " + additionalData.getNormalPrice());
-        // System.out.println("VIP Price: " + additionalData.getVipPrice());
-        // // add 1 event
-        // Event event = (Event) httpSession.getAttribute("newEvent");
-        // Event event2 = eventRepo.get(event.getName());
         int idNewEvent = (int) httpSession.getAttribute("eventIdEdit");
         String imageURL1 = fileUpload.uploadFileSeatMap(multipartFile1);
         seatMapRepo.addSeatMap(idNewEvent, "SeatMapBeta", imageURL1);
