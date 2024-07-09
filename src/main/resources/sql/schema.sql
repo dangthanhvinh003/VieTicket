@@ -298,13 +298,15 @@ INNER JOIN `Order` o ON t.order_id = o.order_id
 WHERE t.ticket_id = 4;
 
 --@block
-DELETE FROM Rating
-WHERE order_id = 2;
+SELECT rating_id FROM Rating WHERE order_id = 2
 
 --@block
-
-SELECT organizer_id, AVG(star) AS rating
-FROM Rating
-WHERE organizer_id = ?
-GROUP BY organizer_id;
+SELECT e.organizer_id 
+FROM `Order` o
+INNER JOIN Ticket t ON o.order_id = t.order_id
+INNER JOIN Seat s ON t.seat_id = s.seat_id  
+INNER JOIN `Row` r ON s.row_id = r.row_id  
+INNER JOIN Area a ON r.area_id = a.area_id 
+INNER JOIN `Event` e ON a.event_id = e.event_id 
+WHERE o.order_id = 2
 

@@ -19,49 +19,6 @@
         .checked-in {
             color: orange;
         }
-        /* CSS cho pop-up đánh giá */
-        .popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .popup-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            position: relative;
-        }
-
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .stars {
-            margin-top: 10px;
-        }
-
-        .star {
-            font-size: 30px;
-            cursor: pointer;
-            color: gray;
-        }
-
-        .star:hover,
-        .star.selected {
-            color: gold;
-        }
     </style>
 </head>
 <body>
@@ -78,99 +35,11 @@
             <img th:src="'data:image/png;base64,'+${qrCode}">
             <p th:text="${ticket.qrCode}"></p>
             <p>Purchase status: <span th:text="${ticket.status}" th:classappend="${ticket.status.toString().toLowerCase().replace('_', '-')}"></span></p>
-            <!-- Nút đánh giá -->
-            <button id="rateButton" class="btn btn-primary mt-3">Rating</button>
         </div>
         <div class="col-md-6">
             <!-- You can add more content here if needed -->
         </div>
     </div>
 </div>
-
-<!-- Pop-up đánh giá -->
-<div id="ratingPopup" class="popup">
-    <div class="popup-content">
-        <span class="close">&times;</span>
-        <h2>Your Rating</h2>
-        <div class="stars">
-            <span class="star" data-value="1">&#9733;</span>
-            <span class="star" data-value="2">&#9733;</span>
-            <span class="star" data-value="3">&#9733;</span>
-            <span class="star" data-value="4">&#9733;</span>
-            <span class="star" data-value="5">&#9733;</span>
-        </div>
-        <button id="submitRating" class="btn btn-primary mt-3">Submit</button>
-    </div>
-</div>
-
-<!-- Bootstrap JS and jQuery -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const rateButton = document.getElementById('rateButton');
-        const ratingPopup = document.getElementById('ratingPopup');
-        const closeButton = document.querySelector('.close');
-        const stars = document.querySelectorAll('.star');
-        const submitButton = document.getElementById('submitRating');
-
-        let selectedRating = 0;
-
-        // Get ticket_id from query parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const ticketId = urlParams.get('ticketId');
-
-        rateButton.addEventListener('click', () => {
-            ratingPopup.style.display = 'flex';
-        });
-
-        closeButton.addEventListener('click', () => {
-            ratingPopup.style.display = 'none';
-        });
-
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                selectedRating = parseInt(star.getAttribute('data-value'));
-                console.log(selectedRating);
-                stars.forEach((s, index) => {
-                    if (index < selectedRating) {
-                        s.classList.add('selected');
-                    } else {
-                        s.classList.remove('selected');
-                    }
-                });
-            });
-        });
-
-        submitButton.addEventListener('click', () => {
-            if (selectedRating === 0) {
-                alert('Please select a rating');
-                return;
-            }
-            // Fetch to /orders/rating with ticket_id and selectedRating
-            // Assuming ticketId and selectedRating are already defined
-            const formData = new FormData();
-            formData.append('ticket_id', ticketId);
-            formData.append('rating', selectedRating);
-
-            fetch('/orders/rating', {
-                method: 'POST',
-                body: formData
-            })
-            .then(data => {
-                console.log('Success:', data);
-                // Handle success - close the popup, show a message, etc.
-                ratingPopup.style.display = 'none';
-                window.location.href = data.url
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Handle error
-                alert('An error occurred. Please try again.');
-            });
-        });
-    });
-</script>
-
 </body>
 </html>
