@@ -12,8 +12,10 @@ import java.util.stream.Collectors;
 
 import com.example.VieTicketSystem.model.entity.*;
 import com.example.VieTicketSystem.repo.*;
+import com.example.VieTicketSystem.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +59,12 @@ public class OrganizerController {
     private HttpSession httpSession;
     @Autowired
     private RefundOrderRepo refundOrderRepo;
+    @Autowired
+    private OrderRepo orderRepo;
+    @Autowired
+    private TicketRepo ticketRepo;
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping(value = ("/createEvent"))
     public String createEventPage(HttpSession httpSession) {
@@ -465,7 +473,7 @@ public class OrganizerController {
         List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.CREATED.toInteger(), eventId);
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Refund Orders to Approve");
-        model.addAttribute("eventId", eventId);
+        model.addAttribute("event", event);
 
         return "organizer/refund";
     }
@@ -498,7 +506,7 @@ public class OrganizerController {
 
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Approved Refund Orders");
-        model.addAttribute("eventId", eventId);
+        model.addAttribute("event", event);
 
         return "organizer/refund";
     }
@@ -527,8 +535,67 @@ public class OrganizerController {
         List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.REJECTED.toInteger(), eventId);
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Rejected Refund Orders");
-        model.addAttribute("eventId", eventId);
+        model.addAttribute("event", event);
 
         return "organizer/refund";
+    }
+
+    @PostMapping("/organizer/refund/reject")
+    public ResponseEntity<String> handleRefundReject(@RequestParam int orderId) throws Exception {
+
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ORGANIZER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have the authority to access this functionality.");
+        }
+
+        RefundOrder refundOrder = refundOrderRepo.findByOrderId(orderId);
+        if (refundOrder == null || refundOrder.getStatus() != RefundOrder.RefundStatus.CREATED) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refund order not found or not waiting for approval.");
+        }
+
+        Event event = eventRepo.findEventByOrderId(orderId);
+        if (event.getOrganizer().getUserId() != user.getUserId()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not your event");
+        }
+
+        // Update refund order status
+        refundOrder.setStatus(RefundOrder.RefundStatus.REJECTED);
+        refundOrder.setApprovedOn(LocalDateTime.now());
+
+        // Revert order and ticket status back to success
+        orderRepo.updateStatus(orderId, Order.PaymentStatus.SUCCESS);
+        ticketRepo.updateStatusByOrderIdAndStatus(orderId, Ticket.TicketStatus.PENDING_REFUND.toInteger(), Ticket.TicketStatus.PURCHASED.toInteger());
+        refundOrderRepo.saveApprovalStatus(refundOrder);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Refund request rejected successfully");
+    }
+
+    @PostMapping("/organizer/refund/approve")
+    public ResponseEntity<String> handleRefundApproval(@RequestParam int orderId) throws Exception {
+
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ORGANIZER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have the authority to access this functionality.");
+        }
+
+        RefundOrder refundOrder = refundOrderRepo.findByOrderId(orderId);
+        if (refundOrder == null || refundOrder.getStatus() != RefundOrder.RefundStatus.CREATED) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refund order not found or not waiting for approval.");
+        }
+
+        Event event = eventRepo.findEventByOrderId(orderId);
+        if (event.getOrganizer().getUserId() != user.getUserId()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not your event");
+        }
+
+        orderService.initiateRefund(refundOrder);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

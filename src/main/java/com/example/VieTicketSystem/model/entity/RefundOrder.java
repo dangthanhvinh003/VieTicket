@@ -16,6 +16,7 @@ public class RefundOrder {
     private RefundStatus status; // The current status of the refund order.
     private LocalDateTime approvedOn; // The date and time when the refund order was approved.
     private LocalDateTime refundedOn; // The date and time when the refund was processed.
+    private int actualRefund; // The actual amount refunded to the user (70% of the total).
 
     public int getActualRefundAmount() {
         return (int) (total * 0.7);
