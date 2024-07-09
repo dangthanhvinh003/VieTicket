@@ -17,15 +17,6 @@ public class ConnectionPoolManager {
     @Getter
     private static HikariDataSource dataSource;
 
-    @Value("${spring.datasource.url}")
-    private String dbUrl;
-
-    @Value("${spring.datasource.username}")
-    private String dbUsername;
-
-    @Value("${spring.datasource.password}")
-    private String dbPassword;
-
     @PostConstruct
     public void initializeDataSource() {
         config.setJdbcUrl(Baseconnection.url);

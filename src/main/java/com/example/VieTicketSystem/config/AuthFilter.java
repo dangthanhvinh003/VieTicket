@@ -63,7 +63,7 @@ public class AuthFilter implements Filter {
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
                 || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event") || requestURI.equals("/eventsByCategory")
-                || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent")
+                || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent") || requestURI.equals("/showAllEvents")
                 || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent") || requestURI.startsWith("/eventsListFragment")
                 || requestURI.startsWith("/api")) && !isUnverified) {
             chain.doFilter(request, response);
@@ -77,7 +77,8 @@ public class AuthFilter implements Filter {
         } else if (isUser(user)
                 && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
                         || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))
-                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase") || requestURI.equals("/orders/rating")) {
+                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase") 
+                || requestURI.startsWith("/orders")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else if (isOrganizer(user)) {
