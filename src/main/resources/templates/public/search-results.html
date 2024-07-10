@@ -86,7 +86,7 @@
     <script>
         document.getElementById('searchInput').addEventListener('input', function() {
            let filter = this.value.toLowerCase();
-           let cards = document.querySelectorAll('#eventCards .col.mb-4');
+           let cards = document.querySelectorAll('.event-card');
        
            cards.forEach(card => {
                let event = card.getAttribute('data-user');
