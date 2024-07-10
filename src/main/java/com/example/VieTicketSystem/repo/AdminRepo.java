@@ -476,6 +476,7 @@ public class AdminRepo {
             organizer.setUsername(rs.getString("username"));
             organizer.setPassword(rs.getString("password"));
             organizer.setPhone(rs.getString("phone"));
+            organizer.setGender(rs.getString("gender").charAt(0));
             organizer.setDob(rs.getDate("dob"));
             organizer.setActive(rs.getBoolean("is_active"));
             organizer.setEmail(rs.getString("email"));

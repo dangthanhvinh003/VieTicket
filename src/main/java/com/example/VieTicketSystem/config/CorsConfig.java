@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("https://*.vieticket.io.vn", "https://*.vieticket.tech", "http://localhost:3000")
+                .allowedOriginPatterns("https://*.vieticket.io.vn", "https://*.vieticket.tech")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
