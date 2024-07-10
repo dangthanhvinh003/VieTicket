@@ -13,6 +13,6 @@ import lombok.ToString;
 public class Rating {
     private int ratingId;
     private int star;
-    private int eventId; // Đại diện cho quan hệ với bảng Event
+    private int organizerId; // Đại diện cho quan hệ với bảng Event
     private int orderId;
 }

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link th:href="@{/static/css/index.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .event-section {
+            display: flex;
+            flex-direction: row;
+            border-radius: 10px;
+            background-color: #2b2b2b;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            max-width: 1200px;
+            /* Giới hạn chiều rộng tối đa */
+            margin: 0 auto;
+            /* Canh giữa */
+        }
+
+        .event-info {
+            flex: 1;
+            padding: 20px;
+        }
+
+
+        .event-info .event-date {
+            display: flex;
+            align-items: center;
+        }
+
+        .event-info .event-location {
+            display: flex;
+            align-items: center;
+        }
+
+
+        .event-info .ticket-price {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .event-info .ticket-price span {
+            font-size: 18px;
+        }
+
+        .circle {
+            width: 40px;
+            height: 40px;
+            background-color: #2b2b2b;
+            border-radius: 50%;
+        }
+
+        .event-section {
+            position: relative;
+        }
+
+        .event-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* Prevent circles from interfering with clicks */
+        }
+
+        .circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            position: absolute;
+        }
+
+
+
+        .event-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* Prevent circles from interfering with clicks */
+        }
+
+        .circle {
+            width: 50px;
+            /* Adjust size as needed */
+            height: 50px;
+            /* Adjust size as needed */
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            position: absolute;
+        }
+
+        .event-wrapper {
+            border: 2px solid #000;
+            /* Viền bao quanh */
+            padding: 20px;
+            /* Khoảng cách bên trong viền */
+            background: linear-gradient(rgb(39, 39, 42) 48.04%, rgb(0, 0, 0) 100%);
+
+        }
+
+        .event-section {
+            display: flex;
+            align-items: center;
+            align-items: stretch;
+            /* Đảm bảo các phần tử con có chiều cao bằng nhau */
+        }
+
+        .event-info {
+            background-color: #524e4e;
+            color: white;
+            /* Màu chữ trắng để dễ đọc trên nền tối */
+            padding: 20px;
+            /* Khoảng cách bên trong thẻ thông tin */
+            flex: 1;
+            border-top-left-radius: 8px;
+            /* Góc bo tròn trên trái */
+            border-bottom-left-radius: 8px;
+            /* Góc bo tròn dưới trái */
+            align-items: stretch;
+            /* Đảm bảo các phần tử con có chiều cao bằng nhau */
+        }
+
+        .event-banner {
+            position: relative;
+            flex: 2;
+        }
+
+        .event-banner img {
+            border-top-right-radius: 8px;
+            /* Góc bo tròn trên phải */
+            border-bottom-right-radius: 8px;
+            /* Góc bo tròn dưới phải */
+        }
+
+        .event-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* Ngăn các vòng tròn ảnh hưởng đến sự kiện chuột */
+        }
+
+        .circle {
+            width: 50px;
+            /* Kích thước vòng tròn */
+            height: 50px;
+            /* Kích thước vòng tròn */
+            border-radius: 50%;
+
+            position: absolute;
+        }
+
+        .circle.top-left {
+            top: -25px;
+            /* Vị trí góc trên trái */
+            left: -23px;
+            /* Vị trí góc trên trái */
+            background-color: #272729;
+        }
+
+        .circle.bottom-left {
+            bottom: -25px;
+            /* Vị trí góc dưới trái */
+            left: -23px;
+            /* Vị trí góc dưới trái */
+            background-color: #030304;
+        }
+
+        .body {
+            background: #191825;
+            overflow-x: hidden;
+        }
+
+        /* thong tin */
+        .container {
+            background-color: #1c1c1c;
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            /* Ensure padding and border are included in element's total width and height */
+            max-width: 100%;
+            /* Ensure container doesn't exceed screen width */
+        }
+
+        .event-display {
+            border: 1px solid #444;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #2e2e2e;
+        }
+
+        .about-section {
+            padding-right: 15px;
+            border-right: 1px solid #444;
+        }
+
+        .organizer-section {
+            padding-left: 15px;
+        }
+
+        .organizer-details {
+            display: flex;
+            align-items: center;
+            /* Center align the items vertically */
+        }
+
+        .organizer-img {
+            width: 50px;
+            /* Set a fixed width for the organizer's image */
+            height: 50px;
+            /* Set a fixed height for the organizer's image */
+            margin-right: 15px;
+            /* Space between the image and the text */
+            border-radius: 50%;
+            /* Make the image circular */
+            border: 2px solid #fff;
+        }
+
+        .about-description h5,
+        .organizer-info h5,
+        .poster h5 {
+            font-size: 18px;
+            color: #865DFF;
+            margin-bottom: 10px;
+        }
+
+        .about-description p,
+        .organizer-info p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .poster img {
+            margin-top: 10px;
+            border: 2px solid #fff;
+            border-radius: 10px;
+        }
+
+        .custom-btn {
+            color: #FFFFFF;
+            /* Màu chữ trắng */
+            border: 2px solid #865DFF;
+            /* Viền màu tím */
+            background-color: #191825;
+            /* Nền màu tím đậm */
+            padding: 10px 20px;
+            /* Khoảng đệm bên trong nút */
+            border-radius: 5px;
+            /* Bo góc cho nút */
+            text-decoration: none;
+            /* Loại bỏ gạch chân */
+            display: inline-block;
+            /* Để padding và border hoạt động chính xác */
+            font-size: 16px;
+            /* Kích thước chữ */
+            transition: background-color 0.3s, color 0.3s;
+            /* Hiệu ứng chuyển đổi màu */
+        }
+
+        .custom-btn:hover {
+            background-color: #865DFF;
+            /* Nền màu tím khi hover */
+            color: #191825;
+            /* Màu chữ khi hover */
+        }
+
+        .about-description img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+            /* Optional: add some margin to separate the image from text */
+        }
+
+        .embed-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            /* 16:9 ratio */
+            height: 0;
+        }
+
+        .embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .circle.top-right {
+            top: 0px;
+            right: 0px;
+            background-color: rgba(0, 0, 0, 0);
+
+        }
+
+        .event-info {
+
+            border-right: 2px dashed #fff;
+        }
+
+        @media only screen and (max-width: 1200px) {
+            .event-section {
+                flex-direction: column;
+                /* Chuyển đổi layout thành dạng cột */
+            }
+
+            .event-info {
+                padding: 15px;
+                /* Giảm padding để các phần tử không bị chồng lên nhau quá nhiều */
+                border-radius: 0;
+                /* Xóa bo tròn ở cạnh trái */
+            }
+
+            .event-banner img {
+                border-radius: 0;
+                /* Xóa bo tròn ở cạnh phải */
+                width: 100%;
+                /* Đảm bảo hình ảnh chiếm toàn bộ không gian có sẵn */
+                height: auto;
+                /* Đảm bảo tỷ lệ khung hình tự động */
+            }
+
+            .circle.top-left {
+                top: -25px;
+                left: -25px;
+                background-color: #1C1C1E;
+                z-index: 100;
+            }
+
+            .circle.top-right {
+                top: -25px;
+                right: -25px;
+                background-color: #1C1C1E;
+                z-index: 100;
+            }
+
+            .circle.bottom-left {
+                bottom: 0px;
+                /* Vị trí góc dưới trái */
+                left: 0px;
+                /* Vị trí góc dưới trái */
+                background-color: rgba(0, 0, 0, 0);
+
+            }
+
+            .event-info {
+                border-right: none;
+                border-bottom: 2px dashed #fff;
+            }
+        }
+    </style>
+
+</head>
+
+<body class="body">
+
+    <!-- Event Header -->
+    <div class="event-header">
+
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-fluid">
+                <div>
+                    <a class="navbar-brand" href="/">VieTicket</a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="c collapse navbar-collapse " id="navbarTogglerDemo02">
+                    <ul class="c navbar-nav me-auto mb-2 mb-lg-0 " style="margin-left: 90%; margin-right: 10px;">
+                        <th:block th:if="${session.activeUser != null}">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
+                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar"
+                                        class="avatar-small">
+                                    Profile
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end " aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/change-password}">Change Password</a></li>
+                                    <th:block th:if="${session.activeUser.role.toString() == 'u'}">
+                                        <li><a class="dropdown-item" th:href="@{/tickets}">Purchased Ticket</a></li>
+                                    </th:block>
+                                    <th:block th:if="${session.activeUser.role.toString() == 'o'}">
+                                        <li><a class="dropdown-item" href="#">View List Event</a></li>
+                                    </th:block>
+                                    <th:block th:if="${session.activeUser.role.toString() == 'a'}">
+                                        <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List
+                                                Approve Organizer</a></li>
+                                    </th:block>
+                                    <th:block th:if="${session.activeUser.role.toString() == 'a'}">
+                                        <li><a class="dropdown-item" th:href="@{/ViewAllApproveEvent}">View All List
+                                                Approve Event</a></li>
+                                    </th:block>
+                                    <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
+                                </ul>
+                            </li>
+                        </th:block>
+                    </ul>
+                    <ul>
+                        <div style="margin-left: -30%; width: 200px;">
+                            <th:block th:if="${session.activeUser == null}">
+                                <li>
+                                    <a class="nav-link" th:href="@{/auth/login}">Sign in / Sign up</a>
+                                </li>
+                            </th:block>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Event Info and Banner -->
+
+    <!-- Message pane -->
+    <div th:if="${error != null}" class="alert alert-warning alert-dismissible fade show mb-4 mx-3" role="alert">
+        <strong th:text="${error}">Message</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row mb-4">
+        <div class="event-wrapper">
+            <div class="event-section">
+                <div class="event-info"
+                    style="background-color: #38383D; max-height: 100%;  display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h4 th:text="${event.name}" style="margin-bottom: 10px;">
+                            <i class="fas fa-calendar-alt"></i> Event Name
+                        </h4>
+                        <h6 style="margin-top: 5px;">
+                            <i class="fas fa-clock"></i> Date:
+                        </h6>
+                        <p th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')} + ' - ' + ${#temporals.format(event.endDate, 'yyyy-MM-dd hh:mm a')}"
+                            style="margin-bottom: 20px;">
+
+                        </p>
+                        <h6 style="margin-top: 5px;">
+                            <i class="fas fa-map-marker-alt"></i> Location:
+                        </h6>
+                        <p th:text="${event.location}" style="margin-bottom: 20px;"></p>
+                        <h6 style="margin-top: 5px;">
+                            <i class="fas fa-calendar-alt"></i> Date Sale Ticket:
+                        </h6>
+                        <p th:text="${#temporals.format(event.ticketSaleDate, 'yyyy-MM-dd hh:mm a')}"
+                            style="margin-bottom: 20px;">Hà Nội</p>
+                        <div style="margin-top: 10%;">
+                            <hr style="margin-top:10px ;">
+                            <h6 style="margin-top: 15px; display: inline;">
+                                <i class="fas fa-dollar-sign"></i> Price: ~
+                            </h6>
+                            <p class="price" th:data-price="${minPrice}" th:text="${minPrice}"
+                                style="margin-bottom: 20px; display: inline;">
+                            </p>
+                            <!-- Thay đổi từ Area.ticketPrice thành area.ticketPrice -->
+
+                            <div style="margin-bottom: 5%; margin-top: 2%;">
+                                <a th:href="@{/purchase/select-tickets?eventId={id}(id=${event.eventId})}"
+                                    class="btn custom-btn"
+                                    style="width: 100%; height: 27px; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; text-align: center;">Buy
+                                    Ticket</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="event-banner">
+                    <img th:src="${event.banner}" alt="Event Banner" class="img-fluid">
+                    <div class="event-circles">
+                        <div class="circle top-left"></div>
+                        <div class="circle bottom-left"></div>
+                        <div class="circle top-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About Description and Organizer Info -->
+
+    <div class="container">
+        <div class="event-display row">
+            <div class="col-md-8 about-section">
+                <div class="about-description">
+                    <h5>About Description</h5>
+                    <p th:utext="${event.description}">Event Description</p>
+                </div>
+            </div>
+            <div class="col-md-4 organizer-section">
+                <div class="organizer-info">
+                    <h5>Organizer</h5>
+
+                    <div class="organizer-details">
+                        <img th:src="${organizer.avatar}" alt="Organizer Image" class="organizer-img img-fluid rounded">
+                        <div>
+                            <p th:text="${organizer.fullName}">Organizer Info</p>
+                            <p>
+                                <span th:text="${stars}"></span>
+                                <i class="fas fa-star"></i>
+                            </p>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <br>
+                <div class="poster">
+                    <h5>Poster</h5>
+                    <img th:src="${event.poster}" alt="Event Poster" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceElements = document.querySelectorAll('.price');
+            priceElements.forEach(function (priceElement) {
+                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(priceValue)) {
+                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                }
+            })
+        });
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var oembeds = document.querySelectorAll('oembed[url]');
+            oembeds.forEach(function (embed) {
+                var url = embed.getAttribute('url');
+                var iframe = document.createElement('iframe');
+                iframe.setAttribute('src', url.replace('watch?v=', 'embed/'));
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                iframe.setAttribute('allowfullscreen', true);
+
+                // Tạo div chứa với class 'embed-container' để quản lý tỷ lệ 16:9
+                var embedContainer = document.createElement('div');
+                embedContainer.classList.add('embed-container');
+                embedContainer.appendChild(iframe);
+
+                embed.parentNode.replaceChild(embedContainer, embed);
+            });
+        });
+    </script>
+</body>
+
+</html>

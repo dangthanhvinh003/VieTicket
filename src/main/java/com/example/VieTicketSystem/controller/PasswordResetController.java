@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.example.VieTicketSystem.model.service.PasswordResetService;
-import com.example.VieTicketSystem.model.service.VerifyEmailService;
+import com.example.VieTicketSystem.service.PasswordResetService;
+import com.example.VieTicketSystem.service.VerifyEmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
@@ -64,7 +64,7 @@ public class PasswordResetController {
             // errorNode.put("message",
             // "An error occurred while processing the request. Please recheck your input
             // and try again later.");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
         }
 
         ObjectNode successNode = mapper.createObjectNode();

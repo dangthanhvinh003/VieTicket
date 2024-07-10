@@ -23,23 +23,26 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cloudinary.Cloudinary;
-import com.example.VieTicketSystem.model.entity.AdditionalData;
+import com.example.VieTicketSystem.model.dto.AdditionalData;
 import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
+import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.Seat;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.AreaRepo;
-import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.OrganizerRepo;
-import com.example.VieTicketSystem.model.repo.RowRepo;
-import com.example.VieTicketSystem.model.repo.SeatMapRepo;
-import com.example.VieTicketSystem.model.repo.SeatRepo;
-import com.example.VieTicketSystem.model.service.EventService;
-import com.example.VieTicketSystem.model.service.FileUpload;
+import com.example.VieTicketSystem.repo.AreaRepo;
+import com.example.VieTicketSystem.repo.EventRepo;
+import com.example.VieTicketSystem.repo.OrganizerRepo;
+import com.example.VieTicketSystem.repo.RowRepo;
+import com.example.VieTicketSystem.repo.SeatMapRepo;
+import com.example.VieTicketSystem.repo.SeatRepo;
+import com.example.VieTicketSystem.service.EventService;
+import com.example.VieTicketSystem.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
+import java.text.DecimalFormat;
+import java.util.stream.Collectors;
 
 @Controller
 public class EventController {
@@ -70,11 +73,16 @@ public class EventController {
             @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
             @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
             throws Exception {
+        long start = System.currentTimeMillis();
         String posterURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958); // Kích thước cho poster
         model.addAttribute("poster", posterURL);
-
+        long end = System.currentTimeMillis();
+        System.out.println("check time 1 :" + (end - start));
+        long start1 = System.currentTimeMillis();
         String bannerURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720); // Kích thước cho banner
         model.addAttribute("banner", bannerURL);
+        long end1 = System.currentTimeMillis();
+        System.out.println("check time 2 :" + (end1 - start1));
         User user = (User) httpSession.getAttribute("activeUser");
         // System.out.println(user);
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
@@ -90,7 +98,7 @@ public class EventController {
 
     @GetMapping(value = ("/seatMap"))
     public String SeatMapPage() {
-        return "seatMap";
+        return "event/create/seatmap";
     }
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
@@ -111,12 +119,12 @@ public class EventController {
             // rowRepo.getIdRowByAreaId(areaRepo.getIdAreaEventId(idNewEvent)));
         }
         seatRepo.addSeats(seatsForRow);
-        return "createEventSuccess";
+        return "event/create/success";
     }
 
     @GetMapping(value = ("/seatMap/SeatMapEditor"))
     public String SeatMapEditor() {
-        return "SeatMapEditor";
+        return "seatmap/editor";
     }
 
     @PostMapping(value = "/seatMap/SeatMapEditor")
@@ -228,12 +236,12 @@ public class EventController {
 
     @GetMapping(value = { "/createEventSuccess" })
     public String createEventSuccessPage() {
-        return "createEventSuccess";
+        return "event/create/success";
     }
 
     @GetMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage() {
-        return "SeatMapBeta";
+        return "seatmap/beta";
     }
 
     @PostMapping(value = ("/seatMap/SeatMapBeta"))
@@ -393,8 +401,15 @@ public class EventController {
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
         eventRepo.incrementClickCount(event.getEventId());
+        Organizer currentOrganizer = organizerRepo.getOrganizerByEventId(eventId);
+
+        double averageRating = organizerRepo.getAverageRatingForOrganizer(currentOrganizer.getUserId());
+        DecimalFormat df = new DecimalFormat("#.#");
+        String formattedRating = df.format(averageRating);
+
         model.addAttribute("event", event);
-        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+        model.addAttribute("organizer", currentOrganizer);
+        model.addAttribute("stars", formattedRating);
         List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
 
         // Tìm giá vé thấp nhất
@@ -405,7 +420,7 @@ public class EventController {
         model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
 
         // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
-        return "viewdetailEvent";
+        return "public/event-detail";
     }
 
     @GetMapping("/viewAllEvent")
@@ -414,7 +429,7 @@ public class EventController {
         model.addAttribute("events", events);
 
         // Chuyển hướng tới trang hiển thị danh sách sự kiện
-        return "searchResults"; // Tên của template hiển thị danh sách sự kiện
+        return "public/search-results"; // Tên của template hiển thị danh sách sự kiện
     }
 
     @GetMapping("/eventUsers")
@@ -423,6 +438,26 @@ public class EventController {
         List<User> users = eventRepo.getUsersWithTicketsByEventId(eventId);
         model.addAttribute("users", users);
 
-        return "eventUsers"; // Tên của template hiển thị danh sách người dùng
+        return "event/view/tickets-bought"; // Tên của template hiển thị danh sách người dùng
     }
+
+    @GetMapping(value = "/eventsByCategory")
+    public String eventsByCategory(@RequestParam("category") String category, Model model, HttpSession httpSession) {
+    List<Event> eventList = eventRepo.getAllEvents();
+    List<Event> filteredEvents = eventList.stream()
+            .filter(event -> event.getType().equalsIgnoreCase(category))
+            .collect(Collectors.toList());
+    model.addAttribute("eventList", filteredEvents);
+    model.addAttribute("pageType", "category");
+    return "public/search-results";
+    }
+
+    @GetMapping(value = "/showAllEvents")
+    public String allEvents(Model model, HttpSession httpSession) {
+    List<Event> eventList = eventRepo.getAllEvents();
+    model.addAttribute("eventList", eventList);
+    model.addAttribute("pageType", "all");
+    return "public/search-results";
+    }
+
 }

@@ -70,13 +70,14 @@ CREATE TABLE `Order`
     vnpay_data JSON
 );
 
+
 CREATE TABLE Rating
 (
     rating_id INT AUTO_INCREMENT
         PRIMARY KEY,
     star      INT,
-    event_id  INT,
-    FOREIGN KEY (event_id) REFERENCES Event (event_id),
+    organizer_id  INT,
+    FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
     order_id  INT,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id)
 );
@@ -105,11 +106,15 @@ CREATE TABLE `Row`
 
 CREATE TABLE RefundOrder
 (
-    order_id   INT AUTO_INCREMENT
+    order_id      INT AUTO_INCREMENT
         PRIMARY KEY,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id),
-    created_on TIMESTAMP,
-    status     TINYINT
+    total         INT,
+    created_on    TIMESTAMP,
+    status        TINYINT,
+    approved_on   TIMESTAMP,
+    refunded_on   TIMESTAMP,
+    actual_refund INT
 );
 
 CREATE TABLE Seat
@@ -279,3 +284,36 @@ VALUES ('NTPMM', 'Những thành phố mơ màng', '2024-06-01', 'Hà Nội', 'M
        ('Rick Astley - Never Gonna Give You Up', 'Lễ hội pháo bông', '2024-06-03', 'Hà Nội', 'Music', '2024-05-20',
         '2024-06-06', 3, 'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg',
         'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg', 1);
+
+--@block 
+SELECT o.*
+FROM Ticket t 
+INNER JOIN Seat s ON t.seat_id = s.seat_id 
+INNER JOIN `Row` r ON s.row_id = r.row_id
+INNER JOIN Area a ON r.area_id = a.area_id
+INNER JOIN Event e ON a.event_id = e.event_id
+INNER JOIN Organizer o ON e.organizer_id = o.organizer_id
+WHERE t.ticket_id = 4;
+
+--@block
+SELECT o.*
+FROM Ticket t
+INNER JOIN `Order` o ON t.order_id = o.order_id
+WHERE t.ticket_id = 4;
+
+--@block
+SELECT * FROM Rating 
+
+--@block
+SELECT e.organizer_id 
+FROM `Order` o
+INNER JOIN Ticket t ON o.order_id = t.order_id
+INNER JOIN Seat s ON t.seat_id = s.seat_id  
+INNER JOIN `Row` r ON s.row_id = r.row_id  
+INNER JOIN Area a ON r.area_id = a.area_id 
+INNER JOIN `Event` e ON a.event_id = e.event_id 
+WHERE o.order_id = 2
+
+--@blocks
+delete from Rating
+

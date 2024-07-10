@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home VieTicket</title>
+
+
+    <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <link href="../static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
+    <link rel="icon" type="image/png"
+        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <style>
+        .carousel-item video {
+            height: 600px;
+            object-fit: cover;
+            object-position: center top;
+            width: 100%;
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 1);
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .nav-item .nav-link {
+            margin-right: 15px;
+        }
+
+        .mode-switch-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .sign-in-link {
+            margin-right: 15px;
+        }
+
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 0 0 10px 10px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .overlayi {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            /* border-radius: 0 0 10px 10px; */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 24.5%;
+            left: 0;
+            width: 100%;
+
+        }
+
+        .card:hover .overlayi {
+            display: flex;
+        }
+
+        .card:hover .overlay {
+            display: flex;
+        }
+
+        .card-body {
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        .card-img-top {
+            border-bottom: 0;
+            border-radius: 10px 10px 0 0;
+
+        }
+
+
+
+        .card-hotevent {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            height: 300px;
+            /* Đảm bảo thẻ sự kiện hiển thị phía trước */
+        }
+
+        .card-hotevent::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            /* Điều chỉnh chiều cao tùy theo độ cao của hình ảnh lửa */
+            background: url('https://res.cloudinary.com/djcowpoua/image/upload/v1718623694/rxs5sjwmtriia6de9byz.gif') center bottom/cover no-repeat;
+            /* Đường dẫn và kiểu hiển thị */
+        }
+
+        .card {
+            height: auto;
+        }
+
+        @media (max-width: 576px) {
+            .card {
+                height: 100%;
+            }
+        }
+
+        .event-name {
+            margin-top: 10px;
+        }
+
+        footer {
+            background-color: #1c1c2b;
+            padding: 20px 0;
+            border-top: 2px solid #4c4c6d;
+            color: #bbb;
+        }
+
+        .footer-column {
+            margin-bottom: 20px;
+        }
+
+        .footer-column h5 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .footer-column ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            color: white;
+            margin-right: 15px;
+            font-size: 1.5em;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            color: #007bff;
+        }
+
+        .navbar-custom {
+            transition: background-color 0.3s ease-in-out;
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            /* Màu nền mặc định */
+        }
+
+        .navbar-custom.navbar-transparent {
+            background-color: rgba(255, 255, 255, 0);
+            /* Màu nền trong suốt khi đi qua carousel */
+        }
+
+        .carousel {
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-input {
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+            background-color: rgba(255, 255, 255, 0) !important;
+            /* Màu nền mặc định cho ô tìm kiếm */
+            color: #000 !important;
+            /* Màu chữ mặc định */
+        }
+
+        .search-input-transparent {
+            background-color: rgba(255, 255, 255, 0) !important;
+            /* Màu nền trong suốt cho ô tìm kiếm */
+            color: #000 !important;
+            /* Màu chữ mặc định */
+        }
+
+        .search-input-dark {
+            background-color: #191825 !important;
+            /* Màu nền khi đi qua carousel */
+        }
+
+        .carousel,
+        .carousel-inner,
+        .carousel-item,
+        .carousel-item video {
+            height: 100vh;
+            /* Chiều cao 100% của màn hình */
+        }
+
+        .carousel-item video {
+            object-fit: cover;
+            /* Đảm bảo video bao phủ toàn bộ khung mà không bị méo */
+        }
+
+        /* .carousel-item {
+            transition: transform 0s ease-in-out !important; /* Thời gian chuyển đổi dài hơn để mượt mà hơn */
+        /* } */
+
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+        }
+
+        .navbar-brand {
+            font-family: 'Arial Black', sans-serif;
+            font-style: italic;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .carousel-caption {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+        .carousel-caption h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .carousel-caption p {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .card {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .row-cols-1 .col.mb-4 {
+                margin-bottom: 15px !important;
+                /* Ensure margin applies on mobile */
+            }
+
+            .card-hotevent {
+                height: auto;
+                /* Allow the card to adjust its height dynamically */
+                object-fit: cover;
+                /* Keep this for images, but it's more relevant to <img> or <video> */
+            }
+        }
+
+        .pagination-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pagination {
+            display: inline-block;
+            list-style: none;
+            padding: 0;
+        }
+
+        .page-item {
+            display: inline;
+        }
+
+        .page-item a {
+            color: #007bff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .page-item.active a {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .page-item.disabled a {
+            color: #ddd;
+            pointer-events: none;
+        }
+
+        .page-item a:hover {
+            background-color: #f2f2f2;
+        }
+
+    </style>
+
+    <script>
+        function redirectToAllEvents() {
+            // Prevent the default form action if necessary
+            // event.preventDefault();
+
+            document.body.classList.add('fade-out'); // Apply the fade-out effect
+
+            setTimeout(() => {
+                // Redirect to the target page after the fade-out animation
+                window.location.href = '/showAllEvents'; // Adjust the URL as needed
+            }, 400); // This duration should match the CSS animation duration
+        }
+    </script>
+</head>
+
+<body class="dark-mode">
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">VieTicket</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-flex justify-content-between " id="navbarTogglerDemo02">
+                <form class="d-flex search-form" role="search">
+                    <input id="searchInput" class="form-control me-2 dark-mode light-mode search-input" type="search"
+                        placeholder="Search" aria-label="Search" onclick="redirectToAllEvents()">
+
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
+                        <li class="nav-item">
+                            <a class="btn btn-outline-success" th:href="@{/createEvent}">Create Event</a>
+                        </li>
+                    </th:block>
+                    <th:block th:if="${session.activeUser != null}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-avatar" href="#" id="navbarDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img th:src="@{${session.activeUser.avatar}}" alt="User Avatar" class="avatar-small">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
+                                <li><a class="dropdown-item" th:href="@{/change-password}">Change Password</a></li>
+                                <th:block th:if="${session.activeUser.role.toString() == 'u'}">
+                                    <li><a class="dropdown-item" th:href="@{/orders}">View My Orders</a></li>
+                                </th:block>
+                                <th:block th:if="${session.activeUser.role.toString() == 'o'}">
+                                    <li><a class="dropdown-item" th:href="@{/viewMyListEvent}">View List Event</a></li>
+                                </th:block>
+                                <th:block th:if="${session.activeUser.role.toString() == 'a'}">
+                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List
+                                            Approve Organizer</a>
+                                    </li>
+                                </th:block>
+                                <th:block th:if="${session.activeUser.role.toString() == 'a'}">
+                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveEvent}">View All List Approve
+                                            Event</a>
+                                    </li>
+                                </th:block>
+                                <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
+                            </ul>
+                        </li>
+                    </th:block>
+                    <th:block th:if="${session.activeUser == null}">
+                        <li class="nav-item sign-in-link">
+                            <a class="nav-link" th:href="@{/auth/login}">Sign in / Sign up</a>
+                        </li>
+                    </th:block>
+                </ul>
+                <div class="mode-switch-container">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="modeSwitch">
+                        <label class="form-check-label" for="modeSwitch">Dark Mode</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+        <!-- Indicators -->
+
+
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <video class="d-block w-100" autoplay muted loop>
+                    <source src="https://res.cloudinary.com/djcowpoua/video/upload/v1717804738/videoplayback_ebmycx.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Welcome to VieTicket</h5>
+                    <p>Explore our website and discover a world of possibilities waiting for you.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <video class="d-block w-100" autoplay muted loop>
+                    <source
+                        src="https://res.cloudinary.com/djcowpoua/video/upload/v1719232070/ODYSSEY_nightclub_promo_video_f26pnk.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Simplified Seat Map Creation</h5>
+                    <p>Easily create different types of seat maps for organizers with our user-friendly format.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <video class="d-block w-100" autoplay muted loop>
+                    <source
+                        src="https://res.cloudinary.com/djcowpoua/video/upload/v1719232073/DJI_AVATA_Night_Footage_EDM_Event_vnas5g.mp4"
+                        type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Versatile Music Venues</h5>
+                    <p>Experience a variety of music genres and events in our versatile venues.</p>
+
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="container mt-5">
+        <h2>Hot Events</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+            <div class="col mb-4" th:each="event : ${session.hotevents}" th:if="${event.approved == 1}">
+                <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="card-link">
+                    <div class="card card-hotevent">
+                        <img th:src="${event.poster}" alt="Event Image" class="card-img-top">
+                        <div class="overlay">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            <span class="ms-2" th:text="${event.eyeView} + '+'"></span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="event-name" th:text="${event.name}">Name Event</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5" th:fragment="eventsFragment">
+        <h2 id="eventsTitle" style="margin-top: 5%;">Events</h2>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="page-item prev mx-2">
+                <a class="page-link load-page rounded" href="#" data-page="prev">«</a>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3" id="eventsList">
+                <!-- Danh sách sự kiện sẽ được cập nhật bằng JavaScript -->
+                <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
+                    <div class="card border-0 shadow">
+                        <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                            style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
+                        <p class="card-text m-0 p-2 overlayi">
+                            Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                        </p>
+                        <div class="card-body p-0">
+                            <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                            <div style="display: flex; width: 100%;">
+                                <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                    class="btn btn-sm btn-outline-success"
+                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                    <i class="fas fa-list"></i> View Detail
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
+                                        th:utext="${event.areas.get(0).ticketPrice}"></span>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-success"
+                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                    <i class="fas fa-eye"></i>
+                                    <span th:utext="${event.eyeView}"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-item next mx-3">
+                <a class="page-link load-page rounded" href="#" data-page="next">»</a>
+            </div>
+        </div>
+        <input type="hidden" id="totalPages" th:value="${session.totalPages}" />
+
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                $(document).on('click', 'a.load-page', function (event) {
+                    event.preventDefault();
+                    var direction = $(this).attr('data-page');
+                    var currentPage = parseInt(localStorage.getItem('currentPage')) || 0;
+                    var totalPages = parseInt($('#totalPages').val()) || 1;
+
+                    if (direction === 'prev' && currentPage > 0) {
+                        currentPage--;
+                    } else if (direction === 'next' && currentPage < totalPages - 1) {
+                        currentPage++;
+                    } else if (!isNaN(parseInt(direction))) {
+                        currentPage = parseInt(direction);
+                    }
+                    console.log('Received totalPages from server:', totalPages);
+                    loadPage(currentPage);
+                });
+            });
+
+            function loadPage(page) {
+                var size = 3; // Số lượng sự kiện trên mỗi trang
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/eventsListFragment?page=' + page + '&size=' + size, // Gửi yêu cầu Ajax đến URL
+                    headers: {
+                        'Accept': 'text/html' // Đảm bảo yêu cầu sẽ trả về dữ liệu HTML
+                    },
+                    success: function (response) {
+
+                        $('#eventsList').html(response); // Cập nhật danh sách sự kiện với fragment HTML trả về
+                        localStorage.setItem('currentPage', page); // Cập nhật thuộc tính trong session nếu cần
+                       
+                    
+
+
+                        
+                    
+                        history.pushState(null, '', '/page=' + page + '&size=' + size); // Cập nhật URL mà không tải lại trang
+
+                        // Sau khi cập nhật nội dung, bạn có thể muốn khởi động lại JavaScript và CSS
+                        // Ví dụ:
+                        document.querySelectorAll('.price').forEach(function (priceElement) {
+                            const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                            if (!isNaN(priceValue)) {
+                                // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                                priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                            }
+                        });
+
+                        // Nếu bạn có các sự kiện JavaScript khác cần thực thi, hãy đảm bảo gọi chúng ở đây
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading events:', error);
+                        console.log('XHR:', xhr);
+                        console.log('Status:', status);
+                        alert('An error occurred while loading events. Please try again.');
+                    }
+                });
+            }
+        </script>
+
+    </div>
+
+    </div>
+
+
+
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>VieTicket</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>Topic</h5>
+                    <ul>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>Topic</h5>
+                    <ul>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>Topic</h5>
+                    <ul>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                        <li><a href="#">Page</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+    <script>
+        // JavaScript để thay đổi màu nền của ô tìm kiếm khi đi qua carousel
+        window.addEventListener('scroll', function () {
+            var navbar = document.querySelector('.navbar-custom');
+            var searchInput = document.getElementById('searchInput');
+            var carousel = document.getElementById('carouselExampleDark');
+            var carouselBottom = carousel.offsetTop + carousel.offsetHeight;
+
+            if (window.scrollY >= carouselBottom) {
+                searchInput.classList.add('search-input-dark');
+            } else {
+                searchInput.classList.remove('search-input-dark');
+            }
+
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let lastScrollTop = 0;
+            const navbar = document.querySelector('.navbar-custom');
+
+            window.addEventListener('scroll', function () {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (scrollTop > lastScrollTop) {
+                    // Scroll down
+                    navbar.classList.add('scrolled-down');
+                } else {
+                    // Scroll up
+                    navbar.classList.remove('scrolled-down');
+                }
+
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceElements = document.querySelectorAll('.price');
+            priceElements.forEach(function (priceElement) {
+                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(priceValue)) {
+                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                }
+            })
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const carousel = document.getElementById('carouselExampleDark');
+            const navbar = document.querySelector('.navbar-custom');
+            const searchInput = document.getElementById('searchInput');
+            const viewportHeight = window.innerHeight;
+
+            function checkScroll() {
+                const carouselRect = carousel.getBoundingClientRect();
+                if (carouselRect.bottom > 0 && carouselRect.top < viewportHeight) {
+                    navbar.classList.add('navbar-transparent');
+                    searchInput.classList.add('search-input-transparent');
+                } else {
+                    navbar.classList.remove('navbar-transparent');
+                    searchInput.classList.remove('search-input-transparent');
+                }
+            }
+
+            window.addEventListener('scroll', checkScroll);
+            checkScroll(); // Kiểm tra ngay khi tải trang
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="../static/js/index.js"></script>
+
+</body>
+
+</html>

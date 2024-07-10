@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.VieTicketSystem.model.entity.AdminStatistics;
+import com.example.VieTicketSystem.model.dto.AdminStatistics;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
-import com.example.VieTicketSystem.model.entity.TableAdminStatistics;
+import com.example.VieTicketSystem.model.dto.TableAdminStatistics;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.AdminRepo;
-import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.UserRepo;
-import com.example.VieTicketSystem.model.service.EmailService;
+import com.example.VieTicketSystem.repo.AdminRepo;
+import com.example.VieTicketSystem.repo.EventRepo;
+import com.example.VieTicketSystem.repo.UserRepo;
+import com.example.VieTicketSystem.service.EmailService;
 
 @Controller
 public class AdminController {
@@ -38,7 +38,7 @@ public class AdminController {
     public String approveOrganizerPage(Model model) throws ClassNotFoundException, SQLException {
         ArrayList<Organizer> organizers = adminRepo.viewAllListAprrove();
         model.addAttribute("organizers", organizers);
-        return "viewApproveOrganizer";
+        return "admin/users/organizers-pending";
     }
 
     @PostMapping(value = ("/approveOrganizer"))
@@ -62,18 +62,18 @@ public class AdminController {
         return "redirect:/ViewAllApproveEvent";
     }
 
-   @GetMapping(value = "/ViewAllApproveEvent")
+    @GetMapping(value = "/ViewAllApproveEvent")
     public String approveEventPage(Model model) throws Exception {
         ArrayList<Event> events = adminRepo.viewAllListApproveEvent();
-        
+
         // Sort events by ID in descending order
         List<Event> sortedEvents = events.stream()
-                                         .sorted(Comparator.comparingLong(Event::getEventId).reversed())
-                                         .collect(Collectors.toList());
+                .sorted(Comparator.comparingLong(Event::getEventId).reversed())
+                .collect(Collectors.toList());
 
         model.addAttribute("events", sortedEvents);
         model.addAttribute("status", "approve");
-        return "viewApproveEvent";
+        return "admin/events/pending-rejected";
     }
 
     @GetMapping(value = ("/ViewAllRejectEvent"))
@@ -82,7 +82,7 @@ public class AdminController {
         model.addAttribute("status", "reject");
         model.addAttribute("events", events);
 
-        return "viewApproveEvent";
+        return "admin/events/pending-rejected";
     }
 
     @PostMapping(value = "/rejectEvent")
@@ -128,15 +128,15 @@ public class AdminController {
         return "redirect:/ViewAllApproveEvent";
     }
 
-    @GetMapping(value = "/dashboardAdmin")
+    @GetMapping(value = "admin/dashboard")
     public String dashboardPage(Model model) throws Exception {
         AdminStatistics statistics = adminRepo.getStatisticsForAdmin();
         List<Integer> dailyRevenue = adminRepo.getDailyRevenue();
         List<Integer> monthlyRevenue = adminRepo.getMonthlyRevenue();
         List<TableAdminStatistics> eventRevenues = adminRepo.getEventRevenues(); // Thêm dòng này
         List<TableAdminStatistics> sortedEventRevenues = eventRevenues.stream()
-        .sorted(Comparator.comparingDouble(TableAdminStatistics::getRevenue).reversed())
-        .collect(Collectors.toList());
+                .sorted(Comparator.comparingDouble(TableAdminStatistics::getRevenue).reversed())
+                .collect(Collectors.toList());
         // System.out.println("dailyRevenue : " + dailyRevenue);
         // System.out.println("monthlyRevenue : " + monthlyRevenue);
 
@@ -145,7 +145,7 @@ public class AdminController {
         model.addAttribute("monthlyRevenue", monthlyRevenue);
         model.addAttribute("eventRevenues", sortedEventRevenues); // Thêm dòng này
 
-        return "dashboardAdmin";
+        return "admin/dashboard";
     }
 
     @GetMapping(value = ("/ViewAllUser"))
@@ -153,7 +153,7 @@ public class AdminController {
         ArrayList<User> users = adminRepo.getAllUser();
         model.addAttribute("users", users);
         model.addAttribute("status", "approve");
-        return "viewUserList";
+        return "admin/users/view";
     }
 
     @GetMapping(value = ("/ViewActiveOrganizer"))
@@ -161,7 +161,7 @@ public class AdminController {
         ArrayList<Organizer> organizers = adminRepo.getAllActiveOrganizer();
         model.addAttribute("organizers", organizers);
 
-        return "viewActiveOrganizer";
+        return "admin/users/organizers-active";
     }
 
     @PostMapping(value = "/lockUser")
@@ -194,7 +194,7 @@ public class AdminController {
         model.addAttribute("users", users);
         model.addAttribute("status", "approve");
 
-        return "viewUserList";
+        return "admin/users/view";
     }
 
     @PostMapping(value = "/unlockUser")
@@ -226,7 +226,7 @@ public class AdminController {
         ArrayList<User> banners = adminRepo.getAllBanner();
         model.addAttribute("status", "reject");
         model.addAttribute("users", banners);
-        return "viewUserList";
+        return "admin/users/view";
     }
 
     @PostMapping(value = "/sendMailToActiveOrganizer")
@@ -266,19 +266,21 @@ public class AdminController {
         model.addAttribute("status", "reject");
         model.addAttribute("users", banners);
 
-        return "ViewUserList";
+        return "admin/users/view";
     }
+
     @GetMapping(value = ("/ViewAllEventOngoing"))
     public String allEventOngoingPage(Model model) throws Exception {
         List<Event> events = eventRepo.getAllOngoingEvents();
         model.addAttribute("events", events);
-        return "viewAllEventOngoingList";
+        return "admin/events/ongoing";
     }
+
     @GetMapping(value = "/searchEvents")
     public String searchEvents(@RequestParam("query") String query, Model model) throws Exception {
         List<Event> events = eventRepo.searchEvents(query);
         model.addAttribute("events", events);
-        return "viewAllEventOngoingList";
+        return "admin/events/ongoing";
     }
 
 }

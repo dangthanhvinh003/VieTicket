@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Events</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <link rel="icon" type="image/png"
+        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            ClassicEditor
+                .create(document.querySelector('#editor'))
+                .then(editor => {
+                    // Update the hidden textarea with the editor content
+                    document.querySelector('form').addEventListener('submit', function () {
+                        document.querySelector('#hiddenDescription').value = editor.getData();
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    </script>
+    <style>
+        .ck-editor__editable {
+            height: 300px !important;
+        }
+
+        .ck-content {
+            color: black !important;
+        }
+
+        body {
+            background-color: #1d1d2c;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-container {
+            border: 2px dashed #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+            color: #6c757d;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        .upload-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            /* Hoặc cover, tùy theo nhu cầu */
+            margin-bottom: 10px;
+        }
+
+        .upload-container input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        #posterPreview,
+        #bannerPreview {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .form-label {
+            color: #ccc;
+        }
+
+        .form-control {
+            background-color: #2d2d44;
+            border: 1px solid #444;
+            color: #ccc;
+        }
+
+        .btn-primary {
+            background-color: #4a4aff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a3ae6;
+        }
+
+        .mb-3 img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 300px;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+            /* Mượt mà hơn */
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Edit Events</h1>
+        <div id="fileSizeAlert" class="alert alert-danger d-none" role="alert">
+            File quá lớn. Vui lòng chọn file nhỏ hơn 1MB.
+        </div>
+
+        <form method="post" th:action="@{/eventEditSubmit}" enctype="multipart/form-data" class="form">
+            <!-- Banner Upload -->
+            <div class="upload-container mb-3" style="height: 480px;">
+                <input type="file" name="banner" accept="image/*" onchange="checkFileSize(event, 'bannerPreview')">
+                <img id="bannerPreview" alt="Banner Preview" style="height:720px;" th:src="${eventEdit.banner}">
+                <input type="hidden" name="currentBanner" th:value="${eventEdit.banner}">
+            </div>
+            <div class="row">
+                <div class="col-lg-4 mb-3">
+                    <div class="upload-container" style="height: 320px;">
+                        <input type="file" name="poster" accept="image/*"
+                            onchange="checkFileSize(event, 'posterPreview')">
+                        <img id="posterPreview" alt="Poster Preview" th:src="${eventEdit.poster}">
+                        <input type="hidden" name="currentPoster" th:value="${eventEdit.poster}">
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name Event :</label>
+                        <input type="text" class="form-control" id="name" name="name" required
+                            th:value="${eventEdit.name}">
+                    </div>
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location :</label>
+                        <input type="text" class="form-control" id="location" name="location" required
+                            th:value="${eventEdit.location}">
+                    </div>
+                    <!-- Start Date -->
+                    <div class="mb-3">
+                        <label for="start_date" class="form-label">Start Date :</label>
+                        <input type="datetime-local" class="form-control" id="start_date" name="start_date" required
+                            th:value="${eventEdit.startDate}">
+                    </div>
+                    <!-- End Date -->
+                    <div class="mb-3">
+                        <label for="end_date" class="form-label">End Date :</label>
+                        <input type="datetime-local" class="form-control" id="end_date" name="end_date" required
+                            th:value="${eventEdit.endDate}">
+                    </div>
+                </div>
+
+            </div>
+            <!--Type -->
+            <div class="mb-3">
+                <label for="type" class="form-label">Type :</label>
+                <select class="form-control" id="type" name="type" required>
+                    <option value="${eventEdit.type }" disabled>Select a type</option>
+                    <option value="music" th:selected="${eventEdit.type == 'music'}">Music</option>
+                    <option value="sport" th:selected="${eventEdit.type == 'sport'}">Sport</option>
+                    <option value="workshop" th:selected="${eventEdit.type == 'workshop'}">Workshop</option>
+                    <option value="comedy" th:selected="${eventEdit.type == 'comedy'}">Comedy</option>
+                    <option value="art" th:selected="${eventEdit.type == 'art'}">Art</option>
+                    <option value="other" th:selected="${eventEdit.type == 'other'}">Other</option>
+                </select>
+            </div>
+            <!-- TicketSaleDate-->
+            <div class="mb-3">
+                <label for="end_date" class="form-label">Ticket Sale Date :</label>
+                <input type="datetime-local" class="form-control" id="ticket_sale_date" name="ticket_sale_date" required
+                    th:value="${eventEdit.ticketSaleDate}">
+            </div>
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="editor" class="form-label">Description :</label>
+                <textarea id="editor" th:utext="${eventEdit.description}"></textarea>
+
+                <!-- Hidden textarea to store the content from CKEditor -->
+                <textarea id="hiddenDescription" name="description" style="display:none;"></textarea>
+            </div>
+            <!-- Submit Button -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Update Event</button>
+            </div>
+        </form>
+        <div id="alertMessage" style="display: none;" class="alert alert-danger" role="alert">
+            <!-- Thông báo sẽ được thêm vào đây bằng JavaScript -->
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="/static/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function checkFileSize(event, previewElementId) {
+            const file = event.target.files[0];
+            const maxSizeGif = 500 * 1024; // 500KB
+            const maxSizeOther = 1.5 * 1024 * 1024; // 1MB
+            const alertElement = document.getElementById('fileSizeAlert');
+
+            if (file.type === 'image/gif' && file.size > maxSizeGif) {
+                alertElement.innerHTML = `GIF size too large. Got ${file.size} bytes. Maximum is ${maxSizeGif} bytes.`;
+                alertElement.classList.remove('d-none');
+                event.target.value = ''; // Clear the file input
+            } else if (file.type !== 'image/gif' && file.size > maxSizeOther) {
+                alertElement.innerHTML = `File size too large. Got ${file.size} bytes. Maximum is ${maxSizeOther} bytes.`;
+                alertElement.classList.remove('d-none');
+                event.target.value = ''; // Clear the file input
+            } else {
+                alertElement.classList.add('d-none');
+                previewImage(event, previewElementId);
+            }
+        }
+        function previewImage(event, previewElementId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById(previewElementId);
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('uploadIcon').classList.add('hidden');
+                    document.getElementById('uploadText').classList.add('hidden');
+                    document.getElementById('uploadIcon1').classList.add('hidden');
+                    document.getElementById('uploadText1').classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent form submission to validate
+
+                // Validation flags
+                let isValid = true;
+                let validationMessages = []; // Initialize validationMessages as an array
+
+                // Name Event Validation
+                const nameEvent = document.getElementById('name').value;
+                if (nameEvent.length > 64) {
+                    isValid = false;
+                    validationMessages.push(" Name Event length must be <= 64 letters.");
+                }
+
+                // Date Validations
+                const startDate = new Date(document.getElementById('start_date').value);
+                const endDate = new Date(document.getElementById('end_date').value);
+                const ticketSaleDate = new Date(document.getElementById('ticket_sale_date').value);
+                const now = new Date();
+
+                if (startDate < now) {
+                    isValid = false;
+                    validationMessages.push("Start Date must be in the present or future.");
+                }
+
+                if (endDate < now || endDate < startDate) {
+                    isValid = false;
+                    validationMessages.push("End Date must be in the present or future and not earlier than the Start Date.");
+                }
+
+                if (ticketSaleDate < now || ticketSaleDate > endDate) {
+                    isValid = false;
+                    validationMessages.push("Ticket Sale Date must be in the present or future and not later than the End Date.");
+                }
+
+                // Display validation messages or submit form
+                if (!isValid) {
+                    showAlert(validationMessages); // Pass validationMessages as an array
+                } else {
+                    form.submit(); // Submit form if validation passes
+                }
+            });
+        });
+
+        function showAlert(messages) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.innerHTML = ''; // Clear previous messages
+            alertDiv.style.display = 'block';
+            alertDiv.style.opacity = '1';
+            // Check if messages is an array before using forEach
+            if (Array.isArray(messages)) {
+                // Loop through the messages array and create a list of alerts
+                messages.forEach((message, index) => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.textContent = message;
+                    alertDiv.appendChild(messageDiv);
+
+                    // Fade out effect for each message
+                    setTimeout(function () {
+                        messageDiv.style.opacity = '0';
+                    }, 5000); // Each message fades out 1 second after the previous one
+                });
+            } else {
+                // Handle case where messages is not an array (for debugging or error handling)
+                console.error("Invalid messages format:", messages);
+            }
+
+            alertDiv.style.display = 'block';
+
+            // Hide alertDiv after all messages have faded out
+           
+        }
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Validation functions
+            function showAlert(message) {
+                const alertDiv = document.getElementById('alertMessage');
+                alertDiv.innerHTML = message;
+                alertDiv.style.display = 'block';
+                alertDiv.style.opacity = '1';
+                // Để ẩn thông báo sau một vài giây
+                setTimeout(function () {
+                    alertDiv.style.opacity = '0';
+                }, 4000);
+
+                // Hoàn toàn ẩn sau khi hiệu ứng mờ dần hoàn tất
+                setTimeout(function () {
+                    alertDiv.style.display = 'none';
+                }, 5000);
+            }
+            function validateNameEvent() {
+                const nameEvent = document.getElementById('name').value;
+                if (nameEvent.length > 64) {
+                    showAlert("MSG52: Name Event length must be <= 64 letters.");
+                    return false;
+                }
+                return true;
+            }
+
+
+
+            function validateDates() {
+                const startDate = new Date(document.getElementById('start_date').value);
+                const endDate = new Date(document.getElementById('end_date').value);
+                const ticketSaleDate = new Date(document.getElementById('ticket_sale_date').value);
+                const now = new Date();
+
+                if (startDate < now) {
+                    showAlert("Start Date must be in the present or future.");
+                    return false;
+                }
+
+                if (endDate < now || endDate < startDate) {
+                    showAlert("End Date must be in the present or future and not earlier than the Start Date.");
+                    return false;
+                }
+
+                if (ticketSaleDate < now || ticketSaleDate > endDate) {
+                    showAlert("Ticket Sale Date must be in the present or future and not later than the End Date.");
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Attach event listeners for real-time validation
+            document.getElementById('name').addEventListener('input', validateNameEvent);
+            document.getElementById('start_date').addEventListener('change', validateDates);
+            document.getElementById('end_date').addEventListener('change', validateDates);
+            document.getElementById('ticket_sale_date').addEventListener('change', validateDates);
+            syncDates();
+        });
+    </script>
+    <script>
+        function syncDates() {
+            const startDateElem = document.getElementById('start_date');
+            const endDateElem = document.getElementById('end_date');
+            const ticketSaleDateElem = document.getElementById('ticket_sale_date');
+            const now = new Date();
+
+            startDateElem.addEventListener('change', function () {
+                const startDateValue = startDateElem.value;
+                if (startDateValue) {
+                    endDateElem.min = startDateValue;
+                    // Ensure ticket sale date is not before current date
+                    ticketSaleDateElem.min = now.toISOString().split('T')[0]; // Set min date to today's date
+                    if (new Date(ticketSaleDateElem.value) < now) {
+                        ticketSaleDateElem.value = now.toISOString().split('T')[0]; // Set value to today's date if it's before today
+                    }
+                }
+            });
+
+            endDateElem.addEventListener('change', function () {
+                const endDateValue = endDateElem.value;
+                if (endDateValue) {
+                    ticketSaleDateElem.max = endDateValue;
+                    // Reset min value if ticketSaleDateElem value is after the new max
+                    if (new Date(ticketSaleDateElem.value) > new Date(endDateValue)) {
+                        ticketSaleDateElem.value = endDateValue;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

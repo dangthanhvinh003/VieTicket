@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.repo.EventRepo;
-import com.example.VieTicketSystem.model.repo.OrganizerRepo;
-import com.example.VieTicketSystem.model.repo.UserRepo;
-import com.example.VieTicketSystem.model.service.Oauth2Service;
-import com.example.VieTicketSystem.model.service.VerifyEmailService;
+import com.example.VieTicketSystem.repo.EventRepo;
+import com.example.VieTicketSystem.repo.OrganizerRepo;
+import com.example.VieTicketSystem.repo.UserRepo;
+import com.example.VieTicketSystem.service.Oauth2Service;
+import com.example.VieTicketSystem.service.VerifyEmailService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -46,16 +46,16 @@ public class UserController {
 
     @PostMapping(value = "/editUser") // Them thuoc tinh cho organizer
     public String editUser(@RequestParam("fullName") String nameInput,
-                           @RequestParam("phone") String phoneInput,
-                           @RequestParam("email") String emailInput,
-                           @RequestParam("dob") Date dobInput,
-                           @RequestParam("gender") Character genderInput,
-                           @RequestParam(value = "foundedDate", required = false) Date foundedDateInput,
-                           @RequestParam(value = "website", required = false) String websiteInput,
-                           @RequestParam(value = "organizerAddr", required = false) String organizerAddrInput,
-                           @RequestParam(value = "organizerType", required = false) String organizerTypeInput,
-                           Model model,
-                           HttpSession httpSession) throws Exception {
+            @RequestParam("phone") String phoneInput,
+            @RequestParam("email") String emailInput,
+            @RequestParam("dob") Date dobInput,
+            @RequestParam("gender") Character genderInput,
+            @RequestParam(value = "foundedDate", required = false) Date foundedDateInput,
+            @RequestParam(value = "website", required = false) String websiteInput,
+            @RequestParam(value = "organizerAddr", required = false) String organizerAddrInput,
+            @RequestParam(value = "organizerType", required = false) String organizerTypeInput,
+            Model model,
+            HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         // Update common user attributes
@@ -101,22 +101,22 @@ public class UserController {
         if (user == null || user.isVerified()) {
             return "redirect:/"; // Redirect if not applicable
         }
-        return "verify-email";
+        return "auth/verify-email";
     }
 
     @PostMapping(value = "/auth/login")
     public String doLogin(@RequestParam("username") String usernameInput,
-                          @RequestParam("password") String passwordInput,
-                          Model model, HttpSession httpSession) throws Exception {
+            @RequestParam("password") String passwordInput,
+            Model model, HttpSession httpSession) throws Exception {
         User user = userRepo.findByUsername(usernameInput);
         if (user == null) {
             model.addAttribute("error", "Invalid login, please try again");
-            return "login";
+            return "auth/login";
         }
 
         if (!passwordEncoder.matches(passwordInput, user.getPassword())) {
             model.addAttribute("error", "Invalid login, please try again");
-            return "login";
+            return "auth/login";
         }
 
         httpSession.setAttribute("activeUser", user);
@@ -133,10 +133,10 @@ public class UserController {
             return "redirect:" + redirect;
         }
         if (user.getRole() == 'a') {
-            return "redirect:/dashboardAdmin";
+            return "redirect:/admin/dashboard";
         }
         if (user.getRole() == 'p' || user.getRole() == 'b') {
-            return "banned";
+            return "auth/banned";
         }
 
         return "redirect:/";
@@ -154,26 +154,59 @@ public class UserController {
         return "redirect:/";
     }
 
-    @GetMapping(value = {"", "/"})
-    public String showLogin(HttpSession session) throws Exception {
-        List<Event> events = eventRepo.getAllEvents();
+    @GetMapping(value = { "", "/" })
+    public String showLogin(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
+            HttpSession session) throws Exception {
+
+        List<Event> events = eventRepo.getEventsPaginated(page, size);
         List<Event> hotEvents = eventRepo.getTopHotEvents();
-        // System.out.println(hotEvents);
+        int totalEvents = eventRepo.countApprovedEvents();
+        int totalPages = (int) Math.ceil((double) totalEvents / size);
+
         session.setAttribute("hotevents", hotEvents);
         session.setAttribute("events", events);
+        session.setAttribute("currentPage", page);
+        session.setAttribute("totalPages", totalPages);
         session.setAttribute("eventCreated", false);
-        return "index";
+        System.out.println("gọi về index");
+        return "public/index";
+    }
+
+    @GetMapping("/eventsListFragment")
+    public String getEventsListFragment(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
+            HttpSession session,
+            Model model) throws Exception {
+
+        List<Event> events = eventRepo.getEventsPaginated(page, size);
+        model.addAttribute("events", events);
+        session.setAttribute("events", events);
+
+        int totalEvents = eventRepo.countApprovedEvents();
+        System.out.println(totalEvents);
+        int totalPages = (int) Math.ceil((double) totalEvents / size);
+        System.out.println("Received totalPages from server: " + totalPages);
+
+        session.setAttribute("currentPage", page);
+        session.setAttribute("totalPages", totalPages);
+
+        System.out.println(events);
+        System.out.println("gọi về eventsListFragment");
+        return "eventsFragment :: eventsList";
     }
 
     @GetMapping("/auth/login")
     public String loginPage() {
 
-        return "login"; // Trả về tên của trang login.html
+        return "auth/login"; // Trả về tên của trang login.html
     }
 
     @GetMapping("/auth/login/oauth2/google")
     public String doLoginWithGoogle(@RequestParam("code") String authorizationCode,
-                                    HttpSession httpSession)
+            HttpSession httpSession)
             throws Exception {
         // System.out.println("hello");
         Oauth2Service oauth2 = new Oauth2Service();
@@ -193,25 +226,25 @@ public class UserController {
 
     @GetMapping("/auth/reset-password")
     public String showPasswordResetForm() {
-        return "reset-password";
+        return "auth/reset-password";
     }
 
     @GetMapping("/change")
     public String changeProfile() {
-        return "changeProfile"; // Trả về tên của trang changeProfile
+        return "user-settings/change-profile"; // Trả về tên của trang changeProfile
     }
 
     @GetMapping("/change-password")
     public String changePassword() {
-        return "change-password"; // Trả về tên của trang changePassword
+        return "user-settings/change-password"; // Trả về tên của trang changePassword
     }
 
     @PostMapping(value = "/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
-                                 @RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmPassword") String confirmPassword,
-                                 Model model,
-                                 HttpSession httpSession) throws Exception {
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Model model,
+            HttpSession httpSession) throws Exception {
         User activeUser = (User) httpSession.getAttribute("activeUser");
 
         if (activeUser == null) {
@@ -255,50 +288,50 @@ public class UserController {
 
     @GetMapping("/signup")
     public String signupPage() {
-        return "signup"; // Trả về trang signup.html
+        return "auth/signup"; // Trả về trang signup.html
     }
     
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
-                         @RequestParam("phone") String phone,
-                         @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
-                         @RequestParam("gender") char gender,
-                         @RequestParam("email") String email,
-                         @RequestParam("username") String username,
-                         @RequestParam("password") String password,
-                         @RequestParam("confirmPassword") String confirmPassword,
-                         @RequestParam("role") char role,
-                         @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
-                         @RequestParam(value = "website", required = false) String website,
-                         @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
-                         @RequestParam(value = "organizerType", required = false) String organizerType,
-                         Model model, HttpSession httpSession) throws Exception {
+            @RequestParam("phone") String phone,
+            @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
+            @RequestParam("gender") char gender,
+            @RequestParam("email") String email,
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("confirmPassword") String confirmPassword,
+            @RequestParam("role") char role,
+            @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
+            @RequestParam(value = "website", required = false) String website,
+            @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
+            @RequestParam(value = "organizerType", required = false) String organizerType,
+            Model model, HttpSession httpSession) throws Exception {
 
         if (userRepo.existsByPhone(phone)) {
             model.addAttribute("error", "Phone already exists.");
-            return "signup";
+            return "auth/signup";
         }
         // Check if username already exists
         if (userRepo.existsByUsername(username)) {
             model.addAttribute("error", "Username already exists.");
-            return "signup";
+            return "auth/signup";
         }
 
         // Check if email already exists
         if (userRepo.existsByEmail(email)) {
             model.addAttribute("error", "Email already exists.");
-            return "signup";
+            return "auth/signup";
         }
 
         if (!userRepo.isValidPhone(phone)) {
             model.addAttribute("error",
                     "Phone invalid");
-            return "signup";
+            return "auth/signup";
         }
         if (!userRepo.isValidPassword(password)) {
             model.addAttribute("error",
                     "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
-            return "signup";
+            return "auth/signup";
         }
 
         // Hash the password

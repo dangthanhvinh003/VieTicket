@@ -85,6 +85,8 @@ function saveCanvasState() {
 
   canvasStates.push(state);
   currentStateIndex++;
+
+  sessionStorage.setItem("lastCanvasState", JSON.stringify(state));
 }
 
 function updateCurrentCanvasState() {
@@ -105,11 +107,15 @@ function updateCurrentCanvasState() {
     shapes: updatedShapes,
   };
   canvasStates[currentStateIndex - 1] = updatedState;
+
+  sessionStorage.setItem(
+    "lastCanvasState",
+    JSON.stringify(canvasStates[currentStateIndex - 1])
+  );
 }
 
 function restoreCanvasState(index) {
   const state = canvasStates[index];
-
   shapes = state.shapes.map((shapeData) => {
     switch (shapeData.type) {
       case "RectangleStage":
@@ -130,6 +136,29 @@ function restoreCanvasState(index) {
     drawAll();
   };
   image.src = state.canvasImage;
+}
+function restoreCanvasStateFromSession(state) {
+  const parsedState = JSON.parse(state);
+  shapes = parsedState.shapes.map((shapeData) => {
+    switch (shapeData.type) {
+      case "RectangleStage":
+        return RectangleStage.deserialize(shapeData);
+      case "EllipseStage":
+        return EllipseStage.deserialize(shapeData);
+      case "Area":
+        return PolygonArea.deserialize(shapeData);
+      default:
+        throw new Error("Unknown shape type: " + shapeData.type);
+    }
+  });
+
+  const image = new Image();
+  image.onload = function () {
+    ctx.clearRect(-600, -600, canvas.width * 1.5, canvas.height * 1.5);
+    ctx.drawImage(image, 0, 0);
+    drawAll();
+  };
+  image.src = parsedState.canvasImage;
 }
 
 function saveAreaCanvasState() {
