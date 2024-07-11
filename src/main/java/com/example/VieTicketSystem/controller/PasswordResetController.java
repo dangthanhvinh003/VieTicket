@@ -108,7 +108,7 @@ public class PasswordResetController {
             if (e instanceof ResponseStatusException) {
                 ObjectNode errorNode = mapper.createObjectNode();
                 errorNode.put("success", false);
-                errorNode.put("message", e.getMessage());
+                errorNode.put("message", ((ResponseStatusException) e).getReason());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
             } else {
                 ObjectNode errorNode = mapper.createObjectNode();
@@ -143,7 +143,7 @@ public class PasswordResetController {
             if (e instanceof ResponseStatusException) {
                 ObjectNode errorNode = mapper.createObjectNode();
                 errorNode.put("success", false);
-                errorNode.put("message", e.getMessage());
+                errorNode.put("message", ((ResponseStatusException) e).getReason());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
             }
 
