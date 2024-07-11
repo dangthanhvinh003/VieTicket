@@ -86,7 +86,7 @@
     </table>
 
     <!-- Nút đánh giá -->
-    <button id="rateButton" class="btn btn-primary mt-3">Rating</button>    
+    <button th:if="${order.status.toString() == 'SUCCESS' || order.status.toString().contains('PARTIAL')}" id="rateButton" class="btn btn-primary mt-3">Rating</button>
 
     <div th:if="${refundOrder != null}">
         <h3>Refund Request Information</h3>
@@ -344,7 +344,6 @@
                 console.log('Success:', data);
                 // Handle success - close the popup, show a message, etc.
                 ratingPopup.style.display = 'none';
-                window.location.href = data.url;
             })
             .catch(error => {
                 console.error('Error:', error);

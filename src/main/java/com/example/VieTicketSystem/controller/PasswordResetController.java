@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.example.VieTicketSystem.service.PasswordResetService;
 import com.example.VieTicketSystem.service.VerifyEmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/v1/auth/")
@@ -24,17 +25,15 @@ public class PasswordResetController {
     private final ObjectMapper mapper;
     private final VerifyEmailService verifyEmailService;
     private final HttpServletResponse httpServletResponse;
-    private final ServletRequest httpServletRequest;
     private final HttpSession httpSession;
 
     // Inject the PasswordResetService and ObjectMapper here
     public PasswordResetController(PasswordResetService passwordResetService, ObjectMapper mapper,
-                                   VerifyEmailService verifyEmailService, HttpServletResponse httpServletResponse, @Qualifier("httpServletRequest") ServletRequest httpServletRequest, HttpSession httpSession) {
+                                   VerifyEmailService verifyEmailService, HttpServletResponse httpServletResponse, HttpSession httpSession) {
         this.passwordResetService = passwordResetService;
         this.mapper = mapper;
         this.verifyEmailService = verifyEmailService;
         this.httpServletResponse = httpServletResponse;
-        this.httpServletRequest = httpServletRequest;
         this.httpSession = httpSession;
     }
 
@@ -106,10 +105,17 @@ public class PasswordResetController {
         } catch (Exception e) {
             // Handle the exception here
             e.printStackTrace();
-            ObjectNode errorNode = mapper.createObjectNode();
-            errorNode.put("success", false);
-            errorNode.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
+            if (e instanceof ResponseStatusException) {
+                ObjectNode errorNode = mapper.createObjectNode();
+                errorNode.put("success", false);
+                errorNode.put("message", e.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
+            } else {
+                ObjectNode errorNode = mapper.createObjectNode();
+                errorNode.put("success", false);
+                errorNode.put("message", "Internal server error");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
+            }
         }
 
         ObjectNode successNode = mapper.createObjectNode();
@@ -134,11 +140,18 @@ public class PasswordResetController {
             // Reset the password
             passwordResetService.resetPassword(token, newPassword);
         } catch (Exception e) {
+            if (e instanceof ResponseStatusException) {
+                ObjectNode errorNode = mapper.createObjectNode();
+                errorNode.put("success", false);
+                errorNode.put("message", e.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
+            }
+
             // Handle the exception here
             ObjectNode errorNode = mapper.createObjectNode();
             errorNode.put("success", false);
-            errorNode.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorNode);
+            errorNode.put("message", "Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorNode);
         }
 
         ObjectNode successNode = mapper.createObjectNode();
