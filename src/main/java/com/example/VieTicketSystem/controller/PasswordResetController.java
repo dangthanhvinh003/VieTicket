@@ -29,7 +29,7 @@ public class PasswordResetController {
 
     // Inject the PasswordResetService and ObjectMapper here
     public PasswordResetController(PasswordResetService passwordResetService, ObjectMapper mapper,
-                                   VerifyEmailService verifyEmailService, HttpServletResponse httpServletResponse, HttpSession httpSession) {
+            VerifyEmailService verifyEmailService, HttpServletResponse httpServletResponse, HttpSession httpSession) {
         this.passwordResetService = passwordResetService;
         this.mapper = mapper;
         this.verifyEmailService = verifyEmailService;
@@ -121,13 +121,19 @@ public class PasswordResetController {
         ObjectNode successNode = mapper.createObjectNode();
         successNode.put("success", true);
         successNode.put("message", "OTP verified successfully");
+        successNode.put("token", resetToken);
         return ResponseEntity.ok().body(successNode);
     }
 
     @PostMapping("/password-reset/new-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body, @CookieValue(value = "token", defaultValue = "") String token) {
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body,
+            @CookieValue(value = "token", defaultValue = "") String token) {
 
         String newPassword = body.get("newPassword");
+
+        if ("".equals(token)) {
+            token = body.get("token");
+        }
 
         if ("".equals(token) || newPassword == null) {
             ObjectNode errorNode = mapper.createObjectNode();
