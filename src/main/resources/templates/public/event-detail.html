@@ -186,7 +186,7 @@
             background: #191825;
             overflow-x: hidden;
         }
-
+        
         /* thong tin */
         .container {
             background-color: #1c1c1c;
@@ -367,6 +367,56 @@
                 border-bottom: 2px dashed #fff;
             }
         }
+        footer {
+            background-color: #1c1c2b;
+            padding: 20px 0;
+            border-top: 2px solid #4c4c6d;
+            color: #bbb;
+        }
+
+        .footer-column {
+            margin-bottom: 20px;
+        }
+
+        .footer-column h5 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .footer-column ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            color: white;
+            margin-right: 15px;
+            font-size: 1.5em;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            color: #007bff;
+        }
+
+
     </style>
 
 </head>
@@ -522,6 +572,50 @@
             </div>
         </div>
     </div>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>VieTicket</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>For User</h5>
+                    <ul>
+                        <li><a href="#">How to use the platform</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                 
+                    </ul>
+                    <h5>For Organizer</h5>
+                    <ul>
+                        <li><a href="#">Terms and contracts</a></li>
+                        <li><a href="#">How to organize an event</a></li>
+                        
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-column">
+                    <h5>About Us</h5>
+                    <ul>
+                        <li><a href="#">Operating regulations</a></li>
+                        <li><a href="#">Information security policy</a></li>
+                        <li><a href="#">Dispute/complaint resolution mechanism</a></li>
+                        <li><a href="#">Payment security policy</a></li>
+                        <li><a href="#">Payment methods</a></li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const priceElements = document.querySelectorAll('.price');
