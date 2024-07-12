@@ -24,18 +24,18 @@
 <body>
     <div class="container mt-4">
         <div class="mt-4">
-            <a th:href="@{/viewMyListEvent}" class="btn btn-secondary">Quay lại</a>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sendInfoModal">Gửi thông tin</button>
+            <a th:href="@{/viewMyListEvent}" class="btn btn-secondary">Go back</a>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sendInfoModal">Send information</button>
         </div>
-        <h1>Danh sách người dùng đã mua vé</h1>
+        <h1>List of users who bought tickets</h1>
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>ID Người Dùng</th>
-                    <th>Họ Tên</th>
-                    <th>Tên Đăng Nhập</th>
+                    <th>User ID</th>
+                    <th>Full Name</th>
+                    <th>Username</th>
                     <th>Email</th>
-                    <th>Số Điện Thoại</th>
+                    <th>Phone</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,7 +56,7 @@
             <div class="modal-content">
                 <form th:action="@{/sendMailToAllUser}" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="sendInfoModalLabel">Gửi thông tin</h5>
+                        <h5 class="modal-title" id="sendInfoModalLabel">Send infor</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -72,8 +72,8 @@
                         <input type="" id="organizerEmails" name="organizerEmails">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary">Gửi</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Send</button>
                     </div>
                 </form>
             </div>
