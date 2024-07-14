@@ -430,7 +430,7 @@ function finishSeatDrawing(event) {
   if (!isDrawing) return;
   isDrawing = false;
   clickCount = 0;
-
+  console.log(seatRadius, seatSpacing);
   canvas.removeEventListener("mousemove", drawSeatPreview);
   canvas.removeEventListener("click", finishSeatDrawing);
   const endX = event.clientX - translateX;
