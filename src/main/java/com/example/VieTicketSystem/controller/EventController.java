@@ -441,6 +441,7 @@ public class EventController {
 
         // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
         return "public/event-detail";
+
     }
 
     @GetMapping("/viewAllEvent")
