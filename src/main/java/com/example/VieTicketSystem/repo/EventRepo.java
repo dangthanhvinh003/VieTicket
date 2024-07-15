@@ -895,25 +895,6 @@ public class EventRepo {
         }
         return events;
     }
-    public boolean hideEvent(int eventId) {
-        String query = "UPDATE Event SET is_approve = 2 WHERE event_id = ?";
-        
-        try (Connection connection = ConnectionPoolManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-    
-            statement.setInt(1, eventId);
-            int rowsUpdated = statement.executeUpdate();
-    
-            // Kiểm tra xem có bất kỳ hàng nào bị ảnh hưởng không
-            return rowsUpdated > 0;
-    
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    
 
     public boolean hideEvent(int eventId) {
         String query = "UPDATE Event SET is_approve = 2 WHERE event_id = ?";
@@ -932,6 +913,7 @@ public class EventRepo {
             return false;
         }
     }
+
     public boolean payEvent(int eventId) {
         String query = "UPDATE Event SET is_approve = 5 WHERE event_id = ?";
 
@@ -953,11 +935,10 @@ public class EventRepo {
     public List<Event> getAllEventPass() {
         List<Event> events = new ArrayList<>();
         String query = "SELECT * "
-           + "FROM Event "
-           + "WHERE (is_approve = 1 AND end_date <= NOW()) "
-           + "OR (is_approve = 4 AND end_date <= NOW()) "
-           + "OR (is_approve = 5 AND end_date <= NOW())";
-
+                + "FROM Event "
+                + "WHERE (is_approve = 1 AND end_date <= NOW()) "
+                + "OR (is_approve = 4 AND end_date <= NOW()) "
+                + "OR (is_approve = 5 AND end_date <= NOW())";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query);
