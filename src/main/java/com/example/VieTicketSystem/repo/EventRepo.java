@@ -873,5 +873,24 @@ public class EventRepo {
         }
         return events;
     }
+    public boolean hideEvent(int eventId) {
+        String query = "UPDATE Event SET is_approve = 2 WHERE event_id = ?";
+        
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+    
+            statement.setInt(1, eventId);
+            int rowsUpdated = statement.executeUpdate();
+    
+            // Kiểm tra xem có bất kỳ hàng nào bị ảnh hưởng không
+            return rowsUpdated > 0;
+    
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    
 
 }

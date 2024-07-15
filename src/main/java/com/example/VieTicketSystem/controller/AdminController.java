@@ -283,6 +283,23 @@ public class AdminController {
         model.addAttribute("events", events);
         return "admin/events/ongoing";
     }
+    @GetMapping("/hideEvent")
+    public String hideEvent(@RequestParam("eventId") int eventId, Model model) throws Exception {
+        boolean isHidden = eventRepo.hideEvent(eventId);
+        
+        if (isHidden) {
+            model.addAttribute("message", "Event has been hidden successfully.");
+        } else {
+            model.addAttribute("message", "Failed to hide the event.");
+        }
+    
+        // Fetch the updated list of events and add to the model
+        List<Event> events = eventRepo.getAllOngoingEvents();
+        model.addAttribute("events", events);
+        
+        return "admin/events/ongoing";
+    }
+    
 
     @GetMapping(value = "/searchEvents")
     public String searchEvents(@RequestParam("query") String query, Model model) throws Exception {
