@@ -301,7 +301,7 @@ public class AdminRepo {
              + " WHERE t.status = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
              + "(SELECT COUNT(*) "
              + " FROM Event "
-             + " WHERE is_approve = 1 AND end_date > NOW()) AS total_ongoing_events, "
+             + " WHERE is_approve = 1)  AS total_ongoing_events, "
              + "(SELECT COUNT(*) "
              + " FROM Event "
              + " WHERE is_approve = 0) AS total_approved_events, "

@@ -823,7 +823,7 @@ public class EventRepo {
 
     public List<Event> getAllOngoingEvents() {
         List<Event> events = new ArrayList<>();
-        String query = "SELECT * FROM Event WHERE is_approve = 1 AND (start_date <= NOW() AND (end_date IS NULL OR end_date >= NOW()))";
+        String query = "SELECT * FROM Event WHERE is_approve = 1 ";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
