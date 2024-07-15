@@ -60,7 +60,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="event : ${events}">
+                    <tr th:each="event : ${events}" th:attr="data-end-date=${#temporals.format(event.endDate, 'yyyy-MM-dd')}">
+
                         <td th:text="${event.eventId}">1</td>
                         <td th:text="${event.name}">Event Name</td>
                         <td th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')}">Start Date</td>
@@ -80,11 +81,34 @@
                             </form>
                         </td>
                     </tr>
+                    
+                    
                 </tbody>
             </table>
         </div>
     </div>
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const rows = document.querySelectorAll("tr[data-end-date]");
+            const today = new Date();
+            
+            rows.forEach(row => {
+                const endDateStr = row.getAttribute("data-end-date");
+                const endDate = new Date(endDateStr);
+                console.log(`Checking row with end date: ${endDateStr}`); // Debugging line
+    
+                const timeDiff = today - endDate; // Difference in milliseconds
+                const dayDiff = timeDiff / (1000 * 60 * 60 * 24); // Difference in days
+                console.log(`Days difference: ${dayDiff}`); // Debugging line
+    
+                if (dayDiff > 5) {
+                    row.style.backgroundColor = "#FF6A6A";
+                }
+            });
+        });
+    </script>
+    
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
