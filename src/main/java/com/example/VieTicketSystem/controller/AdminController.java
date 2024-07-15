@@ -23,6 +23,8 @@ import com.example.VieTicketSystem.repo.EventRepo;
 import com.example.VieTicketSystem.repo.UserRepo;
 import com.example.VieTicketSystem.service.EmailService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class AdminController {
     @Autowired
@@ -268,7 +270,13 @@ public class AdminController {
 
         return "admin/users/view";
     }
-
+     @PostMapping(value = "/eventEditPageAdmin")
+    public String eventEditPage(@RequestParam("eventId") int eventId, Model model, HttpSession httpSession) {
+        httpSession.setAttribute("eventIdEdit", eventId);
+        Event event = eventRepo.getEventById(eventId);
+        model.addAttribute("eventEdit", event);
+        return "admin/events/editEventAdmin";
+    }
     @GetMapping(value = ("/ViewAllEventOngoing"))
     public String allEventOngoingPage(Model model) throws Exception {
         List<Event> events = eventRepo.getAllOngoingEvents();

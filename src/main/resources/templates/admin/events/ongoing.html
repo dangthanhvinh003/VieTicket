@@ -72,7 +72,7 @@
                         <td th:text="${event.approved == 1 ? 'Yes' : 'No'}">Approved</td>
                         <td th:text="${event.eyeView}">Eye View</td>
                         <td>
-                            <form th:action="@{/eventEditPage}" method="post">
+                            <form th:action="@{/eventEditPageAdmin}" method="post">
                                 <input type="hidden" name="eventId" th:value="${event.eventId}" />
                                 <button type="submit" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> Edit
