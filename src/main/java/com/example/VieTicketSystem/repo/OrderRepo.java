@@ -2,8 +2,6 @@ package com.example.VieTicketSystem.repo;
 
 import com.example.VieTicketSystem.model.entity.Order;
 import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.model.entity.Rating;
-
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -176,24 +174,5 @@ public class OrderRepo {
             ps.close();
         }
         return Integer.MIN_VALUE;
-    }
-
-    //Rating Organize 
-    public void submitRating(int star, int organizer_id, int order_id) {
-        String sql = "INSERT INTO Rating (star, organizer_id, order_id) VALUES (?, ?, ?)";
-
-        try (Connection connection = ConnectionPoolManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            preparedStatement.setInt(1, star);
-            preparedStatement.setInt(2, organizer_id);
-            preparedStatement.setInt(3, order_id);
-
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            // Handle exceptions appropriately
-            throw new RuntimeException("Error saving rating to the database", e);
-        }
     }
 }

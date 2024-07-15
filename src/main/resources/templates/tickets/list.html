@@ -77,8 +77,7 @@
             <td>
                         <span
                                 th:style="'color:' + (${ticket.status.toString()} == 'PURCHASED' ? '#40a02b' : (${ticket.status.toString()} == 'PENDING' ? '#df8e1d' : '#d20f39'))"
-                                th:text="${ticket.status}">
-                        </span>
+                                th:text="${ticket.status}"></span>
             </td>
             <td>
                 <a th:href="@{/tickets/view-ticket(ticketId=${ticket.ticketId})}" class="btn btn-primary">

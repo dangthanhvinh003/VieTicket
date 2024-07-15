@@ -84,7 +84,8 @@ public class UserController {
                 activeOrganizer.setOrganizerType(organizerTypeInput);
             }
 
-            // Call repository method to update organizer-specific attributes in the database
+            // Call repository method to update organizer-specific attributes in the
+            // database
             organizerRepo.save(activeOrganizer);
             httpSession.setAttribute("activeOrganizer", activeOrganizer);
         }
@@ -275,7 +276,8 @@ public class UserController {
     public String profilePage(Model model, HttpSession httpSession) {
         // Kiểm tra xem session "activeUser" có tồn tại hay không
         if (httpSession.getAttribute("activeUser") == null) {
-            // Nếu không tồn tại session "activeUser", chuyển hướng người dùng đến trang đăng nhập
+            // Nếu không tồn tại session "activeUser", chuyển hướng người dùng đến trang
+            // đăng nhập
             return "redirect:/auth/login";
         }
 
@@ -290,7 +292,7 @@ public class UserController {
     public String signupPage() {
         return "auth/signup"; // Trả về trang signup.html
     }
-    
+
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
             @RequestParam("phone") String phone,

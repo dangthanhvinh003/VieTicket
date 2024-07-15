@@ -27,7 +27,7 @@ public class Event {
     private Organizer organizer;
     private String poster;
     private String banner;
-    private int approved;
+    private int approved; //0. pending 1. Approved  2. Hide 3. Rejected 
     private List<Area> areas; // Danh sách các khu vực và giá tiền
     private SeatMap seatMap; // Ảnh của sơ đồ chỗ ngồi
     private int eyeView;

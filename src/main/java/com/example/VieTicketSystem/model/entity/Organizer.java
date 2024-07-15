@@ -17,4 +17,3 @@ public class Organizer extends User{
     private String organizerType;
     private boolean isActive;
 }
-

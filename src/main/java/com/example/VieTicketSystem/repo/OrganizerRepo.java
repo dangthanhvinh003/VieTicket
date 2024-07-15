@@ -163,22 +163,4 @@ public class OrganizerRepo {
 
         return organizer;
     }
-
-    public Double getAverageRatingForOrganizer(int organizerId) throws SQLException {
-        try (Connection conn = ConnectionPoolManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT AVG(star) FROM Rating WHERE organizer_id = ?");
-        ) {
-            stmt.setInt(1, organizerId);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble(1); // Assuming the result is a double (AVG function result)
-                }
-            }
-        }
-
-        return null; // Return null if no rating is found for the organizer
-    }
-
-
 }

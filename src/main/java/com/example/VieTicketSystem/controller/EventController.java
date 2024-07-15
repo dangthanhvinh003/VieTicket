@@ -1,32 +1,7 @@
 package com.example.VieTicketSystem.controller;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
 import com.cloudinary.Cloudinary;
-import com.example.VieTicketSystem.model.dto.AdditionalData;
-import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
-import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.Row;
 import com.example.VieTicketSystem.model.entity.Seat;
 import com.example.VieTicketSystem.model.entity.User;
@@ -41,8 +16,30 @@ import com.example.VieTicketSystem.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
-import java.text.DecimalFormat;
-import java.util.stream.Collectors;
+import com.example.VieTicketSystem.model.dto.AdditionalData;
+import com.example.VieTicketSystem.model.entity.Area;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 public class EventController {
@@ -399,27 +396,23 @@ public class EventController {
     @GetMapping("/viewdetailEvent/{id}")
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
-        eventRepo.incrementClickCount(event.getEventId());
-        Organizer currentOrganizer = organizerRepo.getOrganizerByEventId(eventId);
+        if (event != null) {
+            eventRepo.incrementClickCount(event.getEventId());
+            model.addAttribute("event", event);
+            model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+            List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
 
-        double averageRating = organizerRepo.getAverageRatingForOrganizer(currentOrganizer.getUserId());
-        DecimalFormat df = new DecimalFormat("#.#");
-        String formattedRating = df.format(averageRating);
+            // Tìm giá vé thấp nhất
+            Float minPrice = null;
+            if (!ticketPrices.isEmpty()) {
+                minPrice = Collections.min(ticketPrices);
+            }
+            model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
 
-        model.addAttribute("event", event);
-        model.addAttribute("organizer", currentOrganizer);
-        model.addAttribute("stars", formattedRating);
-        List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
-
-        // Tìm giá vé thấp nhất
-        Float minPrice = null;
-        if (!ticketPrices.isEmpty()) {
-            minPrice = Collections.min(ticketPrices);
+            // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
+            return "public/event-detail";
         }
-        model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
-
-        // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
-        return "public/event-detail";
+        return "error/404";
     }
 
     @GetMapping("/viewAllEvent")
@@ -439,24 +432,4 @@ public class EventController {
 
         return "event/view/tickets-bought"; // Tên của template hiển thị danh sách người dùng
     }
-
-    @GetMapping(value = "/eventsByCategory")
-    public String eventsByCategory(@RequestParam("category") String category, Model model, HttpSession httpSession) {
-    List<Event> eventList = eventRepo.getAllEvents();
-    List<Event> filteredEvents = eventList.stream()
-            .filter(event -> event.getType().equalsIgnoreCase(category))
-            .collect(Collectors.toList());
-    model.addAttribute("eventList", filteredEvents);
-    model.addAttribute("pageType", "category");
-    return "public/search-results";
-    }
-
-    @GetMapping(value = "/showAllEvents")
-    public String allEvents(Model model, HttpSession httpSession) {
-    List<Event> eventList = eventRepo.getAllEvents();
-    model.addAttribute("eventList", eventList);
-    model.addAttribute("pageType", "all");
-    return "public/search-results";
-    }
-
 }

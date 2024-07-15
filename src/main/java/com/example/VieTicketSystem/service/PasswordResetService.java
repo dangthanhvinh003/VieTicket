@@ -3,14 +3,12 @@ package com.example.VieTicketSystem.service;
 import com.example.VieTicketSystem.config.JwtUtil;
 import com.example.VieTicketSystem.model.dto.UserSecretInfo;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.VieTicketSystem.model.entity.User;
 import com.example.VieTicketSystem.repo.UserRepo;
 import com.example.VieTicketSystem.repo.UserSecretsRepo;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PasswordResetService {
@@ -74,18 +72,18 @@ public class PasswordResetService {
         User user = userRepository.findByEmail(email);
         user = user == null ? userRepository.findByUsername(email) : user;
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
+            throw new Exception("User not found");
         }
 
         // Check if the user has a secret key
         String secretKey = userSecretsRepo.getSecretKey(user.getUserId());
-        if (secretKey == null) {;
-            throw new RuntimeException("Secret key not found");
+        if (secretKey == null) {
+            throw new Exception("Secret key not found");
         }
 
         // Verify the OTP
         if (!otpService.validateOTP(secretKey, otp)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP");
+            throw new Exception("Invalid OTP");
         }
         userSecretsRepo.deleteSecretKey(user.getUserId());
 
@@ -97,18 +95,13 @@ public class PasswordResetService {
         // Verify the token
         String userName = jwtUtil.extractUsername(token);
         if (userName == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token.");
+            throw new Exception("Invalid token");
         }
 
         // Find the user
         User user = userRepository.findByUsername(userName);
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found from token.");
-        }
-
-        // Check password strength
-        if (!userRepository.isValidPassword(newPassword)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password not strong enough lah.");
+            throw new Exception("User not found");
         }
 
         // Update the user's password

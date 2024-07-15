@@ -63,9 +63,7 @@ public class AuthFilter implements Filter {
                 || requestURI.equals("/auth/reset-password") || requestURI.equals("/auth/password-reset")
                 || requestURI.equals("/auth/verify-otp") || requestURI.equals("/signup")
                 || requestURI.equals("/auth/log-out") || requestURI.equals("/") || requestURI.equals("/search-event")
-                || requestURI.equals("/eventsByCategory")
                 || requestURI.equals("/searchResults") || requestURI.equals("/viewAllEvent")
-                || requestURI.equals("/showAllEvents")
                 || requestURI.equals("/rating") || requestURI.startsWith("/viewdetailEvent")
                 || requestURI.startsWith("/eventsListFragment")
                 || requestURI.startsWith("/api")) && !isUnverified) {
@@ -79,10 +77,9 @@ public class AuthFilter implements Filter {
             chain.doFilter(request, response);
         } else if (isUser(user)
                 && (requestURI.startsWith("/change") || requestURI.startsWith("/editUser")
-                        || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets"))
-                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase")
-                || requestURI.startsWith("/orders") || requestURI.startsWith("/orders/rating")
-                || requestURI.startsWith("/orders/rating-exists")) {
+                        || requestURI.startsWith("/upload") || requestURI.startsWith("/tickets")
+                        || requestURI.startsWith("/orders"))
+                || requestURI.startsWith("/auth/verify-email") || requestURI.startsWith("/purchase")) {
             // Người dùng có role USER chỉ được truy cập trang search
             chain.doFilter(request, response);
         } else if (isOrganizer(user)) {
@@ -117,7 +114,6 @@ public class AuthFilter implements Filter {
                                 || requestURI.startsWith("/createEventSuccess"))
                         || requestURI.startsWith("/eventEditPage") || requestURI.startsWith("/eventEditSubmit")
                         || requestURI.startsWith("/viewStatistics") || requestURI.startsWith("/eventUsers")
-                        || requestURI.startsWith("/organizer")
                         || requestURI.startsWith("/sendMailToAllUser")) {
                     if (requestURI.startsWith("/createEvent")) {
                         session.setAttribute("eventCreated", true);

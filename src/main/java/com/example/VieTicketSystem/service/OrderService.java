@@ -179,25 +179,29 @@ public class OrderService {
         return emailContent.toString();
     }
 
-    public void initiateRefund(RefundOrder refundOrder) throws Exception {
-        float defaultRefundProportion = 0.7f;
-        initiateRefund(refundOrder, defaultRefundProportion);
-    }
-
-    public void initiateRefund(RefundOrder refundOrder, float refundProportion) throws Exception {
-        Order order = refundOrder.getOrder();
+    // Create refund order and request refund from VNPay
+    public RefundOrder createRefundOrder(Order order, long amount) throws Exception {
+        if (amount > order.getTotal()) {
+            throw new IllegalArgumentException("Refund amount cannot exceed the total amount of the order");
+        }
 
         // Get VNPay data
         Map<String, String> vnPayPersist = objectMapper.readValue(order.getVnpayData(),
                 new TypeReference<>() {
                 });
 
-        // Set refund order status
+        // Create refund order
+        RefundOrder refundOrder = new RefundOrder();
+        refundOrder.setCreatedOn(LocalDateTime.now());
+        refundOrder.setOrder(order);
         refundOrder.setStatus(RefundOrder.RefundStatus.PENDING);
-        refundOrder.setApprovedOn(LocalDateTime.now());
-        refundOrderRepo.saveApprovalStatus(refundOrder);
 
-        long amount = Math.round(refundOrder.getTotal() * refundProportion);
+        // Set order status to PENDING_REFUND
+        order.setStatus(Order.PaymentStatus.PENDING_REFUND);
+        orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.PENDING_REFUND);
+
+        // Save refund order
+        refundOrderRepo.save(refundOrder);
 
         // Request refund from VNPay
         vnPayService.refundOrder(vnPayPersist, amount)
@@ -220,32 +224,15 @@ public class OrderService {
                     // Check if the refund is successful
                     // Refund is unavailable in the sandbox environment; therefore, we always set the refund status to SUCCESS
                     if (true || vnPayService.processResponse(responseMap) == VNPayService.VNPayStatus.SUCCESS) {
-                        switch (order.getStatus()) {
-                            case PENDING_PARTIAL_REFUND -> {
-                                try {
-                                    seatRepo.updateSeats(ticketRepo.findSeatIdsByOrderIdAndStatus(order.getOrderId(), Ticket.TicketStatus.PENDING_REFUND.toInteger()), Seat.TakenStatus.AVAILABLE);
-                                    ticketRepo.updateStatusByOrderIdAndStatus(order.getOrderId(), Ticket.TicketStatus.PENDING_REFUND.toInteger(), Ticket.TicketStatus.RETURNED.toInteger());
-                                    orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.PARTIALLY_REFUNDED);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-
-                            case PENDING_TOTAL_REFUND -> {
-                                try {
-                                    seatRepo.updateSeats(ticketRepo.findByOrderId(order.getOrderId()).stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.AVAILABLE);
-                                    ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.RETURNED.toInteger());
-                                    orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.TOTALLY_REFUNDED);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-
-                            default -> throw new IllegalArgumentException("Database integrity error.");
-                        }
-
+                        order.setStatus(Order.PaymentStatus.REFUNDED);
                         refundOrder.setStatus(RefundOrder.RefundStatus.SUCCESS);
-
+                        try {
+                            orderRepo.updateStatus(order.getOrderId(), Order.PaymentStatus.REFUNDED);
+                            ticketRepo.updateStatusByOrderId(order.getOrderId(), Ticket.TicketStatus.RETURNED.toInteger());
+                            seatRepo.updateSeats(ticketRepo.findByOrderId(order.getOrderId()).stream().map(ticket -> ticket.getSeat().getSeatId()).collect(Collectors.toList()), Seat.TakenStatus.AVAILABLE);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     } else {
                         refundOrder.setStatus(RefundOrder.RefundStatus.FAILED);
                     }
@@ -255,6 +242,8 @@ public class OrderService {
                         throw new RuntimeException(e);
                     }
                 });
+
+        return refundOrder;
     }
 
     // Calculate total price of selected seats
@@ -295,7 +284,7 @@ public class OrderService {
                         VNPayService.VNPayStatus vnPayStatus = vnPayService.processResponse(responseMap);
 
                         // Check if the order not expired and the payment status is not SUCCESS
-                        if (vnPayStatus == VNPayService.VNPayStatus.INVALID || vnPayStatus != VNPayService.VNPayStatus.SUCCESS && order.getDate().plusMinutes(ORDER_EXPIRATION).isAfter(LocalDateTime.now())) {
+                        if (vnPayStatus == VNPayService.VNPayStatus.INVALID || vnPayStatus != VNPayService.VNPayStatus.SUCCESS && order.getDate().plusMinutes(15).isAfter(LocalDateTime.now())) {
                             return;
                         }
 
@@ -307,5 +296,4 @@ public class OrderService {
                     });
         }
     }
-
 }
