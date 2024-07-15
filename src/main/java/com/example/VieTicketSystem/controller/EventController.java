@@ -397,20 +397,23 @@ public class EventController {
     @GetMapping("/viewdetailEvent/{id}")
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
-        eventRepo.incrementClickCount(event.getEventId());
-        model.addAttribute("event", event);
-        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
-        List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
+        if (event != null) {
+            eventRepo.incrementClickCount(event.getEventId());
+            model.addAttribute("event", event);
+            model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
+            List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
 
-        // Tìm giá vé thấp nhất
-        Float minPrice = null;
-        if (!ticketPrices.isEmpty()) {
-            minPrice = Collections.min(ticketPrices);
+            // Tìm giá vé thấp nhất
+            Float minPrice = null;
+            if (!ticketPrices.isEmpty()) {
+                minPrice = Collections.min(ticketPrices);
+            }
+            model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
+
+            // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
+            return "public/event-detail";
         }
-        model.addAttribute("minPrice", minPrice); // Thêm giá vé thấp nhất vào model
-
-        // System.out.println(organizerRepo.getOrganizerByEventId(eventId));
-        return "public/event-detail";
+        return "error/404";
     }
 
     @GetMapping("/viewAllEvent")
