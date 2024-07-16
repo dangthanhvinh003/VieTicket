@@ -1,5 +1,6 @@
 package com.example.VieTicketSystem.controller;
 
+import com.example.VieTicketSystem.model.dto.EventWithAreas;
 import com.example.VieTicketSystem.model.entity.*;
 import com.example.VieTicketSystem.repo.*;
 import com.example.VieTicketSystem.service.OrderService;
@@ -81,7 +82,8 @@ public class PurchaseTicketController {
             return "redirect:/viewdetailEvent/" + eventId;
         }
 
-        model.addAttribute("event", purchaseTicketService.getEventWithAreas(eventId));
+        EventWithAreas eventWithAreas = purchaseTicketService.getEventWithAreas(eventId);
+        model.addAttribute("event", eventWithAreas);
         if (seatMapRepo.getSeatMapByEventId(eventId).getImg() == null) {
             model.addAttribute("chooseNumberOfSeats", true);
             model.addAttribute("availableSeats",

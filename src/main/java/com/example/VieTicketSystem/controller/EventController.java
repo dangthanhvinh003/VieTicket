@@ -219,14 +219,14 @@ public class EventController {
             Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
             if ("Area".equals(shape.get("type"))) {
                 List<Map<String, Object>> areaShapes = (List<Map<String, Object>>) shape.get("shapes");
-
+                String areaName = shape.get("name").toString();
                 for (Map<String, Object> areaShape : areaShapes) {
                     if ("Row".equals(areaShape.get("type"))) {
                         String rowName = areaShape.get("name").toString();
-                        Row row = rows.stream().filter(r -> r.getRowName().equals(rowName)).findFirst().orElse(null);
+                        Row row = rows.stream().filter(r -> r.getRowName().equals(rowName) && r.getArea().getName().equals(areaName)).findFirst().orElse(null);
                         if (row == null)
                             continue;
-
+                        System.out.println("Tao in ra row: " + row);
                         List<Map<String, Object>> seatsList = (List<Map<String, Object>>) areaShape.get("seats");
                         for (Map<String, Object> seat : seatsList) {
                             String seatNumber = seat.get("number").toString();
@@ -238,8 +238,7 @@ public class EventController {
             }
         }
 
-        seatRepo.addSeats(seats); // Batch insert seats and get their IDs
-        System.out.println(session.getAttribute("idNewEvent"));
+        seatRepo.addSeats(seats);
         if (session.getAttribute("idNewEvent") != null) {
             session.removeAttribute("idNewEvent");
             return "redirect:/createEventSuccess";
