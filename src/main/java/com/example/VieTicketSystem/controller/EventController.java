@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,33 +70,48 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @PostMapping(value = ("/add-event"))
-    public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
-                           @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
-                           @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
-                           @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
-                           @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
-            throws Exception {
-        long start = System.currentTimeMillis();
-        String posterURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958); // Kích thước cho poster
+    @PostMapping("/add-event")
+    public String addEvent(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("start_date") String startDateStr,
+            @RequestParam("location") String location,
+            @RequestParam("type") String type,
+            @RequestParam("ticket_sale_date") String ticketSaleDateStr,
+            @RequestParam("end_date") String endDateStr,
+            @RequestParam("poster") MultipartFile multipartFile,
+            @RequestParam("banner") MultipartFile multipartFile1,
+            HttpSession httpSession, Model model) throws Exception {
+
+        // Define date-time formatter matching the expected input format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+        // Convert date-time strings to LocalDateTime objects
+        LocalDateTime startDate = LocalDateTime.parse(startDateStr, formatter);
+        LocalDateTime ticketSaleDate = LocalDateTime.parse(ticketSaleDateStr, formatter);
+        LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
+
+        // Process file uploads
+        String posterURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958);
         model.addAttribute("poster", posterURL);
-        long end = System.currentTimeMillis();
-        System.out.println("check time 1 :" + (end - start));
-        long start1 = System.currentTimeMillis();
-        String bannerURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720); // Kích thước cho banner
+
+        String bannerURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile1, 1280, 720);
         model.addAttribute("banner", bannerURL);
-        long end1 = System.currentTimeMillis();
-        System.out.println("check time 2 :" + (end1 - start1));
+
         User user = (User) httpSession.getAttribute("activeUser");
-        // System.out.println(user);
+
+        // Create Event object
         Event event = new Event(0, name, description, startDate, location, type, ticketSaleDate, endDate,
                 organizerRepo.findById(user.getUserId()), posterURL, bannerURL, 0, 0);
+
+        // Store new event in session or database
         httpSession.setAttribute("newEvent", event);
         int idNewEvent = eventRepo.addEvent(name, description, startDate, location, type, ticketSaleDate, endDate,
-                user.getUserId(),
-                posterURL, bannerURL);
+                user.getUserId(), posterURL, bannerURL);
         httpSession.setAttribute("idNewEvent", idNewEvent);
-        httpSession.setAttribute("eventCreated", true); // Đặt thuộc tính eventCreated
+        httpSession.setAttribute("eventCreated", true);
+
+        // Redirect to another endpoint (example: seatMap)
         return "redirect:/seatMap";
     }
 
@@ -106,7 +122,7 @@ public class EventController {
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
     public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
-                            HttpSession httpSession) throws Exception {
+            HttpSession httpSession) throws Exception {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
         seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
@@ -238,7 +254,7 @@ public class EventController {
         return "redirect:/editSuccess";
     }
 
-    @GetMapping(value = {"/createEventSuccess"})
+    @GetMapping(value = { "/createEventSuccess" })
     public String createEventSuccessPage() {
         return "event/create/success";
     }
@@ -250,7 +266,7 @@ public class EventController {
 
     @PostMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage(HttpSession httpSession, @RequestParam("seatMapImg") MultipartFile multipartFile1,
-                                  @RequestParam("additionalData") String additionalDataJson)
+            @RequestParam("additionalData") String additionalDataJson)
             throws Exception {
         // Đọc dữ liệu JSON
         ObjectMapper objectMapper = new ObjectMapper();
