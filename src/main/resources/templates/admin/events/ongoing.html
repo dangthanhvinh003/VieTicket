@@ -57,10 +57,12 @@
                         <th>Approved</th>
                         <th>Eye View</th>
                         <th>Edit</th>
+                        <th>Hide</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="event : ${events}">
+                    <tr th:each="event : ${events}" th:attr="data-end-date=${#temporals.format(event.endDate, 'yyyy-MM-dd')}">
+
                         <td th:text="${event.eventId}">1</td>
                         <td th:text="${event.name}">Event Name</td>
                         <td th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')}">Start Date</td>
@@ -72,19 +74,54 @@
                         <td th:text="${event.approved == 1 ? 'Yes' : 'No'}">Approved</td>
                         <td th:text="${event.eyeView}">Eye View</td>
                         <td>
-                            <form th:action="@{/eventEditPage}" method="post">
+                            <form th:action="@{/eventEditPageAdmin}" method="post">
                                 <input type="hidden" name="eventId" th:value="${event.eventId}" />
                                 <button type="submit" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
                             </form>
                         </td>
+                        <td>
+                            <form th:action="@{/hideEvent}" method="get" class="hide-button">
+                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i> Hide
+                                </button>
+                            </form>
+                        </td>
+                        
                     </tr>
+                    
+                    
                 </tbody>
             </table>
         </div>
     </div>
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const rows = document.querySelectorAll("tr[data-end-date]");
+            const today = new Date();
+            
+            rows.forEach(row => {
+                const endDateStr = row.getAttribute("data-end-date");
+                const endDate = new Date(endDateStr);
+                const timeDiff = today - endDate; // Difference in milliseconds
+                const dayDiff = timeDiff / (1000 * 60 * 60 * 24); // Difference in days
+    
+                // Đổi màu hàng và hiển thị nút Hide nếu ngày khác hơn 5 ngày
+                if (dayDiff > 5) {
+                    row.style.backgroundColor = "#FF6A6A";
+                    const hideButtonForm = row.querySelector(".hide-button");
+                    hideButtonForm.style.display = "block"; // Hiển thị nút Hide
+                } else {
+                    const hideButtonForm = row.querySelector(".hide-button");
+                    hideButtonForm.style.display = "none"; // Ẩn nút Hide
+                }
+            });
+        });
+    </script>
+    
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

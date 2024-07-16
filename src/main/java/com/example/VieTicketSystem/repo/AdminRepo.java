@@ -301,7 +301,7 @@ public class AdminRepo {
              + " WHERE t.status = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
              + "(SELECT COUNT(*) "
              + " FROM Event "
-             + " WHERE is_approve = 1 AND end_date > NOW()) AS total_ongoing_events, "
+             + " WHERE is_approve = 1)  AS total_ongoing_events, "
              + "(SELECT COUNT(*) "
              + " FROM Event "
              + " WHERE is_approve = 0) AS total_approved_events, "
@@ -476,7 +476,6 @@ public class AdminRepo {
             organizer.setUsername(rs.getString("username"));
             organizer.setPassword(rs.getString("password"));
             organizer.setPhone(rs.getString("phone"));
-            organizer.setGender(rs.getString("gender").charAt(0));
             organizer.setDob(rs.getDate("dob"));
             organizer.setActive(rs.getBoolean("is_active"));
             organizer.setEmail(rs.getString("email"));
