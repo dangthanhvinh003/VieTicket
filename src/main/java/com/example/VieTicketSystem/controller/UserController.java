@@ -1,11 +1,9 @@
 package com.example.VieTicketSystem.controller;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -295,24 +293,19 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signUp(@RequestParam("fullName") String fullName,
-            @RequestParam("phone") String phone,
-            @RequestParam("dob") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
-            @RequestParam("gender") char gender,
+           
+           
             @RequestParam("email") String email,
             @RequestParam("username") String username,
             @RequestParam("password") String password,
             @RequestParam("confirmPassword") String confirmPassword,
             @RequestParam("role") char role,
-            @RequestParam(value = "foundedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate foundedDate,
-            @RequestParam(value = "website", required = false) String website,
-            @RequestParam(value = "organizerAddr", required = false) String organizerAddr,
-            @RequestParam(value = "organizerType", required = false) String organizerType,
             Model model, HttpSession httpSession) throws Exception {
 
-        if (userRepo.existsByPhone(phone)) {
-            model.addAttribute("error", "Phone already exists.");
-            return "auth/signup";
-        }
+        // if (userRepo.existsByPhone(phone)) {
+        //     model.addAttribute("error", "Phone already exists.");
+        //     return "auth/signup";
+        // }
         // Check if username already exists
         if (userRepo.existsByUsername(username)) {
             model.addAttribute("error", "Username already exists.");
@@ -325,11 +318,11 @@ public class UserController {
             return "auth/signup";
         }
 
-        if (!userRepo.isValidPhone(phone)) {
-            model.addAttribute("error",
-                    "Phone invalid");
-            return "auth/signup";
-        }
+        // if (!userRepo.isValidPhone(phone)) {
+        //     model.addAttribute("error",
+        //             "Phone invalid");
+        //     return "auth/signup";
+        // }
         if (!userRepo.isValidPassword(password)) {
             model.addAttribute("error",
                     "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
@@ -342,26 +335,18 @@ public class UserController {
 
         // Create new user and save to database
         // Convert LocalDate to java.sql.Date
-        Date sqlDob = Date.valueOf(dob);
-        Date sqlFoundedDate = (foundedDate != null) ? Date.valueOf(foundedDate) : null;
+
 
         // Set role and additional organizer details if the role is "Organizer"
         if (role == 'o') {
             Organizer newUser = new Organizer();
             newUser.setFullName(fullName);
-            newUser.setPhone(phone);
-            newUser.setDob(sqlDob);
-            newUser.setGender(gender);
+            
             newUser.setEmail(email);
             newUser.setUsername(username);
             newUser.setPassword(hashedPassword); // Use hashed password
             newUser.setRole('O');
-
-            newUser.setFoundedDate(sqlFoundedDate);
-            newUser.setWebsite(website);
             newUser.setActive(false);
-            newUser.setOrganizerAddr(organizerAddr);
-            newUser.setOrganizerType(organizerType);
             organizerRepo.saveNew(newUser);
 
             httpSession.setAttribute("activeOrganizer", newUser);
@@ -369,9 +354,7 @@ public class UserController {
         } else {
             User newUser = new User();
             newUser.setFullName(fullName);
-            newUser.setPhone(phone);
-            newUser.setDob(sqlDob);
-            newUser.setGender(gender);
+
             newUser.setEmail(email);
             newUser.setUsername(username);
             newUser.setPassword(hashedPassword); // Use hashed password
