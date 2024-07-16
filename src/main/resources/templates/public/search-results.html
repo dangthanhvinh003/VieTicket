@@ -1,347 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Search Results</title>
-<<<<<<< HEAD
-    
-   
-    <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
-    
-=======
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
->>>>>>> 5a05e80 (search new)
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <title>Search Results</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
-    <link rel="icon" type="image/png"
-        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
-<<<<<<< HEAD
-        <link th:href="@{/static/css/searchResults.css}" rel="stylesheet"> <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
-=======
->>>>>>> 5a05e80 (search new)
-    <style>
-        .navbar-brand {
-            font-family: 'Arial Black', sans-serif;
-            font-style: italic;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        #eventCards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* Creates a 3-column layout where each column takes up an equal fraction of the available space */
-            gap: 20px; /* Adjusts the space between grid items */
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s;
-        }
-        
-        .fade-out {
-            animation: fadeOut 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
+        <link rel="icon" type="image/png"
+            href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+        <style>
+            .navbar-brand {
+                font-family: 'Arial Black', sans-serif;
+                font-style: italic;
+                font-weight: bold;
+                text-transform: uppercase;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            #eventCards {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr); /* Creates a 3-column layout where each column takes up an equal fraction of the available space */
+                gap: 20px; /* Adjusts the space between grid items */
             }
-        }
-<<<<<<< HEAD
-        footer {
-            background-color: #1c1c2b;
-            padding: 20px 0;
-            border-top: 2px solid #4c4c6d;
-            color: #bbb;
-        }
 
-        .footer-column {
-            margin-bottom: 20px;
-        }
-
-        .footer-column h5 {
-            color: white;
-            margin-bottom: 15px;
-        }
-
-        .footer-column ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .footer-column ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-column ul li a {
-            color: #bbb;
-            text-decoration: none;
-        }
-
-        .footer-column ul li a:hover {
-            text-decoration: underline;
-        }
-
-        .social-icons {
-            margin-top: 10px;
-        }
-
-        .social-icons a {
-            color: white;
-            margin-right: 15px;
-            font-size: 1.5em;
-            text-decoration: none;
-        }
-
-        .social-icons a:hover {
-            color: #007bff;
-=======
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: translateY(0);
+            .fade-in {
+                animation: fadeIn 0.5s;
             }
-            to {
-                opacity: 0;
-                transform: translateY(20px);
+            
+            .fade-out {
+                animation: fadeOut 0.5s;
             }
-        }
 
-        .styled-button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 0;
-            color: white;
-            background-color: #16161a;
-            border-radius: 5px;
-            text-decoration: none;
-            text-align: center;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            border-color: #7f5af0;
-        }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+            }
 
-        .styled-button:hover {
-            background-color: #7f5af0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-decoration: none;
-            color: white;
-        }
+            .styled-button {
+                display: inline-block;
+                padding: 10px 20px;
+                margin-top: 0;
+                color: white;
+                background-color: #16161a;
+                border-radius: 5px;
+                text-decoration: none;
+                text-align: center;
+                transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                border-color: #7f5af0;
+            }
 
-        .styled-button:active {
-            background-color: #004494;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
+            .styled-button:hover {
+                background-color: #7f5af0;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                text-decoration: none;
+                color: white;
+            }
 
-        .search-form {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+            .styled-button:active {
+                background-color: #004494;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
 
-        .search-form .form-control {
-            flex-grow: 1;
-            margin-left: 10px;
-        }
+            .search-form {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+            }
 
-        .card-container {
-            margin-top: 30px;
-        }
+            .search-form .form-control {
+                flex-grow: 1;
+                margin-left: 10px;
+            }
 
-        .event-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+            .card-container {
+                margin-top: 30px;
+            }
 
-        .card {
-            height: 100%;
-        }
+            .event-card {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
 
-        .btn-group .btn-custom {
-            color: #fff;
-            background-color: #7f5af0;
-            border: 1px solid #7f5af0;
-            transition: all 0.3s ease;
-        }
+            .card {
+                height: 100%;
+            }
 
-        .btn-group .btn-custom:hover {
-            background-color: #6c43d9;
-            border-color: #6c43d9;
-            color: #fff;
-        }
+            .btn-group .btn-custom {
+                color: #fff;
+                background-color: #7f5af0;
+                border: 1px solid #7f5af0;
+                transition: all 0.3s ease;
+            }
 
-        .btn-group .btn-custom.active {
-            background-color: #5a2cbf;
-            border-color: #5a2cbf;
-            color: #fff;
-        }
+            .btn-group .btn-custom:hover {
+                background-color: #6c43d9;
+                border-color: #6c43d9;
+                color: #fff;
+            }
 
-        .btn-group .btn-custom.active:hover {
-            background-color: #4820a3;
-            border-color: #4820a3;
-            color: #fff;
->>>>>>> 388cbd7 (update search)
-        }
-    </style>
-</head>
-<body>
-<<<<<<< HEAD
-<div class="container mt-5">
-    <form class="d-flex search-form mb-4" role="search">
-        <a href="/" class="btn btn-custom" id="backHome" style="margin-top: 10px; color:white">Back to Home</a>
-        <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
-               placeholder="Search events...">
-    </form>
-    <div class="container">
-        <div class="d-flex align-items-center mb-3" style="margin-top: 30px;">
-            <div class="btn-group ms-2" role="group">
-                <a href="/showAllEvents" style="color:white" class="btn btn-custom" id="allEvents"
-                   th:classappend="${pageType == 'all'} ? 'active'">All Events</a>
-                <a href="/eventsByCategory?category=Music" style="color:white" class="btn btn-custom" id="musicCategory"
-                   th:classappend="${pageType == 'category' && category == 'Music'} ? 'active'">Music</a>
-                <a href="/eventsByCategory?category=Sport" style="color:white" class="btn btn-custom" id="sportCategory"
-                   th:classappend="${pageType == 'category' && category == 'Sport'} ? 'active'">Sport</a>
-                <a href="/eventsByCategory?category=Workshop" style="color:white" class="btn btn-custom"
-                   id="workshopCategory"
-                   th:classappend="${pageType == 'category' && category == 'Workshop'} ? 'active'">Workshop</a>
-                <a href="/eventsByCategory?category=Comedy" style="color:white" class="btn btn-custom"
-                   id="comedyCategory" th:classappend="${pageType == 'category' && category == 'Comedy'} ? 'active'">Comedy</a>
-                <a href="/eventsByCategory?category=Art" style="color:white" class="btn btn-custom" id="artCategory"
-                   th:classappend="${pageType == 'category' && category == 'Art'} ? 'active'">Art</a>
-            </div>
-        </div>
-        <h2 th:if="${pageType == 'category'}">Events by Category</h2>
-        <h2 th:if="${pageType == 'all'}">All Events</h2>
-        <div id="eventList" th:if="${eventList != null}" class="container">
-            <div id="eventCards" class="row">
-                <div th:each="event : ${eventList}" th:if="${event.approved == 1}" class="mb-4">
-                    <div class="card event-card shadow h-100" th:data-user="${event.name.toLowerCase()}">
-                        <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
-                             style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
-                        <div class="card-body d-flex flex-column">
-                            <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
-                            <p class="card-text m-0 p-2">
-                                Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
-                            </p>
-                            <div class="mt-auto">
-                                <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
-                                   class="btn btn-sm btn-outline-success me-1">View Detail</a>
-                                <a href="#" class="btn btn-sm btn-outline-success">Buy Ticket</a>
-=======
-    <div class="container mt-5">
-        <form class="search-form" role="search">
-            <a href="/" class="btn btn-custom styled-button" id="backHome">Back to Home</a>
-            <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search" placeholder="Search events...">
-        </form>
-        <div class="card-container">
-            <div class="d-flex align-items-center mb-3">
-                <div class="btn-group ms-2" role="group">
-                    <a href="/showAllEvents" class="btn btn-custom" id="allEvents" th:classappend="${pageType == 'all'} ? 'active'">All Events</a>
-                    <a href="/eventsByCategory?category=Music" class="btn btn-custom" id="musicCategory" th:classappend="${pageType == 'category' && category == 'Music'} ? 'active'">Music</a>
-                    <a href="/eventsByCategory?category=Sport" class="btn btn-custom" id="sportCategory" th:classappend="${pageType == 'category' && category == 'Sport'} ? 'active'">Sport</a>
-                    <a href="/eventsByCategory?category=Workshop" class="btn btn-custom" id="workshopCategory" th:classappend="${pageType == 'category' && category == 'Workshop'} ? 'active'">Workshop</a>
-                    <a href="/eventsByCategory?category=Comedy" class="btn btn-custom" id="comedyCategory" th:classappend="${pageType == 'category' && category == 'Comedy'} ? 'active'">Comedy</a>
-                    <a href="/eventsByCategory?category=Art" class="btn btn-custom" id="artCategory" th:classappend="${pageType == 'category' && category == 'Art'} ? 'active'">Art</a>
+            .btn-group .btn-custom.active {
+                background-color: #5a2cbf;
+                border-color: #5a2cbf;
+                color: #fff;
+            }
+
+            .btn-group .btn-custom.active:hover {
+                background-color: #4820a3;
+                border-color: #4820a3;
+                color: #fff;
+            }
+            
+            footer {
+                background-color: #1c1c2b;
+                padding: 20px 0;
+                border-top: 2px solid #4c4c6d;
+                color: #bbb;
+            }
+
+            .footer-column {
+                margin-bottom: 20px;
+            }
+
+            .footer-column h5 {
+                color: white;
+                margin-bottom: 15px;
+            }
+
+            .footer-column ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .footer-column ul li {
+                margin-bottom: 10px;
+            }
+
+            .footer-column ul li a {
+                color: #bbb;
+                text-decoration: none;
+            }
+
+            .footer-column ul li a:hover {
+                text-decoration: underline;
+            }
+
+            .social-icons {
+                margin-top: 10px;
+            }
+
+            .social-icons a {
+                color: white;
+                margin-right: 15px;
+                font-size: 1.5em;
+                text-decoration: none;
+            }
+
+            .social-icons a:hover {
+                color: #007bff;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <form class="search-form" role="search">
+                <a href="/" class="btn btn-custom styled-button" id="backHome">Back to Home</a>
+                <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search" placeholder="Search events...">
+            </form>
+            <div class="card-container">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="btn-group ms-2" role="group">
+                        <a href="/showAllEvents" class="btn btn-custom" id="allEvents" th:classappend="${pageType == 'all'} ? 'active'">All Events</a>
+                        <a href="/eventsByCategory?category=Music" class="btn btn-custom" id="musicCategory" th:classappend="${pageType == 'category' && category == 'Music'} ? 'active'">Music</a>
+                        <a href="/eventsByCategory?category=Sport" class="btn btn-custom" id="sportCategory" th:classappend="${pageType == 'category' && category == 'Sport'} ? 'active'">Sport</a>
+                        <a href="/eventsByCategory?category=Workshop" class="btn btn-custom" id="workshopCategory" th:classappend="${pageType == 'category' && category == 'Workshop'} ? 'active'">Workshop</a>
+                        <a href="/eventsByCategory?category=Comedy" class="btn btn-custom" id="comedyCategory" th:classappend="${pageType == 'category' && category == 'Comedy'} ? 'active'">Comedy</a>
+                        <a href="/eventsByCategory?category=Art" class="btn btn-custom" id="artCategory" th:classappend="${pageType == 'category' && category == 'Art'} ? 'active'">Art</a>
+                    </div>
                 </div>
-            </div>
-            <h2 th:if="${pageType == 'category'}">Events by Category</h2>
-            <h2 th:if="${pageType == 'all'}">All Events</h2>
-            <div id="eventList" class="row row-cols-1 row-cols-md-3 g-4" th:if="${eventList != null}">
-                <div th:each="event : ${eventList}" th:if="${event.approved == 1}" class="col event-card" th:data-user="${event.name.toLowerCase()}">
-                    <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}">
-                        <div class="card border-0 shadow">
-                            <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image" style="width: 100%; height: 200px; object-fit: cover;">
-                            <div class="card-body p-0">
-                                <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
-                                <p class="card-text m-0 p-2">
-                                    Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
-                                </p>
-                                <div class="d-flex">
-                                    <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
-                                    class="btn btn-sm btn-outline-success"
-                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
-                                    <i class="fas fa-list"></i> View Detail
-                                </a>
-                                <a href="#" class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
-                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
-                                        th:utext="${event.areas.get(0).ticketPrice}"></span>
-                                </a>
-                                <a href="#" class="btn btn-sm btn-outline-success"
-                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
-                                    <i class="fas fa-eye"></i>
-                                    <span th:utext="${event.eyeView}"></span>
-                                </a>
+                <h2 th:if="${pageType == 'category'}">Events by Category</h2>
+                <h2 th:if="${pageType == 'all'}">All Events</h2>
+                <div id="eventList" class="row row-cols-1 row-cols-md-3 g-4" th:if="${eventList != null}">
+                    <div th:each="event : ${eventList}" th:if="${event.approved == 1}" class="col event-card" th:data-user="${event.name.toLowerCase()}">
+                        <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}">
+                            <div class="card border-0 shadow">
+                                <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <div class="card-body p-0">
+                                    <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                                    <p class="card-text m-0 p-2">
+                                        Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                                    </p>
+                                    <div class="d-flex">
+                                        <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                        class="btn btn-sm btn-outline-success"
+                                        style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-list"></i> View Detail
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+                                        style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-dollar-sign"></i>
+                                        <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
+                                            th:utext="${event.areas.get(0).ticketPrice}"></span>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-success"
+                                        style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                        <span th:utext="${event.eyeView}"></span>
+                                    </a>
+                                    </div>
                                 </div>
->>>>>>> 388cbd7 (update search)
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-<<<<<<< HEAD
+        <script>
+            document.getElementById('searchInput').addEventListener('input', function() {
+                let filter = this.value.toLowerCase();
+                let cards = document.querySelectorAll('.event-card');
 
-        <div th:if="${eventList == null || eventList.size() == 0}">
-            <p>No events found.</p>
-        </div>
-    </div>
-</div>
-
-<script>
-    document.getElementById('searchInput').addEventListener('input', function () {
-        let filter = this.value.toLowerCase();
-        let cards = document.querySelectorAll('.event-card');
-
-        cards.forEach(card => {
-            let event = card.getAttribute('data-user');
-            if (event.includes(filter)) {
-                card.style.display = ''; // Make sure the card is displayed
-                card.classList.add('fade-in'); // Apply the fade-in animation
-            } else {
-                card.style.display = 'none'; // Hide the card
-                card.classList.remove('fade-in'); // Remove the animation class to reset the state
-            }
-        });
-    });
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-=======
-    </div>
-    <script>
-        document.getElementById('searchInput').addEventListener('input', function() {
-            let filter = this.value.toLowerCase();
-            let cards = document.querySelectorAll('.event-card');
-
-            cards.forEach(card => {
-                let event = card.getAttribute('data-user');
-                if (event.includes(filter)) {
-                    card.style.display = ''; // Make sure the card is displayed
-                    card.classList.remove('fade-out'); // Remove the fade-out class if it was hidden
-                    card.classList.add('fade-in'); // Apply the fade-in animation
-                } else {
-                    card.classList.remove('fade-in'); // Remove the fade-in class
-                    card.classList.add('fade-out'); // Apply the fade-out animation
-                    card.addEventListener('animationend', function() {
-                        if (card.classList.contains('fade-out')) {
-                            card.style.display = 'none'; // Hide the card after fade-out
-                        }
-                    }, { once: true });
-                }
+                cards.forEach(card => {
+                    let event = card.getAttribute('data-user');
+                    if (event.includes(filter)) {
+                        card.style.display = ''; // Make sure the card is displayed
+                        card.classList.remove('fade-out'); // Remove the fade-out class if it was hidden
+                        card.classList.add('fade-in'); // Apply the fade-in animation
+                    } else {
+                        card.classList.remove('fade-in'); // Remove the fade-in class
+                        card.classList.add('fade-out'); // Apply the fade-out animation
+                        card.addEventListener('animationend', function() {
+                            if (card.classList.contains('fade-out')) {
+                                card.style.display = 'none'; // Hide the card after fade-out
+                            }
+                        }, { once: true });
+                    }
+                });
             });
-        });
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
->>>>>>> 388cbd7 (update search)
-</body>
+        </script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    </body>
 <div th:insert="~{public/fragments :: footer}"></div>
 </html>
