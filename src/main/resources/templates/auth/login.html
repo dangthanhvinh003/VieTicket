@@ -247,9 +247,9 @@
         }
 
         .overlay {
-            background: #FF416C;
-            background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
-            background: linear-gradient(to right, #FF4B2B, #FF416C);
+            background: #6466E9;
+            background: -webkit-linear-gradient(to right, #6466E9, #6466E9);
+            background: linear-gradient(to right, #6466E9, #6466E9);
             background-repeat: no-repeat;
             background-size: cover;
             background-position: 0 0;
@@ -321,43 +321,44 @@
         <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     </div>
     <div class="form-container sign-up-container">
-        <form th:action="@{/signup}" method="post" onsubmit="return validateForm()">
+        <form id="signupForm" action="/signup">
             <h1>Create Account</h1>
-
             <span>or use your email for registration</span>
-            <input type="text" class="form-control" id="fullName" name="fullName" placeholder="FullName" required>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
-            <div id="username-error" class="form-text text-danger"></div>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required
-                oninput="validatePassword()">
-            <div id="password-help" class="form-text" style="color: #b51e1e">
+            <input type="text" class="form-control" id="signupFullName" name="fullName" placeholder="FullName" required>
+            <input type="email" class="form-control" id="signupEmail" name="email" placeholder="Email" required>
+            <input type="text" class="form-control" id="signupUsername" name="username" placeholder="Username" required>
+            <div id="signupUsernameError" class="form-text text-danger"></div>
+            <input type="password" class="form-control" id="signupPassword" name="password" placeholder="Password"
+                required oninput="validatePassword('signupPassword', 'signupPasswordStrength')">
+            <div id="signupPasswordHelp" class="form-text" style="color: #b51e1e">
                 Password should be at least 8 characters long and include a mix of uppercase letters, lowercase letters,
                 numbers, and special characters.
             </div>
-            <div id="password-strength" class="form-text"></div>
-            <label for="confirmPassword" class="form-label"></label>
-            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+            <div id="signupPasswordStrength" class="form-text"></div>
+            <input type="password" class="form-control" id="signupConfirmPassword" name="confirmPassword"
                 placeholder="Confirm Password" required>
-            <select class="form-select" id="role" name="role" required>
+            <select class="form-select" id="signupRole" name="role" required>
                 <option value="u">User</option>
                 <option value="o">Organizer</option>
             </select>
-
             <button type="submit">Sign Up</button>
         </form>
-        <div id="error-message" th:text="${errorMessage}" class="text-danger"></div>
+        <div id="signupErrorMessage" class="text-danger"></div>
     </div>
+
     <div class="form-container sign-in-container">
         <form th:action="@{/auth/login}" method="post">
             <h1>Sign in</h1>
             <div class="social-container">
                 <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
-                    role="button" ><i class="fab fa-google-plus-g"></i>G+</a>
+                    role="button">
+                    <i class="fab fa-google-plus-g"></i>G+
+                </a>
             </div>
             <span>or use your account</span>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" required>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password"
+            <input type="text" class="form-control" id="loginUsername" name="username" placeholder="Enter Username"
+                required>
+            <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter Password"
                 required>
             <a th:href="@{/auth/reset-password}">Forgot your password?</a>
 
@@ -370,6 +371,7 @@
             <button>Sign In</button>
         </form>
     </div>
+
     <div class="overlay-container">
         <div class="overlay">
             <div class="overlay-panel overlay-left">
@@ -384,67 +386,108 @@
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    function validatePassword() {
-        let password = document.getElementById("password").value;
-        let passwordStrength = document.getElementById("password-strength");
+    <script>
+        function validatePassword(passwordId, strengthId) {
+            let password = document.getElementById(passwordId).value;
+            let passwordStrength = document.getElementById(strengthId);
 
-        // Check password strength
-        let strongPassword = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-        let mediumPassword = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+            // Check password strength
+            let strongPassword = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+            let mediumPassword = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
 
-        if (strongPassword.test(password)) {
-            passwordStrength.textContent = "Password strength: Strong";
-            passwordStrength.style.color = "#a6e3a1";
-        } else if (mediumPassword.test(password)) {
-            passwordStrength.textContent = "Password strength: Medium";
-            passwordStrength.style.color = "#fab387";
-        } else {
-            passwordStrength.textContent = "Password strength: Weak";
-            passwordStrength.style.color = "#f38ba8";
-        }
-    }
-
-    function validateForm() {
-        let password = document.getElementById("password").value;
-        let confirmPassword = document.getElementById("confirmPassword").value;
-        let errorMessage = document.getElementById("error-message");
-        let passwordStrength = document.getElementById("password-strength");
-
-        // Check password strength
-        let strongPassword = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-        let mediumPassword = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
-
-        if (strongPassword.test(password)) {
-            passwordStrength.textContent = "Password strength: Strong";
-            passwordStrength.style.color = "green";
-        } else if (mediumPassword.test(password)) {
-            passwordStrength.textContent = "Password strength: Medium";
-            passwordStrength.style.color = "orange";
-            alert("Please input a strong password.");
-            return false;
-        } else {
-            passwordStrength.textContent = "Password strength: Weak";
-            passwordStrength.style.color = "red";
-            alert("Please input a strong password.");
-            return false; // Block form submission if password is weak
+            if (strongPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Strong";
+                passwordStrength.style.color = "#a6e3a1";
+            } else if (mediumPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Medium";
+                passwordStrength.style.color = "#fab387";
+            } else {
+                passwordStrength.textContent = "Password strength: Weak";
+                passwordStrength.style.color = "#f38ba8";
+            }
         }
 
-        // Check if passwords match
-        if (password !== confirmPassword) {
-            // errorMessage.textContent = "Passwords do not match.";
-            alert("Passwords do not match.");
-            return false;
-        } else {
-            errorMessage.textContent = ""; // Clear error message if passwords match
-            return true;
-        }
-    }
-</script>
+        document.getElementById('signupForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+            let form = event.target;
+            let formData = new FormData(form);
+            let object = {};
+            formData.forEach((value, key) => {
+                object[key] = value;
+            });
+            let json = JSON.stringify(object);
 
-<!-- <div class="login-page">
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: json,
+                redirect: 'follow' // Automatically follow redirects
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirect to the new URL
+                } else if (response.status === 400) {
+                    return response.json().then(data => {
+                        alert(data.message); // Assuming the server returns { "message": "Error message" }
+                    });
+                } else {
+                    return response.text().then(text => {
+                        console.log(text);
+                    });
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+
+        function handleSubmission(formId) {
+            let formData = new FormData(document.getElementById(formId));
+            return Object.fromEntries(formData.entries());
+        }
+
+        function validateForm(event, formId) {
+            let password = document.getElementById(formId + "Password").value;
+            let confirmPassword = document.getElementById(formId + "ConfirmPassword").value;
+            let errorMessage = document.getElementById(formId + "ErrorMessage");
+            let passwordStrength = document.getElementById(formId + "PasswordStrength");
+
+            // Check password strength
+            let strongPassword = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+            let mediumPassword = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+
+            if (strongPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Strong";
+                passwordStrength.style.color = "green";
+            } else if (mediumPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Medium";
+                passwordStrength.style.color = "orange";
+                alert("Please input a strong password.");
+                return false;
+            } else {
+                passwordStrength.textContent = "Password strength: Weak";
+                passwordStrength.style.color = "red";
+                alert("Please input a strong password.");
+                return false; // Block form submission if password is weak
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return false;
+            } else {
+                errorMessage.textContent = ""; // Clear error message if passwords match
+                let formData = handleSubmission(formId);
+                console.log(formData); // For demonstration purposes
+                document.getElementById(formId).submit(); // Submit the form
+                return true;
+            }
+        }
+    </script>
+
+    <!-- <div class="login-page">
     <div class="container">
         <div class="row">
             <div class="col-lg-10 offset-lg-1">
@@ -521,21 +564,21 @@
     </div>
 </div> -->
 
-<script>
-    const signUpButton = document.getElementById('signUp');
-    const signInButton = document.getElementById('signIn');
-    const container = document.getElementById('container');
+    <script>
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const container = document.getElementById('container');
 
-    signUpButton.addEventListener('click', () => {
-        container.classList.add("right-panel-active");
-    });
+        signUpButton.addEventListener('click', () => {
+            container.classList.add("right-panel-active");
+        });
 
-    signInButton.addEventListener('click', () => {
-        container.classList.remove("right-panel-active");
-    });
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        signInButton.addEventListener('click', () => {
+            container.classList.remove("right-panel-active");
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 
 </html>

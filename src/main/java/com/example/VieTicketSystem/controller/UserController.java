@@ -4,13 +4,17 @@ import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.example.VieTicketSystem.model.dto.SignUpRequest;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.entity.User;
@@ -292,41 +296,36 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signUp(@RequestParam("fullName") String fullName,
-           
-           
-            @RequestParam("email") String email,
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("confirmPassword") String confirmPassword,
-            @RequestParam("role") char role,
-            Model model, HttpSession httpSession) throws Exception {
+    public String signUp(@RequestBody SignUpRequest signUpRequest, Model model, HttpSession httpSession)
+            throws Exception {
+        String fullName = signUpRequest.getFullName();
+        String email = signUpRequest.getEmail();
+        String username = signUpRequest.getUsername();
+        String password = signUpRequest.getPassword();
+        char role = signUpRequest.getRole();
 
         // if (userRepo.existsByPhone(phone)) {
-        //     model.addAttribute("error", "Phone already exists.");
-        //     return "auth/signup";
+        // model.addAttribute("error", "Phone already exists.");
+        // return "auth/signup";
         // }
         // Check if username already exists
         if (userRepo.existsByUsername(username)) {
-            model.addAttribute("error", "Username already exists.");
-            return "auth/signup";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
         }
 
         // Check if email already exists
         if (userRepo.existsByEmail(email)) {
-            model.addAttribute("error", "Email already exists.");
-            return "auth/signup";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists.");
         }
 
         // if (!userRepo.isValidPhone(phone)) {
-        //     model.addAttribute("error",
-        //             "Phone invalid");
-        //     return "auth/signup";
+        // model.addAttribute("error",
+        // "Phone invalid");
+        // return "auth/signup";
         // }
         if (!userRepo.isValidPassword(password)) {
-            model.addAttribute("error",
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.");
-            return "auth/signup";
         }
 
         // Hash the password
@@ -336,33 +335,20 @@ public class UserController {
         // Create new user and save to database
         // Convert LocalDate to java.sql.Date
 
+        User newUser = new User();
+        newUser.setFullName(fullName);
 
-        // Set role and additional organizer details if the role is "Organizer"
+        newUser.setEmail(email);
+        newUser.setUsername(username);
+        newUser.setPassword(hashedPassword);
+        newUser.setRole(Character.toUpperCase(role));
+        userRepo.saveNew(newUser);
+
         if (role == 'o') {
-            Organizer newUser = new Organizer();
-            newUser.setFullName(fullName);
-            
-            newUser.setEmail(email);
-            newUser.setUsername(username);
-            newUser.setPassword(hashedPassword); // Use hashed password
-            newUser.setRole('O');
-            newUser.setActive(false);
-            organizerRepo.saveNew(newUser);
-
-            httpSession.setAttribute("activeOrganizer", newUser);
-            httpSession.setAttribute("activeUser", newUser);
-        } else {
-            User newUser = new User();
-            newUser.setFullName(fullName);
-
-            newUser.setEmail(email);
-            newUser.setUsername(username);
-            newUser.setPassword(hashedPassword); // Use hashed password
-            newUser.setRole('U');
-            userRepo.saveNew(newUser);
-
-            httpSession.setAttribute("activeUser", newUser);
+            organizerRepo.saveOnSignup(newUser);
         }
+
+        httpSession.setAttribute("activeUser", newUser);
 
         verifyEmailService.sendOTP(email);
 
