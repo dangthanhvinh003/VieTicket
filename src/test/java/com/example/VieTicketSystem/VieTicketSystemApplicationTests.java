@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -243,7 +244,68 @@ class VieTicketSystemApplicationTests {
 	// String validationMessage = invalidElement.getAttribute("validationMessage");
 	// assertEquals(validationMessage, "Please fill out this field.");
 	// }
+	@Test
+	public void testLoginWithRoleOrganizer() {
+		driver.get("http://localhost:8080/auth/login");
 
+		WebElement username = driver.findElement(By.id("username"));
+		username.sendKeys("o");// o1
+
+		WebElement password = driver.findElement(By.id("password"));
+		password.sendKeys("a");// 123
+
+		WebElement loginButton = driver.findElement(By.xpath("//button[text()='Login']"));
+		loginButton.click();
+
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+		WebElement createEventLink = wait.until(
+				ExpectedConditions
+						.presenceOfElementLocated(By.cssSelector("a.btn.btn-outline-success[href='/createEvent']")));
+
+		assertTrue(createEventLink.isDisplayed());
+	}
+
+	@Test
+	public void testLoginWithRoleUser() {
+		driver.get("http://localhost:8080/auth/login");
+
+		WebElement username = driver.findElement(By.id("username"));
+		username.sendKeys("u"); // User credentials
+
+		WebElement password = driver.findElement(By.id("password"));
+		password.sendKeys("a");
+
+		WebElement loginButton = driver.findElement(By.xpath("//button[text()='Login']"));
+		loginButton.click();
+
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+		List<WebElement> createEventLink = driver
+				.findElements(By.cssSelector("a.btn.btn-outline-success[href='/createEvent']"));
+
+		assertTrue(createEventLink.isEmpty());
+	}
+	@Test
+	public void testLoginWithRoleAdmin() {
+		driver.get("http://localhost:8080/auth/login");
+		
+		WebElement username = driver.findElement(By.id("username"));
+		username.sendKeys("a"); // Admin credentials
+		
+		WebElement password = driver.findElement(By.id("password"));
+		password.sendKeys("a");
+		
+		WebElement loginButton = driver.findElement(By.xpath("//button[text()='Login']"));
+		loginButton.click();
+		
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+		WebElement dashboardHeader = wait.until(
+			ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='row mt-4']//h1[text()='Dashboard']"))
+		);
+		
+		assertTrue(dashboardHeader.isDisplayed());
+	}
+	
 	@Test
 	public void testTicketSaleDateValidation() {
 		driver.get("http://localhost:8080/auth/login");
@@ -255,7 +317,8 @@ class VieTicketSystemApplicationTests {
 		loginButton.click();
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 		WebElement createEventLink = wait.until(
-				ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.btn.btn-outline-success[href='/createEvent']")));
+				ExpectedConditions
+						.presenceOfElementLocated(By.cssSelector("a.btn.btn-outline-success[href='/createEvent']")));
 		createEventLink.click();
 		WebElement bannerUpload = driver.findElement(By.name("banner"));
 		bannerUpload.sendKeys("C:\\Users\\ACER\\Downloads\\haizz.png");
@@ -279,7 +342,8 @@ class VieTicketSystemApplicationTests {
 		WebElement ckEditor = driver.findElement(By.className("ck-editor__editable"));
 		ckEditor.sendKeys("randomKeys");
 		ckEditor.sendKeys(Keys.ENTER);
-		WebElement createEventButton = driver.findElement(By.xpath("//input[@type='submit' and @class='btn btn-primary']"));
+		WebElement createEventButton = driver
+				.findElement(By.xpath("//input[@type='submit' and @class='btn btn-primary']"));
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", createEventButton);
 		WebElement alertMessage = driver.findElement(By.id("alertMessage"));
 		String alertText = alertMessage.getText();
@@ -297,7 +361,8 @@ class VieTicketSystemApplicationTests {
 		loginButton.click();
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 		WebElement createEventLink = wait.until(
-				ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.btn.btn-outline-success[href='/createEvent']")));
+				ExpectedConditions
+						.presenceOfElementLocated(By.cssSelector("a.btn.btn-outline-success[href='/createEvent']")));
 		createEventLink.click();
 		WebElement bannerUpload = driver.findElement(By.name("banner"));
 		bannerUpload.sendKeys("C:\\Users\\ACER\\Downloads\\haizz.png");
@@ -318,7 +383,8 @@ class VieTicketSystemApplicationTests {
 		WebElement ckEditor = driver.findElement(By.className("ck-editor__editable"));
 		ckEditor.sendKeys("randomKeys");
 		ckEditor.sendKeys(Keys.ENTER); // Example: Press Enter key
-		WebElement createEventButton = driver.findElement(By.xpath("//input[@type='submit' and @class='btn btn-primary']"));
+		WebElement createEventButton = driver
+				.findElement(By.xpath("//input[@type='submit' and @class='btn btn-primary']"));
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();",
 				createEventButton);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input:invalid")));
