@@ -308,6 +308,12 @@ public class AdminController {
         model.addAttribute("events", events);
         return "admin/events/ongoing";
     }
+    @GetMapping(value = "/searchEvents2")
+    public String searchEvents2(@RequestParam("query") String query, Model model) throws Exception {
+        List<Event> events = eventRepo.searchEvents2(query);
+        model.addAttribute("events", events);
+        return "admin/events/passEvent";
+    }
     @GetMapping(value = ("/ViewAllPassEvent"))
     public String passEvent(Model model) throws Exception {
         List<Event> events = eventRepo.getAllEventPass();

@@ -778,6 +778,16 @@ public class EventRepo {
         }
         return findEvents;
     }
+    public List<Event> searchEvents2(String keyword) {
+        List<Event> events = getAllEventPass();
+        List<Event> findEvents = new ArrayList<>();
+        for (int i = 0; i < events.size(); i++) {
+            if (events.get(i).getName().toLowerCase().contains(keyword.toLowerCase())) {
+                findEvents.add(events.get(i));
+            }
+        }
+        return findEvents;
+    }
 
     public void incrementClickCount(int eventId) {
         String sql = "UPDATE Event SET eyeview = eyeview + 1 WHERE event_id = ?";
