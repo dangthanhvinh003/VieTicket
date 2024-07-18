@@ -7,10 +7,16 @@
     <title>VieTicket</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvvZboOJ6q2lLZWk5yjQOf+1s6b3Hpm5L6z9ggpc8miJy0fAB3BjzIc1" crossorigin="anonymous">
+    <link rel="icon" type="image/png"
+          href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" type="image/png" sizes="192x192"
+          href="https://res.cloudinary.com/djcowpoua/image/upload/v1717772775/441940205_448935304516588_3476623864067132550_n_fvudiu.png">
 
-    <link rel="icon" type="image/png" sizes="192x192" href="https://res.cloudinary.com/djcowpoua/image/upload/v1717772775/441940205_448935304516588_3476623864067132550_n_fvudiu.png">
     <style>
-        .login-page {
+        /* .login-page {
             width: 100%;
             height: 100vh;
             display: flex;
@@ -73,91 +79,515 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 50%;
-            /* Điều chỉnh kích thước theo nhu cầu */
             height: auto;
+        } */
+
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f6f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            margin: -20px 0 50px;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: 100;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            margin: 20px 0 30px;
+        }
+
+        span {
+            font-size: 12px;
+        }
+
+        a {
+            color: #333;
+            font-size: 14px;
+            text-decoration: none;
+            margin: 15px 0;
+        }
+
+        button {
+            border-radius: 20px;
+            border: 1px solid #FF4B2B;
+            background-color: #FF4B2B;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        button.ghost {
+            background-color: transparent;
+            border-color: #FFFFFF;
+        }
+
+        form {
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 50px;
+            height: 100%;
+            text-align: center;
+        }
+
+        input {
+            background-color: #eee;
+            border: none;
+            padding: 12px 15px;
+            margin: 8px 0;
+            width: 100%;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
+            0 10px 10px rgba(0, 0, 0, 0.22);
+            position: relative;
+            overflow: hidden;
+            width: 1000px;
+            max-width: 100%;
+            min-height: 650px;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+
+        .sign-in-container {
+            left: 0;
+            width: 50%;
+            z-index: 2;
+        }
+
+        .container.right-panel-active .sign-in-container {
+            transform: translateX(100%);
+        }
+
+        .sign-up-container {
+            left: 0;
+            width: 50%;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .container.right-panel-active .sign-up-container {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+            animation: show 0.6s;
+        }
+
+        @keyframes show {
+
+            0%,
+            49.99% {
+                opacity: 0;
+                z-index: 1;
+            }
+
+            50%,
+            100% {
+                opacity: 1;
+                z-index: 5;
+            }
+        }
+
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
+        }
+
+        .container.right-panel-active .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        .overlay {
+            background: #6466E9;
+            background: -webkit-linear-gradient(to right, #6466E9, #6466E9);
+            background: linear-gradient(to right, #6466E9, #6466E9);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 0 0;
+            color: #FFFFFF;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .container.right-panel-active .overlay {
+            transform: translateX(50%);
+        }
+
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .overlay-left {
+            transform: translateX(-20%);
+        }
+
+        .container.right-panel-active .overlay-left {
+            transform: translateX(0);
+        }
+
+        .overlay-right {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        .container.right-panel-active .overlay-right {
+            transform: translateX(20%);
+        }
+
+        .social-container {
+            margin: 20px 0;
+        }
+
+        .social-container a {
+            border: 1px solid #DDDDDD;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+            height: 40px;
+            width: 40px;
         }
     </style>
 </head>
-
 <body>
+<h2>Sign in/up Form</h2>
+<div class="container" id="container">
+    <div class="col-12">
+        <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+    </div>
+    <div class="form-container sign-up-container">
+        <form id="signupForm" action="/signup">
+            <h1>Create Account</h1>
+            <span>or use your email for registration</span>
+            <input type="text" class="form-control" id="signupFullName" name="fullName" placeholder="FullName" required>
+            <input type="email" class="form-control" id="signupEmail" name="email" placeholder="Email" required>
+            <input type="text" class="form-control" id="signupUsername" name="username" placeholder="Username" required>
+            <div id="signupUsernameError" class="form-text text-danger"></div>
+            <input type="password" class="form-control" id="signupPassword" name="password" placeholder="Password"
+                   required oninput="validatePassword('signupPassword', 'signupPasswordStrength')">
+            <div id="signupPasswordHelp" class="form-text" style="color: #b51e1e">
+                Password should be at least 8 characters long and include a mix of uppercase letters, lowercase letters,
+                numbers, and special characters.
+            </div>
+            <div id="signupPasswordStrength" class="form-text"></div>
+            <input type="password" class="form-control" id="signupConfirmPassword" name="confirmPassword"
+                   placeholder="Confirm Password" required>
+            <select class="form-select" id="signupRole" name="role" required>
+                <option value="u">User</option>
+                <option value="o">Organizer</option>
+            </select>
+            <div id="additionalInfoMessage" class="form-text text-muted small" style="display: none;">
+                As an Organizer, you will need to provide additional information after signing up.
+            </div>
+            <div class="form-text text-muted small mt-2">
+                This is a demo. All information collected is for demonstration purposes only.
+            </div>
+            <button class="mt-3" type="submit">Sign Up</button>
+        </form>
+        <div id="signupErrorMessage" class="text-danger"></div>
+    </div>
 
-    <div class="login-page">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 offset-lg-1">
+    <div class="form-container sign-in-container">
+        <form th:action="@{/auth/login}" method="post">
+            <h1>Sign in</h1>
+            <div class="social-container">
+                <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
+                   role="button">
+                    <i class="fab fa-google-plus-g"></i>G+
+                </a>
+            </div>
+            <span>or use your account</span>
+            <input type="text" class="form-control" id="loginUsername" name="username" placeholder="Enter Username"
+                   required>
+            <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter Password"
+                   required>
+            <a th:href="@{/auth/reset-password}">Forgot your password?</a>
 
-                    <div class="bg-white shadow rounded">
-                        <div class="row">
-                            <div class="col-md-7 pe-0">
-                                <div class="form-left h-100 py-5 px-5">
-                                    <form th:action="@{/auth/login}" method="post" class="row g-4">
-                                        <div class="col-12">
-                                            <label for="username" class="form-label">Username <span
-                                                    class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
-                                                <input type="text" class="form-control" id="username" name="username"
-                                                    placeholder="Enter Username" required>
-                                            </div>
-                                        </div>
+            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-                                        <div class="col-12">
-                                            <label for="password" class="form-label">Password <span
-                                                    class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
-                                                <input type="password" class="form-control" id="password"
-                                                    name="password" placeholder="Enter Password" required>
-                                            </div>
-                                        </div>
+            <button>Sign In</button>
+        </form>
+    </div>
 
-                                        <div class="col-12">
-                                            <div th:if="${error}" class="alert alert-danger" role="alert"
-                                                th:text="${error}"></div>
-                                        </div>
-
-                                        <div class="col-sm-6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="rememberMe">
-                                                <label class="form-check-label" for="rememberMe">Remember me</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-sm-6">
-                                            <a th:href="@{/auth/reset-password}" class="float-end text-primary">Forgot
-                                                Password?</a>
-                                        </div>
-
-                                        <div class="col-12 d-flex justify-content-between">
-                                            <button type="submit"
-                                                class="btn btn-primary flex-grow-1 mx-1">Login</button>
-                                            <a th:href="@{/signup}" class="btn btn-secondary flex-grow-1 mx-1">Sign
-                                                Up</a>
-                                        </div>
-
-                                        <div class="col-12 mt-3 text-center">
-                                            <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
-                                                role="button" class="btn btn-secondary w-100">
-                                                <i class="bi bi-google me-2"> Login with Google</i></a>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="col-md-5 ps-0 d-none d-md-block position-relative">
-                                <div
-                                    class="form-right h-100 text-white d-flex flex-column align-items-center justify-content-center position-relative">
-                                    <img src="https://res.cloudinary.com/djcowpoua/image/upload/v1717772773/Main_Idea_Education_Storyboard_Retro_Pink-Photoroom_fm4uvt.png"
-                                        alt="Welcome Image" class="centered-image" style="height: 100%; width: auto; margin-left: 5%;margin-top: 4%;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-end text-secondary mt-3"></p>
-                </div>
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>Welcome Back!</h1>
+                <p>To keep connected with us please login with your personal info</p>
+                <button class="ghost" id="signIn">Sign In</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <h1>Hello, Friend!</h1>
+                <p>Enter your personal details and start journey with us</p>
+                <button class="ghost" id="signUp">Sign Up</button>
             </div>
         </div>
     </div>
 
+    <script>
+        function validatePassword(passwordId, strengthId) {
+            let password = document.getElementById(passwordId).value;
+            let passwordStrength = document.getElementById(strengthId);
+
+            // Check password strength
+            let strongPassword = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+            let mediumPassword = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+
+            if (strongPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Strong";
+                passwordStrength.style.color = "#a6e3a1";
+            } else if (mediumPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Medium";
+                passwordStrength.style.color = "#fab387";
+            } else {
+                passwordStrength.textContent = "Password strength: Weak";
+                passwordStrength.style.color = "#f38ba8";
+            }
+        }
+
+        document.getElementById('signupRole').addEventListener('change', function () {
+            let selectedRole = this.value;
+            let messageDiv = document.getElementById('additionalInfoMessage');
+            if (selectedRole === 'o') { // 'o' is the value for Organizer
+                messageDiv.style.display = 'block';
+            } else {
+                messageDiv.style.display = 'none';
+            }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+            let form = event.target;
+            let formData = new FormData(form);
+            let object = {};
+            formData.forEach((value, key) => {
+                object[key] = value;
+            });
+            let json = JSON.stringify(object);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: json,
+                redirect: 'follow' // Automatically follow redirects
+            }).then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirect to the new URL
+                } else if (response.status === 400) {
+                    return response.json().then(data => {
+                        alert(data.message); // Assuming the server returns { "message": "Error message" }
+                    });
+                } else {
+                    return response.text().then(text => {
+                        console.log(text);
+                    });
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+
+        function handleSubmission(formId) {
+            let formData = new FormData(document.getElementById(formId));
+            return Object.fromEntries(formData.entries());
+        }
+
+        function validateForm(event, formId) {
+            let password = document.getElementById(formId + "Password").value;
+            let confirmPassword = document.getElementById(formId + "ConfirmPassword").value;
+            let errorMessage = document.getElementById(formId + "ErrorMessage");
+            let passwordStrength = document.getElementById(formId + "PasswordStrength");
+
+            // Check password strength
+            let strongPassword = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+            let mediumPassword = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+
+            if (strongPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Strong";
+                passwordStrength.style.color = "green";
+            } else if (mediumPassword.test(password)) {
+                passwordStrength.textContent = "Password strength: Medium";
+                passwordStrength.style.color = "orange";
+                alert("Please input a strong password.");
+                return false;
+            } else {
+                passwordStrength.textContent = "Password strength: Weak";
+                passwordStrength.style.color = "red";
+                alert("Please input a strong password.");
+                return false; // Block form submission if password is weak
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return false;
+            } else {
+                errorMessage.textContent = ""; // Clear error message if passwords match
+                let formData = handleSubmission(formId);
+                console.log(formData); // For demonstration purposes
+                document.getElementById(formId).submit(); // Submit the form
+                return true;
+            }
+        }
+    </script>
+
+    <!-- <div class="login-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+
+                <div class="bg-white shadow rounded">
+                    <div class="row">
+                        <div class="col-md-7 pe-0">
+                            <div class="form-left h-100 py-5 px-5">
+                                <form th:action="@{/auth/login}" method="post" class="row g-4">
+                                    <div class="col-12">
+                                        <label for="username" class="form-label">Username <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
+                                            <input type="text" class="form-control" id="username" name="username"
+                                                placeholder="Enter Username" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="password" class="form-label">Password <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
+                                            <input type="password" class="form-control" id="password" name="password"
+                                                placeholder="Enter Password" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div th:if="${error}" class="alert alert-danger" role="alert"
+                                            th:text="${error}"></div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <a th:href="@{/auth/reset-password}" class="float-end text-primary">Forgot
+                                            Password?</a>
+                                    </div>
+
+                                    <div class="col-12 d-flex justify-content-between">
+                                        <button type="submit" class="btn btn-primary flex-grow-1 mx-1">Login</button>
+                                        <a th:href="@{/signup}" class="btn btn-secondary flex-grow-1 mx-1">Sign
+                                            Up</a>
+                                    </div>
+
+                                    <div class="col-12 mt-3 text-center">
+                                        <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
+                                            role="button" class="btn btn-secondary w-100">
+                                            <i class="bi bi-google me-2"> Login with Google</i></a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-5 ps-0 d-none d-md-block position-relative">
+                            <div
+                                class="form-right h-100 text-white d-flex flex-column align-items-center justify-content-center position-relative">
+                                <img src="https://res.cloudinary.com/djcowpoua/image/upload/v1717772773/Main_Idea_Education_Storyboard_Retro_Pink-Photoroom_fm4uvt.png"
+                                    alt="Welcome Image" class="centered-image"
+                                    style="height: 100%; width: auto; margin-left: 5%;margin-top: 4%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-end text-secondary mt-3"></p>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+    <script>
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const container = document.getElementById('container');
+
+        signUpButton.addEventListener('click', () => {
+            container.classList.add("right-panel-active");
+        });
+
+        signInButton.addEventListener('click', () => {
+            container.classList.remove("right-panel-active");
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

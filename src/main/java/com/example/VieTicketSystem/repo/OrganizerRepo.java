@@ -1,10 +1,15 @@
 package com.example.VieTicketSystem.repo;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.springframework.stereotype.Repository;
 
 import com.example.VieTicketSystem.model.entity.Organizer;
+import com.example.VieTicketSystem.model.entity.User;
 
 @Repository
 public class OrganizerRepo {
@@ -12,33 +17,72 @@ public class OrganizerRepo {
     private static final String INSERT_STATEMENT = "CALL InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_STATEMENT = "CALL UpdateOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SELECT_STATEMENT = "SELECT * FROM OrganizerDetails WHERE organizer_id = ?";
+    private static final String SIGN_UP_STATEMENT = "INSERT INTO `Organizer` (organizer_id, is_active) VALUES (?, ?);";
 
-    public void saveNew(Organizer organizer) throws Exception {
-
-        try (Connection con = ConnectionPoolManager.getConnection()) {
-            CallableStatement cs = con
-                    .prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
-            cs.setString(1, organizer.getFullName());
-            cs.setString(2, organizer.getUsername());
-            cs.setString(3, organizer.getPassword());
-            cs.setString(4, organizer.getPhone());
-            cs.setDate(5, new Date(organizer.getDob().getTime())); // Convert to SQL Date
-            cs.setString(6, String.valueOf(organizer.getGender()));
-            cs.setString(7, organizer.getAvatar());
-            cs.setString(8, String.valueOf(organizer.getRole()));
-            cs.setString(9, organizer.getEmail());
-            cs.setDate(10, new Date(organizer.getFoundedDate().getTime())); // Convert to SQL Date
-            cs.setString(11, organizer.getWebsite());
-            cs.setBoolean(12, organizer.isActive());
-            cs.setString(13, organizer.getOrganizerAddr());
-            cs.setString(14, organizer.getOrganizerType());
-            cs.registerOutParameter(15, Types.INTEGER);
-            cs.executeUpdate();
-
-            int userId = cs.getInt(15);
-            organizer.setUserId(userId);
+    public void saveOnSignup(User user) throws SQLException {
+        try (Connection connection = ConnectionPoolManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SIGN_UP_STATEMENT)) {
+    
+            preparedStatement.setInt(1, user.getUserId()); 
+            preparedStatement.setInt(2, 0);
+    
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            // Handle exceptions
+            e.printStackTrace();
+            throw e; // Rethrow the exception to notify the caller
         }
     }
+
+    // public void saveNew(Organizer organizer) throws Exception {
+
+    //     try (Connection con = ConnectionPoolManager.getConnection()) {
+    //         CallableStatement cs = con
+    //                 .prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+    //         cs.setString(1, organizer.getFullName());
+    //         cs.setString(2, organizer.getUsername());
+    //         cs.setString(3, organizer.getPassword());
+    //         cs.setString(4, organizer.getPhone());
+    //         cs.setDate(5, new Date(organizer.getDob().getTime())); // Convert to SQL Date
+    //         cs.setString(6, String.valueOf(organizer.getGender()));
+    //         cs.setString(7, organizer.getAvatar());
+    //         cs.setString(8, String.valueOf(organizer.getRole()));
+    //         cs.setString(9, organizer.getEmail());
+    //         cs.setDate(10, new Date(organizer.getFoundedDate().getTime())); // Convert to SQL Date
+    //         cs.setString(11, organizer.getWebsite());
+    //         cs.setBoolean(12, organizer.isActive());
+    //         cs.setString(13, organizer.getOrganizerAddr());
+    //         cs.setString(14, organizer.getOrganizerType());
+    //         cs.registerOutParameter(15, Types.INTEGER);
+    //         cs.executeUpdate();
+
+    //         int userId = cs.getInt(15);
+    //         organizer.setUserId(userId);
+    //     }
+    // }
+    // public void addOrganizer(Organizer organizer) throws Exception {
+// setFullName
+            // setEmail
+            // setUsername
+            // setPassword
+            // setRole
+            // setActive
+    //     try (Connection con = ConnectionPoolManager.getConnection()) {
+    //         Prep cs = con
+    //                 .prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?)}");
+    //         cs.setString(1, organizer.getFullName());
+    //         cs.setString(2, organizer.getUsername());
+    //         cs.setString(3, organizer.getPassword());
+    //         cs.setString(4, String.valueOf(organizer.getRole()));
+    //         cs.setString(5, organizer.getEmail());
+    //         cs.setBoolean(6, organizer.isActive());
+    //         cs.registerOutParameter(7, Types.INTEGER);
+    //         cs.executeUpdate();
+
+    //         int userId = cs.getInt(7);
+    //         organizer.setUserId(userId);
+    //     }
+    // }
 
     public void save(Organizer organizer) throws Exception {
 
@@ -163,22 +207,4 @@ public class OrganizerRepo {
 
         return organizer;
     }
-
-    public Double getAverageRatingForOrganizer(int organizerId) throws SQLException {
-        try (Connection conn = ConnectionPoolManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT AVG(star) FROM Rating WHERE organizer_id = ?");
-        ) {
-            stmt.setInt(1, organizerId);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble(1); // Assuming the result is a double (AVG function result)
-                }
-            }
-        }
-
-        return null; // Return null if no rating is found for the organizer
-    }
-
-
 }
