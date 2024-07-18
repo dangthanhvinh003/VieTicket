@@ -294,11 +294,12 @@ public class AdminController {
         }
     
         // Fetch the updated list of events and add to the model
-        List<Event> events = eventRepo.getAllOngoingEvents();
+        List<Event> events = eventRepo.getAllEventPass();
         model.addAttribute("events", events);
         
-        return "admin/events/ongoing";
+        return "admin/events/passEvent";
     }
+    
     
 
     @GetMapping(value = "/searchEvents")
