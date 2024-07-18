@@ -28,16 +28,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.dto.AdditionalData;
 import com.example.VieTicketSystem.model.dto.EventStatistics;
-import com.example.VieTicketSystem.model.entity.Row;
-import com.example.VieTicketSystem.model.entity.Seat;
-import com.example.VieTicketSystem.model.entity.SeatMap;
-import com.example.VieTicketSystem.model.entity.User;
-import com.example.VieTicketSystem.repo.AreaRepo;
-import com.example.VieTicketSystem.repo.EventRepo;
-import com.example.VieTicketSystem.repo.OrganizerRepo;
-import com.example.VieTicketSystem.repo.RowRepo;
-import com.example.VieTicketSystem.repo.SeatMapRepo;
-import com.example.VieTicketSystem.repo.SeatRepo;
 import com.example.VieTicketSystem.service.EmailService;
 import com.example.VieTicketSystem.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -158,6 +148,15 @@ public class OrganizerController {
         model.addAttribute("eventList", passedEvents);
         model.addAttribute("pageType", "passed");
         return "event/view/mine";
+    }
+
+    @PostMapping(value = "/requestPayment")
+    public String requestPayment(@RequestParam("eventId") int eventId, Model model, HttpSession httpSession) {
+        boolean result = eventRepo.updateEventApprovalStatus(eventId, 4);
+        if (!result) {
+            return "404";
+        }
+        return "redirect:/passedEvents";
     }
 
     @PostMapping(value = "/eventEditPage")
@@ -440,15 +439,16 @@ public class OrganizerController {
     }
 
     /*
-     *  This method is used to view the list of users who have purchased tickets for an event
+     * This method is used to view the list of users who have purchased tickets for
+     * an event
      */
 
-    @GetMapping({"/organizer/refund-list", "organizer/refund-list/"})
+    @GetMapping({ "/organizer/refund-list", "organizer/refund-list/" })
     public String viewListRefundOrders(@RequestParam int eventId) {
         return "redirect:/organizer/refund-list/to-approve?eventId=" + eventId;
     }
 
-    @GetMapping({"/organizer/refund-list/to-approve", "organizer/refund-list/to-approve/"})
+    @GetMapping({ "/organizer/refund-list/to-approve", "organizer/refund-list/to-approve/" })
     public String viewListRefundOrdersToApprove(@RequestParam int eventId, Model model) throws Exception {
 
         // Check if user exists and is an organizer
@@ -457,7 +457,8 @@ public class OrganizerController {
             throw new RuntimeException("User not found");
         }
         if (user.getUserRole() != User.UserRole.ORGANIZER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the authority to access this functionality.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You do not have the authority to access this functionality.");
         }
 
         // Check if event exists and is owned by organizer
@@ -469,7 +470,8 @@ public class OrganizerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid request: Not your event");
         }
 
-        List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.CREATED.toInteger(), eventId);
+        List<RefundOrder> refundOrders = refundOrderRepo
+                .findUniqueRefundOrders(RefundOrder.RefundStatus.CREATED.toInteger(), eventId);
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Refund Orders to Approve");
         model.addAttribute("event", event);
@@ -477,7 +479,7 @@ public class OrganizerController {
         return "organizer/refund";
     }
 
-    @GetMapping({"/organizer/refund-list/approved", "organizer/refund-list/approved/"})
+    @GetMapping({ "/organizer/refund-list/approved", "organizer/refund-list/approved/" })
     public String viewListApprovedRefundOrders(@RequestParam int eventId, Model model) throws Exception {
 
         // Check if user exists and is an organizer
@@ -486,7 +488,8 @@ public class OrganizerController {
             throw new RuntimeException("User not found");
         }
         if (user.getUserRole() != User.UserRole.ORGANIZER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the authority to access this functionality.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You do not have the authority to access this functionality.");
         }
 
         // Check if event exists and is owned by organizer
@@ -498,10 +501,14 @@ public class OrganizerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid request: Not your event");
         }
 
-        List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.APPROVED.toInteger(), eventId);
-        refundOrders.addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.SUCCESS.toInteger(), eventId));
-        refundOrders.addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.PENDING.toInteger(), eventId));
-        refundOrders.addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.FAILED.toInteger(), eventId));
+        List<RefundOrder> refundOrders = refundOrderRepo
+                .findUniqueRefundOrders(RefundOrder.RefundStatus.APPROVED.toInteger(), eventId);
+        refundOrders
+                .addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.SUCCESS.toInteger(), eventId));
+        refundOrders
+                .addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.PENDING.toInteger(), eventId));
+        refundOrders
+                .addAll(refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.FAILED.toInteger(), eventId));
 
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Approved Refund Orders");
@@ -510,7 +517,7 @@ public class OrganizerController {
         return "organizer/refund";
     }
 
-    @GetMapping({"/organizer/refund-list/rejected", "organizer/refund-list/rejected/"})
+    @GetMapping({ "/organizer/refund-list/rejected", "organizer/refund-list/rejected/" })
     public String viewListRejectedRefundOrders(@RequestParam int eventId, Model model) throws Exception {
 
         // Check if user exists and is an organizer
@@ -519,7 +526,8 @@ public class OrganizerController {
             throw new RuntimeException("User not found");
         }
         if (user.getUserRole() != User.UserRole.ORGANIZER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the authority to access this functionality.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You do not have the authority to access this functionality.");
         }
 
         // Check if event exists and is owned by organizer
@@ -531,7 +539,8 @@ public class OrganizerController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid request: Not your event");
         }
 
-        List<RefundOrder> refundOrders = refundOrderRepo.findUniqueRefundOrders(RefundOrder.RefundStatus.REJECTED.toInteger(), eventId);
+        List<RefundOrder> refundOrders = refundOrderRepo
+                .findUniqueRefundOrders(RefundOrder.RefundStatus.REJECTED.toInteger(), eventId);
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Rejected Refund Orders");
         model.addAttribute("event", event);
@@ -547,12 +556,14 @@ public class OrganizerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
         if (user.getUserRole() != User.UserRole.ORGANIZER) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have the authority to access this functionality.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You do not have the authority to access this functionality.");
         }
 
         RefundOrder refundOrder = refundOrderRepo.findByOrderId(orderId);
         if (refundOrder == null || refundOrder.getStatus() != RefundOrder.RefundStatus.CREATED) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refund order not found or not waiting for approval.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Refund order not found or not waiting for approval.");
         }
 
         Event event = eventRepo.findEventByOrderId(orderId);
@@ -566,7 +577,8 @@ public class OrganizerController {
 
         // Revert order and ticket status back to success
         orderRepo.updateStatus(orderId, Order.PaymentStatus.SUCCESS);
-        ticketRepo.updateStatusByOrderIdAndStatus(orderId, Ticket.TicketStatus.PENDING_REFUND.toInteger(), Ticket.TicketStatus.PURCHASED.toInteger());
+        ticketRepo.updateStatusByOrderIdAndStatus(orderId, Ticket.TicketStatus.PENDING_REFUND.toInteger(),
+                Ticket.TicketStatus.PURCHASED.toInteger());
         refundOrderRepo.saveApprovalStatus(refundOrder);
 
         return ResponseEntity.status(HttpStatus.OK).body("Refund request rejected successfully");
@@ -580,12 +592,14 @@ public class OrganizerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
         if (user.getUserRole() != User.UserRole.ORGANIZER) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have the authority to access this functionality.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You do not have the authority to access this functionality.");
         }
 
         RefundOrder refundOrder = refundOrderRepo.findByOrderId(orderId);
         if (refundOrder == null || refundOrder.getStatus() != RefundOrder.RefundStatus.CREATED) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Refund order not found or not waiting for approval.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Refund order not found or not waiting for approval.");
         }
 
         Event event = eventRepo.findEventByOrderId(orderId);
