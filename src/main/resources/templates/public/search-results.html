@@ -3,9 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Search Results</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
+    
+   
+    <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
+    <link rel="icon" type="image/png"
+        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+        <link th:href="@{/static/css/searchResults.css}" rel="stylesheet"> <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
     <style>
+        .navbar-brand {
+            font-family: 'Arial Black', sans-serif;
+            font-style: italic;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
         #eventCards {
             display: grid;
             grid-template-columns: repeat(3, 1fr); /* Creates a 3-column layout where each column takes up an equal fraction of the available space */
@@ -40,6 +55,54 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        footer {
+            background-color: #1c1c2b;
+            padding: 20px 0;
+            border-top: 2px solid #4c4c6d;
+            color: #bbb;
+        }
+
+        .footer-column {
+            margin-bottom: 20px;
+        }
+
+        .footer-column h5 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .footer-column ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            color: white;
+            margin-right: 15px;
+            font-size: 1.5em;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            color: #007bff;
         }
     </style>
 </head>
@@ -97,6 +160,7 @@
         </div>
     </div>
 </div>
+
 <script>
     document.getElementById('searchInput').addEventListener('input', function () {
         let filter = this.value.toLowerCase();
@@ -117,4 +181,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
+<div th:insert="~{public/fragments :: footer}"></div>
 </html>
