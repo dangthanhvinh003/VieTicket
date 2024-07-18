@@ -22,10 +22,10 @@ public class OrganizerRepo {
     public void saveOnSignup(User user) throws SQLException {
         try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SIGN_UP_STATEMENT)) {
-    
-            preparedStatement.setInt(1, user.getUserId()); 
+
+            preparedStatement.setInt(1, user.getUserId());
             preparedStatement.setInt(2, 0);
-    
+
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             // Handle exceptions
@@ -62,11 +62,11 @@ public class OrganizerRepo {
     // }
     // public void addOrganizer(Organizer organizer) throws Exception {
 // setFullName
-            // setEmail
-            // setUsername
-            // setPassword
-            // setRole
-            // setActive
+    // setEmail
+    // setUsername
+    // setPassword
+    // setRole
+    // setActive
     //     try (Connection con = ConnectionPoolManager.getConnection()) {
     //         Prep cs = con
     //                 .prepareCall("{call InsertOrganizer(?, ?, ?, ?, ?, ?, ?)}");
@@ -206,5 +206,21 @@ public class OrganizerRepo {
         }
 
         return organizer;
+    }
+
+    public Double getAverageRatingForOrganizer(int organizerId) throws SQLException {
+        try (Connection conn = ConnectionPoolManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT AVG(star) FROM Rating WHERE organizer_id = ?");
+        ) {
+            stmt.setInt(1, organizerId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1); // Assuming the result is a double (AVG function result)
+                }
+            }
+        }
+
+        return null; // Return null if no rating is found for the organizer
     }
 }

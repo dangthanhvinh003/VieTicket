@@ -43,6 +43,7 @@ import com.example.VieTicketSystem.service.FileUpload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
+
 import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
@@ -70,10 +71,10 @@ public class EventController {
 
     @PostMapping(value = ("/add-event"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
-            @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
-            @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
-            @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
-            @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
+                           @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
+                           @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
+                           @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
+                           @RequestParam("banner") MultipartFile multipartFile1, HttpSession httpSession, Model model)
             throws Exception {
         long start = System.currentTimeMillis();
         String posterURL = fileUpload.uploadFileImgBannerAndPoster(multipartFile, 720, 958); // Kích thước cho poster
@@ -105,7 +106,7 @@ public class EventController {
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
     public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
-            HttpSession httpSession) throws Exception {
+                            HttpSession httpSession) throws Exception {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
         seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
@@ -237,7 +238,7 @@ public class EventController {
         return "redirect:/editSuccess";
     }
 
-    @GetMapping(value = { "/createEventSuccess" })
+    @GetMapping(value = {"/createEventSuccess"})
     public String createEventSuccessPage() {
         return "event/create/success";
     }
@@ -249,7 +250,7 @@ public class EventController {
 
     @PostMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage(HttpSession httpSession, @RequestParam("seatMapImg") MultipartFile multipartFile1,
-            @RequestParam("additionalData") String additionalDataJson)
+                                  @RequestParam("additionalData") String additionalDataJson)
             throws Exception {
         // Đọc dữ liệu JSON
         ObjectMapper objectMapper = new ObjectMapper();
@@ -293,7 +294,7 @@ public class EventController {
 
                     }
                     if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Normal")) != null) { // get
-                                                                                                                        // sai
+                        // sai
                         ArrayList<Row> allRow = rowRepo
                                 .getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Normal"));
 
@@ -359,7 +360,7 @@ public class EventController {
 
                     }
                     if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Vip")) != null) { // get
-                                                                                                                     // sai
+                        // sai
                         ArrayList<Row> allRow = rowRepo
                                 .getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Vip"));
                         Map<String, Integer> rowIndexMap = new HashMap<>();
@@ -403,15 +404,17 @@ public class EventController {
     @GetMapping("/viewdetailEvent/{id}")
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
-
-        if (event == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
-        }
-
         eventRepo.incrementClickCount(event.getEventId());
+        Organizer currentOrganizer = organizerRepo.getOrganizerByEventId(eventId);
+
+        double averageRating = organizerRepo.getAverageRatingForOrganizer(currentOrganizer.getUserId());
+        DecimalFormat df = new DecimalFormat("#.#");
+        String formattedRating = df.format(averageRating);
+
         model.addAttribute("event", event);
-        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
-        List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
+        model.addAttribute("organizer", currentOrganizer);
+        model.addAttribute("stars", formattedRating);
+        List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId);
 
         // Tìm giá vé thấp nhất
         Float minPrice = null;
