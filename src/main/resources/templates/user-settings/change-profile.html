@@ -4,6 +4,8 @@
 <head>
     <title>Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
     <style>
@@ -106,6 +108,88 @@
             object-fit: cover;
             margin-right: 8px;
         }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #15132b 0%, #1c1a36 100%);
+        }
+
+        .avatar {
+            border: 4px solid #6466E9;
+            transition: all 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(100, 102, 233, 0.5);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(100, 102, 233, 0.25);
+            border-color: #6466E9;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 40px, 0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .form,
+        .avatar {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, .5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+
+            20% {
+                transform: scale(25, 25);
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+
+        .btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
     </style>
 </head>
 
@@ -118,73 +202,95 @@
                     <a href="/" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left"></i> Back to Home
                     </a>
-                   
-
                 </div>
                 <form class="form" th:action="@{/editUser}" method="post">
                     <div class="mb-3">
                         <label for="name" class="form-label">Full Name:</label>
-                        <input name="fullName" class="form-control" id="name" type="text" pattern="[\s\S]+" required
-                            title="Tên chỉ nên chứa các chữ cái và khoảng trắng. Ví dụ: Nguyễn Văn Á. Lưu ý: không sử dụng ký tự đặc biệt hoặc số."
-                            placeholder="Nhập tên của bạn ở đây..." th:value="${session.activeUser.fullName}">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input name="fullName" class="form-control" id="name" type="text" pattern="[\s\S]+" required
+                                title="Tên chỉ nên chứa các chữ cái và khoảng trắng. Ví dụ: Nguyễn Văn Á. Lưu ý: không sử dụng ký tự đặc biệt hoặc số."
+                                placeholder="Nhập tên của bạn ở đây..." th:value="${session.activeUser.fullName}">
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email address:</label>
-                        <input name="email" class="form-control" type="email" required
-                            placeholder="Type your email address..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
-                            th:value="${session.activeUser.email}">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input name="email" class="form-control" type="email" required
+                                placeholder="Type your email address..." pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
+                                th:value="${session.activeUser.email}">
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone Number:</label>
-                        <input name="phone" class="form-control" type="text" maxlength="10"
-                            oninput="this.value=this.value.replace(/[^0-9]/g,'');" required
-                            placeholder="Type your Mobile Number..." th:value="${session.activeUser.phone}">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                            <input name="phone" class="form-control" type="text" maxlength="10"
+                                oninput="this.value=this.value.replace(/[^0-9]/g,'');" required
+                                placeholder="Type your Mobile Number..." th:value="${session.activeUser.phone}">
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="dob" class="form-label">Date of Birth:</label>
-                        <input name="dob" class="form-control" type="date" id="dob" th:value="${session.activeUser.dob}"
-                            required placeholder="YYYY-MM-DD">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                            <input name="dob" class="form-control" type="date" id="dob" th:value="${session.activeUser.dob}"
+                                required placeholder="YYYY-MM-DD">
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="gender" class="form-label">Gender:</label>
-                        <select class="form-control" name="gender" required>
-                            <option th:value="${session.activeUser.gender}" th:text="${session.activeUser.gender}">
-                            </option>
-                            <option value="M" th:selected="${session.activeUser.gender == 'M'}">Male</option>
-                            <option value="F" th:selected="${session.activeUser.gender == 'F'}">Female</option>
-                            <option value="O" th:selected="${session.activeUser.gender == 'O'}">Other</option>
-                        </select>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                            <select class="form-control" name="gender" required>
+                                <option th:value="${session.activeUser.gender}" th:text="${session.activeUser.gender}"></option>
+                                <option value="M" th:selected="${session.activeUser.gender == 'M'}">Male</option>
+                                <option value="F" th:selected="${session.activeUser.gender == 'F'}">Female</option>
+                                <option value="O" th:selected="${session.activeUser.gender == 'O'}">Other</option>
+                            </select>
+                        </div>
                     </div>
                     <!-- them thuoc tinh organizers -->
                     <div th:if="${session.activeUser.role.toString() == 'o'}">
                         <div class="mb-3">
                             <label for="organizerType" class="form-label">Organizer Type:</label>
-                            <input name="organizerType" class="form-control" id="organizerType" type="text" required
-                                placeholder="Enter the type of organizer" th:value="${session.activeOrganizer.organizerType}">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                                <input name="organizerType" class="form-control" id="organizerType" type="text" required
+                                    placeholder="Enter the type of organizer"
+                                    th:value="${session.activeOrganizer.organizerType}">
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="website" class="form-label">Website:</label>
-                            <input name="website" class="form-control" id="website" type="text" 
-                                placeholder="Enter the website URL" th:value="${session.activeOrganizer.website}">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                <input name="website" class="form-control" id="website" type="text"
+                                    placeholder="Enter the website URL" th:value="${session.activeOrganizer.website}">
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="foundedDate" class="form-label">Founded Date:</label>
-                            <input name="foundedDate" class="form-control" id="foundedDate" type="date" 
-                                placeholder="YYYY-MM-DD" th:value="${session.activeOrganizer.foundedDate}">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input name="foundedDate" class="form-control" id="foundedDate" type="date"
+                                    placeholder="YYYY-MM-DD" th:value="${session.activeOrganizer.foundedDate}">
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="organizerAddr" class="form-label">Address:</label>
-                            <input name="organizerAddr" class="form-control" id="organizerAddr" type="text" 
-                                placeholder="Enter the address" th:value="${session.activeOrganizer.organizerAddr}">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                <input name="organizerAddr" class="form-control" id="organizerAddr" type="text"
+                                    placeholder="Enter the address" th:value="${session.activeOrganizer.organizerAddr}">
+                            </div>
                         </div>
-                      
                     </div>
 
                     <div class="text-end">
-                        <button class="btn btn-secondary" type="reset"><i class="fa fa-fw fa-refresh"></i>
-                            Reset</button>
-                        <button class="btn btn-primary" type="submit">Submit <i
-                                class="fa fa-fw fa-paper-plane"></i></button>
+                        <button class="btn btn-secondary" type="reset"> Reset</button>
+                        <button class="btn btn-primary" type="submit">Submit <i class="fa fa-fw fa-paper-plane"></i></button>
                     </div>
                 </form>
             </div>
@@ -197,7 +303,8 @@
                         <img class="avatar img-fluid" th:src="@{${session.activeUser.avatar}}" alt="Avatar">
                     </div>
                     <div class="mb-3">
-                        <input type="file" class="form-control" name="image" accept="image/gif, image/jpeg, image/png" placeholder="Upload file">
+                        <input type="file" class="form-control" name="image" accept="image/gif, image/jpeg, image/png"
+                            placeholder="Upload file">
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
