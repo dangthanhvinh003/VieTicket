@@ -176,6 +176,20 @@
             .social-icons a:hover {
                 color: #007bff;
             }
+            html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            flex: 1;
+        }
+
+        .footer {
+            margin-top: auto;
+        }
         </style>
     </head>
     <body>
@@ -258,5 +272,8 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     </body>
-<div th:insert="~{public/fragments :: footer}"></div>
+    
+        <div  th:insert="~{public/fragments :: footer}"></div>
+
+
 </html>
