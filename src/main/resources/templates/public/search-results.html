@@ -3,17 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Search Results</title>
+<<<<<<< HEAD
     
    
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     
+=======
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
+>>>>>>> 5a05e80 (search new)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+<<<<<<< HEAD
         <link th:href="@{/static/css/searchResults.css}" rel="stylesheet"> <link th:href="@{/static/css/searchResults.css}" rel="stylesheet">
+=======
+>>>>>>> 5a05e80 (search new)
     <style>
         .navbar-brand {
             font-family: 'Arial Black', sans-serif;
@@ -255,8 +263,22 @@
                                     Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
                                 </p>
                                 <div class="d-flex">
-                                    <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" class="btn btn-sm btn-outline-success flex-fill me-1">View Detail</a>
-                                    <a href="#" class="btn btn-sm btn-outline-success flex-fill">Buy Ticket</a>
+                                    <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                    class="btn btn-sm btn-outline-success"
+                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                    <i class="fas fa-list"></i> View Detail
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
+                                        th:utext="${event.areas.get(0).ticketPrice}"></span>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-success"
+                                    style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                    <i class="fas fa-eye"></i>
+                                    <span th:utext="${event.eyeView}"></span>
+                                </a>
                                 </div>
 >>>>>>> 388cbd7 (update search)
                             </div>
