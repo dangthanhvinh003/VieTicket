@@ -313,5 +313,21 @@ public class AdminController {
         model.addAttribute("events", events);
         return "admin/events/passEvent";
     }
+    @GetMapping("/payEvent")
+    public String payForEvent(@RequestParam("eventId") int eventId, Model model) throws Exception {
+        boolean isHidden = eventRepo.payEvent(eventId);
+        
+        if (isHidden) {
+            model.addAttribute("message", "Event has been hidden successfully.");
+        } else {
+            model.addAttribute("message", "Failed to hide the event.");
+        }
+    
+        // Fetch the updated list of events and add to the model
+        List<Event> events = eventRepo.getAllEventPass();
+        model.addAttribute("events", events);
+        
+        return "admin/events/passEvent";
+    }
 
 }
