@@ -186,7 +186,7 @@ public class PurchaseTicketController {
         Order order = orderService.handlePaymentResponse(fields);
 
         return switch (order.getStatus()) {
-            case SUCCESS -> "redirect:/purchase/purchase-success?orderId=" + order.getOrderId();
+            case SUCCESS -> "redirect:/orders/view?orderId=" + order.getOrderId();
             case FAILED -> "redirect:/purchase/purchase-failure?orderId=" + order.getOrderId();
             default -> "redirect:/";
         };
@@ -223,37 +223,6 @@ public class PurchaseTicketController {
         model.addAttribute("tickets", tickets);
 
         return "purchase/failure";
-    }
-
-    @GetMapping("/purchase-success")
-    public String showPurchaseSuccess(@RequestParam("orderId") int orderId, Model model,
-            RedirectAttributes redirectAttributes) throws Exception {
-        User user = (User) httpSession.getAttribute("activeUser");
-        if (user == null) {
-            httpSession.setAttribute("redirect", "/purchase/purchase-success?orderId=" + orderId);
-            redirectAttributes.addFlashAttribute("error", "Please login to continue");
-            return "redirect:/auth/login";
-        } else if (user.getRole() != 'u') {
-            return "redirect:/";
-        }
-
-        Order order = orderRepo.findById(orderId);
-        if (order == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
-        }
-        if (order.getUser().getUserId() != user.getUserId()) {
-            return "redirect:/";
-        }
-        if (!order.getStatus().equals(Order.PaymentStatus.SUCCESS)) {
-            return "redirect:/purchase/purchase-failure?orderId=" + orderId;
-        }
-
-        List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
-
-        model.addAttribute("order", order);
-        model.addAttribute("tickets", tickets);
-
-        return "purchase/success";
     }
 
     @Data
