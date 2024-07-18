@@ -406,15 +406,10 @@
                                     <li><a class="dropdown-item" th:href="@{/viewMyListEvent}">View List Event</a></li>
                                 </th:block>
                                 <th:block th:if="${session.activeUser.role.toString() == 'a'}">
-                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveOrganizer}">View All List
-                                            Approve Organizer</a>
+                                    <li><a class="dropdown-item" th:href="@{/admin/dashboard}">View Dashboard Admin</a>
                                     </li>
                                 </th:block>
-                                <th:block th:if="${session.activeUser.role.toString() == 'a'}">
-                                    <li><a class="dropdown-item" th:href="@{/ViewAllApproveEvent}">View All List Approve
-                                            Event</a>
-                                    </li>
-                                </th:block>
+                               
                                 <li><a class="dropdown-item" th:href="@{/auth/log-out}">Log out</a></li>
                             </ul>
                         </li>
