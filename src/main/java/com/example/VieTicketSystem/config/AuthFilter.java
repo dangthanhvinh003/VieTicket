@@ -117,6 +117,7 @@ public class AuthFilter implements Filter {
                                 || requestURI.startsWith("/createEventSuccess"))
                         || requestURI.startsWith("/eventEditPage") || requestURI.startsWith("/eventEditSubmit")
                         || requestURI.startsWith("/viewStatistics") || requestURI.startsWith("/eventUsers")
+                        || requestURI.startsWith("/requestPayment")
                         || requestURI.startsWith("/organizer")
                         || requestURI.startsWith("/sendMailToAllUser")) {
                     if (requestURI.startsWith("/createEvent")) {

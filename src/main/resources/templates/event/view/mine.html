@@ -78,14 +78,46 @@
         <div class="row">
             <div class="col-md-12">
                 <div th:each="event : ${eventList}">
-                    <div class="event-card">
+                    <div class="event-card position-relative">
+                        <div th:if="${event.approved == 4 && pageType == 'passed'}"
+                            class="box top-right position-absolute"
+                            style="background-color: rgb(134,93,255); 
+                            color: white; 
+                            padding: 0.3rem;
+                            top: 0; 
+                            right: 0;
+                            border-bottom-left-radius: 0.5rem;"
+                            >
+                            Please wait for payment
+                        </div>
+                        <div th:if="${event.approved == 5 && pageType == 'passed'}"
+                            class="box top-right position-absolute"
+                            style="background-color: rgb(134,93,255); 
+                            color: white; 
+                            padding: 0.3rem;
+                            top: 0; 
+                            right: 0;
+                            border-bottom-left-radius: 0.5rem;"
+                            >
+                            Payment completed
+                        </div>
+                        <div th:if="${(event.approved == 1 || event.approved == 0) && pageType == 'passed'}"
+                            class="box top-right position-absolute"
+                            style="background-color: rgb(134,93,255); 
+                            color: white; 
+                            padding: 0.3rem;
+                            top: 0; 
+                            right: 0;
+                            border-bottom-left-radius: 0.5rem;"
+                            >
+                            You can request for payment
+                        </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="col-md-6">
+                            <div class="col-md-5">
+                                <div class="col-md-7">
                                     <img th:src="@{${event.banner}}" class="img-fluid" alt="Event Poster">
                                 </div>
                                 <div class="mt-3">
-                                    
                                     <strong>Seat Map:</strong>
                                     <div>
                                         <img th:if="${event.seatMap != null}" th:src="@{${event.seatMap.img}}"
@@ -95,7 +127,7 @@
                                         th:if="${event.seatMap == null}">No seat map available</span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <div class="col-md-12">
                                     <h4 th:text="${event.name}">Event Name</h4>
                                     <p>Start Date: <span th:text="${event.startDate}">Start Date</span></p>
@@ -137,19 +169,25 @@
                                                 <button type="submit" class="btn btn-custom">Edit Seat Map</button>
                                             </form>
                                         </div>
+                                        <div th:if="${pageType == 'passed'}">
+                                            <form th:action="@{/requestPayment}" method="post" style="display:inline;">
+                                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
+                                                <button type="submit" class="btn btn-custom">Request Payment</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div>
-
-                            </div>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+        let data = /*[[${eventList}]]*/ {};
+        console.log(data)
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const priceElements = document.querySelectorAll('.price');
