@@ -103,6 +103,11 @@ public class OrderController {
         }
 
         if (refundRequestEntity.isTotalRefund()) {
+            List<Ticket> tickets = ticketRepo.findByOrderId(refundRequestEntity.getOrderId());
+            if (tickets.stream().anyMatch(ticket -> ticket.getStatus() != Ticket.TicketStatus.PURCHASED)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request: invalid ticket status (is not PURCHASED).");
+            }
+
             RefundOrder refundOrder = new RefundOrder();
             refundOrder.setCreatedOn(LocalDateTime.now());
             refundOrder.setOrder(order);
@@ -214,15 +219,15 @@ public class OrderController {
     }
 
     @PostMapping("/rating")
-    public String ratingOrganizer (@RequestParam("order_id") int orderId, @RequestParam("rating") int rating) {
+    public ResponseEntity<String> ratingOrganizer(@RequestParam("order_id") int orderId, @RequestParam("rating") int rating) {
         int organizerId = ticketRepo.findOrganizerIdByOrderId(orderId);
         orderRepo.submitRating(rating, organizerId, orderId);
-        return "redirect:/";
+        return ResponseEntity.status(HttpStatus.OK).body("Rating submitted");
     }
-    
+
     @GetMapping("/rating")
-    public String ratingOrganizer() {      
-        return "redirect:/";
+    public ResponseEntity<String> ratingOrganizer() {
+        return ResponseEntity.status(HttpStatus.OK).body("Rating submitted");
     }
 
     @Data

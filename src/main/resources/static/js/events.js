@@ -16,6 +16,7 @@ const duplicateShape = document.getElementById("duplicateShape");
 const mirrorHorizontally = document.getElementById("mirrorHorizontally");
 const mirrorVertically = document.getElementById("mirrorVertically");
 const saveButton = document.getElementById("saveButton");
+const blankButton = document.getElementById("blankButton");
 const loadButton = document.getElementById("loadButton");
 const panningButton = document.getElementById("panningButton");
 const removeButton = document.getElementById("removeButton");
@@ -317,6 +318,12 @@ loadButton.addEventListener("click", () => {
   }
 });
 
+blankButton.addEventListener("click", () => {
+  shapes = [];
+  mainMapReset();
+  canvas.addEventListener("dblclick", zoomInArea);
+  canvas.addEventListener("mousedown", selectShape);
+});
 panningButton.addEventListener("click", () => {
   mainMapReset();
   canvas.addEventListener("mousedown", startPanning);

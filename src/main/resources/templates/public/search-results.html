@@ -12,6 +12,18 @@
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
     <style>
+        .navbar-brand {
+            font-family: 'Arial Black', sans-serif;
+            font-style: italic;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        #eventCards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Creates a 3-column layout where each column takes up an equal fraction of the available space */
+            gap: 20px; /* Adjusts the space between grid items */
+        }
+
         .fade-in {
             animation: fadeIn 0.5s;
         }
@@ -114,6 +126,53 @@
             background-color: #4820a3;
             border-color: #4820a3;
             color: #fff;
+        footer {
+            background-color: #1c1c2b;
+            padding: 20px 0;
+            border-top: 2px solid #4c4c6d;
+            color: #bbb;
+        }
+
+        .footer-column {
+            margin-bottom: 20px;
+        }
+
+        .footer-column h5 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .footer-column ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .social-icons {
+            margin-top: 10px;
+        }
+
+        .social-icons a {
+            color: white;
+            margin-right: 15px;
+            font-size: 1.5em;
+            text-decoration: none;
+        }
+
+        .social-icons a:hover {
+            color: #007bff;
         }
     </style>
 </head>
@@ -169,9 +228,6 @@
                     </div>
                 </div>
             </div>
-            <div th:if="${eventList == null || eventList.size() == 0}">
-                <p>No events found.</p>
-            </div>
         </div>
     </div>
     <script>
@@ -200,4 +256,5 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
+<div th:insert="~{public/fragments :: footer}"></div>
 </html>

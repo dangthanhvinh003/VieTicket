@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.dto.AdditionalData;
@@ -205,14 +207,16 @@ public class EventController {
             Map<String, Object> shape = (Map<String, Object>) shapeWrapper.get("data");
             if ("Area".equals(shape.get("type"))) {
                 List<Map<String, Object>> areaShapes = (List<Map<String, Object>>) shape.get("shapes");
-
+                String areaName = shape.get("name").toString();
                 for (Map<String, Object> areaShape : areaShapes) {
                     if ("Row".equals(areaShape.get("type"))) {
                         String rowName = areaShape.get("name").toString();
-                        Row row = rows.stream().filter(r -> r.getRowName().equals(rowName)).findFirst().orElse(null);
+                        Row row = rows.stream()
+                                .filter(r -> r.getRowName().equals(rowName) && r.getArea().getName().equals(areaName))
+                                .findFirst().orElse(null);
                         if (row == null)
                             continue;
-
+                        System.out.println("Tao in ra row: " + row);
                         List<Map<String, Object>> seatsList = (List<Map<String, Object>>) areaShape.get("seats");
                         for (Map<String, Object> seat : seatsList) {
                             String seatNumber = seat.get("number").toString();
@@ -224,8 +228,7 @@ public class EventController {
             }
         }
 
-        seatRepo.addSeats(seats); // Batch insert seats and get their IDs
-        System.out.println(session.getAttribute("idNewEvent"));
+        seatRepo.addSeats(seats);
         if (session.getAttribute("idNewEvent") != null) {
             session.removeAttribute("idNewEvent");
             return "redirect:/createEventSuccess";
@@ -400,16 +403,14 @@ public class EventController {
     @GetMapping("/viewdetailEvent/{id}")
     public String viewEventDetail(@PathVariable("id") int eventId, Model model) throws Exception {
         Event event = eventRepo.findById(eventId);
+
+        if (event == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found");
+        }
+
         eventRepo.incrementClickCount(event.getEventId());
-        Organizer currentOrganizer = organizerRepo.getOrganizerByEventId(eventId);
-
-        double averageRating = organizerRepo.getAverageRatingForOrganizer(currentOrganizer.getUserId());
-        DecimalFormat df = new DecimalFormat("#.#");
-        String formattedRating = df.format(averageRating);
-
         model.addAttribute("event", event);
-        model.addAttribute("organizer", currentOrganizer);
-        model.addAttribute("stars", formattedRating);
+        model.addAttribute("organizer", organizerRepo.getOrganizerByEventId(eventId));
         List<Float> ticketPrices = areaRepo.getTicketPricesByEventId(eventId); // Lấy danh sách giá vé
 
         // Tìm giá vé thấp nhất
@@ -443,21 +444,21 @@ public class EventController {
 
     @GetMapping(value = "/eventsByCategory")
     public String eventsByCategory(@RequestParam("category") String category, Model model, HttpSession httpSession) {
-    List<Event> eventList = eventRepo.getAllEvents();
-    List<Event> filteredEvents = eventList.stream()
-            .filter(event -> event.getType().equalsIgnoreCase(category))
-            .collect(Collectors.toList());
-    model.addAttribute("eventList", filteredEvents);
-    model.addAttribute("pageType", "category");
-    return "public/search-results";
+        List<Event> eventList = eventRepo.getAllEvents();
+        List<Event> filteredEvents = eventList.stream()
+                .filter(event -> event.getType().equalsIgnoreCase(category))
+                .collect(Collectors.toList());
+        model.addAttribute("eventList", filteredEvents);
+        model.addAttribute("pageType", "category");
+        return "public/search-results";
     }
 
     @GetMapping(value = "/showAllEvents")
     public String allEvents(Model model, HttpSession httpSession) {
-    List<Event> eventList = eventRepo.getAllEvents();
-    model.addAttribute("eventList", eventList);
-    model.addAttribute("pageType", "all");
-    return "public/search-results";
+        List<Event> eventList = eventRepo.getAllEvents();
+        model.addAttribute("eventList", eventList);
+        model.addAttribute("pageType", "all");
+        return "public/search-results";
     }
 
 }

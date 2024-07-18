@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // Original author: https://github.com/pad1092/VNPAY-Springboot-Demo
 
@@ -26,20 +28,17 @@ public class VNPayService {
 
     private final ObjectMapper jacksonObjectMapper;
     private final WebClient webClient;
-    private final String publicIP;
+    private volatile String publicIP = "10.10.0.0";
 
     public VNPayService(ObjectMapper jacksonObjectMapper, WebClient.Builder webClientBuilder) {
         this.jacksonObjectMapper = jacksonObjectMapper;
         this.webClient = webClientBuilder.baseUrl(VNPayConfig.vnp_APIURL).build();
-        try {
-            this.publicIP = getPublicIP();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        fetchPublicIPAsync();
     }
 
     // Create order and return payment URL
-    public String createOrder(long total, String orderInformation, String urlReturn, String clientIp, Map<String, String> vnp_Params) {
+    public String createOrder(long total, String orderInformation, String urlReturn, String clientIp,
+            Map<String, String> vnp_Params) {
         String vnp_Version = VNPayConfig.vnp_Version;
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomAlphanumericString(64);
@@ -66,7 +65,8 @@ public class VNPayService {
         vnp_Params.put("vnp_ReturnUrl", urlReturn);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+                .withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         String vnp_CreateDate = formatter.format(now);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
@@ -84,11 +84,11 @@ public class VNPayService {
             String fieldName = itr.next();
             String fieldValue = vnp_Params.get(fieldName);
             if ((fieldValue != null) && (!fieldValue.isEmpty())) {
-                //Build hash data
+                // Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
                 hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                //Build query
+                // Build query
                 query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
                 query.append('=');
                 query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
@@ -134,13 +134,15 @@ public class VNPayService {
         String vnp_TransactionDate = transactionData.get("vnp_CreateDate");
         String vnp_CreateBy = "VieTicket";
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+                .withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         String vnp_CreateDate = formatter.format(now);
 
         String vnp_IpAddr = this.publicIP;
 
-        String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TransactionType, vnp_TxnRef, vnp_Amount, vnp_TransactionDate, vnp_CreateBy, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
+        String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TransactionType,
+                vnp_TxnRef, vnp_Amount, vnp_TransactionDate, vnp_CreateBy, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.getVnp_HashSecret(), hash_Data);
 
         Map<String, String> requestBody = new HashMap<>();
@@ -191,8 +193,7 @@ public class VNPayService {
                 fields.get("vnp_TransactionStatus"),
                 fields.get("vnp_OrderInfo"),
                 fields.getOrDefault("vnp_PromotionCode", ""),
-                fields.getOrDefault("vnp_PromotionAmount", "")
-        );
+                fields.getOrDefault("vnp_PromotionAmount", ""));
 
         String secretKey = VNPayConfig.getVnp_HashSecret();
         String checksum = VNPayConfig.hmacSHA512(secretKey, data);
@@ -225,13 +226,15 @@ public class VNPayService {
         String vnp_OrderInfo = "Query order ID: " + vnp_TxnRef;
         String vnp_TransactionDate = transactionData.get("vnp_CreateDate");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+                .withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         String vnp_CreateDate = formatter.format(now);
 
         String vnp_IpAddr = this.publicIP;
 
-        String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TxnRef, vnp_TransactionDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
+        String hash_Data = String.join("|", vnp_RequestId, vnp_Version, vnp_Command, vnp_TmnCode, vnp_TxnRef,
+                vnp_TransactionDate, vnp_CreateDate, vnp_IpAddr, vnp_OrderInfo);
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.getVnp_HashSecret(), hash_Data);
 
         Map<String, String> requestBody = new HashMap<>();
@@ -258,14 +261,25 @@ public class VNPayService {
     }
 
     // Get public IP address of the server
-    public String getPublicIP() throws IOException {
-        URL url = new URL("https://api.ipify.org/");
-        URLConnection connection = url.openConnection();
+    private void fetchPublicIPAsync() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            try {
+                URL url = new URL("https://api.ipify.org/");
+                URLConnection connection = url.openConnection();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String publicIP = in.readLine();
-        in.close();
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                publicIP = in.readLine(); // Update publicIP asynchronously
+                in.close();
+            } catch (IOException e) {
+                // Log error or handle it as needed
+                System.out.println(e.getLocalizedMessage());
+            }
+        });
+        executor.shutdown(); // Shutdown executor after task completion
+    }
 
+    public String getPublicIP() {
         return publicIP;
     }
 

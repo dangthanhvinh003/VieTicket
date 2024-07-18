@@ -288,38 +288,44 @@ public class AdminRepo {
     }
 
     public AdminStatistics getStatisticsForAdmin() throws Exception {
-
         AdminStatistics stats = new AdminStatistics();
-
         String sql = "SELECT "
-             + "(SELECT SUM(s.ticket_price) "
-             + " FROM Ticket t "
-             + " JOIN Seat s ON t.seat_id = s.seat_id "
-             + " JOIN `Row` r ON s.row_id = r.row_id "
-             + " JOIN Area a ON r.area_id = a.area_id "
-             + " JOIN Event e ON a.event_id = e.event_id "
-             + " WHERE t.status = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
-             + "(SELECT COUNT(*) "
-             + " FROM Event "
-             + " WHERE is_approve = 1 AND end_date > NOW()) AS total_ongoing_events, "
-             + "(SELECT COUNT(*) "
-             + " FROM Event "
-             + " WHERE is_approve = 0) AS total_approved_events, "
-             + "(SELECT COUNT(*) "
-             + " FROM Event "
-             + " WHERE is_approve = 3) AS total_rejected_events, "
-             + "(SELECT COUNT(*) "
-             + " FROM Organizer "
-             + " WHERE is_active = 0) AS total_inactive_organizers, "
-             + "(SELECT COUNT(*) "
-             + " FROM Organizer "
-             + " WHERE is_active = 1) AS total_active_organizers, "
-             + "(SELECT COUNT(*) "
-             + " FROM User u "
-             + " WHERE u.role NOT IN ('a', 'b', 'p')) AS total_users_excluding_organizers, "
-             + "(SELECT COUNT(*) "
-             + " FROM User "
-             + " WHERE role = 'b' OR role = 'p') AS total_banned_users";
+        + "(SELECT SUM(s.ticket_price) "
+        + " FROM Ticket t "
+        + " JOIN Seat s ON t.seat_id = s.seat_id "
+        + " JOIN `Row` r ON s.row_id = r.row_id "
+        + " JOIN Area a ON r.area_id = a.area_id "
+        + " JOIN Event e ON a.event_id = e.event_id "
+        + " WHERE t.status = 0 AND e.end_date > NOW()) AS total_sold_amount_active_events, "
+        + "(SELECT COUNT(*) "
+        + " FROM Event "
+        + " WHERE is_approve = 1 AND end_date > NOW()) AS total_ongoing_events, "
+        + "(SELECT COUNT(*) "
+        + " FROM Event "
+        + " WHERE is_approve = 0) AS total_approved_events, "
+        + "(SELECT COUNT(*) "
+        + " FROM Event "
+        + " WHERE is_approve = 3) AS total_rejected_events, "
+        + "(SELECT COUNT(*) "
+        + " FROM RefundOrder "
+        + " WHERE `status` = 3) AS total_refund_ticket, "
+        + "(SELECT COUNT(*) "
+        + " FROM Event "
+        + " WHERE (is_approve = 1 AND end_date <= NOW()) "
+        + "    OR (is_approve = 4 AND end_date <= NOW()) "
+        + "    OR (is_approve = 5 AND end_date <= NOW())) AS total_passed_events, "
+        + "(SELECT COUNT(*) "
+        + " FROM Organizer "
+        + " WHERE is_active = 0) AS total_inactive_organizers, "
+        + "(SELECT COUNT(*) "
+        + " FROM Organizer "
+        + " WHERE is_active = 1) AS total_active_organizers, "
+        + "(SELECT COUNT(*) "
+        + " FROM User u "
+        + " WHERE u.role NOT IN ('a', 'b', 'p')) AS total_users_excluding_organizers, "
+        + "(SELECT COUNT(*) "
+        + " FROM User "
+        + " WHERE role = 'b' OR role = 'p') AS total_banned_users";
 
         try (Connection con = ConnectionPoolManager.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
@@ -330,10 +336,12 @@ public class AdminRepo {
                 stats.setTotalOngoingEvents(rs.getInt("total_ongoing_events"));
                 stats.setTotalApprovedEvents(rs.getInt("total_approved_events"));
                 stats.setTotalRejectedEvents(rs.getInt("total_rejected_events"));
+                stats.setTotalRefundTicket(rs.getInt("total_refund_ticket")); // Thêm dòng này
+                stats.setTotalPassEvent(rs.getInt("total_passed_events"));
                 stats.setTotalInactiveOrganizers(rs.getInt("total_inactive_organizers"));
                 stats.setTotalActiveOrganizers(rs.getInt("total_active_organizers"));
                 stats.setTotalUsersExcludingOrganizers(rs.getInt("total_users_excluding_organizers"));
-                stats.setTotalBannedUsers(rs.getInt("total_banned_users")); // Thêm dòng này
+                stats.setTotalBannedUsers(rs.getInt("total_banned_users"));
             }
 
         }
@@ -363,7 +371,7 @@ public class AdminRepo {
         return dailyRevenue;
     }
 
-     public List<Integer> getMonthlyRevenue() throws Exception {
+    public List<Integer> getMonthlyRevenue() throws Exception {
         // Khởi tạo danh sách với 12 phần tử bằng 0
         List<Integer> monthlyRevenue = new ArrayList<>(Collections.nCopies(12, 0));
 
@@ -476,7 +484,6 @@ public class AdminRepo {
             organizer.setUsername(rs.getString("username"));
             organizer.setPassword(rs.getString("password"));
             organizer.setPhone(rs.getString("phone"));
-            organizer.setGender(rs.getString("gender").charAt(0));
             organizer.setDob(rs.getDate("dob"));
             organizer.setActive(rs.getBoolean("is_active"));
             organizer.setEmail(rs.getString("email"));

@@ -120,31 +120,40 @@ public class SeatRepo {
     public void addSeats(List<Seat> seats) throws SQLException {
         Connection connection = ConnectionPoolManager.getConnection();
         Statement statement = connection.createStatement();
-      
+
         StringBuilder sql = new StringBuilder("INSERT INTO Seat (number, ticket_price, is_taken, row_id) VALUES ");
         for (int i = 0; i < seats.size(); i++) {
-          Seat seat = seats.get(i);
-      
-          // Escape single quotes in seat number
-          String escapedNumber = seat.getNumber().replace("'", "''");
-      
-          sql.append(String.format("('%s', %.2f, %d, %d)",
-            escapedNumber,
-            seat.getTicketPrice(),
-            Seat.TakenStatus.AVAILABLE.toInteger(),
-            seat.getRow().getRowId()));
-          if (i < seats.size() - 1) {
-            sql.append(", ");
-          }
+            Seat seat = seats.get(i);
+
+            // Escape single quotes in seat number
+            String escapedNumber = seat.getNumber().replace("'", "''");
+
+            sql.append(String.format("('%s', %.2f, %d, %d)",
+                    escapedNumber,
+                    seat.getTicketPrice(),
+                    Seat.TakenStatus.AVAILABLE.toInteger(),
+                    seat.getRow().getRowId()));
+            if (i < seats.size() - 1) {
+                sql.append(", ");
+            }
         }
-      
+
         // Execute the statement with careful handling of SQL string
-        statement.execute(sql.toString());
-      
+        statement.execute(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+        ResultSet rs = statement.getGeneratedKeys();
+
+        int index = 0;
+        while (rs.next()) {
+            int id = rs.getInt(1);
+            seats.get(index).setSeatId(id);
+            index++;
+        }
+        rs.close();
+
         statement.close();
         connection.close();
-      }
-      
+    }
+
 
     public List<Seat> findByEventId(int eventId) throws Exception {
         Connection connection = ConnectionPoolManager.getConnection();

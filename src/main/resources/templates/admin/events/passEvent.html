@@ -1,47 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Ongoing Events</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
-        .event-table th, .event-table td {
+        .event-table th,
+        .event-table td {
             vertical-align: middle;
         }
+
         .event-table img {
             width: 100px;
             height: auto;
         }
     </style>
 </head>
+
 <body>
-    
+
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Ongoing Events</h1>
+            <h1>Passed Events</h1>
             <a th:href="@{/admin/dashboard}" class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
         </div>
-        
+
         <!-- Search Form -->
         <div class="mb-4">
             <form th:action="@{/searchEvents}" method="get" class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search events" aria-label="Search" name="query" />
+                <input class="form-control mr-sm-2" type="search" placeholder="Search events" aria-label="Search"
+                    name="query" />
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
                     <i class="fas fa-search"></i> Search
                 </button>
             </form>
         </div>
         <!-- End of Search Form -->
-        
+
         <div th:if="${events.isEmpty()}">
             <div class="alert alert-warning" role="alert">
                 No ongoing events at the moment.
             </div>
         </div>
-        
+        <div id="alerts"></div>
         <div th:if="${!events.isEmpty()}">
             <table class="table table-striped table-hover event-table">
                 <thead class="thead-dark">
@@ -56,12 +61,14 @@
                         <th>Banner</th>
                         <th>Approved</th>
                         <th>Eye View</th>
-                        <th>Edit</th>
-                        <th>Hide</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="event : ${events}" th:attr="data-end-date=${#temporals.format(event.endDate, 'yyyy-MM-dd')}">
+                    <tr th:each="event : ${events}"
+                        th:attr="data-end-date=${#temporals.format(event.endDate, 'yyyy-MM-dd')}">
 
                         <td th:text="${event.eventId}">1</td>
                         <td th:text="${event.name}">Event Name</td>
@@ -69,19 +76,72 @@
                         <td th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd hh:mm a')}">End Date</td>
                         <td th:text="${event.location}">Location</td>
                         <td th:text="${event.type}">Type</td>
-                        <td><img th:src="@{${event.poster}}" alt="Poster"/></td>
-                        <td><img th:src="@{${event.banner}}" alt="Banner"/></td>
+                        <td><img th:src="@{${event.poster}}" alt="Poster" /></td>
+                        <td><img th:src="@{${event.banner}}" alt="Banner" /></td>
                         <td th:text="${event.approved == 1 ? 'Yes' : 'No'}">Approved</td>
                         <td th:text="${event.eyeView}">Eye View</td>
-                        <td>
-                            <form th:action="@{/eventEditPageAdmin}" method="post">
+                        <td
+                            th:classappend="${event.approved == 4 ? 'bg-danger text-white' : (event.approved == 5 ? 'bg-success text-white' : '')}">
+                            <span th:if="${event.approved == 1}">Pending Payment</span>
+                            <span th:if="${event.approved == 4}">Organizer Requested Payment</span>
+                            <span th:if="${event.approved == 5}">Payment Successful</span>
+                        </td>
+                      
+                        <!-- Modal Confirm Payment -->
+                        <div class="modal fade" id="confirmPaymentModal" tabindex="-1" role="dialog"
+                            aria-labelledby="confirmPaymentModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmPaymentModalLabel">Confirm Payment</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Bạn đã chắc chắn chuyển tiền cho organizer này chưa?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="submitPayment()">Yes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <td th:if="${event.approved == 1 or event.approved == 4}">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                data-target="#confirmPaymentModal">
+                                <i class="fas fa-coins"></i> Pay
+                            </button>
+                            <form id="payForm" th:action="@{/payEvent}" method="get" style="display: none;">
                                 <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
                             </form>
                         </td>
-                        <td>
+                        <script>
+                            function submitPayment() {
+                                document.getElementById("payForm").submit();
+                                $('#confirmPaymentModal').modal('hide'); // Đóng modal sau khi submit
+                                showAlert(); // Hiển thị alert sau khi thành công
+                            }
+                        
+                            function showAlert() {
+                                const alert = `
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        Payment successful!
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                `;
+                                document.getElementById("alerts").innerHTML = alert;
+                            }
+                        </script>
+                        
+
+
+                        <td th:if="${event.approved == 5}">
                             <form th:action="@{/hideEvent}" method="get" class="hide-button">
                                 <input type="hidden" name="eventId" th:value="${event.eventId}" />
                                 <button type="submit" class="btn btn-primary btn-sm">
@@ -89,25 +149,28 @@
                                 </button>
                             </form>
                         </td>
-                        
+
+
+
+
                     </tr>
-                    
-                    
+
+
                 </tbody>
             </table>
         </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
+    <!-- <script>
+        document.addEventListener("DOMContentLoaded", function () {
             const rows = document.querySelectorAll("tr[data-end-date]");
             const today = new Date();
-            
+
             rows.forEach(row => {
                 const endDateStr = row.getAttribute("data-end-date");
                 const endDate = new Date(endDateStr);
                 const timeDiff = today - endDate; // Difference in milliseconds
                 const dayDiff = timeDiff / (1000 * 60 * 60 * 24); // Difference in days
-    
+
                 // Đổi màu hàng và hiển thị nút Hide nếu ngày khác hơn 5 ngày
                 if (dayDiff > 5) {
                     row.style.backgroundColor = "#FF6A6A";
@@ -119,11 +182,12 @@
                 }
             });
         });
-    </script>
-    
-    
+    </script> -->
+
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
