@@ -11,9 +11,14 @@
     <style>
         /* Dark Mode Styles */
         body {
-            background-color: #15132b;
             color: white;
-            background: linear-gradient(135deg, #15132b 0%, #1c1a36 100%);
+            background-image: url('https://e1.pxfuel.com/desktop-wallpaper/258/300/desktop-wallpaper-5-vaporwave-and-backgrounds-1920x1080-retro-vaporwave.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            width: 100%;
         }
 
         .navbar-custom {
@@ -278,7 +283,39 @@
         }
 
         .form-label {
-            color: #E384FF;
+            color: #ffffff;
+            /* Màu tím đậm */
+            font-weight: 500;
+            /* Độ đậm vừa phải */
+            font-size: 0.9em;
+            /* Kích thước chữ nhỏ hơn một chút */
+            text-transform: uppercase;
+            /* Chữ in hoa */
+            letter-spacing: 0.05em;
+            /* Tăng khoảng cách giữa các chữ cái */
+            margin-bottom: 0.5em;
+            /* Thêm khoảng cách dưới label */
+            display: inline-block;
+            /* Cho phép margin-bottom hoạt động */
+            position: relative;
+            /* Để thêm pseudo-element */
+            transition: all 0.3s ease;
+            /* Hiệu ứng chuyển đổi mượt mà */
+        }
+
+        .form-label::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 0;
+            height: 2px;
+            background-color: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .form-label:hover::after {
+            width: 100%;
         }
 
         .input-group {
@@ -634,10 +671,10 @@
 
                     if (fileInput.files.length > 0) {
                         submitButton.style.display = 'block';
-                   
+
                     } else {
                         submitButton.style.display = 'none';
-                       
+
                     }
                 }
 
