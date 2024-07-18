@@ -835,7 +835,7 @@ public class EventRepo {
 
     public List<Event> getAllOngoingEvents() {
         List<Event> events = new ArrayList<>();
-        String query = "SELECT * FROM Event WHERE is_approve = 1 ";
+        String query = "SELECT * FROM Event WHERE is_approve = 1 And end_date >= NOW()";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
                 PreparedStatement statement = connection.prepareStatement(query);
@@ -904,4 +904,56 @@ public class EventRepo {
         }
     }
 
+    public List<Event> getAllEventPass() {
+        List<Event> events = new ArrayList<>();
+        String query = "SELECT *  FROM Event WHERE end_date <= NOW()";
+
+        try (Connection connection = ConnectionPoolManager.getConnection();
+                PreparedStatement statement = connection.prepareStatement(query);
+                ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Event event = new Event();
+                event.setEventId(resultSet.getInt("event_id"));
+                event.setName(resultSet.getString("name"));
+                event.setDescription(resultSet.getString("description"));
+
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp startTimestamp = resultSet.getTimestamp("start_date");
+                if (startTimestamp != null) {
+                    event.setStartDate(startTimestamp.toLocalDateTime());
+                }
+
+                event.setLocation(resultSet.getString("location"));
+                event.setType(resultSet.getString("type"));
+
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
+                if (ticketSaleTimestamp != null) {
+                    event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
+                }
+
+                // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                Timestamp endTimestamp = resultSet.getTimestamp("end_date");
+                if (endTimestamp != null) {
+                    event.setEndDate(endTimestamp.toLocalDateTime());
+                }
+
+                event.setPoster(resultSet.getString("poster"));
+                event.setBanner(resultSet.getString("banner"));
+                event.setApproved(resultSet.getInt("is_approve"));
+                event.setEyeView(resultSet.getInt("eyeView"));
+
+                // Lấy danh sách areas và gán vào event
+                List<Area> areas = getAreasForEvent(event.getEventId(), connection);
+                event.setAreas(areas);
+
+                // Set the organizer if applicable
+                events.add(event);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return events;
+    }
 }

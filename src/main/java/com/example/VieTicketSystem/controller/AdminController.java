@@ -307,5 +307,11 @@ public class AdminController {
         model.addAttribute("events", events);
         return "admin/events/ongoing";
     }
+    @GetMapping(value = ("/ViewAllPassEvent"))
+    public String passEvent(Model model) throws Exception {
+        List<Event> events = eventRepo.getAllEventPass();
+        model.addAttribute("events", events);
+        return "admin/events/passEvent";
+    }
 
 }
