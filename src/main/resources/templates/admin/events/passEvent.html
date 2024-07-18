@@ -82,7 +82,7 @@
                         <td th:text="${event.eyeView}">Eye View</td>
                         <td th:classappend="${event.approved == 4 ? 'bg-danger text-white' : (event.approved == 5 ? 'bg-success text-white' : '')}">
                             <span th:if="${event.approved == 1}">Pending Payment</span>
-                            <span th:if="${event.approved == 4}">User Requested Payment</span>
+                            <span th:if="${event.approved == 4}">Organizer Requested Payment</span>
                             <span th:if="${event.approved == 5}">Payment Successful</span>
                         </td>
                         
