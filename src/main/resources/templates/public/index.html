@@ -381,12 +381,12 @@
                     <input id="searchInput" class="form-control me-2 dark-mode light-mode search-input" type="search"
                         placeholder="Search" aria-label="Search" onclick="redirectToAllEvents()">
 
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <button class="btn btn-outline-success" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
-                <ul class="navbar-nav mb-2 mb-lg-0">
+                <ul class="navbar-nav  mb-lg-0">
                     <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
                         <li class="nav-item">
-                            <a class="btn btn-outline-success" th:href="@{/createEvent}">Create Event</a>
+                            <a class="btn btn-outline-success text-truncate" th:href="@{/createEvent}">Create Event</a>
                         </li>
                     </th:block>
                     <th:block th:if="${session.activeUser != null}">
@@ -420,12 +420,12 @@
                         </li>
                     </th:block>
                 </ul>
-                <div class="mode-switch-container">
+                <!-- <div class="mode-switch-container">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="modeSwitch">
                         <label class="form-check-label" for="modeSwitch">Dark Mode</label>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </nav>
@@ -435,7 +435,7 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <video class="d-block w-100" autoplay muted loop>
-                    <source src="https://res.cloudinary.com/djcowpoua/video/upload/v1717804738/videoplayback_ebmycx.mp4"
+                    <source src="https://res.cloudinary.com/duwvn7qqf/video/upload/v1721360508/banner1.mp4"
                         type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -447,7 +447,7 @@
             <div class="carousel-item">
                 <video class="d-block w-100" autoplay muted loop>
                     <source
-                        src="https://res.cloudinary.com/djcowpoua/video/upload/v1719232070/ODYSSEY_nightclub_promo_video_f26pnk.mp4"
+                        src="https://res.cloudinary.com/duwvn7qqf/video/upload/v1721360111/banner2.mp4"
                         type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -459,7 +459,7 @@
             <div class="carousel-item">
                 <video class="d-block w-100" autoplay muted loop>
                     <source
-                        src="https://res.cloudinary.com/djcowpoua/video/upload/v1719232073/DJI_AVATA_Night_Footage_EDM_Event_vnas5g.mp4"
+                        src="https://res.cloudinary.com/duwvn7qqf/video/upload/v1721360106/banner3.mp4"
                         type="video/mp4">
                     Your browser does not support the video tag.
                 </video>

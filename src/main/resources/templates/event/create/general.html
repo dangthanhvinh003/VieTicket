@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Events</title>
     <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
@@ -34,10 +35,30 @@
             color: black !important;
         }
 
-        body {
-            background-color: #1d1d2c;
+        .form {
+            background: linear-gradient(135deg,#3512be, #1b0b5c, #0e0535);
             color: #fff;
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .form:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        body {
+            color: white;
+            background-image: url('https://i.pinimg.com/originals/e4/a7/3c/e4a73c86ccae59ea259c75121ba6cb84.gif');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            width: 100%;
         }
 
         .container {
@@ -97,18 +118,18 @@
         }
 
         .form-control {
-            background-color: #2d2d44;
+            background-color: #ffffff;
             border: 1px solid #444;
             color: #ccc;
         }
 
         .btn-primary {
-            background-color: #4a4aff;
+            background-color: #4019df;
             border: none;
         }
 
         .btn-primary:hover {
-            background-color: #3a3ae6;
+            background-color: #220d79;
         }
 
         .mb-3 img {
@@ -140,12 +161,18 @@
             background-color: #f8d7da;
             border-color: #f5c6cb;
         }
+
+        h1 {
+            text-shadow: 0px 0px 10px #03C7FF, 0px 0px 20px #03C7FF, 0px 0px 40px #03C7FF, 0px 0px 60px #03C7FF, 0px 0px 80px #03C7FF;
+            color: white;
+        }
     </style>
 </head>
 
-<body>
+<body>  
     <div class="container">
-        <h1>Create New Events</h1>
+        
+        <h1> <a href="/" class="btn btn-custom styled-button" id="backHome"><i class="fas fa-home"></i></a>Create New Events</h1>
         <div id="fileSizeAlert" class="alert alert-danger d-none" role="alert">
             File quá lớn. Vui lòng chọn file nhỏ hơn 1MB.
         </div>
@@ -355,7 +382,7 @@
             alertDiv.style.display = 'block';
 
             // Hide alertDiv after all messages have faded out
-           
+
         }
 
     </script>
