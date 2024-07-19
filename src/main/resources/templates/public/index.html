@@ -381,9 +381,9 @@
                     <input id="searchInput" class="form-control me-2 dark-mode light-mode search-input" type="search"
                         placeholder="Search" aria-label="Search" onclick="redirectToAllEvents()">
 
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <button class="btn btn-outline-success" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
-                <ul class="navbar-nav mb-2 mb-lg-0">
+                <ul class="navbar-nav  mb-lg-0">
                     <th:block th:if="${session.activeUser != null and session.activeUser.role.toString() == 'o'}">
                         <li class="nav-item">
                             <a class="btn btn-outline-success text-truncate" th:href="@{/createEvent}">Create Event</a>
