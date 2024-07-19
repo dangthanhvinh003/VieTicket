@@ -113,7 +113,7 @@
             width: 100%;
             height: 30%;
             /* Điều chỉnh chiều cao tùy theo độ cao của hình ảnh lửa */
-            background: url('https://res.cloudinary.com/djcowpoua/image/upload/v1718623694/rxs5sjwmtriia6de9byz.gif') center bottom/cover no-repeat;
+            background: url('https://res.cloudinary.com/duwvn7qqf/image/upload/v1721374491/firegif.gif') center bottom/cover no-repeat;
             /* Đường dẫn và kiểu hiển thị */
         }
 
@@ -507,7 +507,7 @@
                 <a class="page-link load-page rounded" href="#" data-page="prev">«</a>
             </div>
             <div class="row" id="eventsList">
-                <div class="col-4 mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
+                <div class="col mb-4" th:each="event : ${session.events}" th:if="${event.approved == 1}">
                     <div class="card border-0 shadow w-100">
                         <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
                              style="width: 100%; max-width: 800px; height: 200px; object-fit: cover;">
