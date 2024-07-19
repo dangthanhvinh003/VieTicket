@@ -278,14 +278,14 @@
 
                 if (eventName.includes(filter) || eventLocation.includes(filter)) {
                     card.style.display = ''; // Make sure the card is displayed
-                    card.classList.remove('fade-out'); // Remove the fade-out class if it was hidden
-                    card.classList.add('fade-in'); // Apply the fade-in animation
+                    card.classList.remove('fade-out'); // Nếu event đã được ẩn thì xoá fade-out
+                    card.classList.add('fade-in'); // Áp dụng fade-in
                 } else {
-                    card.classList.remove('fade-in'); // Remove the fade-in class
-                    card.classList.add('fade-out'); // Apply the fade-out animation
+                    card.classList.remove('fade-in'); // Nếu event cần được ẩn thì xoá fade-in
+                    card.classList.add('fade-out'); //áp dụng hiệu ứng fade-out
                     card.addEventListener('animationend', function () {
                         if (card.classList.contains('fade-out')) {
-                            card.style.display = 'none'; // Hide the card after fade-out
+                            card.style.display = 'none'; // Ẩn sự kiện sau khi fade-out
                         }
                     }, { once: true });
                 }
