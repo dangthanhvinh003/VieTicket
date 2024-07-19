@@ -172,7 +172,11 @@
                                         <div th:if="${pageType == 'passed'}">
                                             <form th:action="@{/requestPayment}" method="post" style="display:inline;">
                                                 <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                                <button type="submit" class="btn btn-custom">Request Payment</button>
+                                                <button type="submit" class="btn btn-custom" 
+                                                        th:if="${event.approved != 5}" 
+                                                        th:disabled="${event.approved == 4}">
+                                                    Request Payment
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
