@@ -35,6 +35,11 @@ ADD COLUMN map_file json;
 
 Select * from User
 
+insert into googleOauth 
+values 
+('640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com'
+,'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','http://localhost:8080/auth/login/oauth2/google')
+
 drop database vieticket1
 
 use vieticket1
