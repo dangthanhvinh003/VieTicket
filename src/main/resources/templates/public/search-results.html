@@ -277,7 +277,7 @@
                 let eventLocation = removeVietnameseTones(card.getAttribute('data-location'));
 
                 if (eventName.includes(filter) || eventLocation.includes(filter)) {
-                    card.style.display = ''; // Make sure the card is displayed
+                    card.style.display = ''; //để chắc chắn sự kiện đã được hiển thị
                     card.classList.remove('fade-out'); // Nếu event đã được ẩn thì xoá fade-out
                     card.classList.add('fade-in'); // Áp dụng fade-in
                 } else {
