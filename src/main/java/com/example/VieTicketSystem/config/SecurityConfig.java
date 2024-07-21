@@ -69,9 +69,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.requiresChannel((channel) -> channel.anyRequest().requiresSecure());
-//        return http.build();
-//    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.requiresChannel((channel) -> channel.anyRequest().requiresSecure());
+        return http.build();
+    }
 }
