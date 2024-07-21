@@ -3,6 +3,7 @@ package com.example.VieTicketSystem.controller;
 import java.sql.Date;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -214,9 +215,24 @@ public class UserController {
     }
 
     @GetMapping("/auth/login")
-    public String loginPage() {
+    public String loginPage(Model model, HttpServletRequest request) {
+        // Construct base URL from request
+        String baseUrl = request.getScheme() + "://" + request.getServerName();
+        if ((request.getScheme().equals("http") && request.getServerPort() != 80) ||
+                (request.getScheme().equals("https") && request.getServerPort() != 443)) {
+            baseUrl += ":" + request.getServerPort();
+        }
+        String redirectUri = baseUrl + "/auth/login/oauth2/google";
 
-        return "auth/login"; // Trả về tên của trang login.html
+        String googleLoginUrl = "https://accounts.google.com/o/oauth2/v2/auth"
+                + "?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com"
+                + "&redirect_uri=" + redirectUri
+                + "&response_type=code"
+                + "&scope=openid%20email%20profile";
+
+        model.addAttribute("googleLoginUrl", googleLoginUrl);
+
+        return "auth/login"; // Return the name of the login page template
     }
 
     @GetMapping("/auth/login/oauth2/google")

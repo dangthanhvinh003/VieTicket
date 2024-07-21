@@ -11,21 +11,6 @@
     <link rel="icon" type="image/png"
         href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
     <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            ClassicEditor
-                .create(document.querySelector('#editor'))
-                .then(editor => {
-                    // Update the hidden textarea with the editor content
-                    document.querySelector('form').addEventListener('submit', function () {
-                        document.querySelector('#hiddenDescription').value = editor.getData();
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        });
-    </script>
     <style>
         .ck-editor__editable {
             height: 300px !important;
@@ -309,11 +294,28 @@
         }
 
     </script>
-    <script>
+    <script defer>
         document.addEventListener("DOMContentLoaded", function () {
+            let editorInstance;
+
+            // Initialize CKEditor
+            ClassicEditor
+                .create(document.querySelector('#editor'))
+                .then(editor => {
+                    editorInstance = editor; // Save the editor instance for later use
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
             const form = document.querySelector('form');
             form.addEventListener('submit', function (e) {
                 e.preventDefault(); // Prevent form submission to validate
+
+                // Update the hidden textarea with the CKEditor content
+                if (editorInstance) {
+                    document.querySelector('#hiddenDescription').value = editorInstance.getData();
+                }
 
                 // Validation flags
                 let isValid = true;

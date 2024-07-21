@@ -370,7 +370,7 @@
         <form th:action="@{/auth/login}" method="post">
             <h1>Sign in</h1>
             <div class="social-container">
-                <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=640078988681-kmojc9p5oqoc79flah45qhojn1q3l827.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/login/oauth2/google&response_type=code&scope=openid%20email%20profile"
+                <a th:href="${googleLoginUrl}"
                    role="button">
                     <i class="fab fa-google-plus-g"></i>G+
                 </a>
