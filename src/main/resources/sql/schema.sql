@@ -183,8 +183,6 @@ SELECT `VieTicket1`.`Ticket`.`ticket_id`     AS `ticket_id`,
        `VieTicket1`.`Ticket`.`purchase_date` AS `purchase_date`,
        `VieTicket1`.`Ticket`.`order_id`      AS `order_id`,
        `VieTicket1`.`Ticket`.`seat_id`       AS `seat_id`,
-       `VieTicket1`.`Ticket`.`is_returned`   AS `is_returned`,
-       `VieTicket1`.`Ticket`.is_checked_in   AS `is_checked_in`,
        `VieTicket1`.`Order`.`user_id`        AS `user_id`
 FROM (`VieTicket1`.`Ticket` JOIN `VieTicket1`.`Order`
       ON ((`VieTicket1`.`Ticket`.`order_id` = `VieTicket1`.`Order`.`order_id`)));
@@ -209,17 +207,30 @@ BEGIN
     INSERT INTO Organizer (organizer_id, founded_date, website, is_active, organizer_addr, organizer_type)
     VALUES (p_new_user_id, p_founded_date, p_website, p_is_active, p_organizer_addr, p_organizer_type);
 END $$
+DELIMITER $$
 
-CREATE PROCEDURE UpdateOrganizer(IN p_organizer_id INT, IN p_full_name VARCHAR(64),
-                                 IN p_username VARCHAR(64), IN p_password VARCHAR(128),
-                                 IN p_phone VARCHAR(16), IN p_dob DATE, IN p_gender CHAR,
-                                 IN p_avatar TEXT, IN p_role CHAR, IN p_email VARCHAR(96),
-                                 IN p_founded_date DATE, IN p_website TEXT, IN p_is_active TINYINT,
-                                 IN p_organizer_addr VARCHAR(256), IN p_organizer_type VARCHAR(64))
+CREATE PROCEDURE UpdateOrganizer(
+    IN p_organizer_id INT, 
+    IN p_full_name VARCHAR(64),
+    IN p_username VARCHAR(64), 
+    IN p_password VARCHAR(128),
+    IN p_phone VARCHAR(16), 
+    IN p_dob DATE, 
+    IN p_gender CHAR,
+    IN p_avatar TEXT, 
+    IN p_role CHAR, 
+    IN p_email VARCHAR(96),
+    IN p_founded_date DATE, 
+    IN p_website TEXT, 
+    IN p_is_active TINYINT,
+    IN p_organizer_addr VARCHAR(256), 
+    IN p_organizer_type VARCHAR(64)
+)
 BEGIN
     -- Update User attributes
     UPDATE User
-    SET full_name  = p_full_name,
+    SET 
+        full_name  = p_full_name,
         username   = p_username,
         `password` = p_password,
         phone      = p_phone,
@@ -228,16 +239,19 @@ BEGIN
         avatar     = p_avatar,
         `role`     = p_role,
         email      = p_email
-    WHERE user_id = p_organizer_id;
+    WHERE 
+        user_id = p_organizer_id;
 
     -- Update Organizer attributes
     UPDATE Organizer
-    SET founded_date   = p_founded_date,
+    SET 
+        founded_date   = p_founded_date,
         website        = p_website,
         is_active      = p_is_active,
         organizer_addr = p_organizer_addr,
         organizer_type = p_organizer_type
-    WHERE organizer_id = p_organizer_id;
+    WHERE 
+        organizer_id = p_organizer_id;
 END $$
 DELIMITER ;
 
