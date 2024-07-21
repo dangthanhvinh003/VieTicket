@@ -17,11 +17,20 @@ public class ConnectionPoolManager {
     @Getter
     private static HikariDataSource dataSource;
 
+    @Value("${spring.datasource.url}")
+    private String url;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
     @PostConstruct
     public void initializeDataSource() {
-        config.setJdbcUrl(Baseconnection.url);
-        config.setUsername(Baseconnection.username);
-        config.setPassword(Baseconnection.password);
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
         config.setMaximumPoolSize(32);
         dataSource = new HikariDataSource(config);
     }

@@ -1,0 +1,3 @@
+dispatch:
+  - url: "*.savvy-aileron-423709-q9.appspot.com/*"
+    service: default

@@ -68,4 +68,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.requiresChannel((channel) -> channel.anyRequest().requiresSecure());
+//        return http.build();
+//    }
 }
