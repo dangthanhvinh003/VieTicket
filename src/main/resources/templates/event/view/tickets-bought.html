@@ -20,78 +20,79 @@
                 });
         });
     </script>
+    <base th:href="${baseUrl}">
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="mt-4">
-            <a th:href="@{/viewMyListEvent}" class="btn btn-secondary">Go back</a>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sendInfoModal">Send information</button>
-        </div>
-        <h1>List of users who bought tickets</h1>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Full Name</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.userId}"></td>
-                    <td th:text="${user.fullName}"></td>
-                    <td th:text="${user.username}"></td>
-                    <td th:text="${user.email}"></td>
-                    <td th:text="${user.phone}"></td>
-                </tr>
-            </tbody>
-        </table>
+<div class="container mt-4">
+    <div class="mt-4">
+        <a class="btn btn-secondary" th:href="@{/viewMyListEvent}">Go back</a>
+        <button class="btn btn-primary" data-bs-target="#sendInfoModal" data-bs-toggle="modal">Send information</button>
     </div>
+    <h1>List of users who bought tickets</h1>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Full Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Phone</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.userId}"></td>
+            <td th:text="${user.fullName}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.phone}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="sendInfoModal" tabindex="-1" aria-labelledby="sendInfoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{/sendMailToAllUser}" method="post">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="sendInfoModalLabel">Send infor</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal -->
+<div aria-hidden="true" aria-labelledby="sendInfoModalLabel" class="modal fade" id="sendInfoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" th:action="@{/sendMailToAllUser}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sendInfoModalLabel">Send infor</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="title">Title</label>
+                        <input class="form-control" id="title" name="Title" required type="text">
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="title" name="Title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="content" class="form-label">Content</label>
-                            <textarea id="editor"></textarea>
-                            <input type="hidden" id="hiddenDescription" name="content">
-                        </div>
-                        <input type="" id="organizerEmails" name="organizerEmails">
+                    <div class="mb-3">
+                        <label class="form-label" for="content">Content</label>
+                        <textarea id="editor"></textarea>
+                        <input id="hiddenDescription" name="content" type="hidden">
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Send</button>
-                    </div>
-                </form>
-            </div>
+                    <input id="organizerEmails" name="organizerEmails" type="">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
-    <!-- Custom Script to collect emails and set hidden input value -->
-    <script>
-        document.querySelector('#sendInfoModal').addEventListener('show.bs.modal', function () {
-            // Collect all email addresses from the table
-            const emails = Array.from(document.querySelectorAll('tbody tr td:nth-child(4)')).map(td => td.textContent.trim());
-            // Set the value of hidden input
-            document.querySelector('#organizerEmails').value = emails.join(',');
-        });
-    </script>
+<!-- Custom Script to collect emails and set hidden input value -->
+<script>
+    document.querySelector('#sendInfoModal').addEventListener('show.bs.modal', function () {
+        // Collect all email addresses from the table
+        const emails = Array.from(document.querySelectorAll('tbody tr td:nth-child(4)')).map(td => td.textContent.trim());
+        // Set the value of hidden input
+        document.querySelector('#organizerEmails').value = emails.join(',');
+    });
+</script>
 </body>
 </html>

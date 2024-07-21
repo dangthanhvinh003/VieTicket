@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Account Banned - VinhTicket</title>
     <style>
         body {
@@ -14,6 +14,7 @@
             height: 100vh;
             margin: 0;
         }
+
         .container {
             background-color: #fff;
             padding: 30px;
@@ -23,13 +24,16 @@
             max-width: 400px;
             width: 100%;
         }
+
         .container h1 {
             color: #dc3545;
         }
+
         .container p {
             font-size: 16px;
             color: #333;
         }
+
         .logout-button {
             background-color: #007bff;
             color: #fff;
@@ -40,19 +44,24 @@
             cursor: pointer;
             text-decoration: none;
         }
+
         .logout-button:hover {
             background-color: #0056b3;
         }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 <body>
-    <div class="container">
-        <h1>Account Banned</h1>
-        <p>Dear User,</p>
-        <p>Your account has been <strong style="color: #dc3545;">banned</strong> due to violation of our terms of service.</p>
-        <p>If you believe this is a mistake, please contact our support team at <a href="mailto:support@vinhticket.com" style="color: #007bff; text-decoration: none;">support@vinhticket.com</a>.</p>
-        <p>Click the button below to log out.</p>
-        <a th:href="@{/auth/log-out}" class="logout-button">Log Out</a>
-    </div>
+<div class="container">
+    <h1>Account Banned</h1>
+    <p>Dear User,</p>
+    <p>Your account has been <strong style="color: #dc3545;">banned</strong> due to violation of our terms of service.
+    </p>
+    <p>If you believe this is a mistake, please contact our support team at <a href="mailto:support@vinhticket.com"
+                                                                               style="color: #007bff; text-decoration: none;">support@vinhticket.com</a>.
+    </p>
+    <p>Click the button below to log out.</p>
+    <a class="logout-button" th:href="@{/auth/log-out}">Log Out</a>
+</div>
 </body>
 </html>

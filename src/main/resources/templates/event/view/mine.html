@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Event List</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" rel="stylesheet">
     <style>
         body {
             background-color: #1a1a2e;
             color: #fff;
         }
-
 
 
         .btn {
@@ -31,7 +30,6 @@
             background-color: #0f0f1a;
             color: #fff;
         }
-
 
 
         .search-bar input {
@@ -57,128 +55,129 @@
             color: white;
         }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 
 <body>
-    <div class="container">
-        <a href="/" class="btn btn-custom" id="allEvents" style="margin-top: 10px;">Back to Home</a>
-        <div class="d-flex align-items-center mb-3" style="margin-top: 30px;">
-            <form action="/viewMyListEvent" method="get" class="d-flex flex-grow-1">
-                <input type="text" name="search" class="form-control me-2" placeholder="Search" />
-                <button type="submit" class="btn btn-outline-light">Search</button>
-            </form>
-            <div class="btn-group ms-2" role="group">
-                <a href="/allEvents" class="btn btn-custom" id="allEvents">All Events</a>
-                <a href="/pendingEvents" class="btn btn-custom" id="pendingEvents">Pending</a>
-                <a href="/approvedEvents" class="btn btn-custom" id="approvedEvents">Approved</a>
-                <a href="/passedEvents" class="btn btn-custom" id="passedEvents">Passed</a>
-            </div>
+<div class="container">
+    <a class="btn btn-custom" href="/" id="allEvents" style="margin-top: 10px;">Back to Home</a>
+    <div class="d-flex align-items-center mb-3" style="margin-top: 30px;">
+        <form action="/viewMyListEvent" class="d-flex flex-grow-1" method="get">
+            <input class="form-control me-2" name="search" placeholder="Search" type="text"/>
+            <button class="btn btn-outline-light" type="submit">Search</button>
+        </form>
+        <div class="btn-group ms-2" role="group">
+            <a class="btn btn-custom" href="/allEvents" id="allEvents">All Events</a>
+            <a class="btn btn-custom" href="/pendingEvents" id="pendingEvents">Pending</a>
+            <a class="btn btn-custom" href="/approvedEvents" id="approvedEvents">Approved</a>
+            <a class="btn btn-custom" href="/passedEvents" id="passedEvents">Passed</a>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div th:each="event : ${eventList}">
-                    <div class="event-card position-relative">
-                        <div th:if="${event.approved == 4 && pageType == 'passed'}"
-                            class="box top-right position-absolute"
-                            style="background-color: rgb(134,93,255); 
-                            color: white; 
+    <div class="row">
+        <div class="col-md-12">
+            <div th:each="event : ${eventList}">
+                <div class="event-card position-relative">
+                    <div class="box top-right position-absolute"
+                         style="background-color: rgb(134,93,255);
+                            color: white;
                             padding: 0.3rem;
-                            top: 0; 
+                            top: 0;
                             right: 0;
                             border-bottom-left-radius: 0.5rem;"
-                            >
-                            Please wait for payment
-                        </div>
-                        <div th:if="${event.approved == 5 && pageType == 'passed'}"
-                            class="box top-right position-absolute"
-                            style="background-color: rgb(134,93,255); 
-                            color: white; 
+                         th:if="${event.approved == 4 && pageType == 'passed'}"
+                    >
+                        Please wait for payment
+                    </div>
+                    <div class="box top-right position-absolute"
+                         style="background-color: rgb(134,93,255);
+                            color: white;
                             padding: 0.3rem;
-                            top: 0; 
+                            top: 0;
                             right: 0;
                             border-bottom-left-radius: 0.5rem;"
-                            >
-                            Payment completed
-                        </div>
-                        <div th:if="${(event.approved == 1 || event.approved == 0) && pageType == 'passed'}"
-                            class="box top-right position-absolute"
-                            style="background-color: rgb(134,93,255); 
-                            color: white; 
+                         th:if="${event.approved == 5 && pageType == 'passed'}"
+                    >
+                        Payment completed
+                    </div>
+                    <div class="box top-right position-absolute"
+                         style="background-color: rgb(134,93,255);
+                            color: white;
                             padding: 0.3rem;
-                            top: 0; 
+                            top: 0;
                             right: 0;
                             border-bottom-left-radius: 0.5rem;"
-                            >
-                            You can request for payment
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="col-md-7">
-                                    <img th:src="@{${event.banner}}" class="img-fluid" alt="Event Poster">
-                                </div>
-                                <div class="mt-3">
-                                    <strong>Seat Map:</strong>
-                                    <div>
-                                        <img th:if="${event.seatMap != null}" th:src="@{${event.seatMap.img}}"
-                                            alt="Seat Map" class="seat-map img-fluid" style="height: 200px;">
-                                    </div>
-                                    <span th:style="${event.seatMap == null} ? 'color:red;' : ''"
-                                        th:if="${event.seatMap == null}">No seat map available</span>
-                                </div>
-                            </div>
+                         th:if="${(event.approved == 1 || event.approved == 0) && pageType == 'passed'}"
+                    >
+                        You can request for payment
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
                             <div class="col-md-7">
-                                <div class="col-md-12">
-                                    <h4 th:text="${event.name}">Event Name</h4>
-                                    <p>Start Date: <span th:text="${event.startDate}">Start Date</span></p>
-                                    <p>End Date: <span th:text="${event.endDate}">End Date</span></p>
-                                    <p>Ticket Sale Date: <span th:text="${event.ticketSaleDate}">Ticket Sale Date</span>
-                                    </p>
-                                    <p>Type: <span th:text="${event.type}">Type</span></p>
-                                    <p>SeatMap Name:
+                                <img alt="Event Poster" class="img-fluid" th:src="@{${event.banner}}">
+                            </div>
+                            <div class="mt-3">
+                                <strong>Seat Map:</strong>
+                                <div>
+                                    <img alt="Seat Map" class="seat-map img-fluid"
+                                         style="height: 200px;" th:if="${event.seatMap != null}" th:src="@{${event.seatMap.img}}">
+                                </div>
+                                <span th:if="${event.seatMap == null}"
+                                      th:style="${event.seatMap == null} ? 'color:red;' : ''">No seat map available</span>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="col-md-12">
+                                <h4 th:text="${event.name}">Event Name</h4>
+                                <p>Start Date: <span th:text="${event.startDate}">Start Date</span></p>
+                                <p>End Date: <span th:text="${event.endDate}">End Date</span></p>
+                                <p>Ticket Sale Date: <span th:text="${event.ticketSaleDate}">Ticket Sale Date</span>
+                                </p>
+                                <p>Type: <span th:text="${event.type}">Type</span></p>
+                                <p>SeatMap Name:
                                     <span th:style="${event.seatMap == null} ? 'color:red;' : ''"
-                                        th:text="${event.seatMap != null ? event.seatMap.name : 'No seat map available'}">SeatMap
+                                          th:text="${event.seatMap != null ? event.seatMap.name : 'No seat map available'}">SeatMap
                                         Name</span></p><br>
-                                    <strong>Areas and Prices:</strong>
-                                    <ul class="area-list list-group">
-                                        <li class="list-group-item" th:each="area : ${event.areas}">
-                                            <span th:text="${area.name}">Area Name</span>:
-                                            <span class="price" th:data-price="${area.ticketPrice}"
-                                                th:text="${area.ticketPrice}">Price</span>
-                                        </li>
-                                        <!-- Nếu không có khu vực nào, hiển thị thông báo -->
-                                        <li class="list-group-item"
-                                            th:style="${event.areas == null || event.areas.isEmpty()} ? 'color:red;' : ''"
-                                            th:if="${event.areas == null || event.areas.isEmpty()}">
-                                            No areas available</li>
-                                    </ul>
-                                    <div class="d-flex justify-content-between mt-3">
-                                        <form th:action="@{/viewStatistics}" method="post" style="display:inline;">
-                                            <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                            <button type="submit" class="btn btn-custom">Statistic Event</button>
+                                <strong>Areas and Prices:</strong>
+                                <ul class="area-list list-group">
+                                    <li class="list-group-item" th:each="area : ${event.areas}">
+                                        <span th:text="${area.name}">Area Name</span>:
+                                        <span class="price" th:data-price="${area.ticketPrice}"
+                                              th:text="${area.ticketPrice}">Price</span>
+                                    </li>
+                                    <!-- Nếu không có khu vực nào, hiển thị thông báo -->
+                                    <li class="list-group-item"
+                                        th:if="${event.areas == null || event.areas.isEmpty()}"
+                                        th:style="${event.areas == null || event.areas.isEmpty()} ? 'color:red;' : ''">
+                                        No areas available
+                                    </li>
+                                </ul>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <form method="post" style="display:inline;" th:action="@{/viewStatistics}">
+                                        <input name="eventId" th:value="${event.eventId}" type="hidden"/>
+                                        <button class="btn btn-custom" type="submit">Statistic Event</button>
+                                    </form>
+
+                                    <div th:if="${pageType == 'pending'}">
+                                        <form method="post" style="display:inline;" th:action="@{/eventEditPage}">
+                                            <input name="eventId" th:value="${event.eventId}" type="hidden"/>
+                                            <button class="btn btn-custom" type="submit">Edit Event</button>
                                         </form>
-                                    
-                                        <div th:if="${pageType == 'pending'}">
-                                            <form th:action="@{/eventEditPage}" method="post" style="display:inline;">
-                                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                                <button type="submit" class="btn btn-custom">Edit Event</button>
-                                            </form>
-                                            
-                                            <form th:action="@{/seatMapEditPage}" method="post" style="display:inline;">
-                                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                                <button type="submit" class="btn btn-custom">Edit Seat Map</button>
-                                            </form>
-                                        </div>
-                                        <div th:if="${pageType == 'passed'}">
-                                            <form th:action="@{/requestPayment}" method="post" style="display:inline;">
-                                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
-                                                <button type="submit" class="btn btn-custom" 
-                                                        th:if="${event.approved != 5}" 
-                                                        th:disabled="${event.approved == 4}">
-                                                    Request Payment
-                                                </button>
-                                            </form>
-                                        </div>
+
+                                        <form method="post" style="display:inline;" th:action="@{/seatMapEditPage}">
+                                            <input name="eventId" th:value="${event.eventId}" type="hidden"/>
+                                            <button class="btn btn-custom" type="submit">Edit Seat Map</button>
+                                        </form>
+                                    </div>
+                                    <div th:if="${pageType == 'passed'}">
+                                        <form method="post" style="display:inline;" th:action="@{/requestPayment}">
+                                            <input name="eventId" th:value="${event.eventId}" type="hidden"/>
+                                            <button class="btn btn-custom" th:disabled="${event.approved == 4}"
+                                                    th:if="${event.approved != 5}"
+                                                    type="submit">
+                                                Request Payment
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -188,39 +187,40 @@
             </div>
         </div>
     </div>
-    <script th:inline="javascript">
-        let data = /*[[${eventList}]]*/ {};
-        console.log(data)
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const priceElements = document.querySelectorAll('.price');
-            priceElements.forEach(function(priceElement) {
-                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
-                if (!isNaN(priceValue)) {
-                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
-                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
-                }
-            });
+</div>
+<script th:inline="javascript">
+    let data = /*[[${eventList}]]*/ {};
+    console.log(data)
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const priceElements = document.querySelectorAll('.price');
+        priceElements.forEach(function (priceElement) {
+            const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+            if (!isNaN(priceValue)) {
+                // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+            }
         });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const path = window.location.pathname;
-            const buttons = document.querySelectorAll('.btn-custom');
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const path = window.location.pathname;
+        const buttons = document.querySelectorAll('.btn-custom');
 
-            buttons.forEach(button => {
-                // Ensure the trailing slash is consistently handled
-                const buttonPath = new URL(button.href).pathname;
-                if (buttonPath === path) {
-                    button.classList.add('active');
-                }
-            });
+        buttons.forEach(button => {
+            // Ensure the trailing slash is consistently handled
+            const buttonPath = new URL(button.href).pathname;
+            if (buttonPath === path) {
+                button.classList.add('active');
+            }
         });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    });
+</script>
+<script crossorigin="anonymous"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

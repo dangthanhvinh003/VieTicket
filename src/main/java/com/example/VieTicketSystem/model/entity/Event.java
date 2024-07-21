@@ -33,8 +33,8 @@ public class Event {
     private int eyeView;
 
     public Event(int eventId, String name, String description, LocalDateTime startDate, String location, String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, Organizer organizer, String poster, String banner,
-            int isApprove, int eyeView) {
+                 LocalDateTime ticketSaleDate, LocalDateTime endDate, Organizer organizer, String poster, String banner,
+                 int isApprove, int eyeView) {
         this.eventId = eventId;
         this.name = name;
         this.description = description;

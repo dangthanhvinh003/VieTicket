@@ -10,7 +10,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Organizer extends User{
+public class Organizer extends User {
     private Date foundedDate;
     private String website;
     private String organizerAddr;

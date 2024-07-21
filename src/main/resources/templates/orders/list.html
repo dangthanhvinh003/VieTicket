@@ -3,11 +3,12 @@
 
 <head>
     <title>Orders</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link rel="icon" type="image/png"
-          href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" rel="stylesheet">
+    <link href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png" rel="icon"
+          type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <base th:href="${baseUrl}">
 </head>
 <style>
     .table {
@@ -54,7 +55,7 @@
 <body>
 <div class="container mt-4">
     <div class="d-flex mb-3">
-        <a href="/" class="btn btn-primary">
+        <a class="btn btn-primary" href="/">
             <span class="bi bi-house"></span>
             Back to Home
         </a>
@@ -83,7 +84,7 @@
                                 th:text="${order.order.status}"></span>
             </td>
             <td>
-                <a th:href="@{/orders/view(orderId=${order.order.orderId})}" class="btn btn-primary">
+                <a class="btn btn-primary" th:href="@{/orders/view(orderId=${order.order.orderId})}">
                     <span class="bi bi-eye"></span>
                 </a>
             </td>
@@ -94,23 +95,23 @@
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentPage <= 0} ? 'disabled'">
-                <a class="page-link" th:if="${currentPage > 0}"
-                   th:href="@{/orders(page=${currentPage - 1}, size=${size})}">Previous</a>
+                <a class="page-link" th:href="@{/orders(page=${currentPage - 1}, size=${size})}"
+                   th:if="${currentPage > 0}">Previous</a>
             </li>
-            <li class="page-item active" aria-current="page">
+            <li aria-current="page" class="page-item active">
                 <span class="page-link" th:text="${currentPage + 1}"></span>
             </li>
             <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                <a class="page-link" th:if="${currentPage < totalPages - 1}"
-                   th:href="@{/orders(page=${currentPage + 1}, size=${size})}">Next</a>
+                <a class="page-link" th:href="@{/orders(page=${currentPage + 1}, size=${size})}"
+                   th:if="${currentPage < totalPages - 1}">Next</a>
             </li>
         </ul>
     </nav>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+<script crossorigin="anonymous"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

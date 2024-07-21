@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
- public class AdditionalData {
+public class AdditionalData {
     private int totalSelectedSeats;
     private int totalVIPSeats;
     private ArrayList<String> selectedSeats;

@@ -27,21 +27,11 @@ public class VNPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_APIURL = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
     public static String vnp_Returnurl = "/vnpay-return";
+    public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
     @Getter
     private static String vnp_TmnCode;
     @Getter
     private static String vnp_HashSecret;
-    public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-
-    @Value("${vnp_TmnCode}")
-    public void setVnp_TmnCode(String vnp_TmnCode) {
-        VNPayConfig.vnp_TmnCode = vnp_TmnCode;
-    }
-
-    @Value("${vnp_HashSecret}")
-    public void setVnp_HashSecret(String vnp_HashSecret) {
-        VNPayConfig.vnp_HashSecret = vnp_HashSecret;
-    }
 
     public static String md5(String message) {
         String digest = null;
@@ -144,5 +134,15 @@ public class VNPayConfig {
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
         }
         return sb.toString();
+    }
+
+    @Value("${vnp_TmnCode}")
+    public void setVnp_TmnCode(String vnp_TmnCode) {
+        VNPayConfig.vnp_TmnCode = vnp_TmnCode;
+    }
+
+    @Value("${vnp_HashSecret}")
+    public void setVnp_HashSecret(String vnp_HashSecret) {
+        VNPayConfig.vnp_HashSecret = vnp_HashSecret;
     }
 }

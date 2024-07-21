@@ -198,17 +198,6 @@ public class OrderController {
         return "orders/view";
     }
 
-    public static class Utils {
-        public String formatDate(LocalDateTime dateTime) {
-            if (dateTime == null) {
-                return "N/A";
-            } else {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-                return dateTime.format(formatter);
-            }
-        }
-    }
-
     @PostMapping("/rating-exists")
     @ResponseBody
     public Map<String, Boolean> ratingExists(@RequestParam("order_id") int orderId) {
@@ -228,6 +217,17 @@ public class OrderController {
     @GetMapping("/rating")
     public ResponseEntity<String> ratingOrganizer() {
         return ResponseEntity.status(HttpStatus.OK).body("Rating submitted");
+    }
+
+    public static class Utils {
+        public String formatDate(LocalDateTime dateTime) {
+            if (dateTime == null) {
+                return "N/A";
+            } else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                return dateTime.format(formatter);
+            }
+        }
     }
 
     @Data

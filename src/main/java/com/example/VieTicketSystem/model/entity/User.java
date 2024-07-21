@@ -26,7 +26,7 @@ public class User {
     private String email;
 
     public User(String fullName, String phone, Date dob, char gender, String email, String username, String password,
-            char role) {
+                char role) {
         this.fullName = fullName;
         this.phone = phone;
         this.dob = dob;

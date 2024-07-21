@@ -1,4 +1,5 @@
 package com.example.VieTicketSystem.model.entity;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

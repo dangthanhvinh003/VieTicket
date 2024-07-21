@@ -154,7 +154,9 @@ public class OrderRepo {
                     order.setDate(timestamp.toLocalDateTime());
                 }
                 order.setTotal(rs.getLong("total"));
-                order.setUser(new User() {{ setUserId(userId);}});
+                order.setUser(new User() {{
+                    setUserId(userId);
+                }});
                 order.setStatus(Order.PaymentStatus.fromInteger(rs.getInt("status")));
                 orders.add(order);
             }

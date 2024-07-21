@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -66,354 +66,372 @@
             z-index: 1;
             /* Đảm bảo thẻ <a> không bị các phần tử khác che khuất */
         }
+
         .bg-purple {
-        background-color: #6f42c1;
-        color: white;
-    }
+            background-color: #6f42c1;
+            color: white;
+        }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 
 <body>
-    <div class="container-fluid">
+<div class="container-fluid">
 
 
-        <!-- D</div>ashboard Content -->
-        <div class="row mt-4">
-            <div class="col-lg-12 d-flex"> 
-                <h1 class="h3 mb-4 text-gray-800">Dashboard</h1> &nbsp;&nbsp;
-                <span><a href="/" class="btn btn-primary"> Home Page</a></span>
+    <!-- D</div>ashboard Content -->
+    <div class="row mt-4">
+        <div class="col-lg-12 d-flex">
+            <h1 class="h3 mb-4 text-gray-800">Dashboard</h1> &nbsp;&nbsp;
+            <span><a class="btn btn-primary" href="/"> Home Page</a></span>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-primary">
+                <div class="inner">
+                    <h4 class="price" th:data-price="${statisticsOfAdmin.totalSoldAmountActiveEvents}"
+                        th:text="${statisticsOfAdmin.totalSoldAmountActiveEvents}">0.0</h4>
+                    <p>All Revenues from Event</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
+                </div>
+                <a class="small-box-footer" href="#">Real Revenue <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-primary">
-                    <div class="inner">
-                        <h4 class="price" th:data-price="${statisticsOfAdmin.totalSoldAmountActiveEvents}"
-                            th:text="${statisticsOfAdmin.totalSoldAmountActiveEvents}">0.0</h4>
-                        <p>All Revenues from Event</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-bag"></i>
-                    </div>
-                    <a href="#" class="small-box-footer">Real Revenue <i class="fas fa-arrow-circle-right"></i></a>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalOngoingEvents}">123</h4>
+                    <p>Ongoing Event</p>
                 </div>
-            </div>
-
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalOngoingEvents}">123</h4>
-                        <p>Ongoing Event</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-stats-bars"></i>
-                    </div>
-                    <a th:href="@{/ViewAllEventOngoing}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
                 </div>
+                <a class="small-box-footer" th:href="@{/ViewAllEventOngoing}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
             </div>
+        </div>
 
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalApprovedEvents}">456</h4>
-                        <p>Pending Event</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-checkmark-circled"></i>
-                    </div>
-                    <div>
-                        <a th:href="@{/ViewAllApproveEvent}" class="small-box-footer">More info <i
-                                class="fas fa-arrow-circle-right"></i></a>
-                    </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalApprovedEvents}">456</h4>
+                    <p>Pending Event</p>
                 </div>
-            </div>
-
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalRejectedEvents}">789</h4>
-                        <p>Rejected Event</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-close-circled"></i>
-                    </div>
-                    <a th:href="@{/ViewAllRejectEvent}" class="small-box-footer">More info <i
+                <div class="icon">
+                    <i class="ion ion-checkmark-circled"></i>
+                </div>
+                <div>
+                    <a class="small-box-footer" th:href="@{/ViewAllApproveEvent}">More info <i
                             class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalInactiveOrganizers}">789</h4>
-                        <p>Pending organizer</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-person-add"></i>
-                    </div>
-                    <a th:href="@{/ViewAllApproveOrganizer}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-secondary">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalActiveOrganizers}">789</h4>
-                        <p>Active organizer</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-person"></i>
-                    </div>
-                    <a th:href="@{/ViewActiveOrganizer}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-dark">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalUsersExcludingOrganizers}">789</h4>
-                        <p>All User</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-person-stalker"></i>
-                    </div>
-                    <a th:href="@{/ViewAllUser}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-purple">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalBannedUsers}">789</h4>
-                        <p>Banned User</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-alert"></i>
-                    </div>
-                    <a th:href="@{/ViewAllBanner}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-dark">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalPassEvent}">789</h4>
-                        <p>Pass Event</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-person-stalker"></i>
-                    </div>
-                    <a th:href="@{/ViewAllPassEvent}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-6 mb-4">
-                <div class="small-box bg-purple">
-                    <div class="inner">
-                        <h4 th:text="${statisticsOfAdmin.totalRefundTicket}">789</h4>
-                        <p>Ticket Refund</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-alert"></i>
-                    </div>
-                    <a th:href="@{/ViewAllBanner}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-6 mb-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Daily Revenue</h6>
-                    </div>
-                    <div class="card-body chart-container">
-                        <canvas id="dailyRevenueChart"></canvas>
-                    </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalRejectedEvents}">789</h4>
+                    <p>Rejected Event</p>
                 </div>
+                <div class="icon">
+                    <i class="ion ion-close-circled"></i>
+                </div>
+                <a class="small-box-footer" th:href="@{/ViewAllRejectEvent}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
             </div>
+        </div>
 
-            <div class="col-lg-6 mb-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Monthly Revenue</h6>
-                    </div>
-                    <div class="card-body chart-container">
-                        <canvas id="monthlyRevenueChart"></canvas>
-                    </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalInactiveOrganizers}">789</h4>
+                    <p>Pending organizer</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-add"></i>
+                </div>
+                <a class="small-box-footer" th:href="@{/ViewAllApproveOrganizer}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-secondary">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalActiveOrganizers}">789</h4>
+                    <p>Active organizer</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person"></i>
+                </div>
+                <a class="small-box-footer" th:href="@{/ViewActiveOrganizer}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-dark">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalUsersExcludingOrganizers}">789</h4>
+                    <p>All User</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-stalker"></i>
+                </div>
+                <a class="small-box-footer" th:href="@{/ViewAllUser}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-purple">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalBannedUsers}">789</h4>
+                    <p>Banned User</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-alert"></i>
+                </div>
+                <a class="small-box-footer" th:href="@{/ViewAllBanner}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-dark">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalPassEvent}">789</h4>
+                    <p>Pass Event</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-stalker"></i>
+                </div>
+                <a class="small-box-footer" th:href="@{/ViewAllPassEvent}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="small-box bg-purple">
+                <div class="inner">
+                    <h4 th:text="${statisticsOfAdmin.totalRefundTicket}">789</h4>
+                    <p>Ticket Refund</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-alert"></i>
+                </div>
+                <a class="small-box-footer" th:href="@{/ViewAllBanner}">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Daily Revenue</h6>
+                </div>
+                <div class="card-body chart-container">
+                    <canvas id="dailyRevenueChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-12 mb-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Event Information</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Event Name</th>
-                                        <th>Organizer Information</th>
-                                        <th>Revenue</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Sử dụng Thymeleaf để lặp qua danh sách eventRevenues -->
-                                    <tr th:each="eventRevenue : ${eventRevenues}">
-                                        <td th:text="${eventRevenue.eventName}">Tên Sự Kiện</td>
-                                        <td th:text="${eventRevenue.organizerName}">Thông Tin Tổ Chức</td>
-                                        <td class="price" th:data-price="${eventRevenue.revenue}"
-                                            th:text="${eventRevenue.revenue}">Doanh Thu</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Revenue</h6>
+                </div>
+                <div class="card-body chart-container">
+                    <canvas id="monthlyRevenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Event Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table cellspacing="0" class="table table-bordered" id="dataTable" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Organizer Information</th>
+                                <th>Revenue</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Sử dụng Thymeleaf để lặp qua danh sách eventRevenues -->
+                            <tr th:each="eventRevenue : ${eventRevenues}">
+                                <td th:text="${eventRevenue.eventName}">Tên Sự Kiện</td>
+                                <td th:text="${eventRevenue.organizerName}">Thông Tin Tổ Chức</td>
+                                <td class="price" th:data-price="${eventRevenue.revenue}"
+                                    th:text="${eventRevenue.revenue}">Doanh Thu
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const priceElements = document.querySelectorAll('.price');
-            priceElements.forEach(function (priceElement) {
-                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
-                if (!isNaN(priceValue)) {
-                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
-                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
-                }
-            });
-
-            // Thêm sự kiện click cho các liên kết "More info"
-            const moreInfoLinks = document.querySelectorAll('.small-box-footer');
-            moreInfoLinks.forEach(function (link) {
-                link.addEventListener('click', function (event) {
-                    // event.preventDefault(); // Bỏ dòng này để không ngăn chặn hành động mặc định của liên kết
-
-                    const box = link.closest('.small-box');
-                    const priceElement = box.querySelector('.price');
-                    const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
-                    if (!isNaN(originalPrice)) {
-                        const discountedPrice = originalPrice * 0.1; // Tính giá giảm 10%
-                        priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
-                    }
-
-                    // Thêm một độ trễ nhỏ nếu cần thiết trước khi điều hướng
-                    setTimeout(function () {
-                        window.location.href = link.getAttribute('href');
-                    }, 100); // Độ trễ 100ms
-                });
-            });
-        });
-    </script>
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Lấy dữ liệu JSON từ Thymeleaf
-            var dailyRevenue = [[${ dailyRevenue }]];
-            var monthlyRevenue = [[${ monthlyRevenue }]];
-
-            // Kiểm tra dữ liệu JSON từ Thymeleaf
-            console.log("Daily Revenue from Thymeleaf: ", dailyRevenue);
-            console.log("Monthly Revenue from Thymeleaf: ", monthlyRevenue);
-
-            // Tạo nhãn cho biểu đồ doanh thu hàng ngày
-            var dailyLabels = [];
-            for (var i = 0; i < dailyRevenue.length; i++) {
-                var date = new Date();
-                date.setDate(date.getDate() - (dailyRevenue.length - 1 - i));
-                var dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                dailyLabels.push(dateString);
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const priceElements = document.querySelectorAll('.price');
+        priceElements.forEach(function (priceElement) {
+            const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+            if (!isNaN(priceValue)) {
+                // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
             }
+        });
 
-            // Khởi tạo biểu đồ doanh thu hàng ngày
-            var ctxDaily = document.getElementById('dailyRevenueChart').getContext('2d');
-            var dailyRevenueChart = new Chart(ctxDaily, {
-                type: 'line',
-                data: {
-                    labels: dailyLabels,
-                    datasets: [{
-                        label: 'Revenue',
-                        data: dailyRevenue,
-                        backgroundColor: 'rgba(78, 115, 223, 0.2)',
-                        borderColor: 'rgba(78, 115, 223, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function (value) {
-                                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(value);
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+        // Thêm sự kiện click cho các liên kết "More info"
+        const moreInfoLinks = document.querySelectorAll('.small-box-footer');
+        moreInfoLinks.forEach(function (link) {
+            link.addEventListener('click', function (event) {
+                // event.preventDefault(); // Bỏ dòng này để không ngăn chặn hành động mặc định của liên kết
 
-            // Khởi tạo biểu đồ doanh thu hàng tháng
-            var ctxMonthly = document.getElementById('monthlyRevenueChart').getContext('2d');
-            var monthlyRevenueChart = new Chart(ctxMonthly, {
-                type: 'bar',
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                    datasets: [{
-                        label: 'Revenue',
-                        data: monthlyRevenue,
-                        backgroundColor: 'rgba(28, 200, 138, 0.2)',
-                        borderColor: 'rgba(28, 200, 138, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function (value) {
-                                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(value);
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
-                                }
-                            }
-                        }
-                    }
+                const box = link.closest('.small-box');
+                const priceElement = box.querySelector('.price');
+                const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(originalPrice)) {
+                    const discountedPrice = originalPrice * 0.1; // Tính giá giảm 10%
+                    priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
                 }
+
+                // Thêm một độ trễ nhỏ nếu cần thiết trước khi điều hướng
+                setTimeout(function () {
+                    window.location.href = link.getAttribute('href');
+                }, 100); // Độ trễ 100ms
             });
         });
-    </script>
+    });
+</script>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Lấy dữ liệu JSON từ Thymeleaf
+        var dailyRevenue = [[${ dailyRevenue }]];
+        var monthlyRevenue = [[${ monthlyRevenue }]];
+
+        // Kiểm tra dữ liệu JSON từ Thymeleaf
+        console.log("Daily Revenue from Thymeleaf: ", dailyRevenue);
+        console.log("Monthly Revenue from Thymeleaf: ", monthlyRevenue);
+
+        // Tạo nhãn cho biểu đồ doanh thu hàng ngày
+        var dailyLabels = [];
+        for (var i = 0; i < dailyRevenue.length; i++) {
+            var date = new Date();
+            date.setDate(date.getDate() - (dailyRevenue.length - 1 - i));
+            var dateString = date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+            dailyLabels.push(dateString);
+        }
+
+        // Khởi tạo biểu đồ doanh thu hàng ngày
+        var ctxDaily = document.getElementById('dailyRevenueChart').getContext('2d');
+        var dailyRevenueChart = new Chart(ctxDaily, {
+            type: 'line',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: dailyRevenue,
+                    backgroundColor: 'rgba(78, 115, 223, 0.2)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(context.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Khởi tạo biểu đồ doanh thu hàng tháng
+        var ctxMonthly = document.getElementById('monthlyRevenueChart').getContext('2d');
+        var monthlyRevenueChart = new Chart(ctxMonthly, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: monthlyRevenue,
+                    backgroundColor: 'rgba(28, 200, 138, 0.2)',
+                    borderColor: 'rgba(28, 200, 138, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(context.parsed.y);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 </body>
 </body>
 

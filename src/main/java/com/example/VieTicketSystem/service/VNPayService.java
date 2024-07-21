@@ -38,7 +38,7 @@ public class VNPayService {
 
     // Create order and return payment URL
     public String createOrder(long total, String orderInformation, String urlReturn, String clientIp,
-            Map<String, String> vnp_Params) {
+                              Map<String, String> vnp_Params) {
         String vnp_Version = VNPayConfig.vnp_Version;
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomAlphanumericString(64);

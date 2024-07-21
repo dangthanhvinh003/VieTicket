@@ -122,7 +122,7 @@ public class EventController {
 
     @PostMapping(value = ("/seatMap/NoSeatMap"))
     public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
-            HttpSession httpSession) throws Exception {
+                            HttpSession httpSession) throws Exception {
         int idNewEvent = (int) httpSession.getAttribute("idNewEvent");
         seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
@@ -254,7 +254,7 @@ public class EventController {
         return "redirect:/editSuccess";
     }
 
-    @GetMapping(value = { "/createEventSuccess" })
+    @GetMapping(value = {"/createEventSuccess"})
     public String createEventSuccessPage() {
         return "event/create/success";
     }
@@ -266,7 +266,7 @@ public class EventController {
 
     @PostMapping(value = ("/seatMap/SeatMapBeta"))
     public String SeatMapBetaPage(HttpSession httpSession, @RequestParam("seatMapImg") MultipartFile multipartFile1,
-            @RequestParam("additionalData") String additionalDataJson)
+                                  @RequestParam("additionalData") String additionalDataJson)
             throws Exception {
         // Đọc dữ liệu JSON
         ObjectMapper objectMapper = new ObjectMapper();

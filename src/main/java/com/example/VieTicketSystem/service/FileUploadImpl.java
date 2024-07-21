@@ -16,33 +16,33 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileUploadImpl implements FileUpload {
 
-        private final Cloudinary cloudinary;
+    private final Cloudinary cloudinary;
 
-        @Override
-        public String uploadFile(MultipartFile multipartFile) throws IOException {
-                return cloudinary.uploader()
-                                .upload(multipartFile.getBytes(),
-                                                Map.of("public_id", UUID.randomUUID().toString()))
-                                .get("url")
-                                .toString();
-        }
+    @Override
+    public String uploadFile(MultipartFile multipartFile) throws IOException {
+        return cloudinary.uploader()
+                .upload(multipartFile.getBytes(),
+                        Map.of("public_id", UUID.randomUUID().toString()))
+                .get("url")
+                .toString();
+    }
 
-        public String uploadFileImgBannerAndPoster(MultipartFile multipartFile, int width, int height)
-                        throws IOException {
-                Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(),
-                                ObjectUtils.asMap(
-                                                "transformation", new com.cloudinary.Transformation().width(width)
-                                                                .height(height).crop("fill")));
-                return uploadResult.get("url").toString();
-        }
+    public String uploadFileImgBannerAndPoster(MultipartFile multipartFile, int width, int height)
+            throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(),
+                ObjectUtils.asMap(
+                        "transformation", new com.cloudinary.Transformation().width(width)
+                                .height(height).crop("fill")));
+        return uploadResult.get("url").toString();
+    }
 
-        public String uploadFileSeatMap(MultipartFile multipartFile) throws IOException {
+    public String uploadFileSeatMap(MultipartFile multipartFile) throws IOException {
 
-                Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(),
-                                ObjectUtils.asMap(
-                                                "transformation", new Transformation().effect("trim")));
+        Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(),
+                ObjectUtils.asMap(
+                        "transformation", new Transformation().effect("trim")));
 
-                return uploadResult.get("url").toString();
+        return uploadResult.get("url").toString();
 
-        }
+    }
 }

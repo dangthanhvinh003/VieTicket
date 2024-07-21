@@ -1,4 +1,5 @@
 package com.example.VieTicketSystem.model.entity;
+
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -6,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 @Getter
 @Setter
 @ToString
@@ -33,10 +35,6 @@ public class Ticket {
             this.value = value;
         }
 
-        public int toInteger() {
-            return value;
-        }
-
         public static TicketStatus fromInteger(int value) {
             for (TicketStatus status : TicketStatus.values()) {
                 if (status.value == value) {
@@ -44,6 +42,10 @@ public class Ticket {
                 }
             }
             return null;
+        }
+
+        public int toInteger() {
+            return value;
         }
     }
 }

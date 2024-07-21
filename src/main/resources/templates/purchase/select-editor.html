@@ -2,15 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport">
     <title>Canvas Curve Drawing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link th:href="@{/static/css/normalize.css}" rel="stylesheet"></head>
-    <link th:href="@{/static/css/style.css}" rel="stylesheet"></head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/css/normalize.css}">
+    <base th:href="${baseUrl}">
+</head>
+<link rel="stylesheet" th:href="@{/static/css/style.css}">
+</head>
 
-    <style>
-        .loading-overlay {
+<style>
+    .loading-overlay {
         position: fixed;
         top: 0;
         left: 0;
@@ -23,102 +27,106 @@
         align-items: center;
         z-index: 9999;
         display: none;
-        }
-        .spinner-border {
+    }
+
+    .spinner-border {
         width: 3rem;
         height: 3rem;
-        }
-        .editor-panel{
-            top:0
-        }
-        .custom-btn{
-            position: fixed;
-            top: 10px;
-            left: 10px;
-        }
-        .suggest{
-            position: fixed;
-            top:10px;
-            transform: translateX(25vw);
-            color:#FFA3FD
-        }
-    </style>
+    }
+
+    .editor-panel {
+        top: 0
+    }
+
+    .custom-btn {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+    }
+
+    .suggest {
+        position: fixed;
+        top: 10px;
+        transform: translateX(25vw);
+        color: #FFA3FD
+    }
+</style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner-border text-primary" role="status">
-        </div>
-        <div>Please wait for saving...</div>
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-border text-primary" role="status">
     </div>
-    <div class="canvas-container">
-        <canvas id="myCanvas"></canvas>
-    </div>
-    <button class="btn btn-secondary custom-btn" id="goBackButton">
-        <i class="bi bi-box-arrow-left" style="color: white;"></i>
-    </button>
-    <h2 class="suggest">
-        Please click on the area to choose ticket
-    </h2>
-    <div class="editor-panel d-flex flex-column justify-content-between" id="editorPanel">
-        <div>
-            <div id="editorTitle">
-            </div>
-            <div id="editorContent">
-            </div>
+    <div>Please wait for saving...</div>
+</div>
+<div class="canvas-container">
+    <canvas id="myCanvas"></canvas>
+</div>
+<button class="btn btn-secondary custom-btn" id="goBackButton">
+    <i class="bi bi-box-arrow-left" style="color: white;"></i>
+</button>
+<h2 class="suggest">
+    Please click on the area to choose ticket
+</h2>
+<div class="editor-panel d-flex flex-column justify-content-between" id="editorPanel">
+    <div>
+        <div id="editorTitle">
         </div>
-        <div id="editorSubmit" class="d-flex justify-content-between flex-column align-items-start">
-            <div id="editorSubmitContent"></div>
-            <button id="editorSubmitButton" class="btn">Buy</button>
+        <div id="editorContent">
         </div>
     </div>
-    <script th:inline="javascript">
-        let eventData = /*[[${event}]]*/ {};
-        let seatMapData = /*[[${seatMap}]]*/ {};
-        let selectedSeats =[];
-        let takenOrReservedSeats =[];
-    </script>
-    <script src="../static/js/canvas-users.js"></script>
-    <script src="../static/js/function-users.js"></script>
-    <script src="../static/js/editor-users.js"></script>
-    <script src="../static/js/shape.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-        const editorSubmitContent = document.getElementById("editorSubmitContent");
-        const editorSubmitButton = document.getElementById("editorSubmitButton");
-        const goBackButton = document.getElementById('goBackButton');
-        document.addEventListener("DOMContentLoaded", () => {
-            canvas.addEventListener("wheel",handleWheel);
-            canvas.addEventListener("click", zoomInArea);
-            editorSubmitButton.addEventListener("click", handleBuyTickets)
+    <div class="d-flex justify-content-between flex-column align-items-start" id="editorSubmit">
+        <div id="editorSubmitContent"></div>
+        <button class="btn" id="editorSubmitButton">Buy</button>
+    </div>
+</div>
+<script th:inline="javascript">
+    let eventData = /*[[${event}]]*/ {};
+    let seatMapData = /*[[${seatMap}]]*/ {};
+    let selectedSeats = [];
+    let takenOrReservedSeats = [];
+</script>
+<script src="../static/js/canvas-users.js"></script>
+<script src="../static/js/function-users.js"></script>
+<script src="../static/js/editor-users.js"></script>
+<script src="../static/js/shape.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    const editorSubmitContent = document.getElementById("editorSubmitContent");
+    const editorSubmitButton = document.getElementById("editorSubmitButton");
+    const goBackButton = document.getElementById('goBackButton');
+    document.addEventListener("DOMContentLoaded", () => {
+        canvas.addEventListener("wheel", handleWheel);
+        canvas.addEventListener("click", zoomInArea);
+        editorSubmitButton.addEventListener("click", handleBuyTickets)
 
-            goBackButton.innerHTML = '<i class="bi bi-box-arrow-left" style="color: white;"></i>';
-            goBackButton.addEventListener("click",popHistory)
+        goBackButton.innerHTML = '<i class="bi bi-box-arrow-left" style="color: white;"></i>';
+        goBackButton.addEventListener("click", popHistory)
 
-            if (seatMapData !== null) {
-                const canvasData = JSON.parse(seatMapData.mapFile);
+        if (seatMapData !== null) {
+            const canvasData = JSON.parse(seatMapData.mapFile);
 
-                shapes = [];
-                shapes = canvasData.map((shapeData) => {
-                    switch (shapeData.data.type) {
-                        case "EllipseStage":
-                            return EllipseStage.deserialize(shapeData.data);
-                        case "RectangleStage":
-                            return RectangleStage.deserialize(shapeData.data);
-                        case "Area":
-                            return PolygonArea.deserialize(shapeData.data);
-                        default:
-                            console.log(shapeData);
-                    }
-                });
+            shapes = [];
+            shapes = canvasData.map((shapeData) => {
+                switch (shapeData.data.type) {
+                    case "EllipseStage":
+                        return EllipseStage.deserialize(shapeData.data);
+                    case "RectangleStage":
+                        return RectangleStage.deserialize(shapeData.data);
+                    case "Area":
+                        return PolygonArea.deserialize(shapeData.data);
+                    default:
+                        console.log(shapeData);
+                }
+            });
 
-                drawAll();
-            }
-            mainEditor();
-            submitEditor()
-            saveCanvasState();
-            getTakenOrReservedSeats()
-        });
-    </script>
+            drawAll();
+        }
+        mainEditor();
+        submitEditor()
+        saveCanvasState();
+        getTakenOrReservedSeats()
+    });
+</script>
 </body>
 </html>

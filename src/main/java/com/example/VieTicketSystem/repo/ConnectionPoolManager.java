@@ -26,6 +26,14 @@ public class ConnectionPoolManager {
     @Value("${spring.datasource.password}")
     private String password;
 
+    private ConnectionPoolManager() {
+    }
+
+    @Bean
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
     @PostConstruct
     public void initializeDataSource() {
         config.setJdbcUrl(url);
@@ -33,13 +41,5 @@ public class ConnectionPoolManager {
         config.setPassword(password);
         config.setMaximumPoolSize(32);
         dataSource = new HikariDataSource(config);
-    }
-
-    private ConnectionPoolManager() {
-    }
-
-    @Bean
-    public static Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
     }
 }

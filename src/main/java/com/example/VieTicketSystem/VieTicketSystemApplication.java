@@ -9,8 +9,8 @@ import java.util.TimeZone;
 @SpringBootApplication
 @PropertySource("classpath:secrets.properties")
 public class VieTicketSystemApplication {
-	public static void main(String[] args) {
-		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
-		SpringApplication.run(VieTicketSystemApplication.class, args);
-	}
+    public static void main(String[] args) {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        SpringApplication.run(VieTicketSystemApplication.class, args);
+    }
 }

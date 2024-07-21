@@ -3,71 +3,72 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>View User List</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .card-columns {
             column-count: 3;
         }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 
 <body>
-    <div class="container mt-5">
-        <a th:href="@{/admin/dashboard}" class="btn btn-primary">Back to Dashboard</a>
-        <h1 class="mb-4">User List</h1>
+<div class="container mt-5">
+    <a class="btn btn-primary" th:href="@{/admin/dashboard}">Back to Dashboard</a>
+    <h1 class="mb-4">User List</h1>
 
-        <input type="text" id="searchInput" class="form-control mb-4" placeholder="Search for users...">
-        <div id="userCards" class="card-columns">
-            <div th:each="user : ${users}" class="card" th:data-user="${user.fullName.toLowerCase()}">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${user.fullName}"></h5>
-                    <p class="card-text">
-                        <strong>Username:</strong> <span th:text="${user.username}"></span><br>
-                        <strong>Phone:</strong> <span th:text="${user.phone}"></span><br>
-                        <strong>Date of Birth:</strong> <span th:text="${user.dob}"></span><br>
-                        <strong>Gender:</strong> <span th:text="${user.gender}"></span><br>
-                        <strong>Email:</strong> <span th:text="${user.email}"></span><br>
-                        <strong>Role:</strong>
-                        <span th:if="${user.role.toString() == 'u'}">User</span>
-                        <span th:if="${user.role.toString() == 'o'}">Organizer</span>
-                        <span th:if="${user.role.toString() == 'b'}">User</span>
-                        <span th:if="${user.role.toString() == 'p'}">Organizer</span>
-                        <br>
-                    </p>
-                    <form th:if="${status == 'approve'}" th:action="@{/lockUser}" method="post">
-                        <input type="hidden" name="userid" th:value="${user.userId}" />
-                        <input type="hidden" name="role" th:value="${user.role}" />
-                        <button type="submit" class="btn btn-danger" th:text="'Lock'"></button>
-                    </form>
+    <input class="form-control mb-4" id="searchInput" placeholder="Search for users..." type="text">
+    <div class="card-columns" id="userCards">
+        <div class="card" th:data-user="${user.fullName.toLowerCase()}" th:each="user : ${users}">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${user.fullName}"></h5>
+                <p class="card-text">
+                    <strong>Username:</strong> <span th:text="${user.username}"></span><br>
+                    <strong>Phone:</strong> <span th:text="${user.phone}"></span><br>
+                    <strong>Date of Birth:</strong> <span th:text="${user.dob}"></span><br>
+                    <strong>Gender:</strong> <span th:text="${user.gender}"></span><br>
+                    <strong>Email:</strong> <span th:text="${user.email}"></span><br>
+                    <strong>Role:</strong>
+                    <span th:if="${user.role.toString() == 'u'}">User</span>
+                    <span th:if="${user.role.toString() == 'o'}">Organizer</span>
+                    <span th:if="${user.role.toString() == 'b'}">User</span>
+                    <span th:if="${user.role.toString() == 'p'}">Organizer</span>
+                    <br>
+                </p>
+                <form method="post" th:action="@{/lockUser}" th:if="${status == 'approve'}">
+                    <input name="userid" th:value="${user.userId}" type="hidden"/>
+                    <input name="role" th:value="${user.role}" type="hidden"/>
+                    <button class="btn btn-danger" th:text="'Lock'" type="submit"></button>
+                </form>
 
-                    <form th:if="${status == 'reject'}" th:action="@{/unlockUser}" method="post">
-                        <input type="hidden" name="userid" th:value="${user.userId}" />
-                        <input type="hidden" name="role" th:value="${user.role}" />
-                        <button type="submit" class="btn btn-success" th:text="'Unlock'"></button>
-                    </form>
-                </div>
+                <form method="post" th:action="@{/unlockUser}" th:if="${status == 'reject'}">
+                    <input name="userid" th:value="${user.userId}" type="hidden"/>
+                    <input name="role" th:value="${user.role}" type="hidden"/>
+                    <button class="btn btn-success" th:text="'Unlock'" type="submit"></button>
+                </form>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        document.getElementById('searchInput').addEventListener('input', function() {
-            let filter = this.value.toLowerCase();
-            let cards = document.querySelectorAll('#userCards .card');
-        
-            cards.forEach(card => {
-                let user = card.getAttribute('data-user');
-                if (user.includes(filter)) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('searchInput').addEventListener('input', function () {
+        let filter = this.value.toLowerCase();
+        let cards = document.querySelectorAll('#userCards .card');
+
+        cards.forEach(card => {
+            let user = card.getAttribute('data-user');
+            if (user.includes(filter)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
         });
-        </script>
+    });
+</script>
 
 </body>
 

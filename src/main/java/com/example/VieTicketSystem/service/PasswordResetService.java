@@ -79,7 +79,8 @@ public class PasswordResetService {
 
         // Check if the user has a secret key
         String secretKey = userSecretsRepo.getSecretKey(user.getUserId());
-        if (secretKey == null) {;
+        if (secretKey == null) {
+            ;
             throw new RuntimeException("Secret key not found");
         }
 

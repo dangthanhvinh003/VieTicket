@@ -149,7 +149,9 @@ public class TicketRepo {
                 } else {
                     ticket.setPurchaseDate(null); // Xử lý trường hợp purchase_date là null nếu cần thiết
                 }
-                ticket.setOrder(new Order() {{ setOrderId(rs.getInt("order_id")); }});
+                ticket.setOrder(new Order() {{
+                    setOrderId(rs.getInt("order_id"));
+                }});
                 ticket.setSeat(seatRepo.findById(rs.getInt("seat_id")));
                 ticket.setStatus(Ticket.TicketStatus.fromInteger(rs.getInt("status")));
                 tickets.add(ticket);
@@ -323,20 +325,20 @@ public class TicketRepo {
 
     public int findOrganizerIdByOrderId(int orderId) {
         String sql = "SELECT e.organizer_id " +
-                     "FROM `Order` o " +
-                     "INNER JOIN Ticket t ON o.order_id = t.order_id " +
-                     "INNER JOIN Seat s ON t.seat_id = s.seat_id " +
-                     "INNER JOIN `Row` r ON s.row_id = r.row_id " +
-                     "INNER JOIN Area a ON r.area_id = a.area_id " +
-                     "INNER JOIN Event e ON a.event_id = e.event_id " +
-                     "WHERE o.order_id = ?";
-    
+                "FROM `Order` o " +
+                "INNER JOIN Ticket t ON o.order_id = t.order_id " +
+                "INNER JOIN Seat s ON t.seat_id = s.seat_id " +
+                "INNER JOIN `Row` r ON s.row_id = r.row_id " +
+                "INNER JOIN Area a ON r.area_id = a.area_id " +
+                "INNER JOIN Event e ON a.event_id = e.event_id " +
+                "WHERE o.order_id = ?";
+
         try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-    
+
             preparedStatement.setInt(1, orderId);
             ResultSet resultSet = preparedStatement.executeQuery();
-    
+
             if (resultSet.next()) {
                 return resultSet.getInt("organizer_id");
             }
@@ -345,21 +347,20 @@ public class TicketRepo {
         }
         return -1; // Return -1 or throw an exception if organizer_id not found
     }
-    
-    
+
 
     public int findOrderIdByTicketId(int ticketId) {
         String sql = "SELECT o.order_id " +
-                     "FROM Ticket t " +
-                     "INNER JOIN `Order` o ON t.order_id = o.order_id " +
-                     "WHERE t.ticket_id = ?";
-    
+                "FROM Ticket t " +
+                "INNER JOIN `Order` o ON t.order_id = o.order_id " +
+                "WHERE t.ticket_id = ?";
+
         try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-    
+
             preparedStatement.setInt(1, ticketId);
             ResultSet resultSet = preparedStatement.executeQuery();
-    
+
             if (resultSet.next()) {
                 return resultSet.getInt("order_id");
             }
@@ -371,13 +372,13 @@ public class TicketRepo {
 
     public int findRatingIdByOrderId(int orderId) {
         String sql = "SELECT rating_id FROM Rating WHERE order_id = ?";
-    
+
         try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-    
+
             preparedStatement.setInt(1, orderId);
             ResultSet resultSet = preparedStatement.executeQuery();
-    
+
             if (resultSet.next()) {
                 return resultSet.getInt("rating_id");
             }
@@ -386,6 +387,6 @@ public class TicketRepo {
         }
         return -1; // Return -1 or throw an exception if rating_id not found
     }
-    
-    
+
+
 }

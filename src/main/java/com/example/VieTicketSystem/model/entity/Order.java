@@ -44,10 +44,6 @@ public class Order {
             this.value = value;
         }
 
-        public int toInteger() {
-            return value;
-        }
-
         public static PaymentStatus fromInteger(int value) {
             for (PaymentStatus status : PaymentStatus.values()) {
                 if (status.value == value) {
@@ -55,6 +51,10 @@ public class Order {
                 }
             }
             return null;
+        }
+
+        public int toInteger() {
+            return value;
         }
     }
 }

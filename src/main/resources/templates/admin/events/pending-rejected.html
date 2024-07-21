@@ -4,11 +4,11 @@
 <head>
     <title>Approve Event</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png"
-        href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <link href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png" rel="icon"
+          type="image/png">
     <style>
         .description-box {
             height: 300px;
@@ -40,234 +40,241 @@
         .header-container h2 {
             margin: 0;
         }
-        
+
     </style>
+    <base th:href="${baseUrl}">
 </head>
 
 <body class="bg-light">
-    <div class="container mt-5">
-        <div class="header-container">
-            <a th:href="@{/admin/dashboard}" class="btn btn-primary">Back to Dashboard</a>
-            <h2 class="mb-4">List of Event to Approve</h2>
-        </div>
+<div class="container mt-5">
+    <div class="header-container">
+        <a class="btn btn-primary" th:href="@{/admin/dashboard}">Back to Dashboard</a>
+        <h2 class="mb-4">List of Event to Approve</h2>
+    </div>
 
-        <div class="container mt-4">
-            <div class="row">
-                <div class="col-md-4 mb-4" th:each="event : ${events}">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${event.name}">Event Name</h5>
-                            <h5 class="card-title" th:text="${event.eventId}">Event Id</h5>
-                            <p class="card-text">
-                            <p>
-                                <strong>Description:</strong>
-                            <div class="description-box">
-                                <span th:utext="${event.description}">Description</span>
-                            </div>
-                            </p>
-                            <strong>Ticket Sale Date:</strong> <span th:text="${event.ticketSaleDate}">Date</span><br>
-                            <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
-                            <strong>Type:</strong> <span th:text="${event.type}">Type</span><br>
-                            <strong>Start Date:</strong> <span th:text="${event.startDate}">Start Date</span><br>
-                            <strong>End Date:</strong> <span th:text="${event.endDate}">End Date</span><br>
-                            <strong>Organizer Name:</strong> <span th:text="${event.organizer.fullName}">Organizer
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="event : ${events}">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${event.name}">Event Name</h5>
+                        <h5 class="card-title" th:text="${event.eventId}">Event Id</h5>
+                        <p class="card-text">
+                        <p>
+                            <strong>Description:</strong>
+                        <div class="description-box">
+                            <span th:utext="${event.description}">Description</span>
+                        </div>
+                        </p>
+                        <strong>Ticket Sale Date:</strong> <span th:text="${event.ticketSaleDate}">Date</span><br>
+                        <strong>Location:</strong> <span th:text="${event.location}">Location</span><br>
+                        <strong>Type:</strong> <span th:text="${event.type}">Type</span><br>
+                        <strong>Start Date:</strong> <span th:text="${event.startDate}">Start Date</span><br>
+                        <strong>End Date:</strong> <span th:text="${event.endDate}">End Date</span><br>
+                        <strong>Organizer Name:</strong> <span th:text="${event.organizer.fullName}">Organizer
                                 Name</span><br>
-                            <strong>Organizer Phone:</strong> <span th:text="${event.organizer.phone}">Phone</span><br>
-                            <strong>Organizer Email:</strong> <span th:text="${event.organizer.email}">Email</span>
-                            </p>
+                        <strong>Organizer Phone:</strong> <span th:text="${event.organizer.phone}">Phone</span><br>
+                        <strong>Organizer Email:</strong> <span th:text="${event.organizer.email}">Email</span>
+                        </p>
 
-                            <div>
-                                <strong>Areas and Prices:</strong>
-                                <ul class="area-list list-group">
-                                    <li class="list-group-item" th:each="area : ${event.areas}">
-                                        <span th:text="${area.name}">Area Name</span>:
-                                        <span class="price" th:data-price="${area.ticketPrice}"
-                                            th:text="${area.ticketPrice}">Price</span>
-                                    </li>
-                                    <li class="list-group-item"
-                                        th:style="${event.areas == null || event.areas.isEmpty()} ? 'color:red;' : ''"
-                                        th:if="${event.areas == null || event.areas.isEmpty()}">No areas available
-                                    </li>
-                                </ul>
-                            </div>
+                        <div>
+                            <strong>Areas and Prices:</strong>
+                            <ul class="area-list list-group">
+                                <li class="list-group-item" th:each="area : ${event.areas}">
+                                    <span th:text="${area.name}">Area Name</span>:
+                                    <span class="price" th:data-price="${area.ticketPrice}"
+                                          th:text="${area.ticketPrice}">Price</span>
+                                </li>
+                                <li class="list-group-item"
+                                    th:if="${event.areas == null || event.areas.isEmpty()}"
+                                    th:style="${event.areas == null || event.areas.isEmpty()} ? 'color:red;' : ''">No areas available
+                                </li>
+                            </ul>
+                        </div>
 
-                            <div class="mt-3">
-                                <strong>SeatMap Name:</strong>
-                                <span th:style="${event.seatMap == null} ? 'color:red;' : ''"
-                                    th:text="${event.seatMap != null ? event.seatMap.name : 'No seat map available'}">SeatMap
+                        <div class="mt-3">
+                            <strong>SeatMap Name:</strong>
+                            <span th:style="${event.seatMap == null} ? 'color:red;' : ''"
+                                  th:text="${event.seatMap != null ? event.seatMap.name : 'No seat map available'}">SeatMap
                                     Name</span><br>
-                                <strong>Seat Map:</strong>
-                                <img th:if="${event.seatMap != null}" th:src="@{${event.seatMap.img}}" alt="Seat Map"
-                                    class="seat-map img-fluid" style="height: 200px;">
-                                <span th:style="${event.seatMap == null} ? 'color:red;' : ''"
-                                    th:if="${event.seatMap == null}">No seat map available</span>
-                            </div>
+                            <strong>Seat Map:</strong>
+                            <img alt="Seat Map" class="seat-map img-fluid" style="height: 200px;"
+                                 th:if="${event.seatMap != null}" th:src="@{${event.seatMap.img}}">
+                            <span th:if="${event.seatMap == null}"
+                                  th:style="${event.seatMap == null} ? 'color:red;' : ''">No seat map available</span>
+                        </div>
 
-                            <div>
-                                <div th:if="${status == 'approve'}" class="d-flex justify-content-between mt-3">
-                                    <form th:action="@{/approveEvent}" method="post" class="me-2">
-                                        <input type="hidden" name="eventId" th:value="${event.eventId}">
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            <i class="bi bi-check"></i> Approve
-                                        </button>
-                                    </form>
-                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                        th:data-bs-target="'#rejectModal-' + ${event.eventId}">
-                                        <i class="bi bi-x"></i> Reject
+                        <div>
+                            <div class="d-flex justify-content-between mt-3" th:if="${status == 'approve'}">
+                                <form class="me-2" method="post" th:action="@{/approveEvent}">
+                                    <input name="eventId" th:value="${event.eventId}" type="hidden">
+                                    <button class="btn btn-success btn-sm" type="submit">
+                                        <i class="bi bi-check"></i> Approve
                                     </button>
+                                </form>
+                                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="'#rejectModal-' + ${event.eventId}"
+                                        type="button">
+                                    <i class="bi bi-x"></i> Reject
+                                </button>
 
-                                    <div class="modal fade" th:id="'rejectModal-' + ${event.eventId}" tabindex="-1"
-                                        aria-labelledby="rejectModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="rejectModalLabel">Select Corrections
-                                                    </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form th:id="'rejectForm-' + ${event.eventId}"
-                                                        th:action="@{/rejectEvent}" method="post">
-                                                        <input type="hidden" name="eventId" th:value="${event.eventId}">
-                                                        <input type="hidden" name="eventName" th:value="${event.name}">
-                                                        <input type="hidden" name="organizerEmail"
-                                                            th:value="${event.organizer.email}">
+                                <div aria-hidden="true" aria-labelledby="rejectModalLabel" class="modal fade"
+                                     tabindex="-1" th:id="'rejectModal-' + ${event.eventId}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="rejectModalLabel">Select Corrections
+                                                </h5>
+                                                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                                        type="button"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="post"
+                                                      th:action="@{/rejectEvent}" th:id="'rejectForm-' + ${event.eventId}">
+                                                    <input name="eventId" th:value="${event.eventId}" type="hidden">
+                                                    <input name="eventName" th:value="${event.name}" type="hidden">
+                                                    <input name="organizerEmail" th:value="${event.organizer.email}"
+                                                           type="hidden">
 
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="eventName"
-                                                                id="eventNameCheck">
-                                                            <label class="form-check-label" for="eventNameCheck">Name Event</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="ticketPrice"
-                                                                id="ticketPriceCheck">
-                                                            <label class="form-check-label" for="ticketPriceCheck">Price Ticket</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="seatMap" id="seatMapCheck">
-                                                            <label class="form-check-label" for="seatMapCheck">Seat
-                                                                map</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="description"
-                                                                id="descriptionCheck">
-                                                            <label class="form-check-label"
-                                                                for="descriptionCheck">Description</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="posterImage"
-                                                                id="posterImageCheck">
-                                                            <label class="form-check-label" for="posterImageCheck">Poster</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="bannerImage"
-                                                                id="bannerImageCheck">
-                                                            <label class="form-check-label" for="bannerImageCheck">Banner</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="ticketSaleDate"
-                                                                id="ticketSaleDateCheck">
-                                                            <label class="form-check-label"
-                                                                for="ticketSaleDateCheck">Ticket Sale Date</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="eventStartDate"
-                                                                id="eventStartDateCheck">
-                                                            <label class="form-check-label"
-                                                                for="eventStartDateCheck">Start Date </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                name="corrections" value="eventEndDate"
-                                                                id="eventEndDateCheck">
-                                                            <label class="form-check-label" for="eventEndDateCheck">End Date</label>
-                                                        </div>
-
-                                                        <!-- Hidden input to ensure corrections is always present -->
-                                                        <input type="hidden" name="corrections" value="" />
-                                                    </form>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" class="btn btn-primary"
-                                                            th:data-event-id="${event.eventId}"
-                                                            onclick="submitRejectForm(this)">Send</button>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="eventNameCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="eventName">
+                                                        <label class="form-check-label" for="eventNameCheck">Name
+                                                            Event</label>
                                                     </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="ticketPriceCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="ticketPrice">
+                                                        <label class="form-check-label" for="ticketPriceCheck">Price
+                                                            Ticket</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="seatMapCheck"
+                                                               name="corrections" type="checkbox" value="seatMap">
+                                                        <label class="form-check-label" for="seatMapCheck">Seat
+                                                            map</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="descriptionCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="description">
+                                                        <label class="form-check-label"
+                                                               for="descriptionCheck">Description</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="posterImageCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="posterImage">
+                                                        <label class="form-check-label"
+                                                               for="posterImageCheck">Poster</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="bannerImageCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="bannerImage">
+                                                        <label class="form-check-label"
+                                                               for="bannerImageCheck">Banner</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="ticketSaleDateCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="ticketSaleDate">
+                                                        <label class="form-check-label"
+                                                               for="ticketSaleDateCheck">Ticket Sale Date</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="eventStartDateCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="eventStartDate">
+                                                        <label class="form-check-label"
+                                                               for="eventStartDateCheck">Start Date </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" id="eventEndDateCheck"
+                                                               name="corrections" type="checkbox"
+                                                               value="eventEndDate">
+                                                        <label class="form-check-label" for="eventEndDateCheck">End
+                                                            Date</label>
+                                                    </div>
+
+                                                    <!-- Hidden input to ensure corrections is always present -->
+                                                    <input name="corrections" type="hidden" value=""/>
+                                                </form>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" data-bs-dismiss="modal"
+                                                            type="button">Close
+                                                    </button>
+                                                    <button class="btn btn-primary" onclick="submitRejectForm(this)"
+                                                            th:data-event-id="${event.eventId}"
+                                                            type="button">Send
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div th:if="${status == 'reject'}" class="d-flex justify-content-between mt-3">
-                                    <form th:action="@{/approveEvent}" method="post" class="me-2">
-                                        <input type="hidden" name="eventId" th:value="${event.eventId}">
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            <i class="bi bi-check"></i> Approve
-                                        </button>
-                                    </form>
-                                    <form th:action="@{/DeleteEvent}" method="post" class="me-2">
-                                        <input type="hidden" name="eventId" th:value="${event.eventId}">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-check"></i> Delete Event
-                                        </button>
-                                    </form>
-                                </div>
-
                             </div>
+
+                            <div class="d-flex justify-content-between mt-3" th:if="${status == 'reject'}">
+                                <form class="me-2" method="post" th:action="@{/approveEvent}">
+                                    <input name="eventId" th:value="${event.eventId}" type="hidden">
+                                    <button class="btn btn-success btn-sm" type="submit">
+                                        <i class="bi bi-check"></i> Approve
+                                    </button>
+                                </form>
+                                <form class="me-2" method="post" th:action="@{/DeleteEvent}">
+                                    <input name="eventId" th:value="${event.eventId}" type="hidden">
+                                    <button class="btn btn-primary btn-sm" type="submit">
+                                        <i class="bi bi-check"></i> Delete Event
+                                    </button>
+                                </form>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const priceElements = document.querySelectorAll('.price');
-                priceElements.forEach(function (priceElement) {
-                    const priceValue = parseFloat(priceElement.getAttribute('data-price'));
-                    if (!isNaN(priceValue)) {
-                        // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
-                        priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
-                    }
-                });
-            });
-        </script>
-        <script>
-            function submitRejectForm(button) {
-                var eventId = button.getAttribute('data-event-id');
-                var form = document.getElementById('rejectForm-' + eventId);
-                if (form) {
-                    var checkboxes = form.querySelectorAll('input[name="corrections"]:checked');
-                    if (checkboxes.length === 0) {
-                        form.querySelector('input[name="corrections"][type="hidden"]').value = "no_corrections";
-                    } else {
-                        var correctionsValue = Array.from(checkboxes).map(function (checkbox) {
-                            return checkbox.value;
-                        }).join(',');
-                        form.querySelector('input[name="corrections"][type="hidden"]').value = correctionsValue;
-                    }
-                    form.submit();
-                } else {
-                    console.error('Form not found for event ID: ' + eventId);
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceElements = document.querySelectorAll('.price');
+            priceElements.forEach(function (priceElement) {
+                const priceValue = parseFloat(priceElement.getAttribute('data-price'));
+                if (!isNaN(priceValue)) {
+                    // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
+                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
                 }
+            });
+        });
+    </script>
+    <script>
+        function submitRejectForm(button) {
+            var eventId = button.getAttribute('data-event-id');
+            var form = document.getElementById('rejectForm-' + eventId);
+            if (form) {
+                var checkboxes = form.querySelectorAll('input[name="corrections"]:checked');
+                if (checkboxes.length === 0) {
+                    form.querySelector('input[name="corrections"][type="hidden"]').value = "no_corrections";
+                } else {
+                    var correctionsValue = Array.from(checkboxes).map(function (checkbox) {
+                        return checkbox.value;
+                    }).join(',');
+                    form.querySelector('input[name="corrections"][type="hidden"]').value = correctionsValue;
+                }
+                form.submit();
+            } else {
+                console.error('Form not found for event ID: ' + eventId);
             }
+        }
 
 
-        </script>
+    </script>
 
 
-
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

@@ -3,33 +3,34 @@
 
 <head>
     <title>Verify Email</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <base th:href="${baseUrl}">
 </head>
 
 <body class="d-flex justify-content-center align-items-center vh-100">
 <div class="container col-md-8 col-lg-6 col-xl-6 col-xxl-6 p-5 border rounded shadow">
     <div>
         <h2 class="mb-4">Verify Your Email</h2>
-        <a href="/auth/log-out" class="btn btn-secondary mb-3">Log Out</a>
+        <a class="btn btn-secondary mb-3" href="/auth/log-out">Log Out</a>
     </div>
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
 
-    <form id="otp-form" th:action="@{/auth/verify-otp}" method="post" class="mb-3">
+    <form class="mb-3" id="otp-form" method="post" th:action="@{/auth/verify-otp}">
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required readonly
-                   th:value="${session.activeUser != null} ? ${session.activeUser.email} : ''" class="form-control">
+            <input class="form-control" id="email" name="email" readonly required
+                   th:value="${session.activeUser != null} ? ${session.activeUser.email} : ''" type="email">
         </div>
 
         <div class="form-group">
             <label for="userOTP">OTP:</label>
-            <input type="text" id="otp" name="userOTP" required class="form-control">
+            <input class="form-control" id="otp" name="userOTP" required type="text">
         </div>
 
-        <button type="submit" class="btn btn-primary">Verify</button>
+        <button class="btn btn-primary" type="submit">Verify</button>
     </form>
-    <p>Didn't receive the OTP? <a href="#" th:onclick="resendOTP()" class="text-primary">Resend OTP</a></p>
+    <p>Didn't receive the OTP? <a class="text-primary" href="#" th:onclick="resendOTP()">Resend OTP</a></p>
 </div>
 
 <script th:inline="javascript">

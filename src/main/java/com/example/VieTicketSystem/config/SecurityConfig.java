@@ -2,6 +2,7 @@ package com.example.VieTicketSystem.config;
 
 import com.example.VieTicketSystem.repo.UserRepo;
 import com.example.VieTicketSystem.service.UserDetailsServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.regex.Pattern;
 
 @Configuration
 @EnableWebSecurity
@@ -71,7 +75,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.requiresChannel((channel) -> channel.anyRequest().requiresSecure());
+        http.requiresChannel(channel ->
+                channel.requestMatchers(new LocalRequestMatcher()).requiresInsecure()
+                        .anyRequest().requiresSecure()
+        );
         return http.build();
+    }
+
+    private static class LocalRequestMatcher implements RequestMatcher {
+        private static final Pattern LOCAL_IP_PATTERN = Pattern.compile(
+                "^(127\\.|192\\.168\\.|10\\.|172\\.(1[6-9]|2[0-9]|3[0-1]))"
+        );
+
+        @Override
+        public boolean matches(HttpServletRequest request) {
+            String remoteAddr = request.getRemoteAddr();
+            return LOCAL_IP_PATTERN.matcher(remoteAddr).find();
+        }
     }
 }

@@ -5,6 +5,7 @@ from pyzbar.pyzbar import decode
 
 API_BASE_URL = "http://localhost:8080/api/v1/organizer/"
 
+
 def login(username, password):
     url = API_BASE_URL + "login"
     payload = {"username": username, "password": password}
@@ -15,6 +16,7 @@ def login(username, password):
         print(f"Login failed: {response.status_code}")
         return None
 
+
 def logout(token):
     url = API_BASE_URL + "logout"
     payload = {"token": token}
@@ -23,6 +25,7 @@ def logout(token):
         print("Logged out successfully")
     else:
         print(f"Logout failed: {response.status_code}")
+
 
 def query_events(token):
     url = API_BASE_URL + "query-events"
@@ -34,6 +37,7 @@ def query_events(token):
         print(f"Query events failed: {response.status_code}")
         return None
 
+
 def check_in(token, qr_code, event_id):
     url = API_BASE_URL + "checkin"
     payload = {"token": token, "qrCode": qr_code, "eventId": event_id}
@@ -44,6 +48,7 @@ def check_in(token, qr_code, event_id):
     else:
         print(f"Check-in failed: {response.status_code}")
         print(response.json())
+
 
 def scan_qr_code():
     cap = cv2.VideoCapture(0)
@@ -60,6 +65,7 @@ def scan_qr_code():
             break
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     username = input("Enter username: ")

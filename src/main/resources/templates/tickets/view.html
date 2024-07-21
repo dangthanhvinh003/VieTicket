@@ -2,9 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <title>View Ticket</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .purchased {
             color: green;
@@ -20,6 +20,7 @@
             color: orange;
         }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 <body>
 <div class="container">
@@ -29,12 +30,15 @@
             <p><strong>Lead visitor:</strong> <span th:text="${ticket.order.user.fullName}"></span></p>
             <p><strong>Event Name:</strong> <span th:text="${ticket.seat.row.area.event.name}"></span></p>
             <p><strong>Area:</strong> <span th:text="${ticket.seat.row.area.name}"></span></p>
-            <p><strong>Seat:</strong> <span th:text="${ticket.seat.row.rowName} + ' ' + ${ticket.seat.number}"></span></p>
+            <p><strong>Seat:</strong> <span th:text="${ticket.seat.row.rowName} + ' ' + ${ticket.seat.number}"></span>
+            </p>
             <p><strong>Purchase Date:</strong> <span th:text="${utils.formatDate(ticket.purchaseDate)}"></span></p>
             <!-- Add more details as needed -->
             <img th:src="'data:image/png;base64,'+${qrCode}">
             <p th:text="${ticket.qrCode}"></p>
-            <p>Purchase status: <span th:text="${ticket.status}" th:classappend="${ticket.status.toString().toLowerCase().replace('_', '-')}"></span></p>
+            <p>Purchase status: <span th:classappend="${ticket.status.toString().toLowerCase().replace('_', '-')}"
+                                      th:text="${ticket.status}"></span>
+            </p>
         </div>
         <div class="col-md-6">
             <!-- You can add more content here if needed -->

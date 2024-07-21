@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Seat Selector</title>
     <style>
         * {
@@ -11,7 +11,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
 
 
         .controls {
@@ -222,548 +221,550 @@
             /* Chiều cao tự động điều chỉnh */
         }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 
 <body>
-    <div class="controls">
-        <div class="sidenav" id="mySidenav">
-            <div style="margin: 10px;">
-                <button class="closebtn" onclick="closeNav()">x</button>
-                <input type="file" id="imageUpload" accept="image/*">
-                <label for="seatSize">Size of seat:</label>
-                <input type="number" id="seatSize" value="30" min="10">
-                <label for="seatSpacing">Gap:</label>
-                <input type="number" id="seatSpacing" value="5" min="0.1">
-                <button id="applySettingsButton">Apply</button>
-                <label for="seatRow">Row:</label>
-                <input type="number" id="Row" value="20" min="10">
-                <label for="seatCol">Col:</label>
-                <input type="number" id="Col" value="50" min="0.1">
-                <button id="updateBtn">Apply</button>
-                <label for="normalTicketPrice">Normal ticket Price:</label>
-                <input type="number" class="form-control" id="normalTicketPrice" name="normalTicketPrice" required
-                    pattern="[0-9,]+" title="Vui lòng nhập số tiền hợp lệ. Ví dụ : 5,000,000" value="0">
-                <label for="vipTicketPrice" class="form-label">Vip Ticket Price:</label>
-                <input type="number" class="form-control" id="vipTicketPrice" name="vipTicketPrice" required
-                    pattern="[0-9,]+" title="Vui lòng nhập số tiền hợp lệ. Ví dụ : 5,000,000">
-                <button id="vipButton" style="width: 100%; margin: 10px 0px;">Choose Vip Stage</button>
-                <button id="saveImageButton" style=" display: none;" onclick="showSubmitButton()">Save Image</button>
-                <form th:action="@{/createEventSuccess}" method="get">
-                    <button type="submit" id="submitButton" style="display: none;">Submit</button>
-                </form>
+<div class="controls">
+    <div class="sidenav" id="mySidenav">
+        <div style="margin: 10px;">
+            <button class="closebtn" onclick="closeNav()">x</button>
+            <input accept="image/*" id="imageUpload" type="file">
+            <label for="seatSize">Size of seat:</label>
+            <input id="seatSize" min="10" type="number" value="30">
+            <label for="seatSpacing">Gap:</label>
+            <input id="seatSpacing" min="0.1" type="number" value="5">
+            <button id="applySettingsButton">Apply</button>
+            <label for="seatRow">Row:</label>
+            <input id="Row" min="10" type="number" value="20">
+            <label for="seatCol">Col:</label>
+            <input id="Col" min="0.1" type="number" value="50">
+            <button id="updateBtn">Apply</button>
+            <label for="normalTicketPrice">Normal ticket Price:</label>
+            <input class="form-control" id="normalTicketPrice" name="normalTicketPrice" pattern="[0-9,]+" required
+                   title="Vui lòng nhập số tiền hợp lệ. Ví dụ : 5,000,000" type="number" value="0">
+            <label class="form-label" for="vipTicketPrice">Vip Ticket Price:</label>
+            <input class="form-control" id="vipTicketPrice" name="vipTicketPrice" pattern="[0-9,]+" required
+                   title="Vui lòng nhập số tiền hợp lệ. Ví dụ : 5,000,000" type="number">
+            <button id="vipButton" style="width: 100%; margin: 10px 0px;">Choose Vip Stage</button>
+            <button id="saveImageButton" onclick="showSubmitButton()" style=" display: none;">Save Image</button>
+            <form method="get" th:action="@{/createEventSuccess}">
+                <button id="submitButton" style="display: none;" type="submit">Submit</button>
+            </form>
+        </div>
+
+    </div>
+    <div id="main">
+        <button class="openbtn" onclick="openNav()">☰ Open Sidebar</button> <!-- Nút để mở modal -->
+        <button id="myBtn">Open Instructions</button>
+    </div>
+    <div class="modal" id="instructionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Instructions</h2>
             </div>
-
-        </div>
-        <div id="main">
-            <button class="openbtn" onclick="openNav()">☰ Open Sidebar</button> <!-- Nút để mở modal -->
-            <button id="myBtn">Open Instructions</button>
-        </div>
-        <div id="instructionModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="close">&times;</span>
-                    <h2>Instructions</h2>
+            <div class="modal-body">
+                <p>Here are some basic instructions...</p>
+                <div class="modal-image">
+                    <p>Step 1: Users click on Open Sidebar to open the tool bar</p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/448711238_1619721822203517_2108154777085591680_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=pLKlklzrFroQ7kNvgGzWQ12&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEqDzZPwLr8wMJf5_Dw4J_7MnsgbKbWnXON4JvCYstL4A&oe=66A9B9AA">
                 </div>
-                <div class="modal-body">
-                    <p>Here are some basic instructions...</p>
-                    <div class="modal-image">
-                        <p>Step 1: Users click on Open Sidebar to open the tool bar</p>
-                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/448711238_1619721822203517_2108154777085591680_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=pLKlklzrFroQ7kNvgGzWQ12&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEqDzZPwLr8wMJf5_Dw4J_7MnsgbKbWnXON4JvCYstL4A&oe=66A9B9AA"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <p>Step 2: When the tool bar is opened, add an image to ChooseFile</p>
-                        <img src="https://scontent-sin6-1.xx.fbcdn.net/v/t1.15752-9/448721771_3164120117053712_3238911446119888959_n.png?_nc_cat=105&ccb=1-7&_nc_sid=9f807c&_nc_ohc=hbUIrg8XzVQQ7kNvgE8_n3D&_nc_ht=scontent-sin6-1.xx&oh=03_Q7cD1QGSl0ekG6kWfZSzteWByCBEH2Z3K0Au85bnlykPWs8Yxw&oe=66A9B319"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <p>Step 3: After successfully adding the image, the interface will appear</p>
-                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449160935_460310490044874_5664092625570513007_n.png?_nc_cat=100&ccb=1-7&_nc_sid=9f807c&_nc_ohc=Oy6DupX5SjkQ7kNvgHLK9iN&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEGLMcobyq48tPveRi2dXcHicc83VUbfRlJGd06hm7ttg&oe=66A9A50E"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <p>Step 4: Note that you should first choose the size of the seat and the gap to have specific
-                            seat size and spacing</p>
-                        <img src="https://scontent-sin6-3.xx.fbcdn.net/v/t1.15752-9/448769551_1016815913214375_7512857209086666439_n.png?_nc_cat=110&ccb=1-7&_nc_sid=9f807c&_nc_ohc=NX_u3Z5s2gYQ7kNvgHt42VB&_nc_ht=scontent-sin6-3.xx&oh=03_Q7cD1QEL6x0njwWVmzmqjPQNZft1xWce_TL3D-VAV1PfMRVLnw&oe=66A9BECD"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <p>Step 5: After choosing the size, select the corresponding number of rows and columns to help
-                            with accurate seat numbering</p>
-                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449403453_1120024452428028_8864018800410856005_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=aMwBitnWcn8Q7kNvgHXf87Z&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QHhnp0YSnhVKBCwJoWVaG-BbQTVSCnrvtCIxxwKAkdGiw&oe=66A9BC15"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <p>Step 6: After completing the above steps, drag and select the regular seat areas</p>
-                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449403453_1120024452428028_8864018800410856005_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=aMwBitnWcn8Q7kNvgHXf87Z&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QHhnp0YSnhVKBCwJoWVaG-BbQTVSCnrvtCIxxwKAkdGiw&oe=66A9BC15"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <img src="https://scontent-sin6-3.xx.fbcdn.net/v/t1.15752-9/449214464_385831720678288_6368561299070544460_n.png?_nc_cat=104&ccb=1-7&_nc_sid=9f807c&_nc_ohc=isQxBgMgSNgQ7kNvgGc3QS2&_nc_ht=scontent-sin6-3.xx&oh=03_Q7cD1QF6bf4nW0CLa9FuldxQl2AJbKpZHb-IRkzvD9FAlqBgYw&oe=66A9BFEE"
-                            alt="Instruction image">
-                    </div>
+                <div class="modal-image">
+                    <p>Step 2: When the tool bar is opened, add an image to ChooseFile</p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-1.xx.fbcdn.net/v/t1.15752-9/448721771_3164120117053712_3238911446119888959_n.png?_nc_cat=105&ccb=1-7&_nc_sid=9f807c&_nc_ohc=hbUIrg8XzVQQ7kNvgE8_n3D&_nc_ht=scontent-sin6-1.xx&oh=03_Q7cD1QGSl0ekG6kWfZSzteWByCBEH2Z3K0Au85bnlykPWs8Yxw&oe=66A9B319">
+                </div>
+                <div class="modal-image">
+                    <p>Step 3: After successfully adding the image, the interface will appear</p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449160935_460310490044874_5664092625570513007_n.png?_nc_cat=100&ccb=1-7&_nc_sid=9f807c&_nc_ohc=Oy6DupX5SjkQ7kNvgHLK9iN&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEGLMcobyq48tPveRi2dXcHicc83VUbfRlJGd06hm7ttg&oe=66A9A50E">
+                </div>
+                <div class="modal-image">
+                    <p>Step 4: Note that you should first choose the size of the seat and the gap to have specific
+                        seat size and spacing</p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-3.xx.fbcdn.net/v/t1.15752-9/448769551_1016815913214375_7512857209086666439_n.png?_nc_cat=110&ccb=1-7&_nc_sid=9f807c&_nc_ohc=NX_u3Z5s2gYQ7kNvgHt42VB&_nc_ht=scontent-sin6-3.xx&oh=03_Q7cD1QEL6x0njwWVmzmqjPQNZft1xWce_TL3D-VAV1PfMRVLnw&oe=66A9BECD">
+                </div>
+                <div class="modal-image">
+                    <p>Step 5: After choosing the size, select the corresponding number of rows and columns to help
+                        with accurate seat numbering</p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449403453_1120024452428028_8864018800410856005_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=aMwBitnWcn8Q7kNvgHXf87Z&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QHhnp0YSnhVKBCwJoWVaG-BbQTVSCnrvtCIxxwKAkdGiw&oe=66A9BC15">
+                </div>
+                <div class="modal-image">
+                    <p>Step 6: After completing the above steps, drag and select the regular seat areas</p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/449403453_1120024452428028_8864018800410856005_n.png?_nc_cat=103&ccb=1-7&_nc_sid=9f807c&_nc_ohc=aMwBitnWcn8Q7kNvgHXf87Z&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QHhnp0YSnhVKBCwJoWVaG-BbQTVSCnrvtCIxxwKAkdGiw&oe=66A9BC15">
+                </div>
+                <div class="modal-image">
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-3.xx.fbcdn.net/v/t1.15752-9/449214464_385831720678288_6368561299070544460_n.png?_nc_cat=104&ccb=1-7&_nc_sid=9f807c&_nc_ohc=isQxBgMgSNgQ7kNvgGc3QS2&_nc_ht=scontent-sin6-3.xx&oh=03_Q7cD1QF6bf4nW0CLa9FuldxQl2AJbKpZHb-IRkzvD9FAlqBgYw&oe=66A9BFEE">
+                </div>
 
-                    <div class="modal-image">
-                        <p>Step 7: Click on Select VIP Area to choose VIP seats</p>
-                        <img src="https://scontent-sin6-2.xx.fbcdn.net/v/t1.15752-9/448791963_440556828891102_878985263003056307_n.png?_nc_cat=109&ccb=1-7&_nc_sid=9f807c&_nc_ohc=t_piL-hWeAkQ7kNvgF-wvbc&_nc_ht=scontent-sin6-2.xx&oh=03_Q7cD1QHrMPFnOnhz2GXwVAb7l1QxlNUHXJVemzEdxBiyo7YsOA&oe=66A9A8ED"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <p>Step 8: Use the same drag and select method as above, but the color of the area will change
-                        </p>
-                        <img src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/448875307_2924520814361900_2112901554785562907_n.png?_nc_cat=100&ccb=1-7&_nc_sid=9f807c&_nc_ohc=gc89u1vcjFIQ7kNvgGlDFyA&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEOdBM1eFhVMNZ1nN6P6mnokgxpysolqiIYLesNggZbNg&oe=66A999AD"
-                            alt="Instruction image">
-                    </div>
-                    <div class="modal-image">
-                        <p>Step 9: Enter the ticket price for the seat areas. If you don't have VIP or regular seat
-                            areas, leave it as 0 and you can Save Image</p>
-                        <img src="https://scontent-sin6-1.xx.fbcdn.net/v/t1.15752-9/449317923_1221551869280931_1590935591696111147_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=bxhhB3XpM1oQ7kNvgEXuYUG&_nc_ht=scontent-sin6-1.xx&oh=03_Q7cD1QHTsM-92GRBg2DI52MCS2oohpaJghyH4KbeOuqtuRxt4w&oe=66A9B986"
-                            alt="Hình ảnh hướng dẫn">
-                    </div>
+                <div class="modal-image">
+                    <p>Step 7: Click on Select VIP Area to choose VIP seats</p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-2.xx.fbcdn.net/v/t1.15752-9/448791963_440556828891102_878985263003056307_n.png?_nc_cat=109&ccb=1-7&_nc_sid=9f807c&_nc_ohc=t_piL-hWeAkQ7kNvgF-wvbc&_nc_ht=scontent-sin6-2.xx&oh=03_Q7cD1QHrMPFnOnhz2GXwVAb7l1QxlNUHXJVemzEdxBiyo7YsOA&oe=66A9A8ED">
+                </div>
+                <div class="modal-image">
+                    <p>Step 8: Use the same drag and select method as above, but the color of the area will change
+                    </p>
+                    <img alt="Instruction image"
+                         src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.15752-9/448875307_2924520814361900_2112901554785562907_n.png?_nc_cat=100&ccb=1-7&_nc_sid=9f807c&_nc_ohc=gc89u1vcjFIQ7kNvgGlDFyA&_nc_ht=scontent-sin6-4.xx&oh=03_Q7cD1QEOdBM1eFhVMNZ1nN6P6mnokgxpysolqiIYLesNggZbNg&oe=66A999AD">
+                </div>
+                <div class="modal-image">
+                    <p>Step 9: Enter the ticket price for the seat areas. If you don't have VIP or regular seat
+                        areas, leave it as 0 and you can Save Image</p>
+                    <img alt="Hình ảnh hướng dẫn"
+                         src="https://scontent-sin6-1.xx.fbcdn.net/v/t1.15752-9/449317923_1221551869280931_1590935591696111147_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=bxhhB3XpM1oQ7kNvgEXuYUG&_nc_ht=scontent-sin6-1.xx&oh=03_Q7cD1QHTsM-92GRBg2DI52MCS2oohpaJghyH4KbeOuqtuRxt4w&oe=66A9B986">
+                </div>
 
-                    <div class="modal-video">
-                        <p>This is video</p>
-                        <video width="320" height="240" controls>
+                <div class="modal-video">
+                    <p>This is video</p>
+                    <video controls height="240" width="320">
 
-                            <source
+                        <source
                                 src="https://res.cloudinary.com/djcowpoua/video/upload/v1719813993/2024-07-01_13-04-18_w5ywsy.mkv"
                                 type="video/mp4">
-                            Trình duyệt của bạn không hỗ trợ thẻ video.
-                        </video>
-                    </div>
+                        Trình duyệt của bạn không hỗ trợ thẻ video.
+                    </video>
                 </div>
             </div>
         </div>
-        <div id="seatCounts"></div>
+    </div>
+    <div id="seatCounts"></div>
 
 
-        <div class="container-wrapper">
-            <div class="container" id="container">
-                <div class="selection-box" id="selectionBox"></div>
-            </div>
+    <div class="container-wrapper">
+        <div class="container" id="container">
+            <div class="selection-box" id="selectionBox"></div>
         </div>
-        <script>// Lấy modal
-            var modal = document.getElementById("instructionModal");
+    </div>
+    <script>// Lấy modal
+    var modal = document.getElementById("instructionModal");
 
-            // Lấy nút mở modal
-            var btn = document.getElementById("myBtn");
+    // Lấy nút mở modal
+    var btn = document.getElementById("myBtn");
 
-            // Lấy phần tử span để đóng modal
-            var span = document.getElementsByClassName("close")[0];
+    // Lấy phần tử span để đóng modal
+    var span = document.getElementsByClassName("close")[0];
 
-            // Khi nút được click, mở modal
-            btn.onclick = function () {
-                modal.style.display = "block";
+    // Khi nút được click, mở modal
+    btn.onclick = function () {
+        modal.style.display = "block";
+    }
+
+    // Khi nút đóng (x) được click, đóng modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    // Khi người dùng click bên ngoài modal, đóng nó lại
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }</script>
+    <script>
+        // Hàm để hiển thị nút Submit
+        function showSubmitButton() {
+            var submitButton = document.getElementById('submitButton');
+            submitButton.style.display = 'block';
+        }
+    </script>
+    <script>
+        const normalTicketPriceInput = document.getElementById('normalTicketPrice');
+        const vipTicketPriceInput = document.getElementById('vipTicketPrice');
+        saveImageButton = document.getElementById('saveImageButton');
+
+        function formatCurrency(input) {
+            // Lấy giá trị hiện tại của ô nhập liệu
+            let value = input.value;
+
+            // Loại bỏ tất cả các ký tự không phải số
+            value = value.replace(/\D/g, '');
+
+            // Thêm dấu chấm vào tiền Việt Nam
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+            // Cập nhật giá trị của ô nhập liệu
+            input.value = value;
+        }
+
+        function checkInput() {
+            const normalPrice = normalTicketPriceInput.value.replace(/[^0-9]/g, '');
+            const vipPrice = vipTicketPriceInput.value.replace(/[^0-9]/g, '');
+
+            if (normalPrice.length > 0 && vipPrice.length > 0) {
+                saveImageButton.style.display = 'inline-block';
+            } else {
+                saveImageButton.style.display = 'none';
             }
+        }
 
-            // Khi nút đóng (x) được click, đóng modal
-            span.onclick = function () {
-                modal.style.display = "none";
-            }
+        normalTicketPriceInput.addEventListener('input', checkInput);
+        vipTicketPriceInput.addEventListener('input', checkInput);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
+    <script>
 
-            // Khi người dùng click bên ngoài modal, đóng nó lại
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }</script>
-        <script>
-            // Hàm để hiển thị nút Submit
-            function showSubmitButton() {
-                var submitButton = document.getElementById('submitButton');
-                submitButton.style.display = 'block';
-            }
-        </script>
-        <script>
-            const normalTicketPriceInput = document.getElementById('normalTicketPrice');
-            const vipTicketPriceInput = document.getElementById('vipTicketPrice');
-            saveImageButton = document.getElementById('saveImageButton');
-            function formatCurrency(input) {
-                // Lấy giá trị hiện tại của ô nhập liệu
-                let value = input.value;
+        const containerWrapper = document.querySelector('.container-wrapper');
+        const container = document.getElementById('container');
+        const selectionBox = document.getElementById('selectionBox');
+        const seatSizeInput = document.getElementById('seatSize');
+        const seatSpacingInput = document.getElementById('seatSpacing');
+        let startX, startY, endX, endY;
+        let isSelecting = false;
+        let isSelectingSeat = false;
+        let isSelectingVIP = false;
+        let isSelectingStage = false;
 
-                // Loại bỏ tất cả các ký tự không phải số
-                value = value.replace(/\D/g, '');
-
-                // Thêm dấu chấm vào tiền Việt Nam
-                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-                // Cập nhật giá trị của ô nhập liệu
-                input.value = value;
-            }
-            function checkInput() {
-                const normalPrice = normalTicketPriceInput.value.replace(/[^0-9]/g, '');
-                const vipPrice = vipTicketPriceInput.value.replace(/[^0-9]/g, '');
-
-                if (normalPrice.length > 0 && vipPrice.length > 0) {
-                    saveImageButton.style.display = 'inline-block';
-                } else {
-                    saveImageButton.style.display = 'none';
-                }
-            }
-
-            normalTicketPriceInput.addEventListener('input', checkInput);
-            vipTicketPriceInput.addEventListener('input', checkInput);
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.7/dist/html2canvas.min.js"></script>
-        <script>
-
-            const containerWrapper = document.querySelector('.container-wrapper');
-            const container = document.getElementById('container');
-            const selectionBox = document.getElementById('selectionBox');
-            const seatSizeInput = document.getElementById('seatSize');
-            const seatSpacingInput = document.getElementById('seatSpacing');
-            let startX, startY, endX, endY;
-            let isSelecting = false;
-            let isSelectingSeat = false;
-            let isSelectingVIP = false;
-            let isSelectingStage = false;
-
-            // Generate seats
-            const rowInput = document.getElementById('Row');
-            const colInput = document.getElementById('Col');
-            const updateBtn = document.getElementById('updateBtn');
+        // Generate seats
+        const rowInput = document.getElementById('Row');
+        const colInput = document.getElementById('Col');
+        const updateBtn = document.getElementById('updateBtn');
 
 
-            let rows = 40;
-            let cols = 80;
+        let rows = 40;
+        let cols = 80;
 
-            rowInput.addEventListener('input', function () {
-                rows = parseInt(this.value);
-            });
+        rowInput.addEventListener('input', function () {
+            rows = parseInt(this.value);
+        });
 
-            colInput.addEventListener('input', function () {
-                cols = parseInt(this.value);
-            });
+        colInput.addEventListener('input', function () {
+            cols = parseInt(this.value);
+        });
 
-            updateBtn.addEventListener('click', function () {
-                updateGrid();
-                generateSeats();
-            });
+        updateBtn.addEventListener('click', function () {
+            updateGrid();
+            generateSeats();
+        });
 
-            function updateGrid() {
-                container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-                container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-            }
+        function updateGrid() {
+            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+        }
 
-            function generateSeats() {
-                container.innerHTML = ''; // Clear existing seats
-                for (let i = 0; i < rows; i++) {
-                    for (let j = 0; j < cols; j++) {
-                        const seat = document.createElement('div');
-                        seat.classList.add('seat');
-                        seat.dataset.originalRow = String.fromCharCode(65 + i);
-                        seat.dataset.number = j + 1;
-                        seat.addEventListener('click', selectSeat);
-                        container.appendChild(seat);
-                    }
-                }
-            }
-            // Hàm thêm sự kiện click cho từng ghế
-            function addClickEventToSeats() {
-                const seats = document.querySelectorAll('.seat');
-                seats.forEach(seat => {
-                    seat.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        selectSeat(seat);
-                    });
-                });
-            }
-
-            // Hàm áp dụng thiết lập mới
-            function applySettings() {
-                const seatSize = parseFloat(seatSizeInput.value);
-                const seatSpacing = parseFloat(seatSpacingInput.value);
-                const containerWidth = container.offsetWidth;
-                const containerHeight = container.offsetHeight;
-                const cols = Math.floor((containerWidth + seatSpacing) / (seatSize + seatSpacing)); // Thay đổi cách tính số cột
-                const rows = Math.floor((containerHeight + seatSpacing) / (seatSize + seatSpacing)); // Thay đổi cách tính số hàng
-
-                // Cập nhật kích thước container
-                container.style.width = cols * (seatSize + seatSpacing) - seatSpacing + 'px';
-                container.style.height = rows * (seatSize + seatSpacing) - seatSpacing + 'px';
-
-                // Cập nhật kích thước ghế
-                document.querySelectorAll('.seat').forEach(seat => {
-                    seat.style.width = seatSize + 'px';
-                    seat.style.height = seatSize + 'px';
-                });
-
-                // Cập nhật số hàng và số cột trong grid template
-                container.style.gridTemplateColumns = `repeat(${cols}, ${seatSize}px)`;
-                container.style.gridTemplateRows = `repeat(${rows}, ${seatSize}px)`;
-
-                // Cập nhật khoảng cách giữa các ghế
-                container.style.gap = seatSpacing + 'px';
-
-                // Tạo thêm các ghế nếu cần
-                generateSeats();
-
-                // Thêm sự kiện click cho từng ghế
-                addClickEventToSeats();
-            }
-
-
-            // Gọi hàm áp dụng thiết lập mới khi click vào nút "Áp dụng"
-            document.getElementById('applySettingsButton').addEventListener('click', applySettings);
-
-            // Thêm sự kiện click cho từng ghế khi trang được tải lần đầu
-            addClickEventToSeats();
-
-
-
-            function generateSeats() {
-                const currentSeats = document.querySelectorAll('.seat');
-                const seatSize = parseFloat(seatSizeInput.value);
-                const seatSpacing = parseFloat(seatSpacingInput.value);
-                const containerWidth = container.offsetWidth;
-                const containerHeight = container.offsetHeight;
-                const cols = Math.floor(containerWidth / (seatSize + seatSpacing));
-                const rows = Math.floor(containerHeight / (seatSize + seatSpacing));
-
-                const totalSeats = currentSeats.length;
-                const seatsNeeded = cols * rows;
-                const seatsToAdd = seatsNeeded - totalSeats;
-
-                if (seatsToAdd > 0) {
-                    let rowIndex = Math.floor(totalSeats / cols);
-                    let colIndex = totalSeats % cols;
-
-                    for (let i = 0; i < seatsToAdd; i++) {
-                        const seat = document.createElement('div');
-                        seat.classList.add('seat');
-                        seat.classList.add(`col-${colIndex + 1}`);
-                        seat.id = `seat-${rowIndex + 1}-${colIndex + 1}`;
-                        seat.style.width = seatSize + 'px';
-                        seat.style.height = seatSize + 'px';
-                        container.appendChild(seat);
-
-                        colIndex++;
-                        if (colIndex >= cols) {
-                            colIndex = 0;
-                            rowIndex++;
-                        }
-                    }
+        function generateSeats() {
+            container.innerHTML = ''; // Clear existing seats
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const seat = document.createElement('div');
+                    seat.classList.add('seat');
+                    seat.dataset.originalRow = String.fromCharCode(65 + i);
+                    seat.dataset.number = j + 1;
+                    seat.addEventListener('click', selectSeat);
+                    container.appendChild(seat);
                 }
             }
+        }
 
-            document.getElementById('applySettingsButton').addEventListener('click', applySettings);
-
-
-
-            document.getElementById('applySettingsButton').addEventListener('click', applySettings);
-
-            function selectSeat() {
-                if (isSelectingSeat) {
-                    if (isSelectingVIP) {
-                        this.classList.add('vip');
-                    } else if (isSelectingStage) {
-                        this.classList.add('stage');
-                    } else {
-                        this.classList.toggle('selected');
-                    }
-                }
-            }
-
-            container.addEventListener('mousedown', (e) => {
-                const rect = container.getBoundingClientRect();
-                startX = e.clientX - rect.left;
-                startY = e.clientY - rect.top;
-                selectionBox.style.left = `${startX}px`;
-                selectionBox.style.top = `${startY}px`;
-                selectionBox.style.width = '0';
-                selectionBox.style.height = '0';
-                selectionBox.style.display = 'block';
-                isSelecting = true;
-                isSelectingSeat = false;
-            });
-
+        // Hàm thêm sự kiện click cho từng ghế
+        function addClickEventToSeats() {
             const seats = document.querySelectorAll('.seat');
             seats.forEach(seat => {
                 seat.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    selectSeat.call(seat);
+                    selectSeat(seat);
                 });
             });
+        }
 
-            container.addEventListener('mousemove', (e) => {
-                if (isSelecting) {
-                    const rect = container.getBoundingClientRect();
-                    endX = e.clientX - rect.left;
-                    endY = e.clientY - rect.top;
-                    const width = endX - startX;
-                    const height = endY - startY;
-                    selectionBox.style.width = `${Math.abs(width)}px`;
-                    selectionBox.style.height = `${Math.abs(height)}px`;
-                    selectionBox.style.left = `${width < 0 ? endX : startX}px`;
-                    selectionBox.style.top = `${height < 0 ? endY : startY}px`;
-                }
+        // Hàm áp dụng thiết lập mới
+        function applySettings() {
+            const seatSize = parseFloat(seatSizeInput.value);
+            const seatSpacing = parseFloat(seatSpacingInput.value);
+            const containerWidth = container.offsetWidth;
+            const containerHeight = container.offsetHeight;
+            const cols = Math.floor((containerWidth + seatSpacing) / (seatSize + seatSpacing)); // Thay đổi cách tính số cột
+            const rows = Math.floor((containerHeight + seatSpacing) / (seatSize + seatSpacing)); // Thay đổi cách tính số hàng
+
+            // Cập nhật kích thước container
+            container.style.width = cols * (seatSize + seatSpacing) - seatSpacing + 'px';
+            container.style.height = rows * (seatSize + seatSpacing) - seatSpacing + 'px';
+
+            // Cập nhật kích thước ghế
+            document.querySelectorAll('.seat').forEach(seat => {
+                seat.style.width = seatSize + 'px';
+                seat.style.height = seatSize + 'px';
             });
 
-            container.addEventListener('mouseup', () => {
-                if (isSelecting) {
-                    const rect = selectionBox.getBoundingClientRect();
-                    const seats = document.querySelectorAll('.seat');
-                    seats.forEach(seat => {
-                        const seatRect = seat.getBoundingClientRect();
-                        if (seatRect.left >= rect.left && seatRect.right <= rect.right &&
-                            seatRect.top >= rect.top && seatRect.bottom <= rect.bottom) {
-                            if (isSelectingVIP) {
-                                seat.classList.add
-                                    ('vip');
-                            } else if (isSelectingStage) {
-                                seat.classList.add('stage');
-                            } else {
-                                seat.classList.add('selected');
-                            }
-                        }
-                    });
-                    selectionBox.style.display = 'none';
-                    isSelecting = false;
-                }
-            });
+            // Cập nhật số hàng và số cột trong grid template
+            container.style.gridTemplateColumns = `repeat(${cols}, ${seatSize}px)`;
+            container.style.gridTemplateRows = `repeat(${rows}, ${seatSize}px)`;
 
-            container.addEventListener('mouseleave', () => {
-                if (isSelecting) {
-                    selectionBox.style.display = 'none';
-                    isSelecting = false;
-                }
-            });
+            // Cập nhật khoảng cách giữa các ghế
+            container.style.gap = seatSpacing + 'px';
 
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Shift') {
-                    isSelectingSeat = true;
-                }
-            });
+            // Tạo thêm các ghế nếu cần
+            generateSeats();
 
-            document.addEventListener('keyup', (e) => {
-                if (e.key === 'Shift') {
-                    isSelectingSeat = false;
-                }
-            });
+            // Thêm sự kiện click cho từng ghế
+            addClickEventToSeats();
+        }
 
-            const vipButton = document.getElementById('vipButton');
-            vipButton.addEventListener('click', () => {
-                isSelectingVIP = !isSelectingVIP;
+
+        // Gọi hàm áp dụng thiết lập mới khi click vào nút "Áp dụng"
+        document.getElementById('applySettingsButton').addEventListener('click', applySettings);
+
+        // Thêm sự kiện click cho từng ghế khi trang được tải lần đầu
+        addClickEventToSeats();
+
+
+        function generateSeats() {
+            const currentSeats = document.querySelectorAll('.seat');
+            const seatSize = parseFloat(seatSizeInput.value);
+            const seatSpacing = parseFloat(seatSpacingInput.value);
+            const containerWidth = container.offsetWidth;
+            const containerHeight = container.offsetHeight;
+            const cols = Math.floor(containerWidth / (seatSize + seatSpacing));
+            const rows = Math.floor(containerHeight / (seatSize + seatSpacing));
+
+            const totalSeats = currentSeats.length;
+            const seatsNeeded = cols * rows;
+            const seatsToAdd = seatsNeeded - totalSeats;
+
+            if (seatsToAdd > 0) {
+                let rowIndex = Math.floor(totalSeats / cols);
+                let colIndex = totalSeats % cols;
+
+                for (let i = 0; i < seatsToAdd; i++) {
+                    const seat = document.createElement('div');
+                    seat.classList.add('seat');
+                    seat.classList.add(`col-${colIndex + 1}`);
+                    seat.id = `seat-${rowIndex + 1}-${colIndex + 1}`;
+                    seat.style.width = seatSize + 'px';
+                    seat.style.height = seatSize + 'px';
+                    container.appendChild(seat);
+
+                    colIndex++;
+                    if (colIndex >= cols) {
+                        colIndex = 0;
+                        rowIndex++;
+                    }
+                }
+            }
+        }
+
+        document.getElementById('applySettingsButton').addEventListener('click', applySettings);
+
+
+        document.getElementById('applySettingsButton').addEventListener('click', applySettings);
+
+        function selectSeat() {
+            if (isSelectingSeat) {
                 if (isSelectingVIP) {
-                    vipButton.textContent = 'Kết thúc chọn vùng VIP';
+                    this.classList.add('vip');
+                } else if (isSelectingStage) {
+                    this.classList.add('stage');
                 } else {
-                    vipButton.textContent = 'Chọn vùng VIP';
+                    this.classList.toggle('selected');
                 }
+            }
+        }
+
+        container.addEventListener('mousedown', (e) => {
+            const rect = container.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+            selectionBox.style.left = `${startX}px`;
+            selectionBox.style.top = `${startY}px`;
+            selectionBox.style.width = '0';
+            selectionBox.style.height = '0';
+            selectionBox.style.display = 'block';
+            isSelecting = true;
+            isSelectingSeat = false;
+        });
+
+        const seats = document.querySelectorAll('.seat');
+        seats.forEach(seat => {
+            seat.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectSeat.call(seat);
             });
+        });
 
-            // const stageButton = document.getElementById('stageButton');
-            // stageButton.addEventListener('click', () => {
-            //     isSelectingStage = !isSelectingStage;
-            //     if (isSelectingStage) {
-            //         stageButton.textContent = 'Kết thúc chọn vùng Stage';
-            //     } else {
-            //         stageButton.textContent = 'Chọn vùng Stage';
-            //     }
-            // });
-            //
-            // Hàm đếm và liệt kê ghế
-            function countAndListSeats() {
+        container.addEventListener('mousemove', (e) => {
+            if (isSelecting) {
+                const rect = container.getBoundingClientRect();
+                endX = e.clientX - rect.left;
+                endY = e.clientY - rect.top;
+                const width = endX - startX;
+                const height = endY - startY;
+                selectionBox.style.width = `${Math.abs(width)}px`;
+                selectionBox.style.height = `${Math.abs(height)}px`;
+                selectionBox.style.left = `${width < 0 ? endX : startX}px`;
+                selectionBox.style.top = `${height < 0 ? endY : startY}px`;
+            }
+        });
+
+        container.addEventListener('mouseup', () => {
+            if (isSelecting) {
+                const rect = selectionBox.getBoundingClientRect();
                 const seats = document.querySelectorAll('.seat');
-
-                let selectedSeats = [];
-                let vipSeats = [];
-
                 seats.forEach(seat => {
-                    const seatLabel = seat.getAttribute('data-label');
-                    if (seatLabel) {
-                        if (seat.classList.contains('vip')) {
-                            vipSeats.push(seatLabel);
-                        } else if (seat.classList.contains('selected')) {
-                            selectedSeats.push(seatLabel);
+                    const seatRect = seat.getBoundingClientRect();
+                    if (seatRect.left >= rect.left && seatRect.right <= rect.right &&
+                        seatRect.top >= rect.top && seatRect.bottom <= rect.bottom) {
+                        if (isSelectingVIP) {
+                            seat.classList.add
+                            ('vip');
+                        } else if (isSelectingStage) {
+                            seat.classList.add('stage');
+                        } else {
+                            seat.classList.add('selected');
                         }
                     }
                 });
+                selectionBox.style.display = 'none';
+                isSelecting = false;
+            }
+        });
 
-                const totalSelected = selectedSeats.length;
-                const totalVIP = vipSeats.length;
+        container.addEventListener('mouseleave', () => {
+            if (isSelecting) {
+                selectionBox.style.display = 'none';
+                isSelecting = false;
+            }
+        });
 
-                return {
-                    totalSelected,
-                    totalVIP,
-                    selectedSeats: selectedSeats.join(', '),
-                    vipSeats: vipSeats.join(', ')
-                };
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Shift') {
+                isSelectingSeat = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Shift') {
+                isSelectingSeat = false;
+            }
+        });
+
+        const vipButton = document.getElementById('vipButton');
+        vipButton.addEventListener('click', () => {
+            isSelectingVIP = !isSelectingVIP;
+            if (isSelectingVIP) {
+                vipButton.textContent = 'Kết thúc chọn vùng VIP';
+            } else {
+                vipButton.textContent = 'Chọn vùng VIP';
+            }
+        });
+
+        // const stageButton = document.getElementById('stageButton');
+        // stageButton.addEventListener('click', () => {
+        //     isSelectingStage = !isSelectingStage;
+        //     if (isSelectingStage) {
+        //         stageButton.textContent = 'Kết thúc chọn vùng Stage';
+        //     } else {
+        //         stageButton.textContent = 'Chọn vùng Stage';
+        //     }
+        // });
+        //
+        // Hàm đếm và liệt kê ghế
+        function countAndListSeats() {
+            const seats = document.querySelectorAll('.seat');
+
+            let selectedSeats = [];
+            let vipSeats = [];
+
+            seats.forEach(seat => {
+                const seatLabel = seat.getAttribute('data-label');
+                if (seatLabel) {
+                    if (seat.classList.contains('vip')) {
+                        vipSeats.push(seatLabel);
+                    } else if (seat.classList.contains('selected')) {
+                        selectedSeats.push(seatLabel);
+                    }
+                }
+            });
+
+            const totalSelected = selectedSeats.length;
+            const totalVIP = vipSeats.length;
+
+            return {
+                totalSelected,
+                totalVIP,
+                selectedSeats: selectedSeats.join(', '),
+                vipSeats: vipSeats.join(', ')
+            };
+        }
+
+        //
+        function saveImage() {
+
+            const container = document.querySelector('#container');
+            const seats = Array.from(container.querySelectorAll('.seat'));
+            const rowInputValue = parseInt(document.getElementById('Row').value);
+            const colInputValue = parseInt(document.getElementById('Col').value);
+
+            // Đảm bảo container có vị trí tương đối để đặt nhãn tương đối với nó
+            container.style.position = 'relative';
+
+            let rowIndex = 0;
+            let colIndex = 0;
+            let currentRowSeats = [];
+            let rowCounter = 0; // Biến đếm hàng để bắt đầu từ A
+
+            function labelSeats(rowSeats, rowIndex) {
+                rowSeats.forEach((seat, index) => {
+                    const rowLabel = String.fromCharCode(65 + rowIndex); // Chuyển đổi hàng thành ký tự chữ cái ('A' là 65 trong mã ASCII)
+                    const colLabel = (index + 1).toString(); // Đánh số ghế bắt đầu từ 1
+
+                    const seatLabel = `${rowLabel}${colLabel}`;
+
+                    // Gán nhãn vào thuộc tính data-label của ghế
+                    seat.setAttribute('data-label', seatLabel);
+
+                    // Tạo nhãn ghế
+                    const label = document.createElement('div');
+                    label.textContent = seatLabel;
+                    label.style.color = 'white';
+                    label.style.fontSize = `${parseInt(document.getElementById('seatSize').value) * 0.5}px`;
+                    label.style.position = 'absolute';
+                    label.style.left = `${seat.offsetWidth / 2}px`;
+                    label.style.top = `${seat.offsetHeight / 2}px`;
+                    label.style.transform = 'translate(-50%, -50%)';
+
+                    // Thêm nhãn vào ghế
+                    seat.style.position = 'relative';
+                    seat.appendChild(label);
+                });
             }
 
-            //
-            function saveImage() {
+            seats.forEach((seat, index) => {
+                const seatRow = Math.floor(index / colInputValue);
 
-                const container = document.querySelector('#container');
-                const seats = Array.from(container.querySelectorAll('.seat'));
-                const rowInputValue = parseInt(document.getElementById('Row').value);
-                const colInputValue = parseInt(document.getElementById('Col').value);
-
-                // Đảm bảo container có vị trí tương đối để đặt nhãn tương đối với nó
-                container.style.position = 'relative';
-
-                let rowIndex = 0;
-                let colIndex = 0;
-                let currentRowSeats = [];
-                let rowCounter = 0; // Biến đếm hàng để bắt đầu từ A
-
-                function labelSeats(rowSeats, rowIndex) {
-                    rowSeats.forEach((seat, index) => {
-                        const rowLabel = String.fromCharCode(65 + rowIndex); // Chuyển đổi hàng thành ký tự chữ cái ('A' là 65 trong mã ASCII)
-                        const colLabel = (index + 1).toString(); // Đánh số ghế bắt đầu từ 1
-
-                        const seatLabel = `${rowLabel}${colLabel}`;
-
-                        // Gán nhãn vào thuộc tính data-label của ghế
-                        seat.setAttribute('data-label', seatLabel);
-
-                        // Tạo nhãn ghế
-                        const label = document.createElement('div');
-                        label.textContent = seatLabel;
-                        label.style.color = 'white';
-                        label.style.fontSize = `${parseInt(document.getElementById('seatSize').value) * 0.5}px`;
-                        label.style.position = 'absolute';
-                        label.style.left = `${seat.offsetWidth / 2}px`;
-                        label.style.top = `${seat.offsetHeight / 2}px`;
-                        label.style.transform = 'translate(-50%, -50%)';
-
-                        // Thêm nhãn vào ghế
-                        seat.style.position = 'relative';
-                        seat.appendChild(label);
-                    });
-                }
-
-                seats.forEach((seat, index) => {
-                    const seatRow = Math.floor(index / colInputValue);
-
-                    if (seat.classList.contains('selected') || seat.classList.contains('vip') || seat.classList.contains('stage')) {
-                        if (seatRow > rowIndex) {
-                            // Nếu đang chuyển sang hàng mới, gán nhãn cho hàng hiện tại và đặt lại hàng ghế
-                            if (currentRowSeats.length > 0) {
-                                labelSeats(currentRowSeats, rowCounter);
-                                rowCounter++;
-                            }
-                            currentRowSeats = [];
-                            rowIndex = seatRow;
-                            colIndex = 0;
+                if (seat.classList.contains('selected') || seat.classList.contains('vip') || seat.classList.contains('stage')) {
+                    if (seatRow > rowIndex) {
+                        // Nếu đang chuyển sang hàng mới, gán nhãn cho hàng hiện tại và đặt lại hàng ghế
+                        if (currentRowSeats.length > 0) {
+                            labelSeats(currentRowSeats, rowCounter);
+                            rowCounter++;
                         }
-                        currentRowSeats.push(seat);
-                        colIndex++;
-                    } else {
-                        seat.style.visibility = 'hidden'; // Ẩn các ghế không được chọn
+                        currentRowSeats = [];
+                        rowIndex = seatRow;
+                        colIndex = 0;
                     }
-                });
-
-                // Gán nhãn cho hàng cuối cùng
-                if (currentRowSeats.length > 0) {
-                    labelSeats(currentRowSeats, rowCounter);
+                    currentRowSeats.push(seat);
+                    colIndex++;
+                } else {
+                    seat.style.visibility = 'hidden'; // Ẩn các ghế không được chọn
                 }
-                //laafy ghees : 
-                const seatCounts = countAndListSeats();
-                const seatCountsDiv = document.getElementById('seatCounts');
+            });
 
-                if (seatCountsDiv) {
-                    seatCountsDiv.innerHTML = `
+            // Gán nhãn cho hàng cuối cùng
+            if (currentRowSeats.length > 0) {
+                labelSeats(currentRowSeats, rowCounter);
+            }
+            //laafy ghees :
+            const seatCounts = countAndListSeats();
+            const seatCountsDiv = document.getElementById('seatCounts');
+
+            if (seatCountsDiv) {
+                seatCountsDiv.innerHTML = `
            
             <p>Total Selected Seats: ${seatCounts.totalSelected}</p>
             <p>Total VIP Seats: ${seatCounts.totalVIP}</p>
@@ -771,77 +772,78 @@
             <p>Selected Seats: ${seatCounts.selectedSeats}</p>
             <p>VIP Seats: ${seatCounts.vipSeats}</p>
         `;
-                } else {
-                    console.error('Element with ID "seatCounts" not found.');
-                }
-                // Tạo ảnh từ canvas
-                html2canvas(container).then(canvas => {
-                    canvas.toBlob(blob => {
-                        const formData = new FormData();
-                        formData.append('seatMapImg', blob, 'seat_layout.png');
-                        //laasy gias ves
-                        const normalPrice = document.getElementById('normalTicketPrice').value;
-                        const vipPrice = document.getElementById('vipTicketPrice').value;
-                        // Chuẩn bị dữ liệu bổ sung
-                        const additionalData = {
-                            totalSelectedSeats: seatCounts.totalSelected,
-                            totalVIPSeats: seatCounts.totalVIP,
-                            selectedSeats: seatCounts.selectedSeats.split(', '),
-                            vipSeats: seatCounts.vipSeats.split(', '),
-                            normalPrice: normalPrice,
-                            vipPrice: vipPrice
-                        };
-
-                        // Chuyển đổi dữ liệu bổ sung thành chuỗi JSON và thêm vào FormData
-                        formData.append('additionalData', JSON.stringify(additionalData));
-
-                        fetch('/seatMap/SeatMapBeta', {
-                            method: 'POST',
-                            body: formData
-                        })
-                            .then(response => {
-                                if (response.ok) {
-                                    console.log('Đã lưu ảnh thành công!');
-                                } else {
-                                    console.error('Lỗi khi lưu ảnh:', response.statusText);
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Lỗi khi gửi yêu cầu:', error);
-                            });
-                    }, 'image/png');
-                }).catch(error => {
-                    console.error("Error generating canvas:", error);
-                });
+            } else {
+                console.error('Element with ID "seatCounts" not found.');
             }
-            const saveImageButton = document.getElementById('saveImageButton');
-            saveImageButton.addEventListener('click', saveImage);
-
-            document.getElementById('imageUpload').addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (event) {
-                        const img = new Image();
-                        img.src = event.target.result;
-                        img.onload = function () {
-                            container.style.backgroundImage = `url(${event.target.result})`;
-                        };
+            // Tạo ảnh từ canvas
+            html2canvas(container).then(canvas => {
+                canvas.toBlob(blob => {
+                    const formData = new FormData();
+                    formData.append('seatMapImg', blob, 'seat_layout.png');
+                    //laasy gias ves
+                    const normalPrice = document.getElementById('normalTicketPrice').value;
+                    const vipPrice = document.getElementById('vipTicketPrice').value;
+                    // Chuẩn bị dữ liệu bổ sung
+                    const additionalData = {
+                        totalSelectedSeats: seatCounts.totalSelected,
+                        totalVIPSeats: seatCounts.totalVIP,
+                        selectedSeats: seatCounts.selectedSeats.split(', '),
+                        vipSeats: seatCounts.vipSeats.split(', '),
+                        normalPrice: normalPrice,
+                        vipPrice: vipPrice
                     };
-                    reader.readAsDataURL(file);
-                }
+
+                    // Chuyển đổi dữ liệu bổ sung thành chuỗi JSON và thêm vào FormData
+                    formData.append('additionalData', JSON.stringify(additionalData));
+
+                    fetch('/seatMap/SeatMapBeta', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Đã lưu ảnh thành công!');
+                            } else {
+                                console.error('Lỗi khi lưu ảnh:', response.statusText);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi gửi yêu cầu:', error);
+                        });
+                }, 'image/png');
+            }).catch(error => {
+                console.error("Error generating canvas:", error);
             });
+        }
 
-            function openNav() {
-                document.getElementById("mySidenav").style.width = "300px"; // Điều chỉnh chiều rộng của thanh điều hướng
-                document.getElementById("main").style.marginRight = "300px"; // Điều chỉnh khoảng cách margin cho nội dung chính
-            }
+        const saveImageButton = document.getElementById('saveImageButton');
+        saveImageButton.addEventListener('click', saveImage);
 
-            function closeNav() {
-                document.getElementById("mySidenav").style.width = "0";
-                document.getElementById("main").style.marginLeft = "0";
+        document.getElementById('imageUpload').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        container.style.backgroundImage = `url(${event.target.result})`;
+                    };
+                };
+                reader.readAsDataURL(file);
             }
-        </script>
+        });
+
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "300px"; // Điều chỉnh chiều rộng của thanh điều hướng
+            document.getElementById("main").style.marginRight = "300px"; // Điều chỉnh khoảng cách margin cho nội dung chính
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+            document.getElementById("main").style.marginLeft = "0";
+        }
+    </script>
 </body>
 
 </html>

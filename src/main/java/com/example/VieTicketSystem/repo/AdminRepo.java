@@ -328,8 +328,8 @@ public class AdminRepo {
                 + " WHERE role = 'b' OR role = 'p') AS total_banned_users";
 
         try (Connection con = ConnectionPoolManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
                 stats.setTotalSoldAmountActiveEvents(rs.getDouble("total_sold_amount_active_events"));
@@ -424,8 +424,8 @@ public class AdminRepo {
                 + "GROUP BY e.event_id, u.full_name;";
 
         try (Connection con = ConnectionPoolManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 String eventName = rs.getString("eventName");

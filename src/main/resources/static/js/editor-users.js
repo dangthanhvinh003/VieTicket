@@ -1,43 +1,45 @@
 function isSeatInsideArea(row, area) {
-  for (let i = 0; i < row.seats; i++) {
-    const seat = row.seats[i];
-    const seatRadius = seat.radius || 5;
-    return (
-      seat.x - seatRadius >= area.x &&
-      seat.x + seatRadius <= area.x + area.width &&
-      seat.y - seatRadius >= area.y &&
-      seat.y + seatRadius <= area.y + area.height
-    );
-  }
+    for (let i = 0; i < row.seats; i++) {
+        const seat = row.seats[i];
+        const seatRadius = seat.radius || 5;
+        return (
+            seat.x - seatRadius >= area.x &&
+            seat.x + seatRadius <= area.x + area.width &&
+            seat.y - seatRadius >= area.y &&
+            seat.y + seatRadius <= area.y + area.height
+        );
+    }
 }
+
 function pad(number) {
-  if (number < 10) {
-    return "0" + number;
-  }
-  return number;
+    if (number < 10) {
+        return "0" + number;
+    }
+    return number;
 }
+
 function mainEditor() {
-  const startDate = new Date(eventData.event.startDate);
+    const startDate = new Date(eventData.event.startDate);
 
-  var hours = pad(startDate.getHours());
-  var minutes = pad(startDate.getMinutes());
-  var day = pad(startDate.getDate());
-  var month = pad(startDate.getMonth() + 1); // getMonth() returns 0-indexed
+    var hours = pad(startDate.getHours());
+    var minutes = pad(startDate.getMinutes());
+    var day = pad(startDate.getDate());
+    var month = pad(startDate.getMonth() + 1); // getMonth() returns 0-indexed
 
-  // Construct formatted date string
-  var formattedDateStr =
-    hours +
-    ":" +
-    minutes +
-    ", " +
-    day +
-    "-" +
-    month +
-    "-" +
-    startDate.getFullYear();
+    // Construct formatted date string
+    var formattedDateStr =
+        hours +
+        ":" +
+        minutes +
+        ", " +
+        day +
+        "-" +
+        month +
+        "-" +
+        startDate.getFullYear();
 
-  setEditorTitle(`<h2>${eventData.event.name}</h2>`);
-  setEditorContent(`
+    setEditorTitle(`<h2>${eventData.event.name}</h2>`);
+    setEditorContent(`
     <div class="d-flex gap-2">
       <div><i style="color:#FFA3FD" class="bi bi-briefcase-fill"></i></div>
       <div>${formattedDateStr}</div>
@@ -67,7 +69,7 @@ function mainEditor() {
       <h4>Ticket price</h4>
       ${eventData.areas
         .map((area) => {
-          return `<div class="d-flex justify-content-between">
+            return `<div class="d-flex justify-content-between">
             <div>${area.area.name}</div>
             <div style="color:#FFA3FD">${area.area.ticketPrice}</div>
           </div>`;
@@ -78,14 +80,14 @@ function mainEditor() {
 }
 
 function submitEditor() {
-  const seats = selectedSeats
-    .map((seat) => `${seat.row.name}${seat.number}`)
-    .join(", ");
-  if (selectedSeats.length > 0) {
-    editorSubmitButton.style =
-      "background-color: #FFA3FD; color:white;width: 100%;";
-  } else {
-    editorSubmitButton.style = "color: #FFA3FD; width: 100%;";
-  }
-  editorSubmitContent.innerHTML = `${seats}`;
+    const seats = selectedSeats
+        .map((seat) => `${seat.row.name}${seat.number}`)
+        .join(", ");
+    if (selectedSeats.length > 0) {
+        editorSubmitButton.style =
+            "background-color: #FFA3FD; color:white;width: 100%;";
+    } else {
+        editorSubmitButton.style = "color: #FFA3FD; width: 100%;";
+    }
+    editorSubmitContent.innerHTML = `${seats}`;
 }

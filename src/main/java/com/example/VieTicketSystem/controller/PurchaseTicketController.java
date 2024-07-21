@@ -37,8 +37,8 @@ public class PurchaseTicketController {
     private final EventRepo eventRepo;
 
     public PurchaseTicketController(SeatMapRepo seatMapRepo, HttpSession httpSession,
-            PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo,
-            OrderRepo orderRepo, TicketRepo ticketRepo, EventRepo eventRepo) {
+                                    PurchaseTicketService purchaseTicketService, OrderService orderService, SeatRepo seatRepo,
+                                    OrderRepo orderRepo, TicketRepo ticketRepo, EventRepo eventRepo) {
         this.seatMapRepo = seatMapRepo;
         this.httpSession = httpSession;
         this.purchaseTicketService = purchaseTicketService;
@@ -51,8 +51,8 @@ public class PurchaseTicketController {
 
     @GetMapping("/select-tickets")
     public String showForm(@RequestParam("eventId") int eventId,
-            Model model,
-            RedirectAttributes redirectAttributes) throws Exception {
+                           Model model,
+                           RedirectAttributes redirectAttributes) throws Exception {
 
         User activeUser = (User) httpSession.getAttribute("activeUser");
         if (activeUser == null) {
@@ -102,7 +102,7 @@ public class PurchaseTicketController {
 
     @PostMapping("/select-tickets")
     public ResponseEntity<String> selectTickets(@RequestBody TicketSelection ticketSelection,
-            HttpServletRequest request) throws Exception {
+                                                HttpServletRequest request) throws Exception {
         User user = (User) httpSession.getAttribute("activeUser");
         if (user == null) {
             return new ResponseEntity<>("Please login to buy ticket", HttpStatus.UNAUTHORIZED);
@@ -173,7 +173,7 @@ public class PurchaseTicketController {
 
         // Get all the fields from the request to a dictionary
         Map<String, String> fields = new HashMap<>();
-        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements(); ) {
             String fieldName;
             String fieldValue;
             fieldName = URLEncoder.encode(params.nextElement(), StandardCharsets.US_ASCII);
@@ -194,7 +194,7 @@ public class PurchaseTicketController {
 
     @GetMapping("/purchase-failure")
     public String showPurchaseFailure(@RequestParam("orderId") int orderId, Model model,
-            RedirectAttributes redirectAttributes) throws Exception {
+                                      RedirectAttributes redirectAttributes) throws Exception {
         User user = (User) httpSession.getAttribute("activeUser");
         if (user == null) {
             httpSession.setAttribute("redirect", "/purchase/purchase-failure?orderId=" + orderId);

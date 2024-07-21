@@ -17,13 +17,13 @@ public class Cloudinaryconfig {
     private String API_KEY;
     @Value("${API_SECRET}")
     private String API_SECRET;
-    
+
     @Bean
-    public Cloudinary cloudinary(){
+    public Cloudinary cloudinary() {
         Map<String, String> config = new HashMap<>();
-        config.put("cloud_name",CLOUD_NAME);
-        config.put("api_key",API_KEY);
-        config.put("api_secret",API_SECRET);
+        config.put("cloud_name", CLOUD_NAME);
+        config.put("api_key", API_KEY);
+        config.put("api_secret", API_SECRET);
 
         return new Cloudinary(config);
     }

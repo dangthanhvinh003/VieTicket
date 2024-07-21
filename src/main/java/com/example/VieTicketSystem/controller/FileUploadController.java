@@ -25,14 +25,14 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequiredArgsConstructor
 public class FileUploadController {
-    @Autowired
-    UserRepo userRepo = new UserRepo();
     private final FileUpload fileUpload;
     private final Cloudinary cloudinary;
+    @Autowired
+    UserRepo userRepo = new UserRepo();
 
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("image") MultipartFile multipartFile,
-            Model model, HttpSession httpSession) throws Exception {
+                             Model model, HttpSession httpSession) throws Exception {
 
         Map uploadResult = cloudinary.uploader().upload(multipartFile.getBytes(),
                 ObjectUtils.asMap(

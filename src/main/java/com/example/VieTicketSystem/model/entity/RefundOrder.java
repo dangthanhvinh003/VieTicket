@@ -44,15 +44,6 @@ public class RefundOrder {
         }
 
         /**
-         * Converts the RefundStatus enum to an integer
-         *
-         * @return The corresponding integer.
-         */
-        public int toInteger() {
-            return value;
-        }
-
-        /**
          * Retrieves the RefundStatus enum corresponding to the given numeric value.
          *
          * @param value The numeric value to convert to a RefundStatus enum.
@@ -65,6 +56,15 @@ public class RefundOrder {
                 }
             }
             return null;
+        }
+
+        /**
+         * Converts the RefundStatus enum to an integer
+         *
+         * @return The corresponding integer.
+         */
+        public int toInteger() {
+            return value;
         }
     }
 }

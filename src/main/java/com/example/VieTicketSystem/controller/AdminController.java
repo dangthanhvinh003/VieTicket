@@ -270,37 +270,39 @@ public class AdminController {
 
         return "admin/users/view";
     }
-     @PostMapping(value = "/eventEditPageAdmin")
+
+    @PostMapping(value = "/eventEditPageAdmin")
     public String eventEditPage(@RequestParam("eventId") int eventId, Model model, HttpSession httpSession) {
         httpSession.setAttribute("eventIdEdit", eventId);
         Event event = eventRepo.getEventById(eventId);
         model.addAttribute("eventEdit", event);
         return "admin/events/editEventAdmin";
     }
+
     @GetMapping(value = ("/ViewAllEventOngoing"))
     public String allEventOngoingPage(Model model) throws Exception {
         List<Event> events = eventRepo.getAllOngoingEvents();
         model.addAttribute("events", events);
         return "admin/events/ongoing";
     }
+
     @GetMapping("/hideEvent")
     public String hideEvent(@RequestParam("eventId") int eventId, Model model) throws Exception {
         boolean isHidden = eventRepo.hideEvent(eventId);
-        
+
         if (isHidden) {
             model.addAttribute("message", "Event has been hidden successfully.");
         } else {
             model.addAttribute("message", "Failed to hide the event.");
         }
-    
+
         // Fetch the updated list of events and add to the model
         List<Event> events = eventRepo.getAllEventPass();
         model.addAttribute("events", events);
-        
+
         return "admin/events/passEvent";
     }
-    
-    
+
 
     @GetMapping(value = "/searchEvents")
     public String searchEvents(@RequestParam("query") String query, Model model) throws Exception {
@@ -308,32 +310,35 @@ public class AdminController {
         model.addAttribute("events", events);
         return "admin/events/ongoing";
     }
+
     @GetMapping(value = "/searchEvents2")
     public String searchEvents2(@RequestParam("query") String query, Model model) throws Exception {
         List<Event> events = eventRepo.searchEvents2(query);
         model.addAttribute("events", events);
         return "admin/events/passEvent";
     }
+
     @GetMapping(value = ("/ViewAllPassEvent"))
     public String passEvent(Model model) throws Exception {
         List<Event> events = eventRepo.getAllEventPass();
         model.addAttribute("events", events);
         return "admin/events/passEvent";
     }
+
     @GetMapping("/payEvent")
     public String payForEvent(@RequestParam("eventId") int eventId, Model model) throws Exception {
         boolean isHidden = eventRepo.payEvent(eventId);
-        
+
         if (isHidden) {
             model.addAttribute("message", "Event has been hidden successfully.");
         } else {
             model.addAttribute("message", "Failed to hide the event.");
         }
-    
+
         // Fetch the updated list of events and add to the model
         List<Event> events = eventRepo.getAllEventPass();
         model.addAttribute("events", events);
-        
+
         return "admin/events/passEvent";
     }
 

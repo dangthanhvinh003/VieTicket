@@ -26,9 +26,6 @@ import com.example.VieTicketSystem.model.entity.User;
 @Repository
 public class EventRepo {
 
-    @Autowired
-    OrganizerRepo organizerRepo = new OrganizerRepo();
-
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM Event WHERE event_id = ?";
     // KEEP WHITESPACE AFTER EACH CHUNK
     private static final String SELECT_EVENT_BY_ORDER_ID = "SELECT E.event_id, E.name, E.start_date, E.organizer_id " +
@@ -39,12 +36,14 @@ public class EventRepo {
             "JOIN Ticket T ON S.seat_id = T.seat_id " +
             "WHERE order_id = ? " +
             "LIMIT 1";
+    @Autowired
+    OrganizerRepo organizerRepo = new OrganizerRepo();
 
     public Event findEventByOrderId(int orderId) throws Exception {
         Event event = null;
 
         try (Connection con = ConnectionPoolManager.getConnection();
-                PreparedStatement ps = con.prepareStatement(SELECT_EVENT_BY_ORDER_ID)) {
+             PreparedStatement ps = con.prepareStatement(SELECT_EVENT_BY_ORDER_ID)) {
 
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
@@ -70,7 +69,7 @@ public class EventRepo {
 
     public Event findById(int id) throws Exception {
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);) {
+             PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID_SQL);) {
 
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -115,8 +114,8 @@ public class EventRepo {
     public List<Event> findUpcomingByOrganizerId(int organizerId) throws SQLException {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection
-                        .prepareStatement("SELECT * FROM Event WHERE organizer_id = ? AND end_date >= ?");) {
+             PreparedStatement statement = connection
+                     .prepareStatement("SELECT * FROM Event WHERE organizer_id = ? AND end_date >= ?");) {
 
             statement.setInt(1, organizerId);
             statement.setDate(2, new Date(System.currentTimeMillis()));
@@ -179,9 +178,9 @@ public class EventRepo {
     public List<Event> getTopHotEvents() throws Exception {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection
-                        .prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection
+                     .prepareStatement("SELECT * FROM Event ORDER BY eyeview DESC LIMIT 4");
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
@@ -200,8 +199,8 @@ public class EventRepo {
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event");
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
@@ -253,8 +252,8 @@ public class EventRepo {
         List<Event> events = new ArrayList<>();
         int start = page * size;
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection
-                        .prepareStatement("SELECT * FROM Event WHERE is_approve = 1 LIMIT ? OFFSET ?")) {
+             PreparedStatement statement = connection
+                     .prepareStatement("SELECT * FROM Event WHERE is_approve = 1 LIMIT ? OFFSET ?")) {
             statement.setInt(1, size);
             statement.setInt(2, start);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -307,9 +306,9 @@ public class EventRepo {
     public int countApprovedEvents() {
         int count = 0;
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection
-                        .prepareStatement("SELECT COUNT(*) FROM Event WHERE is_approve = 1");
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection
+                     .prepareStatement("SELECT COUNT(*) FROM Event WHERE is_approve = 1");
+             ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 count = resultSet.getInt(1);
             }
@@ -322,7 +321,7 @@ public class EventRepo {
     public Event getEventById(int eventid) {
         Event event = null;
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE event_id = ?");) {
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Event WHERE event_id = ?");) {
 
             statement.setInt(1, eventid); // Truyền tên sự kiện cụ thể vào câu lệnh SQL
 
@@ -392,7 +391,7 @@ public class EventRepo {
                 "a.event_id = ?;";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, eventId);
             statement.setInt(2, eventId);
@@ -464,7 +463,7 @@ public class EventRepo {
                 "GROUP BY DATE(t.purchase_date);";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, eventId);
 
@@ -483,7 +482,7 @@ public class EventRepo {
     }
 
     public int addEvent(String name, String description, LocalDateTime startDate, String location, String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
+                        LocalDateTime ticketSaleDate, LocalDateTime endDate, int organizerId, String poster, String banner)
             throws ClassNotFoundException, SQLException {
 
         Connection connection = null;
@@ -559,8 +558,8 @@ public class EventRepo {
     }
 
     public int updateEvent(int eventId, String name, String description, LocalDateTime startDate, String location,
-            String type,
-            LocalDateTime ticketSaleDate, LocalDateTime endDate, String poster, String banner, boolean isApprove)
+                           String type,
+                           LocalDateTime ticketSaleDate, LocalDateTime endDate, String poster, String banner, boolean isApprove)
             throws ClassNotFoundException, SQLException {
 
         Class.forName(Baseconnection.nameClass);
@@ -618,7 +617,7 @@ public class EventRepo {
         String query = "SELECT * FROM Event WHERE organizer_id = ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, organizerId);
 
@@ -672,7 +671,7 @@ public class EventRepo {
         String query = "SELECT * FROM Event WHERE organizer_id = ? AND name LIKE ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, organizerId);
             statement.setString(2, "%" + name + "%");
@@ -778,6 +777,7 @@ public class EventRepo {
         }
         return findEvents;
     }
+
     public List<Event> searchEvents2(String keyword) {
         List<Event> events = getAllEventPass();
         List<Event> findEvents = new ArrayList<>();
@@ -792,7 +792,7 @@ public class EventRepo {
     public void incrementClickCount(int eventId) {
         String sql = "UPDATE Event SET eyeview = eyeview + 1 WHERE event_id = ?";
         try (Connection conn = ConnectionPoolManager.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, eventId);
             pstmt.executeUpdate();
             pstmt.close();
@@ -815,7 +815,7 @@ public class EventRepo {
                 "WHERE a.event_id = ? AND t.status = 0";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, eventId);
 
@@ -848,8 +848,8 @@ public class EventRepo {
         String query = "SELECT * FROM Event WHERE is_approve = 1 And end_date >= NOW()";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query);
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();
@@ -901,7 +901,7 @@ public class EventRepo {
         String updateQuery = "UPDATE VieTicket1.event SET is_approve = ? WHERE event_id = ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(updateQuery)) {
+             PreparedStatement statement = connection.prepareStatement(updateQuery)) {
 
             // Set the parameters for the query
             statement.setInt(1, newApprovalStatus);
@@ -921,7 +921,7 @@ public class EventRepo {
         String query = "UPDATE Event SET is_approve = 2 WHERE event_id = ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, eventId);
             int rowsUpdated = statement.executeUpdate();
@@ -939,7 +939,7 @@ public class EventRepo {
         String query = "UPDATE Event SET is_approve = 5 WHERE event_id = ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setInt(1, eventId);
             int rowsUpdated = statement.executeUpdate();
@@ -962,8 +962,8 @@ public class EventRepo {
                 + "OR (is_approve = 5 AND end_date <= NOW())";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection.prepareStatement(query);
-                ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
                 Event event = new Event();

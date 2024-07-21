@@ -235,14 +235,15 @@ public class UserRepo {
         return exists;
     }
 
-    public boolean isValidPhone (String phone){
-            // Định dạng số điện thoại Việt Nam
-            String phoneNumberPattern = "^(\\+84|0)\\d{9,10}$";
-            Pattern pattern = Pattern.compile(phoneNumberPattern);
-            Matcher matcher = pattern.matcher(phone);
-            return matcher.matches();
-        
+    public boolean isValidPhone(String phone) {
+        // Định dạng số điện thoại Việt Nam
+        String phoneNumberPattern = "^(\\+84|0)\\d{9,10}$";
+        Pattern pattern = Pattern.compile(phoneNumberPattern);
+        Matcher matcher = pattern.matcher(phone);
+        return matcher.matches();
+
     }
+
     public boolean isValidPassword(String password) {
         if (password.length() < 8) {
             return false;

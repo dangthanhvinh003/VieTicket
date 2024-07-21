@@ -90,7 +90,7 @@ public class OrganizerController {
 
     @GetMapping(value = "/viewMyListEvent")
     public String viewMyListEvent(@RequestParam(value = "search", required = false) String search, Model model,
-            HttpSession httpSession) {
+                                  HttpSession httpSession) {
         User user = (User) httpSession.getAttribute("activeUser");
         List<Event> eventList;
         if (search == null || search.isEmpty()) {
@@ -169,13 +169,13 @@ public class OrganizerController {
 
     @PostMapping(value = ("/eventEditSubmit"))
     public String addEvent(@RequestParam("name") String name, @RequestParam("description") String description,
-            @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
-            @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
-            @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
-            @RequestParam("banner") MultipartFile multipartFile1,
-            @RequestParam("currentPoster") String currentPoster,
-            @RequestParam("currentBanner") String currentBanner,
-            HttpSession httpSession, Model model) throws Exception {
+                           @RequestParam("start_date") LocalDateTime startDate, @RequestParam("location") String location,
+                           @RequestParam("type") String type, @RequestParam("ticket_sale_date") LocalDateTime ticketSaleDate,
+                           @RequestParam("end_date") LocalDateTime endDate, @RequestParam("poster") MultipartFile multipartFile,
+                           @RequestParam("banner") MultipartFile multipartFile1,
+                           @RequestParam("currentPoster") String currentPoster,
+                           @RequestParam("currentBanner") String currentBanner,
+                           HttpSession httpSession, Model model) throws Exception {
         int eventId = (int) httpSession.getAttribute("eventIdEdit");
         String posterUrl = currentPoster;
         String bannerUrl = currentBanner;
@@ -240,7 +240,7 @@ public class OrganizerController {
 
     @PostMapping(value = ("/seatMap/NoSeatMapEdit"))
     public String NoSeatMap(@RequestParam("quantity") int total, @RequestParam("price") String price,
-            HttpSession httpSession) throws Exception {
+                            HttpSession httpSession) throws Exception {
         int idNewEvent = (int) httpSession.getAttribute("eventIdEdit");
         seatMapRepo.addSeatMap(idNewEvent, "NoSeatMap", null);
         areaRepo.addArea("NoSeatMap", total, idNewEvent, price, seatMapRepo.getSeatMapIdByEventRepo(idNewEvent));
@@ -266,7 +266,7 @@ public class OrganizerController {
 
     @PostMapping(value = ("/seatMap/SeatMapBetaEdit"))
     public String SeatMapBetaPage(HttpSession httpSession, @RequestParam("seatMapImg") MultipartFile multipartFile1,
-            @RequestParam("additionalData") String additionalDataJson)
+                                  @RequestParam("additionalData") String additionalDataJson)
             throws Exception {
         // Đọc dữ liệu JSON
         ObjectMapper objectMapper = new ObjectMapper();
@@ -300,7 +300,7 @@ public class OrganizerController {
 
                     }
                     if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Normal")) != null) { // get
-                                                                                                                        // sai
+                        // sai
                         ArrayList<Row> allRow = rowRepo
                                 .getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Normal"));
 
@@ -366,7 +366,7 @@ public class OrganizerController {
 
                     }
                     if (rowRepo.getAllRowIdsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Vip")) != null) { // get
-                                                                                                                     // sai
+                        // sai
                         ArrayList<Row> allRow = rowRepo
                                 .getAllRowsByAreaId(areaRepo.getIdAreaEventIdAndName(idNewEvent, "Vip"));
                         Map<String, Integer> rowIndexMap = new HashMap<>();
@@ -443,12 +443,12 @@ public class OrganizerController {
      * an event
      */
 
-    @GetMapping({ "/organizer/refund-list", "organizer/refund-list/" })
+    @GetMapping({"/organizer/refund-list", "organizer/refund-list/"})
     public String viewListRefundOrders(@RequestParam int eventId) {
         return "redirect:/organizer/refund-list/to-approve?eventId=" + eventId;
     }
 
-    @GetMapping({ "/organizer/refund-list/to-approve", "organizer/refund-list/to-approve/" })
+    @GetMapping({"/organizer/refund-list/to-approve", "organizer/refund-list/to-approve/"})
     public String viewListRefundOrdersToApprove(@RequestParam int eventId, Model model) throws Exception {
 
         // Check if user exists and is an organizer
@@ -479,7 +479,7 @@ public class OrganizerController {
         return "organizer/refund";
     }
 
-    @GetMapping({ "/organizer/refund-list/approved", "organizer/refund-list/approved/" })
+    @GetMapping({"/organizer/refund-list/approved", "organizer/refund-list/approved/"})
     public String viewListApprovedRefundOrders(@RequestParam int eventId, Model model) throws Exception {
 
         // Check if user exists and is an organizer
@@ -517,7 +517,7 @@ public class OrganizerController {
         return "organizer/refund";
     }
 
-    @GetMapping({ "/organizer/refund-list/rejected", "organizer/refund-list/rejected/" })
+    @GetMapping({"/organizer/refund-list/rejected", "organizer/refund-list/rejected/"})
     public String viewListRejectedRefundOrders(@RequestParam int eventId, Model model) throws Exception {
 
         // Check if user exists and is an organizer

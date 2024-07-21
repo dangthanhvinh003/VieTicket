@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <title>Thông báo</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <base th:href="${baseUrl}">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="alert alert-success text-center">
-            You have successfully updated the event and waiting for Admin approval
-        </div>
-        <div class="text-center">
-            <a th:href="@{/viewMyListEvent}">Go back to homepage</a>
-        </div>
+<div class="container mt-5">
+    <div class="alert alert-success text-center">
+        You have successfully updated the event and waiting for Admin approval
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <div class="text-center">
+        <a th:href="@{/viewMyListEvent}">Go back to homepage</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

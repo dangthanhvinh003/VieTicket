@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 @Getter
 @Setter
 @ToString
@@ -38,10 +39,6 @@ public class Seat {
             this.value = value;
         }
 
-        public int toInteger() {
-            return value;
-        }
-
         public static TakenStatus fromInteger(int value) {
             return switch (value) {
                 case 0 -> AVAILABLE;
@@ -49,6 +46,10 @@ public class Seat {
                 case 2 -> RESERVED;
                 default -> null;
             };
+        }
+
+        public int toInteger() {
+            return value;
         }
     }
 }

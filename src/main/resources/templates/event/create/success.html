@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <title>Thông báo</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <base th:href="${baseUrl}">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="alert alert-success text-center">
-            You have successfully created an event and it is awaiting approval from the Admin. Additionally, please check your email if your event is rejected.
-        </div>
-        <div class="text-center">
-            <a href="/" class="btn btn-primary">Go back to homepage</a>
-        </div>
+<div class="container mt-5">
+    <div class="alert alert-success text-center">
+        You have successfully created an event and it is awaiting approval from the Admin. Additionally, please check
+        your email if your event is rejected.
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <div class="text-center">
+        <a class="btn btn-primary" href="/">Go back to homepage</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

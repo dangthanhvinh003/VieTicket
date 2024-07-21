@@ -18,12 +18,13 @@ CHECKIN_URL = f"{BASE_URL}/checkin"
 token = None
 stop_check_in = False
 
+
 # QR code scanner function
 def scan_qr_code():
     global stop_check_in
     cap = cv2.VideoCapture(0)
     qr_code_data = None
-    
+
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -38,11 +39,12 @@ def scan_qr_code():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             stop_check_in = True
             break
-    
+
     cap.release()
     cv2.destroyAllWindows()
-    
+
     return qr_code_data
+
 
 # Login function
 def login(username, password, familiar_name, ip_address):
@@ -61,6 +63,7 @@ def login(username, password, familiar_name, ip_address):
     else:
         messagebox.showerror("Login", "Login failed")
 
+
 # Logout function
 def logout():
     global token
@@ -73,6 +76,7 @@ def logout():
         messagebox.showinfo("Logout", "Logout successful")
     else:
         messagebox.showerror("Logout", "Logout failed")
+
 
 # Check-in function
 def check_in(qr_code):
@@ -89,10 +93,11 @@ def check_in(qr_code):
         formatted_data = format_checkin_data(data)
         messagebox.showinfo("Check-In", f"Check-in successful:\n{formatted_data}")
     else:
-        for _ in range(2):  
+        for _ in range(2):
             generate_beep(frequency=360, duration=125)
         formatted_data = format_checkin_data(data)
         messagebox.showerror("Check-In", f"Check-in failed:\n{formatted_data}")
+
 
 # Format check-in data
 def format_checkin_data(data):
@@ -102,22 +107,24 @@ def format_checkin_data(data):
         formatted_data += f"{formatted_key}: {value}\n"
     return formatted_data
 
+
 # Generate custom beep sound
 def generate_beep(frequency, duration):
     sample_rate = 44100  # Hertz
     t = duration / 1000.0  # convert duration to seconds
     samples = (np.sin(2 * np.pi * np.arange(sample_rate * t) * frequency / sample_rate)).astype(np.float32)
-    
+
     # Use pydub to create an AudioSegment
     audio_segment = AudioSegment(
-        samples.tobytes(), 
+        samples.tobytes(),
         frame_rate=sample_rate,
-        sample_width=samples.dtype.itemsize, 
+        sample_width=samples.dtype.itemsize,
         channels=1
     )
-    
+
     # Play the sound
     play(audio_segment)
+
 
 # Start check-in loop function
 def start_check_in_loop():
@@ -131,11 +138,13 @@ def start_check_in_loop():
             messagebox.showerror("QR Code", "Failed to scan QR code")
     stop_check_in_loop()
 
+
 # Stop check-in loop function
 def stop_check_in_loop():
     global stop_check_in
     stop_check_in = True
     logout()
+
 
 # Create GUI
 def create_gui():
@@ -161,10 +170,13 @@ def create_gui():
     ip_address.grid(row=3, column=1)
     event_id_entry.grid(row=4, column=1)
 
-    Button(root, text="Login", command=lambda: login(username.get(), password.get(), familiar_name.get(), ip_address.get())).grid(row=5, column=0)
+    Button(root, text="Login",
+           command=lambda: login(username.get(), password.get(), familiar_name.get(), ip_address.get())).grid(row=5,
+                                                                                                              column=0)
     Button(root, text="Stop and Logout", command=stop_check_in_loop).grid(row=5, column=1)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     create_gui()

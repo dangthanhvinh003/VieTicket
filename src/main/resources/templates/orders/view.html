@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Successful Purchase</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+          rel="stylesheet"/>
     <!-- TODO: Custom CSS -->
     <style>
         /* CSS cho pop-up đánh giá */
@@ -53,11 +53,12 @@
             color: gold;
         }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 <body>
 <div class="container mt-4">
     <h2 class="mb-3">
-        <a href="/orders/" class="btn btn-primary">
+        <a class="btn btn-primary" href="/orders/">
             <span class="bi bi-arrow-left"></span>
             Back to Orders
         </a>
@@ -68,7 +69,8 @@
     </h2>
 
     <h3>Order Information</h3>
-    <p>If there are any problems about your order, kindly contact support at <a href="mailto:support@vieticket.io.vn">support@vieticket.io.vn</a>.</p>
+    <p>If there are any problems about your order, kindly contact support at <a href="mailto:support@vieticket.io.vn">support@vieticket.io.vn</a>.
+    </p>
     <table class="table table-striped">
         <tr>
             <td>Total:</td>
@@ -84,13 +86,15 @@
         </tr>
         <tr>
             <td>Event:</td>
-            <td><a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" th:text="${event.name}"
-                   th:target="_blank"></a></td>
+            <td><a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}" th:target="_blank"
+                   th:text="${event.name}"></a></td>
         </tr>
     </table>
 
     <!-- Nút đánh giá -->
-    <button th:if="${order.status.toString() == 'SUCCESS' || order.status.toString().contains('PARTIAL')}" id="rateButton" class="btn btn-primary mt-3">Rating</button>
+    <button class="btn btn-primary mt-3"
+            id="rateButton" th:if="${order.status.toString() == 'SUCCESS' || order.status.toString().contains('PARTIAL')}">Rating
+    </button>
 
     <div th:if="${refundOrder != null}">
         <h3>Refund Request Information</h3>
@@ -132,11 +136,11 @@
     </p>
 
     <form action="/orders/request-refund" method="post">
-        <input type="hidden" name="orderId" th:value="${order.orderId}"/>
-        <div th:if="${isReturnable}" th:class="form-group">
+        <input name="orderId" th:value="${order.orderId}" type="hidden"/>
+        <div th:class="form-group" th:if="${isReturnable}">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="totalRefund" name="isTotalRefund" value="true"
-                       onchange="toggleTicketSelection()">
+                <input class="form-check-input" id="totalRefund" name="isTotalRefund" onchange="toggleTicketSelection()" type="checkbox"
+                       value="true">
                 <label class="form-check-label" for="totalRefund">
                     Request Total Refund
                 </label>
@@ -158,20 +162,20 @@
             </thead>
             <tbody>
             <tr th:each="ticket : ${tickets}">
-                <td th:if="${isReturnable}"><input type="checkbox" name="tickets" th:value="${ticket.ticketId}"
-                                                   class="ticketCheckbox"></td>
+                <td th:if="${isReturnable}"><input class="ticketCheckbox" name="tickets" th:value="${ticket.ticketId}"
+                                                   type="checkbox"></td>
                 <td th:text="${ticket.seat.row.area.event.name}"></td>
                 <td th:text="${ticket.seat.number}"></td>
                 <td th:text="${ticket.seat.row.area.name}"></td>
                 <td class="price" th:attr="data-price=${ticket.seat.ticketPrice}"></td>
                 <td>
                     <span class="fw-bolder"
-                            th:style="'color:' + (${ticket.status.toString()} == 'PURCHASED' ? '#40a02b' : (${ticket.status.toString()} == 'PENDING' ? '#df8e1d' : '#d20f39'))"
-                            th:text="${ticket.status}">
+                          th:style="'color:' + (${ticket.status.toString()} == 'PURCHASED' ? '#40a02b' : (${ticket.status.toString()} == 'PENDING' ? '#df8e1d' : '#d20f39'))"
+                          th:text="${ticket.status}">
                     </span>
                 </td>
                 <td>
-                    <a th:href="@{/tickets/view-ticket?ticketId={id}(id=${ticket.ticketId})}" class="btn btn-primary">
+                    <a class="btn btn-primary" th:href="@{/tickets/view-ticket?ticketId={id}(id=${ticket.ticketId})}">
                         <span class="bi bi-eye"></span>
                     </a>
                 </td>
@@ -179,7 +183,7 @@
             </tbody>
         </table>
 
-        <button th:if="${isReturnable}" type="submit" class="btn btn-danger">Request Refund</button>
+        <button class="btn btn-danger" th:if="${isReturnable}" type="submit">Request Refund</button>
     </form>
 </div>
 
@@ -254,7 +258,7 @@
 </script>
 
 <!-- Pop-up đánh giá -->
-<div id="ratingPopup" class="popup">
+<div class="popup" id="ratingPopup">
     <div class="popup-content">
         <span class="close">&times;</span>
         <h2>Your Rating</h2>
@@ -265,7 +269,7 @@
             <span class="star" data-value="4">&#9733;</span>
             <span class="star" data-value="5">&#9733;</span>
         </div>
-        <button id="submitRating" class="btn btn-primary mt-3">Submit</button>
+        <button class="btn btn-primary mt-3" id="submitRating">Submit</button>
     </div>
 </div>
 
@@ -294,21 +298,21 @@
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    // Display message that order already has a rating
-                    alert('This order already has a rating. You cannot rate it again.');
-                } else {
-                    // Open the rating popup
-                    ratingPopup.style.display = 'flex';
-                }
-            })
-            .catch(error => {
-                console.error('Error checking rating:', error);
-                // Handle error
-                alert('An error occurred while checking rating. Please try again.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        // Display message that order already has a rating
+                        alert('This order already has a rating. You cannot rate it again.');
+                    } else {
+                        // Open the rating popup
+                        ratingPopup.style.display = 'flex';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking rating:', error);
+                    // Handle error
+                    alert('An error occurred while checking rating. Please try again.');
+                });
         });
 
         closeButton.addEventListener('click', () => {
@@ -344,16 +348,16 @@
                 method: 'POST',
                 body: formData
             })
-            .then(data => {
-                console.log('Success:', data);
-                // Handle success - close the popup, show a message, etc.
-                ratingPopup.style.display = 'none';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Handle error
-                alert('An error occurred. Please try again.');
-            });
+                .then(data => {
+                    console.log('Success:', data);
+                    // Handle success - close the popup, show a message, etc.
+                    ratingPopup.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Handle error
+                    alert('An error occurred. Please try again.');
+                });
         });
     });
 </script>

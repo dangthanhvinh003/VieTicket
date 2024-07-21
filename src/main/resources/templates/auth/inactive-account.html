@@ -3,13 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Inactive Account</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css">
-    <link rel="icon" type="image/png" href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png">
+    <link href="/static/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://res.cloudinary.com/djcowpoua/image/upload/v1716277138/5E9B944E-8D69-4D6B-AF10-93526CF88EAA_invhvi.png" rel="icon"
+          type="image/png">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-PsSC83n7NDzQz3Etc6tGL5givL/4WT/7GwzNaHn8I1W0ko8+IiKOMYgDqMpK/gwuc1aAnqYx61Jj+TmIv+JX3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          integrity="sha512-PsSC83n7NDzQz3Etc6tGL5givL/4WT/7GwzNaHn8I1W0ko8+IiKOMYgDqMpK/gwuc1aAnqYx61Jj+TmIv+JX3w=="
+          referrerpolicy="no-referrer" rel="stylesheet"/>
     <style>
         /* Định dạng cho container */
         .container {
@@ -19,7 +22,7 @@
             transform: translate(-50%, -50%);
             text-align: center;
         }
-        
+
         /* Định dạng cho thông báo */
         .alert {
             padding: 20px;
@@ -29,25 +32,29 @@
             border: 1px solid #f5c6cb; /* Viền */
             border-radius: .25rem; /* Bo góc */
         }
-        
+
         /* Định dạng cho icon cảnh báo */
         .alert i {
             margin-right: 10px;
         }
     </style>
+    <base th:href="${baseUrl}">
 </head>
 
 <body>
-    <div class="container">
-        <!-- Thông báo cảnh báo -->
-        <div class="alert" role="alert">
-            <i class="fas fa-exclamation-triangle"></i> Your account is pending approval from the admin. Please wait for admin approval.
-        </div>
-        <!-- Back to index button -->
-        <a href="/" class="btn btn-primary">Back to Home</a>
+<div class="container">
+    <!-- Thông báo cảnh báo -->
+    <div class="alert" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> Your account is pending approval from the admin. Please wait for
+        admin approval.
     </div>
-    <!-- Font Awesome Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" integrity="sha512-MtW/m6nkpKea1prg7H5NzQ1G/k8p9RfGRATqY0Zkcim1hyWshI0kCDpA+qFBHjRjFpLlfAdFfIvpsV5G4/hFlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Back to index button -->
+    <a class="btn btn-primary" href="/">Back to Home</a>
+</div>
+<!-- Font Awesome Script -->
+<script crossorigin="anonymous"
+        integrity="sha512-MtW/m6nkpKea1prg7H5NzQ1G/k8p9RfGRATqY0Zkcim1hyWshI0kCDpA+qFBHjRjFpLlfAdFfIvpsV5G4/hFlg=="
+        referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 </body>
 
 </html>

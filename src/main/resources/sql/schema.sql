@@ -73,12 +73,12 @@ CREATE TABLE `Order`
 
 CREATE TABLE Rating
 (
-    rating_id INT AUTO_INCREMENT
+    rating_id    INT AUTO_INCREMENT
         PRIMARY KEY,
-    star      INT,
-    organizer_id  INT,
+    star         INT,
+    organizer_id INT,
     FOREIGN KEY (organizer_id) REFERENCES Organizer (organizer_id),
-    order_id  INT,
+    order_id     INT,
     FOREIGN KEY (order_id) REFERENCES `Order` (order_id)
 );
 
@@ -210,27 +210,26 @@ END $$
 DELIMITER $$
 
 CREATE PROCEDURE UpdateOrganizer(
-    IN p_organizer_id INT, 
+    IN p_organizer_id INT,
     IN p_full_name VARCHAR(64),
-    IN p_username VARCHAR(64), 
+    IN p_username VARCHAR(64),
     IN p_password VARCHAR(128),
-    IN p_phone VARCHAR(16), 
-    IN p_dob DATE, 
+    IN p_phone VARCHAR(16),
+    IN p_dob DATE,
     IN p_gender CHAR,
-    IN p_avatar TEXT, 
-    IN p_role CHAR, 
+    IN p_avatar TEXT,
+    IN p_role CHAR,
     IN p_email VARCHAR(96),
-    IN p_founded_date DATE, 
-    IN p_website TEXT, 
+    IN p_founded_date DATE,
+    IN p_website TEXT,
     IN p_is_active TINYINT,
-    IN p_organizer_addr VARCHAR(256), 
+    IN p_organizer_addr VARCHAR(256),
     IN p_organizer_type VARCHAR(64)
 )
 BEGIN
     -- Update User attributes
     UPDATE User
-    SET 
-        full_name  = p_full_name,
+    SET full_name  = p_full_name,
         username   = p_username,
         `password` = p_password,
         phone      = p_phone,
@@ -239,19 +238,16 @@ BEGIN
         avatar     = p_avatar,
         `role`     = p_role,
         email      = p_email
-    WHERE 
-        user_id = p_organizer_id;
+    WHERE user_id = p_organizer_id;
 
     -- Update Organizer attributes
     UPDATE Organizer
-    SET 
-        founded_date   = p_founded_date,
+    SET founded_date   = p_founded_date,
         website        = p_website,
         is_active      = p_is_active,
         organizer_addr = p_organizer_addr,
         organizer_type = p_organizer_type
-    WHERE 
-        organizer_id = p_organizer_id;
+    WHERE organizer_id = p_organizer_id;
 END $$
 DELIMITER ;
 
@@ -299,35 +295,34 @@ VALUES ('NTPMM', 'Những thành phố mơ màng', '2024-06-01', 'Hà Nội', 'M
         '2024-06-06', 3, 'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg',
         'https://salt.tkbcdn.com/ts/ds/e8/60/2a/c80d33a955fc8f36a98fcbc1f120c750.jpg', 1);
 
---@block 
-SELECT o.*
-FROM Ticket t 
-INNER JOIN Seat s ON t.seat_id = s.seat_id 
-INNER JOIN `Row` r ON s.row_id = r.row_id
-INNER JOIN Area a ON r.area_id = a.area_id
-INNER JOIN Event e ON a.event_id = e.event_id
-INNER JOIN Organizer o ON e.organizer_id = o.organizer_id
-WHERE t.ticket_id = 4;
-
---@block
+--@BLOCK
 SELECT o.*
 FROM Ticket t
-INNER JOIN `Order` o ON t.order_id = o.order_id
+         INNER JOIN Seat s ON t.seat_id = s.seat_id
+         INNER JOIN `Row` r ON s.row_id = r.row_id
+         INNER JOIN Area a ON r.area_id = a.area_id
+         INNER JOIN Event e ON a.event_id = e.event_id
+         INNER JOIN Organizer o ON e.organizer_id = o.organizer_id
 WHERE t.ticket_id = 4;
 
---@block
-SELECT * FROM Rating 
+--@BLOCK
+SELECT o.*
+FROM Ticket t
+         INNER JOIN `Order` o ON t.order_id = o.order_id
+WHERE t.ticket_id = 4;
 
---@block
-SELECT e.organizer_id 
+--@BLOCK
+SELECT *
+FROM Rating --@BLOCK
+SELECT e.organizer_id
 FROM `Order` o
-INNER JOIN Ticket t ON o.order_id = t.order_id
-INNER JOIN Seat s ON t.seat_id = s.seat_id  
-INNER JOIN `Row` r ON s.row_id = r.row_id  
-INNER JOIN Area a ON r.area_id = a.area_id 
-INNER JOIN `Event` e ON a.event_id = e.event_id 
+         INNER JOIN Ticket t ON o.order_id = t.order_id
+         INNER JOIN Seat s ON t.seat_id = s.seat_id
+         INNER JOIN `Row` r ON s.row_id = r.row_id
+         INNER JOIN Area a ON r.area_id = a.area_id
+         INNER JOIN `Event` e ON a.event_id = e.event_id
 WHERE o.order_id = 2
-
---@blocks
-delete from Rating
+    - -@blocks
+DELETE
+FROM Rating
 
