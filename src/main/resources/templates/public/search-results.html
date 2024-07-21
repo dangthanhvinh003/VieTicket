@@ -205,7 +205,7 @@
 <body>
     <div class="container mt-5">
         <form class="search-form" role="search">
-            <a href="/" class="btn btn-custom styled-button" id="backHome"><i class="fas fa-home"></i></a>
+            <a href="/" class="btn btn-custom styled-button" id="backHome">Back to Home</a>
             <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
                 placeholder="Search events...">
         </form>
@@ -230,8 +230,8 @@
             <h2 th:if="${pageType == 'all'}">All Events</h2>
             <div id="eventList" class="row row-cols-1 row-cols-md-3 g-4" th:if="${eventList != null}">
                 <div th:each="event : ${eventList}" th:if="${event.approved == 1}" class="col event-card"
-                    th:data-user="${event.name.toLowerCase()}">
-                    <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}">
+                    th:data-user="${event.name.toLowerCase()}" th:data-location="${event.location.toLowerCase()}">
+                    <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}" th:data-location="${event.location.toLowerCase()}">
                         <div class="card border-0 shadow">
                             <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
                                 style="width: 100%; height: 200px; object-fit: cover;">
@@ -266,27 +266,37 @@
         </div>
     </div>
     <script>
-        document.getElementById('searchInput').addEventListener('input', function () {
-            let filter = this.value.toLowerCase();
+        document.getElementById('searchInput').addEventListener('input', filterEvents);
+
+        function filterEvents() {
+            let filter = removeVietnameseTones(document.getElementById('searchInput').value.toLowerCase());
             let cards = document.querySelectorAll('.event-card');
 
             cards.forEach(card => {
-                let event = card.getAttribute('data-user');
-                if (event.includes(filter)) {
-                    card.style.display = ''; // Make sure the card is displayed
-                    card.classList.remove('fade-out'); // Remove the fade-out class if it was hidden
-                    card.classList.add('fade-in'); // Apply the fade-in animation
+                let eventName = removeVietnameseTones(card.getAttribute('data-user'));
+                let eventLocation = removeVietnameseTones(card.getAttribute('data-location'));
+
+                if (eventName.includes(filter) || eventLocation.includes(filter)) {
+                    card.style.display = ''; //để chắc chắn sự kiện đã được hiển thị
+                    card.classList.remove('fade-out'); // Nếu event đã được ẩn thì xoá fade-out
+                    card.classList.add('fade-in'); // Áp dụng fade-in
                 } else {
-                    card.classList.remove('fade-in'); // Remove the fade-in class
-                    card.classList.add('fade-out'); // Apply the fade-out animation
+                    card.classList.remove('fade-in'); // Nếu event cần được ẩn thì xoá fade-in
+                    card.classList.add('fade-out'); //áp dụng hiệu ứng fade-out
                     card.addEventListener('animationend', function () {
                         if (card.classList.contains('fade-out')) {
-                            card.style.display = 'none'; // Hide the card after fade-out
+                            card.style.display = 'none'; // Ẩn sự kiện sau khi fade-out
                         }
                     }, { once: true });
                 }
             });
-        });
+        }
+
+        function removeVietnameseTones(str) {
+            str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            str = str.replace(/đ/g, 'd').replace(/Đ/g, 'D');
+            return str;
+        }
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
