@@ -101,7 +101,7 @@
                             >
                             Payment completed
                         </div>
-                        <div th:if="${(event.approved == 1 || event.approved == 0) && pageType == 'passed'}"
+                        <div th:if="${event.approved == 1 && pageType == 'passed'}"
                             class="box top-right position-absolute"
                             style="background-color: rgb(134,93,255); 
                             color: white; 
