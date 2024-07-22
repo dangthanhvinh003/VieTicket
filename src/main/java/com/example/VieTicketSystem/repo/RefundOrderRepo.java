@@ -130,4 +130,48 @@ public class RefundOrderRepo {
 
         return refundOrders;
     }
+
+    public List<RefundOrder> findAllRefundOrders(int status) throws Exception {
+
+        List<RefundOrder> refundOrders = new ArrayList<>();
+
+        String sql = "SELECT DISTINCT RO.* " +
+                "FROM Event E " +
+                "JOIN Area A ON E.event_id = A.event_id " +
+                "JOIN `Row` R ON A.area_id = R.area_id " +
+                "JOIN Seat S ON R.row_id = S.row_id " +
+                "JOIN Ticket T ON S.seat_id = T.seat_id " +
+                "JOIN RefundOrder RO ON T.order_id = RO.order_id " +
+                "WHERE RO.status = ?";
+
+        try (Connection connection = ConnectionPoolManager.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                statement.setInt(1, status);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        RefundOrder refundOrder = new RefundOrder();
+                        refundOrder.setOrder(orderRepo.findById(resultSet.getInt("order_id")));
+
+                        refundOrder.setStatus(RefundOrder.RefundStatus.fromInteger(resultSet.getInt("status")));
+                        refundOrder.setTotal(resultSet.getInt("total"));
+
+                        Timestamp timestamp = resultSet.getTimestamp("created_on");
+                        refundOrder.setCreatedOn(timestamp == null ? null : timestamp.toLocalDateTime());
+
+                        timestamp = resultSet.getTimestamp("refunded_on");
+                        refundOrder.setRefundedOn(timestamp == null ? null : timestamp.toLocalDateTime());
+
+                        timestamp = resultSet.getTimestamp("approved_on");
+                        refundOrder.setApprovedOn(timestamp == null ? null : timestamp.toLocalDateTime());
+
+                        refundOrders.add(refundOrder);
+                    }
+                }
+            }
+        }
+
+        return refundOrders;
+    }
 }

@@ -15,16 +15,14 @@
         </div>
 
         <div aria-label="Basic example" class="btn-group text-end" role="group">
-            <a class="btn btn-outline-primary" th:href="@{/organizer/refund-list(eventId=${event.eventId})}">To
-                approve</a>
-            <a class="btn btn-outline-primary" th:href="@{/organizer/refund-list/approved(eventId=${event.eventId})}">Approved</a>
-            <a class="btn btn-outline-primary" th:href="@{/organizer/refund-list/rejected(eventId=${event.eventId})}">Rejected</a>
+            <a class="btn btn-outline-primary" th:href="@{/admin/refund}">To
+                resolve</a>
+            <a class="btn btn-outline-primary" th:href="@{/admin/refund/success}">Success</a>
+            <a class="btn btn-outline-primary" th:href="@{/admin/refund/failure}">Failed</a>
         </div>
     </div>
 
     <h2 class="text-center mt-4 mb-2" th:text="${title}"></h2>
-
-    <p class="text-center mb-4">For event: <span th:text="${event.name}"></span></p>
 
     <p class="text-center fw-bold" th:if="${refundOrders == null || refundOrders.isEmpty()}">There's nothing here.</p>
 
@@ -85,19 +83,12 @@
                     <p><span class="fw-bold">Order:</span> <span th:text="${refundOrder.order.status}"></span></p>
                 </td>
                 <td>
-                    <span th:if="${refundOrder.status.toString() == 'CREATED'}">
-                        <button aria-label="Approve" class="btn btn-outline-success approve-refund" th:data-order-id="${refundOrder.order.orderId}"
-                                title="Approve">
+                    <span th:if="${refundOrder.status.toString() == 'APPROVED'}">
+                        <button aria-label="Resolve" class="btn btn-outline-success approve-refund" th:data-order-id="${refundOrder.order.orderId}"
+                                title="Resolve">
                             <i class="bi bi-check-lg"></i>
                         </button>
-                        <button aria-label="Reject" class="btn btn-outline-danger reject-refund" th:data-order-id="${refundOrder.order.orderId}"
-                                title="Reject">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
                     </span>
-                    <button aria-label="View Detail" class="btn btn-outline-primary" title="View Detail">
-                        <i class="bi bi-eye-fill"></i>
-                    </button>
                 </td>
             </tr>
             </tbody>
@@ -118,50 +109,12 @@
         priceElement.textContent = Number(price).toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
     });
 
-    // Reject handler
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.reject-refund').forEach(button => {
-            button.addEventListener('click', function () {
-                const orderId = this.getAttribute('data-order-id');
-                fetch('/organizer/refund/reject?orderId=' + orderId, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // Include other necessary headers like authorization if needed
-                    },
-                    // No need to send a body for this request as orderId is sent as a query parameter
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.text();
-                        } else {
-                            throw new Error('Something went wrong');
-                        }
-                    })
-                    .then(data => {
-                        console.log(data);
-                        // Handle success response, maybe refresh the page or show a success message
-                        alert('Refund request has been rejected');
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        // Handle error, maybe show an error message to the user
-                        alert('Error: ' + error.message);
-                    })
-                    .finally(() => {
-                        // Reload the page after the request is completed
-                        location.reload();
-                    });
-            });
-        });
-    });
-
     // Approve handler
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.approve-refund').forEach(button => {
             button.addEventListener('click', function () {
                 const orderId = this.getAttribute('data-order-id');
-                fetch('/organizer/refund/approve?orderId=' + orderId, {
+                fetch('/admin/refund/mark-resolved?orderId=' + orderId, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

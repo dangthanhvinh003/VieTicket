@@ -6,7 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.VieTicketSystem.model.entity.RefundOrder;
+import com.example.VieTicketSystem.repo.RefundOrderRepo;
+import com.example.VieTicketSystem.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +29,7 @@ import com.example.VieTicketSystem.repo.UserRepo;
 import com.example.VieTicketSystem.service.EmailService;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 public class AdminController {
@@ -35,6 +41,12 @@ public class AdminController {
     UserRepo userRepo = new UserRepo();
     @Autowired
     EventRepo eventRepo = new EventRepo();
+    @Autowired
+    private HttpSession httpSession;
+    @Autowired
+    private RefundOrderRepo refundOrderRepo;
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping(value = ("/ViewAllApproveOrganizer"))
     public String approveOrganizerPage(Model model) throws ClassNotFoundException, SQLException {
@@ -342,4 +354,89 @@ public class AdminController {
         return "admin/events/passEvent";
     }
 
+    @GetMapping({"/admin/refund", "/admin/refund/"})
+    public String refundPage(Model model) throws Exception {
+        // Check if user exists and is an organizer
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You do not have the authority to access this functionality.");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderRepo.findAllRefundOrders(RefundOrder.RefundStatus.APPROVED.toInteger());
+        model.addAttribute("refundOrders", refundOrders);
+
+        model.addAttribute("backLink", "/admin/dashboard");
+        model.addAttribute("title", "Refund Orders to Resolve");
+
+        return "admin/refund";
+    }
+
+    @GetMapping({"/admin/refund/success", "/admin/refund/success/"})
+    public String refundPageSuccess(Model model) throws Exception {
+        // Check if user exists and is an organizer
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You do not have the authority to access this functionality.");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderRepo.findAllRefundOrders(RefundOrder.RefundStatus.SUCCESS.toInteger());
+        model.addAttribute("refundOrders", refundOrders);
+
+        model.addAttribute("backLink", "/admin/dashboard");
+        model.addAttribute("title", "Successful Refund Orders");
+
+        return "admin/refund";
+    }
+
+    @GetMapping({"/admin/refund/failure", "/admin/refund/failure/"})
+    public String refundPageFailure(Model model) throws Exception {
+        // Check if user exists and is an organizer
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You do not have the authority to access this functionality.");
+        }
+
+        List<RefundOrder> refundOrders = refundOrderRepo.findAllRefundOrders(RefundOrder.RefundStatus.FAILED.toInteger());
+        model.addAttribute("refundOrders", refundOrders);
+
+        model.addAttribute("backLink", "/admin/dashboard");
+        model.addAttribute("title", "Failed Refund Orders");
+
+        return "admin/refund";
+    }
+
+    @PostMapping("/admin/refund/mark-resolved")
+    public ResponseEntity<String> markRefundResolved(@RequestParam("orderId") int orderId) throws Exception {
+
+        User user = (User) httpSession.getAttribute("activeUser");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+        }
+        if (user.getUserRole() != User.UserRole.ADMIN) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You do not have the authority to access this functionality.");
+        }
+
+        RefundOrder refundOrder = refundOrderRepo.findByOrderId(orderId);
+        if (refundOrder == null || refundOrder.getStatus() != RefundOrder.RefundStatus.APPROVED) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Refund order not found or not waiting to be resolved.");
+        }
+
+        orderService.initiateRefund(refundOrder);
+
+        return ResponseEntity.ok("Refund order with id of " + orderId + " marked as resolved.");
+    }
 }

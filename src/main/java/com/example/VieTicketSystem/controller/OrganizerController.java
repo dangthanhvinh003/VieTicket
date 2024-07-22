@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import com.example.VieTicketSystem.model.entity.*;
 import com.example.VieTicketSystem.repo.*;
-import com.example.VieTicketSystem.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,8 +62,6 @@ public class OrganizerController {
     private OrderRepo orderRepo;
     @Autowired
     private TicketRepo ticketRepo;
-    @Autowired
-    private OrderService orderService;
 
     @GetMapping(value = ("/createEvent"))
     public String createEventPage(HttpSession httpSession) {
@@ -475,6 +472,7 @@ public class OrganizerController {
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Refund Orders to Approve");
         model.addAttribute("event", event);
+        model.addAttribute("backLink", "/viewMyListEvent");
 
         return "organizer/refund";
     }
@@ -513,6 +511,7 @@ public class OrganizerController {
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Approved Refund Orders");
         model.addAttribute("event", event);
+        model.addAttribute("backLink", "/viewMyListEvent");
 
         return "organizer/refund";
     }
@@ -544,6 +543,7 @@ public class OrganizerController {
         model.addAttribute("refundOrders", refundOrders);
         model.addAttribute("title", "Rejected Refund Orders");
         model.addAttribute("event", event);
+        model.addAttribute("backLink", "/viewMyListEvent");
 
         return "organizer/refund";
     }
@@ -607,7 +607,10 @@ public class OrganizerController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not your event");
         }
 
-        orderService.initiateRefund(refundOrder);
+        // Update refund order status
+        refundOrder.setStatus(RefundOrder.RefundStatus.APPROVED);
+        refundOrder.setApprovedOn(LocalDateTime.now());
+        refundOrderRepo.saveApprovalStatus(refundOrder);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
