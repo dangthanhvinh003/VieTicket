@@ -252,63 +252,67 @@ public class EventRepo {
     public List<Event> getEventsPaginated(int page, int size) {
         List<Event> events = new ArrayList<>();
         int start = page * size;
+        
+        String sql = "SELECT * FROM Event WHERE is_approve IN (1, 4, 5) LIMIT ? OFFSET ?";
+        
         try (Connection connection = ConnectionPoolManager.getConnection();
-                PreparedStatement statement = connection
-                        .prepareStatement("SELECT * FROM Event WHERE is_approve = 1 LIMIT ? OFFSET ?")) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
             statement.setInt(1, size);
             statement.setInt(2, start);
+            
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Event event = new Event();
                     event.setEventId(resultSet.getInt("event_id"));
                     event.setName(resultSet.getString("name"));
                     event.setDescription(resultSet.getString("description"));
-
-                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    
+                    // Chuyển đổi Timestamp thành LocalDateTime
                     Timestamp startTimestamp = resultSet.getTimestamp("start_date");
                     if (startTimestamp != null) {
                         event.setStartDate(startTimestamp.toLocalDateTime());
                     }
-
+                    
                     event.setLocation(resultSet.getString("location"));
                     event.setType(resultSet.getString("type"));
-
-                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    
                     Timestamp ticketSaleTimestamp = resultSet.getTimestamp("ticket_sale_date");
                     if (ticketSaleTimestamp != null) {
                         event.setTicketSaleDate(ticketSaleTimestamp.toLocalDateTime());
                     }
-
-                    // Sử dụng getTimestamp() và chuyển đổi thành LocalDateTime
+                    
                     Timestamp endTimestamp = resultSet.getTimestamp("end_date");
                     if (endTimestamp != null) {
                         event.setEndDate(endTimestamp.toLocalDateTime());
                     }
-
+                    
                     event.setPoster(resultSet.getString("poster"));
                     event.setBanner(resultSet.getString("banner"));
                     event.setApproved(resultSet.getInt("is_approve"));
                     event.setEyeView(resultSet.getInt("eyeView"));
-
+                    
                     // Lấy danh sách areas và gán vào event
                     List<Area> areas = getAreasForEvent(event.getEventId(), connection);
                     event.setAreas(areas);
-
-                    // Set the organizer if applicable
+                    
+                    // Thêm sự kiện vào danh sách
                     events.add(event);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         return events;
     }
+    
 
     public int countApprovedEvents() {
         int count = 0;
         try (Connection connection = ConnectionPoolManager.getConnection();
                 PreparedStatement statement = connection
-                        .prepareStatement("SELECT COUNT(*) FROM Event WHERE is_approve = 1");
+                        .prepareStatement("SELECT COUNT(*) FROM Event WHERE is_approve IN (1, 4, 5)");
                 ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 count = resultSet.getInt(1);
@@ -316,6 +320,7 @@ public class EventRepo {
         } catch (Exception e) {
             e.printStackTrace();
         }
+  
         return count;
     }
 
