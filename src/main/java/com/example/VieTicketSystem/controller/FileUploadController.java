@@ -40,7 +40,8 @@ public class FileUploadController {
                                 .aspectRatio("1.0")
                                 .gravity("face")
                                 .width(200)
-                                .crop("thumb")));
+                                .crop("thumb"),
+                        "secure", true));
 
         // Lấy URL của ảnh đã upload
         String imageURL = uploadResult.get("url").toString();

@@ -393,11 +393,11 @@
                 </th:block>
                 <th:block th:if="${session.activeUser != null}">
                     <li class="nav-item dropdown">
-                        <a aria-expanded="false" class="nav-link dropdown-toggle dropdown-toggle-avatar" data-bs-toggle="dropdown"
-                           href="#" id="navbarDropdown" role="button">
+                        <span aria-expanded="false" class="nav-link dropdown-toggle dropdown-toggle-avatar" data-bs-toggle="dropdown"
+                           id="navbarDropdown" role="button">
                             <img alt="User Avatar" class="avatar-small" th:src="@{${session.activeUser.avatar}}">
                             Profile
-                        </a>
+                        </span>
                         <ul aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" th:href="@{/change}">Change Profile</a></li>
                             <li><a class="dropdown-item" th:href="@{/change-password}">Change Password</a></li>

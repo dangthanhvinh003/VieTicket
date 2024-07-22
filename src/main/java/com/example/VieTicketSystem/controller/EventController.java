@@ -233,7 +233,6 @@ public class EventController {
                                 .findFirst().orElse(null);
                         if (row == null)
                             continue;
-                        System.out.println("Tao in ra row: " + row);
                         List<Map<String, Object>> seatsList = (List<Map<String, Object>>) areaShape.get("seats");
                         for (Map<String, Object> seat : seatsList) {
                             String seatNumber = seat.get("number").toString();
