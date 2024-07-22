@@ -204,60 +204,61 @@
 </head>
 
 <body>
-<div class="container mt-5">
-    <form class="search-form" role="search">
-        <a class="btn btn-custom styled-button" href="/" id="backHome"><i class="fas fa-home"></i></a>
-        <input class="form-control me-2 dark-mode light-mode" id="searchInput" placeholder="Search events..."
-               type="search">
-    </form>
-    <div class="card-container">
-        <div class="d-flex align-items-center mb-3">
-            <div class="btn-group ms-2" role="group">
-                <a class="btn btn-custom" href="/showAllEvents" id="allEvents"
-                   th:classappend="${pageType == 'all'} ? 'active'">All Events</a>
-                <a class="btn btn-custom" href="/eventsByCategory?category=Music" id="musicCategory"
-                   th:classappend="${pageType == 'category' && category == 'Music'} ? 'active'">Music</a>
-                <a class="btn btn-custom" href="/eventsByCategory?category=Sport" id="sportCategory"
-                   th:classappend="${pageType == 'category' && category == 'Sport'} ? 'active'">Sport</a>
-                <a class="btn btn-custom" href="/eventsByCategory?category=Workshop" id="workshopCategory"
-                   th:classappend="${pageType == 'category' && category == 'Workshop'} ? 'active'">Workshop</a>
-                <a class="btn btn-custom" href="/eventsByCategory?category=Comedy" id="comedyCategory"
-                   th:classappend="${pageType == 'category' && category == 'Comedy'} ? 'active'">Comedy</a>
-                <a class="btn btn-custom" href="/eventsByCategory?category=Art" id="artCategory"
-                   th:classappend="${pageType == 'category' && category == 'Art'} ? 'active'">Art</a>
+    <div class="container mt-5">
+        <form class="search-form" role="search">
+            <a href="/" class="btn btn-custom styled-button" id="backHome">Back to Home</a>
+            <input id="searchInput" class="form-control me-2 dark-mode light-mode" type="search"
+                placeholder="Search events...">
+        </form>
+        <div class="card-container">
+            <div class="d-flex align-items-center mb-3">
+                <div class="btn-group ms-2" role="group">
+                    <a href="/showAllEvents" class="btn btn-custom" id="allEvents"
+                        th:classappend="${pageType == 'all'} ? 'active'">All Events</a>
+                    <a href="/eventsByCategory?category=Music" class="btn btn-custom" id="musicCategory"
+                        th:classappend="${pageType == 'category' && category == 'Music'} ? 'active'">Music</a>
+                    <a href="/eventsByCategory?category=Sport" class="btn btn-custom" id="sportCategory"
+                        th:classappend="${pageType == 'category' && category == 'Sport'} ? 'active'">Sport</a>
+                    <a href="/eventsByCategory?category=Workshop" class="btn btn-custom" id="workshopCategory"
+                        th:classappend="${pageType == 'category' && category == 'Workshop'} ? 'active'">Workshop</a>
+                    <a href="/eventsByCategory?category=Comedy" class="btn btn-custom" id="comedyCategory"
+                        th:classappend="${pageType == 'category' && category == 'Comedy'} ? 'active'">Comedy</a>
+                    <a href="/eventsByCategory?category=Art" class="btn btn-custom" id="artCategory"
+                        th:classappend="${pageType == 'category' && category == 'Art'} ? 'active'">Art</a>
+                </div>
             </div>
-        </div>
-        <h2 th:if="${pageType == 'category'}">Events by Category</h2>
-        <h2 th:if="${pageType == 'all'}">All Events</h2>
-        <div class="row row-cols-1 row-cols-md-3 g-4" id="eventList" th:if="${eventList != null}">
-            <div class="col event-card" th:data-user="${event.name.toLowerCase()}" th:each="event : ${eventList}"
-                 th:if="${event.approved == 1}">
-                <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}">
-                    <div class="card border-0 shadow">
-                        <img alt="Event Image" class="card-img-top" decoding="async" style="width: 100%; height: 200px; object-fit: cover;"
-                             th:src="${event.banner}">
-                        <div class="card-body p-0">
-                            <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
-                            <p class="card-text m-0 p-2">
-                                Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
-                            </p>
-                            <div class="d-flex">
-                                <a class="btn btn-sm btn-outline-success"
-                                   style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;"
-                                   th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}">
-                                    <i class="fas fa-list"></i> View Detail
-                                </a>
-                                <a class="btn btn-sm btn-outline-success" href="#" style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;"
-                                   th:if="${event.areas.size() > 0}">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
-                                          th:utext="${event.areas.get(0).ticketPrice}"></span>
-                                </a>
-                                <a class="btn btn-sm btn-outline-success" href="#"
-                                   style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
-                                    <i class="fas fa-eye"></i>
-                                    <span th:utext="${event.eyeView}"></span>
-                                </a>
+            <h2 th:if="${pageType == 'category'}">Events by Category</h2>
+            <h2 th:if="${pageType == 'all'}">All Events</h2>
+            <div id="eventList" class="row row-cols-1 row-cols-md-3 g-4" th:if="${eventList != null}">
+                <div th:each="event : ${eventList}" th:if="${event.approved == 1}" class="col event-card"
+                    th:data-user="${event.name.toLowerCase()}" th:data-location="${event.location.toLowerCase()}">
+                    <div class="col mb-4 event-card" th:data-user="${event.name.toLowerCase()}" th:data-location="${event.location.toLowerCase()}">
+                        <div class="card border-0 shadow">
+                            <img decoding="async" th:src="${event.banner}" class="card-img-top" alt="Event Image"
+                                style="width: 100%; height: 200px; object-fit: cover;">
+                            <div class="card-body p-0">
+                                <h6 class="card-title m-0 p-2" th:text="${event.name}">Event Name</h6>
+                                <p class="card-text m-0 p-2">
+                                    Start Date: <span class="small" th:text="${event.startDate}">Start Date</span>
+                                </p>
+                                <div class="d-flex">
+                                    <a th:href="@{/viewdetailEvent/{id}(id=${event.eventId})}"
+                                        class="btn btn-sm btn-outline-success"
+                                        style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-list"></i> View Detail
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-success" th:if="${event.areas.size() > 0}"
+                                        style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-dollar-sign"></i>
+                                        <span class="price" th:data-price="${event.areas.get(0).ticketPrice}"
+                                            th:utext="${event.areas.get(0).ticketPrice}"></span>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-success"
+                                        style="flex: 1; text-align: center; padding: 0.25rem 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                        <span th:utext="${event.eyeView}"></span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -265,32 +266,41 @@
             </div>
         </div>
     </div>
-</div>
-<script>
-    document.getElementById('searchInput').addEventListener('input', function () {
-        let filter = this.value.toLowerCase();
-        let cards = document.querySelectorAll('.event-card');
+    <script>
+        document.getElementById('searchInput').addEventListener('input', filterEvents);
 
-        cards.forEach(card => {
-            let event = card.getAttribute('data-user');
-            if (event.includes(filter)) {
-                card.style.display = ''; // Make sure the card is displayed
-                card.classList.remove('fade-out'); // Remove the fade-out class if it was hidden
-                card.classList.add('fade-in'); // Apply the fade-in animation
-            } else {
-                card.classList.remove('fade-in'); // Remove the fade-in class
-                card.classList.add('fade-out'); // Apply the fade-out animation
-                card.addEventListener('animationend', function () {
-                    if (card.classList.contains('fade-out')) {
-                        card.style.display = 'none'; // Hide the card after fade-out
-                    }
-                }, {once: true});
-            }
-        });
-    });
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        function filterEvents() {
+            let filter = removeVietnameseTones(document.getElementById('searchInput').value.toLowerCase());
+            let cards = document.querySelectorAll('.event-card');
+
+            cards.forEach(card => {
+                let eventName = removeVietnameseTones(card.getAttribute('data-user'));
+                let eventLocation = removeVietnameseTones(card.getAttribute('data-location'));
+
+                if (eventName.includes(filter) || eventLocation.includes(filter)) {
+                    card.style.display = ''; //để chắc chắn sự kiện đã được hiển thị
+                    card.classList.remove('fade-out'); // Nếu event đã được ẩn thì xoá fade-out
+                    card.classList.add('fade-in'); // Áp dụng fade-in
+                } else {
+                    card.classList.remove('fade-in'); // Nếu event cần được ẩn thì xoá fade-in
+                    card.classList.add('fade-out'); //áp dụng hiệu ứng fade-out
+                    card.addEventListener('animationend', function () {
+                        if (card.classList.contains('fade-out')) {
+                            card.style.display = 'none'; // Ẩn sự kiện sau khi fade-out
+                        }
+                    }, { once: true });
+                }
+            });
+        }
+
+        function removeVietnameseTones(str) {
+            str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            str = str.replace(/đ/g, 'd').replace(/Đ/g, 'D');
+            return str;
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 
 <div th:insert="~{public/fragments :: footer}"></div>

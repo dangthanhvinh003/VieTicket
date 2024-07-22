@@ -42,152 +42,124 @@
     </div>
     <!-- End of Search Form -->
 
-    <div th:if="${events.isEmpty()}">
-        <div class="alert alert-warning" role="alert">
-            No ongoing events at the moment.
+        <div th:if="${events.isEmpty()}">
+            <div class="alert alert-warning" role="alert">
+                No ongoing events at the moment.
+            </div>
+        </div>
+        <div id="alerts"></div>
+        <div th:if="${!events.isEmpty()}">
+            <table class="table table-striped table-hover event-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Poster</th>
+                        <th>Banner</th>
+                        <th>Approved</th>
+                        <th>Eye View</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="event : ${events}">
+                        <td th:text="${event.eventId}">1</td>
+                        <td th:text="${event.name}">Event Name</td>
+                        <td th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')}">Start Date</td>
+                        <td th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd hh:mm a')}">End Date</td>
+                        <td th:text="${event.location}">Location</td>
+                        <td th:text="${event.type}">Type</td>
+                        <td><img th:src="@{${event.poster}}" alt="Poster" /></td>
+                        <td><img th:src="@{${event.banner}}" alt="Banner" /></td>
+                        <td th:text="${event.approved == 1 ? 'Yes' : 'No'}">Approved</td>
+                        <td th:text="${event.eyeView}">Eye View</td>
+                        <td th:classappend="${event.approved == 4 ? 'bg-danger text-white' : (event.approved == 5 ? 'bg-success text-white' : '')}">
+                            <span th:if="${event.approved == 1}">Pending Payment</span>
+                            <span th:if="${event.approved == 4}">Organizer Requested Payment</span>
+                            <span th:if="${event.approved == 5}">Payment Successful</span>
+                        </td>
+                        <td th:if="${event.approved == 1 or event.approved == 4}">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                data-target="#confirmPaymentModal" th:data-event-id="${event.eventId}">
+                                <i class="fas fa-coins"></i> Pay
+                            </button>
+                            <form id="payForm" th:action="@{/payEvent}" method="get" style="display: none;">
+                                <input name="eventId" id="eventIdInput" th:value="${event.eventId}" />
+                            </form>
+                        </td>
+
+                        <td th:if="${event.approved == 5}">
+                            <form th:action="@{/hideEvent}" method="get" class="hide-button">
+                                <input type="hidden" name="eventId" th:value="${event.eventId}" />
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i> Hide
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-    <div id="alerts"></div>
-    <div th:if="${!events.isEmpty()}">
-        <table class="table table-striped table-hover event-table">
-            <thead class="thead-dark">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Location</th>
-                <th>Type</th>
-                <th>Poster</th>
-                <th>Banner</th>
-                <th>Approved</th>
-                <th>Eye View</th>
-                <th>Status</th>
-                <th>Payment</th>
 
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:attr="data-end-date=${#temporals.format(event.endDate, 'yyyy-MM-dd')}"
-                th:each="event : ${events}">
-
-                <td th:text="${event.eventId}">1</td>
-                <td th:text="${event.name}">Event Name</td>
-                <td th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')}">Start Date</td>
-                <td th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd hh:mm a')}">End Date</td>
-                <td th:text="${event.location}">Location</td>
-                <td th:text="${event.type}">Type</td>
-                <td><img alt="Poster" th:src="@{${event.poster}}"/></td>
-                <td><img alt="Banner" th:src="@{${event.banner}}"/></td>
-                <td th:text="${event.approved == 1 ? 'Yes' : 'No'}">Approved</td>
-                <td th:text="${event.eyeView}">Eye View</td>
-                <td
-                        th:classappend="${event.approved == 4 ? 'bg-danger text-white' : (event.approved == 5 ? 'bg-success text-white' : '')}">
-                    <span th:if="${event.approved == 1}">Pending Payment</span>
-                    <span th:if="${event.approved == 4}">Organizer Requested Payment</span>
-                    <span th:if="${event.approved == 5}">Payment Successful</span>
-                </td>
-
-                <!-- Modal Confirm Payment -->
-                <div aria-hidden="true" aria-labelledby="confirmPaymentModalLabel" class="modal fade" id="confirmPaymentModal"
-                     role="dialog" tabindex="-1">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="confirmPaymentModalLabel">Confirm Payment</h5>
-                                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                Are you sure you want to transfer money to this organizer?
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" data-dismiss="modal"
-                                        type="button">Cancel
-                                </button>
-                                <button class="btn btn-primary" onclick="submitPayment()"
-                                        type="button">Yes
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <td th:if="${event.approved == 1 or event.approved == 4}">
-                    <button class="btn btn-primary btn-sm" data-target="#confirmPaymentModal" data-toggle="modal"
-                            type="button">
-                        <i class="fas fa-coins"></i> Pay
+    <!-- Modal Confirm Payment -->
+    <div class="modal fade" id="confirmPaymentModal" tabindex="-1" role="dialog" aria-labelledby="confirmPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmPaymentModalLabel">Confirm Payment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
-                    <form id="payForm" method="get" style="display: none;" th:action="@{/payEvent}">
-                        <input name="eventId" th:value="${event.eventId}" type="hidden"/>
-                    </form>
-                </td>
-                <script>
-                    function submitPayment() {
-                        document.getElementById("payForm").submit();
-                        $('#confirmPaymentModal').modal('hide'); // Đóng modal sau khi submit
-                        showAlert(); // Hiển thị alert sau khi thành công
-                    }
-
-                    function showAlert() {
-                        const alert = `
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        Payment successful!
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                `;
-                        document.getElementById("alerts").innerHTML = alert;
-                    }
-                </script>
-
-
-                <td th:if="${event.approved == 5}">
-                    <form class="hide-button" method="get" th:action="@{/hideEvent}">
-                        <input name="eventId" th:value="${event.eventId}" type="hidden"/>
-                        <button class="btn btn-primary btn-sm" type="submit">
-                            <i class="fas fa-edit"></i> Hide
-                        </button>
-                    </form>
-                </td>
-
-
-            </tr>
-
-
-            </tbody>
-        </table>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to transfer money to this organizer?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmPaymentButton">Yes</button>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-<!-- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const rows = document.querySelectorAll("tr[data-end-date]");
-        const today = new Date();
 
-        rows.forEach(row => {
-            const endDateStr = row.getAttribute("data-end-date");
-            const endDate = new Date(endDateStr);
-            const timeDiff = today - endDate; // Difference in milliseconds
-            const dayDiff = timeDiff / (1000 * 60 * 60 * 24); // Difference in days
 
-            // Đổi màu hàng và hiển thị nút Hide nếu ngày khác hơn 5 ngày
-            if (dayDiff > 5) {
-                row.style.backgroundColor = "#FF6A6A";
-                const hideButtonForm = row.querySelector(".hide-button");
-                hideButtonForm.style.display = "block"; // Hiển thị nút Hide
-            } else {
-                const hideButtonForm = row.querySelector(".hide-button");
-                hideButtonForm.style.display = "none"; // Ẩn nút Hide
-            }
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $('#confirmPaymentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var eventId = button.data('event-id'); // Extract info from data-* attributes
+            var modal = $(this);
+            modal.find('#confirmPaymentButton').data('event-id', eventId); // Store eventId in the button
         });
-    });
-</script> -->
 
+        document.getElementById('confirmPaymentButton').addEventListener('click', function() {
+            var eventId = $(this).data('event-id');
+            document.getElementById("eventIdInput").value = eventId; // Set the eventId in the hidden input
+            document.getElementById("payForm").submit(); // Submit the form
+            $('#confirmPaymentModal').modal('hide'); // Close the modal
+            showAlert(); // Show success alert
+        });
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        function showAlert() {
+            const alert = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Payment successful!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `;
+            document.getElementById("alerts").innerHTML = alert;
+        }
+    </script>
 </body>
-
 </html>
