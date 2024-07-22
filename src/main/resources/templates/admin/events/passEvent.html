@@ -63,10 +63,11 @@
                         <th>Eye View</th>
                         <th>Status</th>
                         <th>Payment</th>
+                        <th>Funtions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="event : ${events}">
+                    <tr th:each="event, stat : ${events}">
                         <td th:text="${event.eventId}">1</td>
                         <td th:text="${event.name}">Event Name</td>
                         <td th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd hh:mm a')}">Start Date</td>
@@ -82,6 +83,9 @@
                             <span th:if="${event.approved == 4}">Organizer Requested Payment</span>
                             <span th:if="${event.approved == 5}">Payment Successful</span>
                         </td>
+                        <td>
+                            <p th:text="${eventStatistics[stat.index].totalRevenue*0.85}"></p>
+                        </td>
                         <td th:if="${event.approved == 1 or event.approved == 4}">
                             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
                                 data-target="#confirmPaymentModal" th:data-event-id="${event.eventId}">
@@ -91,7 +95,6 @@
                                 <input name="eventId" id="eventIdInput" th:value="${event.eventId}" />
                             </form>
                         </td>
-
                         <td th:if="${event.approved == 5}">
                             <form th:action="@{/hideEvent}" method="get" class="hide-button">
                                 <input type="hidden" name="eventId" th:value="${event.eventId}" />
@@ -132,6 +135,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <script th:inline="javascript">
+        let data = /*[[${eventStatistics}]]*/ {};
+        console.log(data)
+    </script>
     <script>
         $('#confirmPaymentModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget); // Button that triggered the modal
