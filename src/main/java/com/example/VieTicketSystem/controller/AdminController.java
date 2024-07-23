@@ -327,6 +327,12 @@ public class AdminController {
     @GetMapping(value = "/searchEvents2")
     public String searchEvents2(@RequestParam("query") String query, Model model) throws Exception {
         List<Event> events = eventRepo.searchEvents2(query);
+        List<EventStatistics> eventStatisticsList = new ArrayList<>();
+        for (Event event : events) {
+            EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(event.getEventId());
+            eventStatisticsList.add(eventStatistics);
+        }
+        model.addAttribute("eventStatistics", eventStatisticsList);
         model.addAttribute("events", events);
         return "admin/events/passEvent";
     }
