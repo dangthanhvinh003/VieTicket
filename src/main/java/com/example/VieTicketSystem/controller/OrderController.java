@@ -176,6 +176,7 @@ public class OrderController {
 
         List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
         model.addAttribute("tickets", tickets);
+        boolean isAtLeastOneTicketCheckedIn = tickets.stream().anyMatch(ticket -> ticket.getStatus() == Ticket.TicketStatus.CHECKED_IN);
 
         if (order == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
@@ -194,6 +195,8 @@ public class OrderController {
         boolean isReturnable = !LocalDateTime.now().isAfter(event.getStartDate().minusDays(3)) && refundOrder == null;
         model.addAttribute("isReturnable", isReturnable);
 
+        model.addAttribute("isRatingAllowed", isAtLeastOneTicketCheckedIn);
+
         model.addAttribute("utils", new Utils());
         return "orders/view";
     }
@@ -208,8 +211,14 @@ public class OrderController {
     }
 
     @PostMapping("/rating")
-    public ResponseEntity<String> ratingOrganizer(@RequestParam("order_id") int orderId, @RequestParam("rating") int rating) {
+    public ResponseEntity<String> ratingOrganizer(@RequestParam("order_id") int orderId, @RequestParam("rating") int rating) throws Exception {
         int organizerId = ticketRepo.findOrganizerIdByOrderId(orderId);
+        List<Ticket> tickets = ticketRepo.findByOrderId(orderId);
+        boolean isAtLeastOneTicketCheckedIn = tickets.stream().anyMatch(ticket -> ticket.getStatus() == Ticket.TicketStatus.CHECKED_IN);
+        if (!isAtLeastOneTicketCheckedIn) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Rating not allowed");
+        }
+
         orderRepo.submitRating(rating, organizerId, orderId);
         return ResponseEntity.status(HttpStatus.OK).body("Rating submitted");
     }

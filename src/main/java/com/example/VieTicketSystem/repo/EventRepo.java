@@ -903,7 +903,7 @@ public class EventRepo {
 
     public boolean updateEventApprovalStatus(int eventId, int newApprovalStatus) {
         boolean updateSuccessful = false;
-        String updateQuery = "UPDATE VieTicket1.event SET is_approve = ? WHERE event_id = ?";
+        String updateQuery = "UPDATE Event SET is_approve = ? WHERE event_id = ?";
 
         try (Connection connection = ConnectionPoolManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(updateQuery)) {

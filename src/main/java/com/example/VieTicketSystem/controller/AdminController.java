@@ -357,7 +357,13 @@ public class AdminController {
 
         // Fetch the updated list of events and add to the model
         List<Event> events = eventRepo.getAllEventPass();
+        List<EventStatistics> eventStatisticsList = new ArrayList<>();
+        for (Event event : events) {
+            EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(event.getEventId());
+            eventStatisticsList.add(eventStatistics);
+        }
         model.addAttribute("events", events);
+        model.addAttribute("eventStatistics", eventStatisticsList);
 
         return "admin/events/passEvent";
     }

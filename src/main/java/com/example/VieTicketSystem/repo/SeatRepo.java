@@ -13,8 +13,8 @@ public class SeatRepo {
     private static final String SELECT_BY_ID_SQL = "SELECT * FROM Seat WHERE seat_id = ?";
     private static final String SELECT_BY_EVENT_ID_SQL = """
             SELECT * FROM Seat
-            JOIN VieTicket1.Row R ON R.row_id = Seat.row_id
-            JOIN VieTicket1.Area A ON R.area_id = A.area_id
+            JOIN `Row` R ON R.row_id = Seat.row_id
+            JOIN `Area` A ON R.area_id = A.area_id
             WHERE event_id = 5""";
     private static final String SELECT_BY_ROW_ID_SQL = "SELECT * FROM Seat WHERE row_id = ?";
     private static final String UPDATE_SQL = "UPDATE Seat SET is_taken = ? WHERE seat_id = ?";

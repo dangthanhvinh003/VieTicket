@@ -93,7 +93,8 @@
 
     <!-- Nút đánh giá -->
     <button class="btn btn-primary mt-3"
-            id="rateButton" th:if="${order.status.toString() == 'SUCCESS' || order.status.toString().contains('PARTIAL')}">Rating
+            id="rateButton" th:if="${isRatingAllowed}">
+        Rating
     </button>
 
     <div th:if="${refundOrder != null}">
@@ -139,7 +140,8 @@
         <input name="orderId" th:value="${order.orderId}" type="hidden"/>
         <div th:class="form-group" th:if="${isReturnable}">
             <div class="form-check">
-                <input class="form-check-input" id="totalRefund" name="isTotalRefund" onchange="toggleTicketSelection()" type="checkbox"
+                <input class="form-check-input" id="totalRefund" name="isTotalRefund" onchange="toggleTicketSelection()"
+                       type="checkbox"
                        value="true">
                 <label class="form-check-label" for="totalRefund">
                     Request Total Refund
