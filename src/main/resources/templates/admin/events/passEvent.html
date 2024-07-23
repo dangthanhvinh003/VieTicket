@@ -84,7 +84,7 @@
                             <span th:if="${event.approved == 5}">Payment Successful</span>
                         </td>
                         <td>
-                            <p th:text="${eventStatistics[stat.index].totalRevenue*0.85}"></p>
+                            <p th:text="${#numbers.formatDecimal(eventStatistics[stat.index].totalRevenue * 0.85, 1, 'COMMA', 0, 'POINT') + 'đ'}"></p>
                         </td>
                         <td th:if="${event.approved == 1 or event.approved == 4}">
                             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"

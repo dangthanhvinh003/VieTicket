@@ -286,7 +286,7 @@
                 const priceValue = parseFloat(priceElement.getAttribute('data-price'));
                 if (!isNaN(priceValue)) {
                     // Định dạng giá tiền với dấu phân cách hàng nghìn và thêm chữ "đ" ở sau
-                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + ' đ';
+                    priceElement.textContent = priceValue.toLocaleString('vi-VN') + 'đ';
                 }
             });
 
