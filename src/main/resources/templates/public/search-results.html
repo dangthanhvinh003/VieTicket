@@ -225,6 +225,8 @@
                         th:classappend="${pageType == 'category' && category == 'Comedy'} ? 'active'">Comedy</a>
                     <a href="/eventsByCategory?category=Art" class="btn btn-custom" id="artCategory"
                         th:classappend="${pageType == 'category' && category == 'Art'} ? 'active'">Art</a>
+                    <a href="/eventsByCategory?category=Other" class="btn btn-custom" id="otherCategory"
+                        th:classappend="${pageType == 'category' && category == 'Other'} ? 'active'">Other</a>
                 </div>
             </div>
             <h2 th:if="${pageType == 'category'}">Events by Category</h2>

@@ -96,13 +96,13 @@
                             top: 0;
                             right: 0;
                             border-bottom-left-radius: 0.5rem;"
-                         th:if="${event.approved == 5 && pageType == 'passed'}"
-                    >
-                        Payment completed
-                    </div>
-                    <div class="box top-right position-absolute"
-                         style="background-color: rgb(134,93,255);
-                            color: white;
+                            >
+                            Payment completed
+                        </div>
+                        <div th:if="${event.approved == 1 && pageType == 'passed'}"
+                            class="box top-right position-absolute"
+                            style="background-color: rgb(134,93,255); 
+                            color: white; 
                             padding: 0.3rem;
                             top: 0;
                             right: 0;

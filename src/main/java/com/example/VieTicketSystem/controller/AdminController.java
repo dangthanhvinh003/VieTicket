@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.VieTicketSystem.model.dto.AdminStatistics;
+import com.example.VieTicketSystem.model.dto.EventStatistics;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
 import com.example.VieTicketSystem.model.dto.TableAdminStatistics;
@@ -333,7 +334,14 @@ public class AdminController {
     @GetMapping(value = ("/ViewAllPassEvent"))
     public String passEvent(Model model) throws Exception {
         List<Event> events = eventRepo.getAllEventPass();
+        List<EventStatistics> eventStatisticsList = new ArrayList<>();
+        for (Event event : events) {
+            EventStatistics eventStatistics = eventRepo.getEventStatisticsByEventId(event.getEventId());
+            eventStatisticsList.add(eventStatistics);
+        }
+        System.out.println(eventStatisticsList);
         model.addAttribute("events", events);
+        model.addAttribute("eventStatistics", eventStatisticsList);
         return "admin/events/passEvent";
     }
 
