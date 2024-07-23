@@ -301,13 +301,13 @@
             link.addEventListener('click', function (event) {
                 // event.preventDefault(); // Bỏ dòng này để không ngăn chặn hành động mặc định của liên kết
 
-                const box = link.closest('.small-box');
-                const priceElement = box.querySelector('.price');
-                const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
-                if (!isNaN(originalPrice)) {
-                    const discountedPrice = originalPrice * 0.1; // Tính giá giảm 10%
-                    priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
-                }
+                    const box = link.closest('.small-box');
+                    const priceElement = box.querySelector('.price');
+                    const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
+                    if (!isNaN(originalPrice)) {
+                        const discountedPrice = originalPrice * 0.15; // Tính giá giảm 10%
+                        priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
+                    }
 
                 // Thêm một độ trễ nhỏ nếu cần thiết trước khi điều hướng
                 setTimeout(function () {

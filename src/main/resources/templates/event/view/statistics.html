@@ -167,7 +167,7 @@
             const priceElement = box.querySelector('.price');
             const originalPrice = parseFloat(priceElement.getAttribute('data-price'));
             if (!isNaN(originalPrice)) {
-                const discountedPrice = originalPrice * 0.1; // Tính giá giảm 10%
+                const discountedPrice = originalPrice * 0.85; // Tính giá giảm 10%
                 priceElement.textContent = discountedPrice.toLocaleString('vi-VN') + ' đ';
             }
 
