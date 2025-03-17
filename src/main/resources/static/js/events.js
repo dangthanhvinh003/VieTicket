@@ -35,6 +35,14 @@ const duplicateShapeInArea = document.getElementById("duplicateShapeInArea");
 
 const loadingOverlay = document.getElementById("loadingOverlay");
 
+const searchInInternet = document.getElementById("searchInInternet");
+const modal = document.getElementById("modal");
+const closeModalBtn = document.getElementById("closeModal");
+const searchSeatMaps = document.getElementById("searchSeatMaps");
+
+const dashboard = document.getElementById("dashboard");
+const seatMapsMine = document.getElementById("seatMapsMine");
+
 const editorTitle = document.getElementById("editorTitle");
 const editorContent = document.getElementById("editorContent");
 
@@ -333,7 +341,132 @@ removeButton.addEventListener("click", (event) => {
   removeShape();
   mainEditor();
 });
+// Open modal
+searchInInternet.addEventListener("click", () => {
+  searchInInternetHandler();
+  modal.classList.remove("d-none");
+  modal.classList.add("d-block");
+});
 
+searchSeatMaps.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    searchInInternetHandler();
+  }
+});
+
+dashboard.addEventListener("click", () => {
+  searchInInternetHandler();
+});
+
+async function searchInInternetHandler() {
+  const seatMapsContainer = document.getElementById("seatMapsContainer");
+  seatMapsContainer.innerHTML = "";
+
+  const response = await fetch(`/seatMaps?search=${searchSeatMaps.value}`);
+  const data = await response.json();
+
+  let html = '<div class="container"><div class="row g-3">';
+
+  data.forEach((result) => {
+    html += `
+    <div class="col-6">
+        <div class="card overflow-hidden" style="height: 10em;" onclick="handleCardClick(${result.eventId})">
+            <div class="card-body p-0 position-relative">
+                <div class="card-img-container" style="height:100%;">
+                    <div class="card-img-overlay p-3" 
+                        style="background-image: url('${result.img}'); background-size: cover; background-size: 200% 200%;">
+                        <h5 class="card-title text-black">${result.location}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            `;
+  });
+
+  html += "</div></div>";
+  seatMapsContainer.innerHTML = html;
+}
+
+async function handleCardClick(eventId) {
+  const data = await fetch(`/seatMaps/${eventId}`);
+  const canvasData = await data.json();
+  shapes = [];
+  shapes = canvasData.map((shapeData) => {
+    switch (shapeData.data.type) {
+      case "EllipseStage":
+        return EllipseStage.deserialize(shapeData.data);
+      case "RectangleStage":
+        return RectangleStage.deserialize(shapeData.data);
+      case "Area":
+        return PolygonArea.deserialize(shapeData.data);
+      default:
+        console.log(shapeData);
+    }
+  });
+
+  drawAll();
+}
+
+seatMapsMine.addEventListener("click", async () => {
+  const seatMapsContainer = document.getElementById("seatMapsContainer");
+  seatMapsContainer.innerHTML = "";
+
+  const response = await fetch(`/seatMaps/mine`);
+  const data = await response.json();
+
+  let html = '<div class="container"><div class="row g-3">';
+
+  data.forEach((result) => {
+    html += `
+    <div class="col-6">
+        <div class="card overflow-hidden" style="height: 10em;" onclick="handleCardClick(${result.event_id})">
+            <div class="card-body p-0 position-relative">
+                <div class="card-img-container" style="height:100%;">
+                    <div class="card-img-overlay p-3" 
+                        style="background-image: url('${result.img}'); background-size: cover; background-size: 200% 200%;">
+                        <h5 class="card-title text-black">${result.location}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            `;
+  });
+
+  html += "</div></div>";
+  seatMapsContainer.innerHTML = html;
+});
+// Close modal
+closeModalBtn.addEventListener("click", () => {
+  modal.classList.remove("d-block");
+  modal.classList.add("d-none");
+});
+
+let isDraggingModal = false;
+let dragOffsetX, dragOffsetY;
+
+modal.addEventListener("mousedown", (e) => {
+  isDraggingModal = true;
+  dragOffsetX = e.clientX - modal.getBoundingClientRect().left;
+  dragOffsetY = e.clientY - modal.getBoundingClientRect().top;
+  modal.addEventListener("mousemove", handleMouseMove);
+  modal.addEventListener("mouseup", handleMouseUp);
+});
+
+function handleMouseUp() {
+  isDraggingModal = false;
+  modal.removeEventListener("mousemove", handleMouseMove);
+  modal.removeEventListener("mouseup", handleMouseUp);
+}
+
+function handleMouseMove(e) {
+  if (!isDraggingModal) return;
+  requestAnimationFrame(() => {
+    modal.style.left = e.clientX - dragOffsetX + "px";
+    modal.style.top = e.clientY - dragOffsetY + "px";
+  });
+}
 //-------Area Events---------
 
 function removeAreaEventListeners() {

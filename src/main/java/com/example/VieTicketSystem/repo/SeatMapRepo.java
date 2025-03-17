@@ -4,7 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.example.VieTicketSystem.model.dto.SeatMapCardDto;
+import com.example.VieTicketSystem.model.dto.SeatMapDto;
 import com.example.VieTicketSystem.model.entity.SeatMap;
 import org.springframework.stereotype.Repository;
 
@@ -88,6 +92,62 @@ public class SeatMapRepo {
         connection.close();
 
         return seatMapId;
+    }
+
+    public List<SeatMapCardDto> getSeatMapList(String search) throws SQLException {
+        Connection connection = ConnectionPoolManager.getConnection();
+
+        String query = "SELECT sm.seat_map_id, e.event_id, sm.img, e.location " +
+                "FROM seatmap sm " +
+                "INNER JOIN event e ON sm.event_id = e.event_id " +
+                "WHERE e.location LIKE ? " +
+                "LIMIT 10";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, "%" + search + "%");
+
+        ResultSet rs = ps.executeQuery();
+        List<SeatMapCardDto> seatMapList = new ArrayList<>();
+        while (rs.next()) {
+            SeatMapCardDto seatMap = new SeatMapCardDto();
+            seatMap.setSeatMapId(rs.getInt("seat_map_id"));
+            seatMap.setEventId(rs.getInt("event_id"));
+            seatMap.setImg(rs.getString("img"));
+            seatMap.setLocation(rs.getString("location"));
+            seatMapList.add(seatMap);
+        }
+
+        rs.close();
+        ps.close();
+        connection.close();
+
+        return seatMapList;
+    }
+
+    public List<SeatMapCardDto> getSeatMapListByUserId(int userId) throws SQLException {
+
+        Connection connection = ConnectionPoolManager.getConnection();
+
+        String query = "SELECT sm.seat_map_id, e.event_id, e.name, sm.img, e.location FROM seatmap sm inner join event e on sm.event_id = e.event_id where e.organizer_id = ?;";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, userId);
+
+        ResultSet rs = ps.executeQuery();
+        List<SeatMapCardDto> seatMapList = new ArrayList<>();
+        while (rs.next()) {
+            SeatMapCardDto seatMap = new SeatMapCardDto();
+            seatMap.setSeatMapId(rs.getInt("seat_map_id"));
+            seatMap.setEventId(rs.getInt("event_id"));
+            seatMap.setEventName(rs.getString("name"));
+            seatMap.setImg(rs.getString("img"));
+            seatMap.setLocation(rs.getString("location"));
+            seatMapList.add(seatMap);
+        }
+
+        rs.close();
+        ps.close();
+        connection.close();
+
+        return seatMapList;
     }
 
     public void deleteSeatMapByEventId(int eventId) throws SQLException {

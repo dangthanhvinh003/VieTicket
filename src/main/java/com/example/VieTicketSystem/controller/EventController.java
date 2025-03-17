@@ -15,18 +15,23 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cloudinary.Cloudinary;
 import com.example.VieTicketSystem.model.dto.AdditionalData;
+import com.example.VieTicketSystem.model.dto.SeatMapCardDto;
+import com.example.VieTicketSystem.model.dto.SeatMapDto;
 import com.example.VieTicketSystem.model.entity.Area;
 import com.example.VieTicketSystem.model.entity.Event;
 import com.example.VieTicketSystem.model.entity.Organizer;
@@ -41,6 +46,7 @@ import com.example.VieTicketSystem.repo.SeatMapRepo;
 import com.example.VieTicketSystem.repo.SeatRepo;
 import com.example.VieTicketSystem.service.EventService;
 import com.example.VieTicketSystem.service.FileUpload;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
@@ -252,6 +258,39 @@ public class EventController {
         }
         session.removeAttribute("eventIdEdit");
         return "redirect:/editSuccess";
+    }
+
+    @GetMapping(value = ("/seatMaps"))
+    @ResponseBody
+    public ResponseEntity<List<SeatMapCardDto>> SeatMapsPage(@RequestParam("search") String search) {
+        try {
+            List<SeatMapCardDto> seatMaps = seatMapRepo.getSeatMapList(search);
+            return new ResponseEntity<>(seatMaps, HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = ("/seatMaps/mine"))
+    @ResponseBody
+    public ResponseEntity<List<SeatMapCardDto>> SeatMapsByUserId(HttpSession session) {
+        User user = (User) session.getAttribute("activeUser");
+        try {
+            List<SeatMapCardDto> seatMaps = seatMapRepo.getSeatMapListByUserId(user.getUserId());
+            return new ResponseEntity<>(seatMaps, HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = ("/seatMaps/{eventId}"))
+    @ResponseBody
+    public ResponseEntity<String> SeatMapEditPage(@PathVariable("eventId") int eventId, Model model)
+            throws SQLException {
+        String mapFile = seatMapRepo.getSeatMapByEventId(eventId).getMapFile();
+        return new ResponseEntity<>(mapFile, HttpStatus.OK);
     }
 
     @GetMapping(value = { "/createEventSuccess" })
