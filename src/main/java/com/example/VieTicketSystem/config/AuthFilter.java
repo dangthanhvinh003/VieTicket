@@ -119,7 +119,10 @@ public class AuthFilter implements Filter {
                         || requestURI.startsWith("/viewStatistics") || requestURI.startsWith("/eventUsers")
                         || requestURI.startsWith("/requestPayment")
                         || requestURI.startsWith("/organizer")
-                        || requestURI.startsWith("/sendMailToAllUser")) {
+                        || requestURI.startsWith("/sendMailToAllUser")
+                        || requestURI.startsWith("/seatMaps")
+                        || requestURI.startsWith("/seatMaps/mine")
+                        || requestURI.startsWith("/seatMaps/{eventId}")) {
                     if (requestURI.startsWith("/createEvent")) {
                         session.setAttribute("eventCreated", true);
                     }
